@@ -1,0 +1,1454 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass scrartcl
+\use_default_options true
+\begin_modules
+theorems-ams
+theorems-sec
+\end_modules
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 0
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 0
+\use_package mhchem 1
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine natbib
+\cite_engine_type numerical
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Khamiltonian Monte Carlo
+\end_layout
+
+\begin_layout Author
+Heiko Strathmann and Dino Sejdinovic
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset FormulaMacro
+\newcommand{\Mz}{M_{\mathbf{z},y}}
+{M_{\mathbf{z},y}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\muz}{\mu_{\mathbf{z}}}
+{\mu_{\mathbf{z}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\aj}{\alpha^{(j)}}
+{\alpha^{(j)}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\Cz}{C_{\mathbf{z}}}
+{C_{\mathbf{z}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\kq}{{\bf k}_{q}}
+{{\bf k}_{q}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\kz}{{\bf k}_{{\bf z}}}
+{{\bf k}_{{\bf z}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Idea
+\end_layout
+
+\begin_layout Standard
+The Kernel Adaptive Metropolis Hastings framework embeds the history of
+ a MCMC chain into a RKHS and uses the resulting notion of structure of
+ the target distribution to come up with a clever proposal.
+ The proposal is a Gaussian which is centred at the current point of the
+ MCMC chain and whose covariance locally aligns with the target distribution
+ at that point.
+ This allows to avoids purely random walk behaviour and scaling issues for
+ non-linear target distribution.
+\end_layout
+
+\begin_layout Standard
+Since the embedded Markov chain history gives notion of 
+\emph on
+global
+\emph default
+ covariance structure in the RKHS, the existing framework in fact does not
+ take full advantage of the available information: while the covariance
+ structure in the RKHS and the corresponding manifold in input space cover
+ all yet explored parts of the target distribution, the proposal only results
+ in 
+\emph on
+local
+\emph default
+ moves.
+ We now explore ideas to exploit the notion of global target structure.
+ 
+\end_layout
+
+\begin_layout Standard
+The key idea will be to use Hamiltonian dynamics to propose moves that are
+ less correlated to the current point, while achieving high acceptance rates.
+ In contrast to Hamiltonian Monte Carlo (HMC), our sampler will not depend
+ on knowledge of the gradients of the target distribution.
+ Thus, the use-case of this sampler will be the same as for the Kameleon
+ MCMC algorithm: Cases where information of the target density is unavailable
+ such as in pseudo-marginal MCMC.
+\end_layout
+
+\begin_layout Paragraph
+Hamiltonian Dynamics without target gradients
+\end_layout
+
+\begin_layout Standard
+In order to use Hamiltonian Dynamics to come up with proposals for a Metropolis-
+Hastings algorithm, we need a notion of the structure of the target.
+ Given an arbitrary energy function 
+\begin_inset Formula $U(q):\mathbb{R}^{d}\rightarrow\mathbb{R}$
+\end_inset
+
+ with gradient 
+\begin_inset Formula $\nabla_{q}U(q)$
+\end_inset
+
+, we can define Hamiltonian dynamics in the standard way using 
+\begin_inset Formula $U$
+\end_inset
+
+ as the potential energy, sample momentum, and finally simulate the dynamics
+ for a given time using a reversible and volume preserving integrator (say
+ leap-frog).
+ The resulting proposal can be accepted using the pdf of the 
+\emph on
+target
+\emph default
+ density.
+ If the energy function 
+\begin_inset Formula $U$
+\end_inset
+
+ is the log-pdf of the target distribution, this exactly is HMC.
+ For different energy functions, the sampler is still valid.
+ However, the acceptance probability might suffer if 
+\begin_inset Formula $U$
+\end_inset
+
+ results in proposals in regions where the target has little mass.
+ Note that the approach does not require any target gradients, but rather
+ the gradient of 
+\begin_inset Formula $U$
+\end_inset
+
+.
+ Also note that the acceptance probability can be replaced by an unbiased
+ estimator in the sense of Pseudo-Marginal MCMC.
+\end_layout
+
+\begin_layout Paragraph
+Using Kameleon MCMC's 
+\begin_inset Formula $g(x)$
+\end_inset
+
+ as energy
+\end_layout
+
+\begin_layout Standard
+Kameleon MCMC samples from the Gaussian in the RKHS that is induced by the
+ chain history, and then attempts to solve the pre-image problem via taking
+ a gradient step in input space along a cost function that gives the distance
+ of the kernel embedding of a point to the sample in the RKHS.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+g(x)=k(x,x)-2k(x,y)-2\sum_{i=1}^{n}\beta_{i}\left[k(x,z_{i})-\muz(x)\right]
+\]
+
+\end_inset
+
+We tried using 
+\begin_inset Formula $g$
+\end_inset
+
+ as the energy term in HMC.
+ Gradients are readily available from the Kameleon MCMC framework.
+ This however leads to a density whose mass is mostly concentrated around
+ the current point of the MCMC chain, so exploring it via Hamiltonian dynamics
+ does not lead to improvements.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /home/heiko/Desktop/download (3).png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /home/heiko/Desktop/download (1).png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Hamiltonian dynamics on the projection of the Gaussian in the RKHS to the
+ input space
+\end_layout
+
+\begin_layout Standard
+Another idea is to simulate Hamiltonian dynamics on the empirical Gaussian
+ in the (possibly infinite dimensional) RKHS.
+ Since this is hard, we project the Gaussian into the input space where
+ it corresponds to a non-linear manifold.
+ The energy is induced by the kernel and the history of the Markov chain
+ as
+\begin_inset Formula 
+\[
+U_{\mathbf{z},k}(q)=\frac{1}{2}\left\langle k(q,\cdot)-\muz,(\Cz+\lambda I)^{-1}(k(q,\cdot)-\muz)\right\rangle _{{\cal H}}
+\]
+
+\end_inset
+
+which can be seen as the log-pdf of the empirical Gaussian in the RKHS,
+ with (empirical) mean 
+\begin_inset Formula $\muz$
+\end_inset
+
+, covariance 
+\begin_inset Formula $\Cz$
+\end_inset
+
+ and a regulariser 
+\begin_inset Formula $\lambda I$
+\end_inset
+
+.
+ This energy function closely captures the global non-linear covariance
+ structure in the input space.
+ The gradients can be easily computed for any kernel.
+ This example shows the exponentiated energy function for samples from a
+ banana distribution.
+ Norm of the gradient is shown on the right side.
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /home/heiko/Desktop/download (4).png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is clear that simulating Hamiltonian dynamics on this energy function
+ leads to proposals that are in some sense close to those if the log-pdf
+ would be used as energy.
+ Here are examples of trajectories in 
+\begin_inset Formula $q$
+\end_inset
+
+ space.
+ Note how they oscillate nicely along the high density regions of the induced
+ pseudo-density and therefore also the true target.
+ The Hamiltonian (consisting of our induced energy 
+\begin_inset Formula $U$
+\end_inset
+
+ and a squared form as momentum) stays constant up to local oscillations.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /home/heiko/Desktop/download (7).png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /home/heiko/Desktop/download (6).png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /home/heiko/Desktop/download (5).png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Details
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+Let 
+\begin_inset Formula $\mathcal{X}=\mathbb{R}^{d}$
+\end_inset
+
+ be the domain of interest
+\lang british
+ with probability measure 
+\begin_inset Formula $P$
+\end_inset
+
+ on 
+\begin_inset Formula ${\cal X}$
+\end_inset
+
+, and 
+\lang english
+
+\begin_inset Formula $k:\mathcal{X}\times\mathcal{X}\to\mathbb{R}$
+\end_inset
+
+ be a positive definite function (
+\emph on
+kernel
+\emph default
+) with associated reproducing kernel Hilbert space (RKHS) 
+\begin_inset Formula $\mathcal{H}_{k}$
+\end_inset
+
+ of real-valued functions on 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+.
+ 
+\lang british
+Let 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}\sim P$
+\end_inset
+
+ be samples from the distribution of interest.
+ We represent the corresponding empirical measure in an RKHS 
+\begin_inset Formula ${\cal H}_{k}$
+\end_inset
+
+ with reproducing kernel 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ The measure is defined via mean embedding 
+\begin_inset Formula $\muz=\frac{1}{n}\sum_{i=1}^{n}k(\cdot,z_{i}).$
+\end_inset
+
+ and covariance 
+\begin_inset Formula $C_{\mathbf{z}}=\frac{1}{n}\sum_{i=1}^{n}k(\cdot,z_{i})\otimes k(\cdot,z_{i})-\muz\otimes\muz$
+\end_inset
+
+, where for 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\lang english
+
+\begin_inset Formula $a,b,c\in\mathcal{H}_{k}$
+\end_inset
+
+ the tensor product is defined as 
+\begin_inset Formula $(a\otimes b)c=\left\langle b,c\right\rangle _{\mathcal{H}_{k}}a$
+\end_inset
+
+.
+ We define a kernel induced energy function 
+\begin_inset Formula $U:{\cal X}\rightarrow\mathbb{R}^{+}$
+\end_inset
+
+ as 
+\begin_inset Formula 
+\[
+U_{\mathbf{z},k}(q):=\frac{1}{2}\left\langle k(q,\cdot)-\muz,(\Cz+\lambda I)^{-1}(k(q,\cdot)-\muz)\right\rangle _{{\cal H}}.
+\]
+
+\end_inset
+
+Note while the function itself corresponds to the negative log-pdf of the
+ empirical Gaussian measure of the samples 
+\begin_inset Formula ${\bf z}$
+\end_inset
+
+ in the RKHS (see 
+\begin_inset CommandInset citation
+LatexCommand citep
+after "section 3.1"
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+), rather than interpreting it as a Gaussian in 
+\begin_inset Formula $k(q,\cdot)$
+\end_inset
+
+, we interpret it as a function in 
+\begin_inset Formula ${\cal X}$
+\end_inset
+
+ itself.
+ This intuitively corresponds to projecting the empirical Gaussian in 
+\begin_inset Formula ${\cal H}_{k}$
+\end_inset
+
+ into 
+\begin_inset Formula ${\cal X}$
+\end_inset
+
+ where its form might not be Gaussian but rather reassembles a manifold
+ structure induced by the samples 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Even though the empirical Gaussian measure lies in a possibly infinite dimension
+al space 
+\begin_inset Formula ${\cal H}_{k}$
+\end_inset
+
+, it is only supported on 
+\lang english
+a finite-dimensional affine space
+\lang british
+ 
+\lang english
+
+\begin_inset Formula $k(\cdot,y)+\mathcal{H}_{\mathbf{z}}$
+\end_inset
+
+, where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\mathcal{H}_{\mathbf{z}}=\textrm{span}\left\{ k(\cdot,z_{i})\right\} _{i=1}^{n}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ is the subspace spanned by the canonical features of 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+
+\lang british
+, 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+.
+ This energy can therefore be easily evaluated solely using evaluations
+ of the kernel function 
+\begin_inset Formula $k$
+\end_inset
+
+ only.
+ Define the kernel matrix on 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+ as 
+\begin_inset Formula $K\in\mathbb{R}^{n\times n}$
+\end_inset
+
+ with entries 
+\begin_inset Formula $K_{ij}=k(z_{i},z_{j})$
+\end_inset
+
+, and its centred version 
+\begin_inset Formula $\tilde{K}:=HKH$
+\end_inset
+
+ 
+\lang english
+with 
+\begin_inset Formula $H=I-\frac{1}{n}\mathbf{1}_{n\times n}$
+\end_inset
+
+ being the 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ centering matrix
+\lang british
+.
+ We write (slightly abusing notation using infinite dimensional vectors)
+\begin_inset Formula 
+\begin{align*}
+\tilde{k}(x,\cdot) & :=k(x,\cdot)-\muz & (\text{centered feature map})\\
+\kz & :=\left[\tilde{k}(z_{1,}\cdot),\dots,\tilde{k}(z_{n,}\cdot)\right] & (\infty\times n)\\
+\kq & :=\tilde{k}(q,\cdot) & (\infty\times1)
+\end{align*}
+
+\end_inset
+
+We now use the Woodbury identity to rewrite the infinite dimensional inverted
+ covariance of 
+\begin_inset Formula $U$
+\end_inset
+
+ as 
+\begin_inset Formula 
+\begin{align*}
+(\Cz+\lambda I)^{-1} & =(\kz\kz^{T}+\lambda I)^{-1}\\
+ & =\frac{1}{\lambda}\left(I-\kz(\kz^{T}\kz+\lambda I)^{-1}\kz^{T}\right)\\
+ & =\frac{1}{\lambda}\left(I-\kz(\tilde{K}+\lambda I)^{-1}\kz^{T}\right),
+\end{align*}
+
+\end_inset
+
+which leads to a dual form of 
+\begin_inset Formula $U_{\mathbf{z},k}$
+\end_inset
+
+: 
+\begin_inset Formula 
+\begin{align*}
+U_{\mathbf{z},k}(q) & =\frac{1}{2}\left\langle k(q,\cdot)-\muz,(\Cz+\lambda I)^{-1}(k(q,\cdot)-\muz)\right\rangle _{{\cal H}}\\
+ & =\frac{1}{2}\left\langle \kq,\left(\kz\kz^{T}+\lambda I\right)^{-1}\kq\right\rangle _{{\cal H}}\\
+ & =\frac{1}{2\lambda}\left\langle \kq,\left(I-\kz(\tilde{K}+\lambda I)^{-1}\kz^{T}\right)\kq\right\rangle _{{\cal H}}\\
+ & =\frac{1}{2\lambda}\left(\underbrace{\kq^{T}\kq}_{\mathbb{R}}-\underbrace{\kq^{T}\kz}_{\mathbb{R}^{1\times n}}(\underbrace{\tilde{K}+\lambda I}_{\mathbb{R}^{n\times n}})^{-1}\underbrace{\kz^{T}\kq}_{\mathbb{R}^{n\times1}}\right).
+\end{align*}
+
+\end_inset
+
+This now can be evaluated in terms of 
+\begin_inset Formula $n$
+\end_inset
+
+-dimensional vector/matrix operations, and kernel evaluations only, using
+ (note in particular that the matrix inversion only depends on 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+, but not on 
+\begin_inset Formula $q$
+\end_inset
+
+):
+\begin_inset Formula 
+\begin{align*}
+\underbrace{\kq^{T}\kq}_{\mathbb{R}} & =\left\langle \tilde{k}(q,\cdot),\tilde{k}(q,\cdot)\right\rangle _{{\cal H}}\\
+ & =\left\langle k(q,\cdot)-\muz,k(q,\cdot)-\muz\right\rangle _{{\cal H}}\\
+ & =k(q,q)-\frac{2}{n}\sum_{i=1}^{n}k(q,z_{i})+\frac{1}{n^{2}}\sum_{i,j=1}^{n}k(z_{i},z_{j}),
+\end{align*}
+
+\end_inset
+
+(note that the last component is constant in 
+\begin_inset Formula $q$
+\end_inset
+
+) and
+\begin_inset Formula 
+\begin{align*}
+\underbrace{\kz^{T}\kq}_{\mathbb{R}^{n\times1}} & =\left\langle \underbrace{\left[\tilde{k}(z_{1,}\cdot),\dots,\tilde{k}(z_{n,}\cdot)\right]^{T}}_{\mathbb{R}^{n\times\infty}},\tilde{k}(q,\cdot)\right\rangle _{{\cal H}}\\
+ & =\left\langle \left[k(z_{1,}\cdot)-\muz,\dots,k(z_{n,}\cdot)-\muz\right]^{T},k(q,\cdot)-\muz\right\rangle _{{\cal H}}\\
+ & =\left[\dots,\underbrace{k(q,z_{\ell})-\frac{1}{n}\sum_{i=1}^{n}k(q,z_{i})-\frac{1}{n}\sum_{i=1}^{n}k(z_{\ell},z_{i})+\frac{1}{n^{2}}\sum_{i,j=1}^{n}k(z_{i},z_{j})}_{\ell\text{-th component}},\dots\right]^{T}.
+\end{align*}
+
+\end_inset
+
+(Note again that the last two components are constant in 
+\begin_inset Formula $q$
+\end_inset
+
+).
+ The gradients can be evaluated in a similar fashion, using kernel gradients
+ for the form 
+\begin_inset Formula 
+\[
+\nabla_{q}k(q,x)=\left[\frac{\partial}{\partial q_{1}}k(q,x),\dots,\frac{\partial}{\partial q_{n}}k(q,x)\right]^{T}\in\mathbb{R}^{n\times1}
+\]
+
+\end_inset
+
+ (for any 
+\begin_inset Formula $x\in{\cal X}$
+\end_inset
+
+) only.
+ We first split 
+\begin_inset Formula $U(q)$
+\end_inset
+
+ into the left and right terms 
+\begin_inset Formula $U(q)=\frac{1}{2\lambda}\left(U_{1}(q)+U_{2}(q)\right)$
+\end_inset
+
+ and differentiate them with respect to 
+\begin_inset Formula $q$
+\end_inset
+
+.
+ We get
+\begin_inset Formula 
+\begin{align*}
+\nabla_{q}\left[U_{1}(q)\right] & =\nabla_{q}\left[\kq^{T}\kq\right]\\
+ & =\nabla_{q}\left[k(q,q)-\frac{2}{n}\sum_{i=1}^{n}k(q,z_{i})+\frac{1}{n^{2}}\sum_{i,j=1}^{n}k(z_{i},z_{j})\right]\\
+ & =\nabla_{q}k(q,q)-\frac{2}{n}\sum_{i=1}^{n}\nabla_{q}k(q,z_{i}).
+\end{align*}
+
+\end_inset
+
+For 
+\begin_inset Formula $\nabla_{q}\left[U_{2}(q)\right]$
+\end_inset
+
+, we first define 
+\begin_inset Formula $\mathbf{s}=s(q):=\kz^{T}\kq\in\mathbb{R}^{n\times1}$
+\end_inset
+
+ and use the chain rule
+\begin_inset Formula 
+\begin{align*}
+\nabla_{q}\left[U_{2}(q)\right] & =\nabla_{q}\left[\kq^{T}\kz(\tilde{K}+\lambda I)^{-1}\kz^{T}\kq\right]\\
+ & =\nabla_{\mathbf{s}}\left[\mathbf{s}^{T}(\tilde{K}+\lambda I)^{-1}\mathbf{s}\right]\nabla_{q}s(q)\\
+ & =2(\tilde{K}+\lambda I)^{-1}\mathbf{s}\nabla_{q}s(q)\\
+ & =2(\tilde{K}+\lambda I)^{-1}\mathbf{s}\\
+ & \qquad\times\left[\dots,\underbrace{\nabla_{q}k(q,z_{\ell})-\underbrace{\begin{bmatrix}\vdots\\
+\frac{1}{n}\sum_{i=1}^{n}k(q,z_{i})\\
+\vdots
+\end{bmatrix}}_{\mathbb{R}^{n\times1}}}_{\ell\text{-th column}},\dots\right]^{T}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Hamiltonian dynamics for MCMC
+\end_layout
+
+\begin_layout Standard
+We now describe plain Hamiltonian Monte Carlo.
+ We first need to define a momentum energy function 
+\begin_inset Formula $K(p):{\cal X}\rightarrow\mathbb{R}^{+}$
+\end_inset
+
+.
+ Hamiltonian dynamics are based around the Hamiltonian function 
+\begin_inset Formula $H:{\cal X}\times{\cal X}\rightarrow\mathbb{R}^{+}$
+\end_inset
+
+ which assigns a positive energy to each point of the joint space 
+\begin_inset Formula ${\cal X}\times{\cal X}$
+\end_inset
+
+ (we will refer to as 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+-space)
+\begin_inset Formula 
+\begin{align*}
+H(p,q) & =K(p)+U(q),
+\end{align*}
+
+\end_inset
+
+which consists of the sum of fictional potential energy 
+\begin_inset Formula $U(q)$
+\end_inset
+
+ (taken to be the log-pdf of the distribution of interest) and kinetic energy
+ 
+\begin_inset Formula $K(p)$
+\end_inset
+
+.
+ They form a dynamical system in time whose evolution leaves the value of
+ 
+\begin_inset Formula $H$
+\end_inset
+
+ constant.
+ This is formalised by Hamilton's equations for the evolution of the 
+\begin_inset Formula $i$
+\end_inset
+
+-th component of both 
+\begin_inset Formula $d$
+\end_inset
+
+-dimensional momentum 
+\begin_inset Formula $p$
+\end_inset
+
+ and position 
+\begin_inset Formula $q$
+\end_inset
+
+,
+\begin_inset Formula 
+\begin{align*}
+\frac{dq_{i}}{dt} & =\frac{\partial H}{\partial p_{i}}\\
+\frac{dp_{i}}{dt} & =-\frac{\partial H}{\partial q_{i}}.
+\end{align*}
+
+\end_inset
+
+Trajectories in 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+ space following those dynamics satisfy three properties that are crucial
+ for constructing a Markov chain: a) reversability (via inverting time),
+ b) preservation of volume, and c) lieing on contour lines of 
+\begin_inset Formula $H$
+\end_inset
+
+.
+ The latter implies that individual values of 
+\begin_inset Formula $K(p)$
+\end_inset
+
+ and 
+\begin_inset Formula $U(q)$
+\end_inset
+
+ therefore oscillate in order to keep 
+\begin_inset Formula $H$
+\end_inset
+
+ constant.
+ In practice, simulating these dynamics is not possible, but there exist
+ numerical integrators that preserve a) and b), and small deviations of
+ c) can be dealt with otherwise, 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Neal2010"
+
+\end_inset
+
+.
+ We will denote by 
+\begin_inset Formula $T:(p,q)\mapsto(p^{*},q^{*})$
+\end_inset
+
+ an operator, that numerically integrates Hamiltonian dynamics via leap-frog,
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Neal2010"
+
+\end_inset
+
+, with a fixed step size 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ and a number of steps 
+\begin_inset Formula $L$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+This framework can now be used to build a MCMC sampler via setting 
+\begin_inset Formula $K(p)$
+\end_inset
+
+ to a known distribution, and 
+\begin_inset Formula $U(q)$
+\end_inset
+
+ to the log-pdf of the target desnity of interest.
+ We follow the conventions 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Neal2010"
+
+\end_inset
+
+ and restrict our attention to the case where 
+\begin_inset Formula $K$
+\end_inset
+
+ corresponds to a zero mean Gaussian with covariance 
+\begin_inset Formula $M,$
+\end_inset
+
+ i.e., 
+\begin_inset Formula $K(p)=\frac{1}{2}p^{T}M^{-1}p$
+\end_inset
+
+.
+ HMC defines a Markov chain on the joint 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+-space and iterates two steps.
+ Let 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+ be the current state of the MCMC chain.
+\end_layout
+
+\begin_layout Enumerate
+Re-sample 
+\begin_inset Formula $p$
+\end_inset
+
+' from 
+\begin_inset Formula $K(p)$
+\end_inset
+
+.
+ This produces a new point 
+\begin_inset Formula $(p',q)$
+\end_inset
+
+ which has the same distribution as 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+ since 
+\begin_inset Formula $p'$
+\end_inset
+
+ comes from the true marginal distribution of the chain.
+ Note that the value of 
+\begin_inset Formula $H$
+\end_inset
+
+ is changed in this step (i.e.
+ we jump to another contour of 
+\begin_inset Formula $H$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Enumerate
+Starting from 
+\begin_inset Formula $(p',q)$
+\end_inset
+
+, simulate along the current contour of 
+\begin_inset Formula $H$
+\end_inset
+
+ to obtain a new point 
+\begin_inset Formula $T(p',q)=(p^{*},q^{*})$
+\end_inset
+
+.
+ Since numerical integration cannot guarantee that 
+\begin_inset Formula $H$
+\end_inset
+
+ is exactly constant, accept this point according to its new value of 
+\begin_inset Formula $H$
+\end_inset
+
+ using a Metorpolis-Hastings step with an acceptance probability of
+\begin_inset Formula 
+\begin{align*}
+ & \min\left[1,\exp\left(H(p^{*},q^{*})-H(p',q)\right)\right]\\
+= & \min\left[1,\exp\left(K(p^{*})-K(p')+U(q^{*})-U(q)\right)\right]
+\end{align*}
+
+\end_inset
+
+ This gives another valid point in the Markov chain.
+\end_layout
+
+\begin_layout Enumerate
+Iterate the previous two points.
+ The resulting Markov chain in 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+-space can be marginalised by simply dropping all 
+\begin_inset Formula $p$
+\end_inset
+
+ components.
+\end_layout
+
+\begin_layout Standard
+Using the properties of Hamiltonian dynamics and the integrator 
+\begin_inset Formula $T$
+\end_inset
+
+, one can show that the resulting marginalised Markov chain converges to
+ a distribution whose density is proportional to 
+\begin_inset Formula $\exp(-U(q))$
+\end_inset
+
+.
+ Furthermore, the acceptance rate of the correction step for the numerical
+ integration will be large as 
+\begin_inset Formula $H$
+\end_inset
+
+ only slightly fluctuates in practice.
+ The result is a Markov chain with very little autocorrelation as both big
+ jumps are taken and these are likely to be accepted.
+\end_layout
+
+\begin_layout Paragraph
+Kernel Hamiltonian dynamics
+\end_layout
+
+\begin_layout Standard
+Denote by 
+\begin_inset Formula $\pi(\cdot)$
+\end_inset
+
+ the distribution of interest.
+ We now plug in the kernel induced energy function 
+\begin_inset Formula $U_{\mathbf{z},k}$
+\end_inset
+
+ as the potential energy in HMC, giving rise to an approximate Hamiltonian
+ 
+\begin_inset Formula $H_{\mathbf{z},k}=U_{\mathbf{z},k}+K.$
+\end_inset
+
+ The leap-frog integrator 
+\begin_inset Formula $T_{\mathbf{z},k}$
+\end_inset
+
+ now uses gradients of 
+\begin_inset Formula $U_{\mathbf{z},k}$
+\end_inset
+
+ to map 
+\begin_inset Formula $T_{\mathbf{z},k}:(p',q)\mapsto(p_{\mathbf{z},k}^{*},q_{\mathbf{z},k}^{*})$
+\end_inset
+
+, but its properties remain unchanged otherwise.
+ Running HMC on 
+\begin_inset Formula $H_{\mathbf{z},k}$
+\end_inset
+
+ now does produce samples from a density proportinal to 
+\begin_inset Formula $\exp\left(-U_{\mathbf{z},k}(q)\right)$
+\end_inset
+
+, which is close to 
+\begin_inset Formula $\pi(\cdot)$
+\end_inset
+
+, but not the same.
+ In order to correct the marginalised Markov chain in 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+-space to converge to 
+\begin_inset Formula $\pi(\cdot)$
+\end_inset
+
+, we need to change the MH acceptance probability to not only correct for
+ discretisation errors of the integrator 
+\begin_inset Formula $T$
+\end_inset
+
+, but also to also correct the approximate target log-pdf 
+\begin_inset Formula $U_{\mathbf{z},k}(\cdot)\neq\pi(\cdot)$
+\end_inset
+
+.
+ This can be accomplished by using the MH acceptance probability
+\begin_inset Formula 
+\begin{align*}
+\min\left[1,\exp\left(K(p_{\mathbf{z},k}^{*})-K(p')+\log\pi(q_{\mathbf{z},k}^{*})-\log\pi(q)\right)\right],
+\end{align*}
+
+\end_inset
+
+i.e., the proposal of the kernel induced dynamics is accepted according to
+ the true target desnity.
+ As only the proposal distribution of the HMC chain is changed, this will
+ cause the Markov chain on 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+-space to converge to 
+\begin_inset Formula $\pi(\cdot)$
+\end_inset
+
+ Naturally, since the Hamiltonian dynamics now do not match the distribution
+ of interest anymore, trajectories (contours) on the approximate Hamiltonian
+ might not match those of the true one.
+ For bad choices of 
+\begin_inset Formula $U_{\mathbf{z},k}$
+\end_inset
+
+, this might result in lower acceptance rates than original HMC, however,
+ the correctness of the algorithm remains untouched.
+ In particular, the kernel induced HMC proposal's support is the full space
+ 
+\begin_inset Formula ${\cal X}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Pseudo Marginal KHMC
+\end_layout
+
+\begin_layout Standard
+A particularly nice propery of this KHMC algorithm is that there is no need
+ for 
+\begin_inset Formula $\nabla\log\pi(q)$
+\end_inset
+
+.
+ In fact, we do not even require 
+\begin_inset Formula $\pi(q)$
+\end_inset
+
+ itself: If we replace it in fact with an unbiased estimator, i.e.
+ accept a KHMC proposal with probability
+\begin_inset Formula 
+\[
+\min\left[1,\exp\left(K(p_{\mathbf{z},k}^{*})-K(p')\right)\frac{\hat{\pi}(q_{\mathbf{z},k}^{*})}{\hat{\pi}(q)}\right],
+\]
+
+\end_inset
+
+the underlying Markov chain still converges (in a pseudo-marginal sense,
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Andrieu2009"
+
+\end_inset
+
+) such that the marginalised chain on 
+\begin_inset Formula $q$
+\end_inset
+
+ is equal 
+\begin_inset Formula $\pi(\cdot)$
+\end_inset
+
+.
+ KHMC is the first instance of a non-random walk sampler that can operate
+ in the pseudo-marginal context.
+ It will (hopefully) in particular beat Kameleon MCMC 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+ in therms of correlation of the produced samples.
+\end_layout
+
+\begin_layout Paragraph
+Things to verify/Ideas to follow
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Ergedocity
+\series default
+.
+ What if the support of 
+\begin_inset Formula $U_{\mathbf{z},k}(\cdot)$
+\end_inset
+
+ is smaller than the one of 
+\begin_inset Formula $\log\pi(\cdot)$
+\end_inset
+
+.
+ Will we eventually move everywhere? Intuitively, I think this is true since
+ the support of the kernel HMC proposal should cover all of 
+\begin_inset Formula ${\cal X}$
+\end_inset
+
+, but this should be checked formally.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\begin_inset Formula $U_{\mathbf{z},k}$
+\end_inset
+
+ as a density estimator.
+ 
+\series default
+What do we gain in using 
+\begin_inset Formula $U_{\mathbf{z},k}$
+\end_inset
+
+ rather than a kernel density estimate of 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+? Theoretical guerantees (high dimensions?) and empirical evaluation.
+ Using a KDD as proposal distribution is shitty as we have seen in the rebuttal
+ experiments of 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Theoretical guarantees
+\series default
+.
+ Can we (theoretically) quantify how close 
+\begin_inset Formula $U_{\mathbf{z},k}(\cdot)$
+\end_inset
+
+ is to 
+\begin_inset Formula $\log\pi(\cdot)$
+\end_inset
+
+? One intuition that I have is (for 
+\begin_inset Formula $Z:=\int\exp\left(U_{\mathbf{z},k}(q)\right)dq$
+\end_inset
+
+) that 
+\begin_inset Formula $\frac{1}{Z}\exp\left(-U_{\mathbf{z},k}(q)\right)\leq\pi(q)$
+\end_inset
+
+ for most 
+\begin_inset Formula $q\in{\cal X}$
+\end_inset
+
+ since the former is constructed from samples from.
+ The density corresponding to 
+\begin_inset Formula $U_{\mathbf{z},k}$
+\end_inset
+
+ is unlikely to have mass where 
+\begin_inset Formula $\pi$
+\end_inset
+
+ doesn't.
+ More formally, 
+\begin_inset Formula 
+\[
+\text{KL}\left[\frac{1}{Z}\exp\left(-U_{\mathbf{z},k}(q)\right)\Bigg|\Bigg|\pi(q)\right]
+\]
+
+\end_inset
+
+ should be smallish while 
+\begin_inset Formula 
+\[
+\text{KL}\left[\pi(q)\Bigg|\Bigg|\frac{1}{Z}\exp\left(-U_{\mathbf{z},k}(q)\right)\right]
+\]
+
+\end_inset
+
+ might be larger.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Computational savings.
+
+\series default
+ For evaluating the 
+\begin_inset Formula $\nabla_{q}U_{\mathbf{z},k}$
+\end_inset
+
+, the main cost is to invert the kernel matrix of the samples of the chain
+ history 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+.
+ This inversion however only depends on 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+ itself and not on the position 
+\begin_inset Formula $q$
+\end_inset
+
+.
+ It can therefore be precomputed and only has to be performed once per MCMC
+ step, costing 
+\begin_inset Formula ${\cal O}(n^{3})$
+\end_inset
+
+ when done in a naive way.
+ The main cost for the gradient is to evaluate the sum 
+\begin_inset Formula $\sum_{i=1}^{n}k(q,z_{i})$
+\end_inset
+
+, which has to be done in 
+\emph on
+every
+\emph default
+ leap-from step.
+ There are multiple way to think about scalling the size of the history
+ up in 
+\begin_inset Formula $n$
+\end_inset
+
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+using incremental updates for Cholesky factorisations for the inversion
+ of 
+\begin_inset Formula $K+\lambda I$
+\end_inset
+
+.
+ This would get rid of the cubic cost for every MCMC step if we do not sub-sampl
+e the chain history
+\end_layout
+
+\begin_layout Itemize
+using random features in the sense of 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Rahimi2007"
+
+\end_inset
+
+, which will bound the comutational costs to a constant that we can choose.
+ There are ways to invert kernel matrices using random features.
+ For the inversion, this would allow to use any history size 
+\begin_inset Formula $n$
+\end_inset
+
+ without being punished in computational costs.
+ For the remaining terms of the kernel induced energy, we would have to
+ think about it.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+Riemanian Manifold like (K)HMC.
+
+\series default
+ Another potentially very useful idea is to mimic Riemanian Manifold Hamiltonian
+ Monte Carlo 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Girolami2011"
+
+\end_inset
+
+ using kernels.
+ Skipping any formal details for now, I describe my intuition here.
+ The idea in Riemanian methods for MCMC is to use second order information
+ in order to come up with a better proposal.
+ For HMC, this results in using information of the curvature of the target
+ density (say the Fisher information matrix aka Hessian) to scale the momentum
+ variable in the Hamiltonian dynamics.
+ Intuitively, this simply leads to oscilations that match the target density.
+ In particular, if the curvature of the target changes in space, a single
+ momentum distribution (and oscilation speeds) might not be matching all
+ areas of the space, resulting in sub-optimal moves.
+ Using a pre-conditioning matrix effectively re-scales the dynamics to have
+ the same scaler everywhere in space.
+ There are two downsides:
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+1.) The metric is expensive to compute as it is usually based around the
+ Hessian of the target.
+ It might not even be available (pseudo-marginal).
+ It has to be inverted in every MCMC iteration and its size corresponds
+ to dimension of the target density.
+\begin_inset Newline newline
+\end_inset
+
+2.) The standard leap-frog integrator looses some of the properties needed
+ for the MCMC chain to converge.
+ The used generalised leap-frog integrator is expensive to compute (we should
+ read up on this, I don't exacly know what is going on there)
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+My idea is to plug in the proposal distribution of Kameleon MCMC into the
+ mass matrix.
+ Since this proposal locally aligns with the target density, it in fact
+ is a quantification of curvature of the target density.
+ Details would have to be derived.
+ There are two ways to do this.
+ First is to combine this with standard HMC, which would be a competitor
+ to RMHMC and might produce more samples per time as the kernel based approximat
+ion to the metric tensor is cheaper to compute and scales with the number
+ of points used rather than their dimension.
+ Second, combine this with the described KHMC algorithm, which would mimc
+ RMHMC (and hopefully give similar superior performance) for cases where
+ currently only a random walk is available (again pseudo-marginal).
+ We might also be able to identify a case where the full exact RMHMC is
+ just too expensive to do and (RM)(K)HMC might produce more samples per
+ time.
+ World domination.
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "kernel-hmc"
+options "plainnat"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
