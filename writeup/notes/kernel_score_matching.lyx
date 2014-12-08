@@ -1,0 +1,780 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\renewcommand{\Pr}{\mathbf{P}}
+\renewcommand{\Re}{\mathbb{R}}
+\newcommand{\Ex}{\mathbf{E}}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 1
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Infinite exponential families lite
+\end_layout
+
+\begin_layout Author
+Arthur Gretton
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+We provide a means of fitting infinite dimensional kernel exponential families,
+ under some mild assumptions on the density, via score matching.
+ From the representer theorem, a solution requires solving a linear system
+ of size 
+\begin_inset Formula $m^{2}d^{2}$
+\end_inset
+
+, where 
+\begin_inset Formula $m$
+\end_inset
+
+ is the number of training points and 
+\begin_inset Formula $d$
+\end_inset
+
+ is the dimension (see Annals submission, http://arxiv.org/abs/1312.3516).
+ We propose a 
+\begin_inset Quotes eld
+\end_inset
+
+lite
+\begin_inset Quotes erd
+\end_inset
+
+ version of the score matching procedure, where the linear system is of
+ size 
+\begin_inset Formula $m^{2}$
+\end_inset
+
+, and the solution is expressed as a linear combination of the mapped training
+ points.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+This can be thought of as projecting the original solution, which has 
+\begin_inset Formula $m\times d$
+\end_inset
+
+ terms, onto the span of 
+\begin_inset Formula $\left\{ k(x_{i},\cdot)\right\} _{i=1}^{m}$
+\end_inset
+
+, where this basis set still grows with increasing sample size; other growing
+ basis sets might equally be used.
+\end_layout
+
+\end_inset
+
+ This formulation can easily be approximated further via an incomplete Cholesky
+ implementation.
+\end_layout
+
+\begin_layout Section
+A review of score matching
+\end_layout
+
+\begin_layout Standard
+Assume the variabes 
+\begin_inset Formula $\xi\sim\Pr_{x}$
+\end_inset
+
+ for some unknown probability density function 
+\begin_inset Formula $\Pr_{x}$
+\end_inset
+
+ defined on 
+\begin_inset Formula $\Re^{d}$
+\end_inset
+
+.
+ We assume the log probability takes the form
+\begin_inset Formula 
+\begin{align*}
+\log\Pr(\xi;\alpha) & =\sum_{i=1}^{m}\alpha_{i}k(x_{i},\xi)-\log Z(\alpha)\\
+ & =\log q(\xi;\alpha)-\log Z(\alpha),
+\end{align*}
+
+\end_inset
+
+where we will assume that 
+\begin_inset Formula $x_{i}\sim\Pr_{x}$
+\end_inset
+
+ i.i.d.
+ (although this need not be the case), and that only the 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ are being optimized.
+\end_layout
+
+\begin_layout Standard
+Following 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Hyvarinen05"
+
+\end_inset
+
+, we use score matching to fit the parameters 
+\begin_inset Formula $\alpha$
+\end_inset
+
+, assuming the 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ to be fixed.
+ From 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "e.q. 2"
+key "Hyvarinen05"
+
+\end_inset
+
+, the criterion being optimized is
+\emph on
+ 
+\emph default
+
+\begin_inset Formula 
+\begin{equation}
+J(\alpha)=\frac{1}{2}\int_{\xi}\Pr_{x}(\xi)\left\Vert \psi(\xi;\alpha)-\psi_{x}(\xi)\right\Vert ^{2}d\xi,\label{eq:originalScoreFunction}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula 
+\[
+\psi(\xi;\alpha)=\nabla_{\xi}\log\Pr(\xi;\alpha),
+\]
+
+\end_inset
+
+and 
+\begin_inset Formula $\psi_{x}(\xi)$
+\end_inset
+
+ is the derivative wrt 
+\begin_inset Formula $\xi$
+\end_inset
+
+ of the unknown true density 
+\begin_inset Formula $\Pr_{x}(\xi)$
+\end_inset
+
+.
+ As proved in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Theorem 1"
+key "Hyvarinen05"
+
+\end_inset
+
+, this optimization is possible without computing 
+\begin_inset Formula $\psi_{x}$
+\end_inset
+
+: instead, we solve
+\begin_inset Formula 
+\begin{equation}
+J(\alpha)=\int_{\xi}\Pr_{x}(\xi)\sum_{i=1}^{d}\left[\partial_{i}\psi_{i}(\xi;\alpha)+\frac{1}{2}\psi_{i}(\xi;\alpha)^{2}\right]d\xi,\label{eq:scoreMatchCriterion}
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\[
+\psi_{\ell}(\xi;\alpha)=\frac{\partial\log q(\xi;\alpha)}{\partial\xi_{\ell}}
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+\partial_{\ell}\psi_{\ell}(\xi;\alpha)=\frac{\partial^{2}\log q(\xi;\alpha)}{\partial\xi_{\ell}^{2}}.
+\]
+
+\end_inset
+
+Replacing the integral 
+\begin_inset Formula $\int_{\xi}\Pr_{x}(\xi)$
+\end_inset
+
+ with a sum over the samples 
+\begin_inset Formula $x_{\ell}$
+\end_inset
+
+ gives us a simple criterion to optimize:
+\begin_inset Formula 
+\begin{equation}
+J(\alpha)=\frac{1}{m}\sum_{\ell=1}^{d}\sum_{i=1}^{m}\left[\partial_{\ell}\psi_{\ell}(x_{i};\alpha)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};\alpha)\right].\label{eq:empiricalScore}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Score matching: implementation with a Gaussian RKHS
+\end_layout
+
+\begin_layout Standard
+We now implement score matching in the case where a Gaussian RKHS is used.
+ Here
+\begin_inset Formula 
+\[
+\log q(\xi;\alpha):=\log\Pr(\xi;\alpha)+\log Z(\alpha)=\sum_{i=1}^{m}\alpha_{i}k(x_{i},\xi)
+\]
+
+\end_inset
+
+where
+\begin_inset Formula 
+\[
+k(x_{i},\xi)=\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)=\exp\left(-\frac{1}{\sigma}\sum_{\ell=1}^{d}(x_{i\ell}-\xi_{\ell})^{2}\right)
+\]
+
+\end_inset
+
+Thus
+\begin_inset Formula 
+\[
+\psi_{\ell}(\xi;\alpha)=\frac{2}{\sigma}\sum_{i=1}^{m}\alpha_{i}(x_{i\ell}-\xi_{\ell})\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{align*}
+\partial_{\ell}\psi_{\ell}(\xi;\alpha) & =\frac{-2}{\sigma}\sum_{i=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)+\left(\frac{2}{\sigma}\right)^{2}\sum_{i=1}^{m}\alpha_{i}(x_{i\ell}-\xi_{\ell})^{2}\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)\\
+ & =\frac{2}{\sigma}\sum_{i=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-\xi_{\ell})^{2}\right].
+\end{align*}
+
+\end_inset
+
+Substituting this into 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:empiricalScore"
+
+\end_inset
+
+ yields
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{1}{m}\sum_{i=1}^{m}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\alpha)+\frac{1}{2}\psi_{\ell}(x_{i};\alpha)^{2}\right]\\
+ & =\frac{2}{m\sigma}\sum_{\ell=1}^{d}\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{j\ell})^{2}\right]\\
+ & \qquad+\frac{2}{m\sigma^{2}}\sum_{\ell=1}^{d}\sum_{i=1}^{m}\left[\sum_{j=1}^{m}\alpha_{j}(x_{j\ell}-x_{i\ell})\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Matrix form for the cost function
+\end_layout
+
+\begin_layout Standard
+The expression for the term 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ being optimized is the sum of two terms.
+ 
+\end_layout
+
+\begin_layout Standard
+Consider the 
+\series bold
+first term
+\series default
+:
+\begin_inset Formula 
+\[
+\sum_{\ell=1}^{d}\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{j\ell})^{2}\right]
+\]
+
+\end_inset
+
+ The term we need to compute is
+\begin_inset Formula 
+\begin{align*}
+ & \sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)(x_{i\ell}-x_{j\ell})^{2},\\
+= & \sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left(x_{i\ell}^{2}+x_{j\ell}^{2}-2x_{i\ell}x_{j\ell}\right).
+\end{align*}
+
+\end_inset
+
+Define 
+\begin_inset Formula 
+\[
+x_{\ell}:=\left[\begin{array}{ccc}
+x_{1\ell} & \hdots & x_{m\ell}\end{array}\right]^{\top}.
+\]
+
+\end_inset
+
+The final term may be computed cheaply with the right ordering of operations,
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+We assume we have an incomplete Cholesy representation of 
+\begin_inset Formula $K_{ij}:=\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)$
+\end_inset
+
+, 
+\begin_inset Formula 
+\[
+K\approx LL^{\top},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $L$
+\end_inset
+
+ is 
+\begin_inset Formula $m\times t$
+\end_inset
+
+ and 
+\begin_inset Formula $t\ll m$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+-2(\alpha\odot x_{\ell})^{\top}Kx_{\ell}\approx-2(\alpha\odot x_{\ell})^{\top}LL^{\top}x_{\ell},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\alpha\odot x_{\ell}$
+\end_inset
+
+ is the entrywise product.
+ The remaining terms are sums with constant row or column terms, and can
+ likewise be computed cheaply: define 
+\begin_inset Formula $s_{\ell}:=x_{\ell}\odot x_{\ell}$
+\end_inset
+
+ with components 
+\begin_inset Formula $s_{i\ell}=x_{i\ell}^{2}$
+\end_inset
+
+.
+ Then
+\begin_inset Formula 
+\begin{align*}
+\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}k_{ij}s_{j\ell} & =\alpha^{\top}Ks_{\ell}\\
+ & \approx\alpha^{\top}LL^{\top}s_{\ell},
+\end{align*}
+
+\end_inset
+
+which is cheap to compute.
+ Likewise
+\begin_inset Formula 
+\[
+\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}x_{i\ell}^{2}k_{ij}\approx(\alpha\odot s_{\ell})^{\top}LL^{\top}1.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We now write out the 
+\series bold
+second term
+\series default
+.
+ Considering only the 
+\begin_inset Formula $\ell$
+\end_inset
+
+th dimension, this is
+\begin_inset Formula 
+\begin{align*}
+ & \sum_{i=1}^{m}\left[\sum_{j=1}^{m}\alpha_{j}(x_{j\ell}-x_{i\ell})\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}
+\end{align*}
+
+\end_inset
+
+In matrix notation, the inner sum is a column vector,
+\begin_inset Formula 
+\[
+K(\alpha\odot x_{\ell})-\left(K\alpha\right)\odot x_{\ell}\approx LL^{\top}(\alpha\odot x_{\ell})-\left(LL^{\top}\alpha\right)\odot x_{\ell}.
+\]
+
+\end_inset
+
+We then take the entrywise square and sum the resulting vector, where both
+ operations cost 
+\begin_inset Formula $O(m)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Solving 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ for 
+\begin_inset Formula $\alpha$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we denote by 
+\begin_inset Formula $D_{x}$
+\end_inset
+
+ the matrix with the vector 
+\begin_inset Formula $x$
+\end_inset
+
+ on its diagonal, then the following two relations hold
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+K(\alpha\odot x) & =KD_{x}\alpha\\
+(K\alpha)\odot x & =D_{x}K\alpha
+\end{align}
+
+\end_inset
+
+This means that 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ as defined previously,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{2}{m\sigma}\sum_{\ell=1}^{D}\left[\frac{2}{\sigma}\left[\alpha^{T}Ks_{\ell}+(\alpha\odot s_{\ell})^{T}K\mathbf{1}-2(\alpha\odot x_{\ell})^{T}Kx_{\ell}\right]-\alpha^{T}K\mathbf{1}\right]\\
+ & +\frac{2}{m\sigma^{2}}\sum_{\ell=1}^{D}\left[(\alpha\odot x_{\ell})^{T}K-x_{\ell}^{T}\odot(\alpha^{T}K)\right]\left[K(\alpha\odot x_{\ell})-(K\alpha)\odot x_{\ell}\right],
+\end{align*}
+
+\end_inset
+
+can be rewritten
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{2}{m\sigma}\alpha^{T}\sum_{\ell=1}^{D}\left[\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right]\\
+ & +\frac{2}{m\sigma^{2}}\alpha^{T}\left(\sum_{\ell=1}^{D}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\right)\alpha\\
+ & =\frac{2}{m\sigma}\alpha^{T}b+\frac{2}{m\sigma^{2}}\alpha^{T}C\alpha
+\end{align*}
+
+\end_inset
+
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+b & =\sum_{\ell=1}^{D}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{m}\\
+C & =\sum_{\ell=1}^{D}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\in\mathbb{R}^{m\times m}.
+\end{align*}
+
+\end_inset
+
+Assuming 
+\begin_inset Formula $C$
+\end_inset
+
+ is invertible, this is minimised by 
+\emph on
+
+\begin_inset Formula 
+\[
+\hat{\alpha}=\frac{-\sigma}{2}C^{-1}b.
+\]
+
+\end_inset
+
+
+\emph default
+If 
+\begin_inset Formula $C$
+\end_inset
+
+ is not invertible or poorly conditioned, we can regularise using the norm
+ of 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ to give 
+\begin_inset Formula $\hat{\alpha}=\frac{-\sigma}{2}\left(C+\lambda I\right)^{-1}b$
+\end_inset
+
+.
+ In practice, we might not want to compute the matrix inverse: if we only
+ need an approximate density, a couple of steps of conjugate gradient should
+ be enough (this would further allow us to easily exploit a Cholesky approximati
+on of 
+\begin_inset Formula $K$
+\end_inset
+
+, without complicated Woodbury arguments for the matrix inverse).
+\end_layout
+
+\begin_layout Section
+Open question
+\end_layout
+
+\begin_layout Standard
+Convergence of the score matching algorithm has been shown in the case of
+ a finite number of fixed 
+\begin_inset Formula $x_{\ell}$
+\end_inset
+
+.
+ In our computations, however, we have used that 
+\begin_inset Formula $x_{\ell}=\xi_{\ell}$
+\end_inset
+
+, i.e.
+ the centres of the Gaussians are the sample points, and the number of centres
+ grows as the sample size increases.
+ Can we show that as the sample size increases, the density estimate is
+ consistent? This should be a two-stage argument like the regression problem.
+ First: we have the solution to the full regression problem, which is given
+ using the representer theorem.
+ Second, we approximate this solution by the projection onto a sample.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+appendix
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Score matching proof
+\end_layout
+
+\begin_layout Standard
+We reproduce the proof here of eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:scoreMatchCriterion"
+
+\end_inset
+
+ from 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:originalScoreFunction"
+
+\end_inset
+
+.
+ We begin with the original function for completeness,
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{1}{2}\int_{\xi}\Pr_{x}(\xi)\left\Vert \psi(\xi;\alpha)-\psi_{x}(\xi)\right\Vert ^{2}d\xi\\
+ & =\frac{1}{2}\int_{\xi}\left(\left\Vert \psi(\xi;\alpha)\right\Vert ^{2}+\left\Vert \psi_{x}(\xi)\right\Vert ^{2}-2\psi(\xi;\alpha)^{\top}\psi_{x}(\xi)\right)\Pr_{x}(\xi)d\xi.
+\end{align*}
+
+\end_inset
+
+We ignore the second term, as it is not a function of 
+\begin_inset Formula $\alpha$
+\end_inset
+
+.
+ For the first term, bearing in mind that the 
+\begin_inset Formula $i$
+\end_inset
+
+th component of this vector is given by the definition
+\begin_inset Formula 
+\[
+\psi_{x,\ell}(\xi)=\frac{\partial\log\Pr_{x}(\xi)}{\partial\xi_{\ell}},
+\]
+
+\end_inset
+
+we obtain
+\begin_inset Formula 
+\begin{align*}
+\int_{\xi}\psi(\xi;\alpha)^{\top}\psi_{x}(\xi)d\xi & =\int_{\xi}\sum_{\ell=1}^{d}\psi_{\ell}(\xi;\alpha)\psi_{x,\ell}(\xi)\Pr_{x}(\xi)d\xi\\
+ & =\int_{\xi}\sum_{\ell=1}^{d}\psi_{\ell}(\xi;\alpha)\frac{\partial\log\Pr_{x}(\xi)}{\partial\xi_{\ell}}\Pr_{x}(\xi)d\xi\\
+ & =\int_{\xi}\sum_{\ell=1}^{d}\psi_{\ell}(\xi;\alpha)\frac{\partial\Pr_{x}(\xi)}{\partial\xi_{\ell}}d\xi.
+\end{align*}
+
+\end_inset
+
+Next, we integrate by parts, where we use the multivariate version in Lemma
+ 4 of the Hyvarinen appendix:
+\begin_inset Formula 
+\begin{align*}
+ & \int_{\xi}\sum_{\ell=1}^{d}\psi_{\ell}(\xi;\alpha)\frac{\partial\Pr_{x}(\xi)}{\partial\xi_{\ell}}d\xi\\
+ & =-\int_{\xi}\sum_{\ell=1}^{d}\frac{\partial\psi_{\ell}(\xi;\alpha)}{\partial\xi_{\ell}}\Pr_{x}(\xi)d\xi+\int_{\xi_{2\ldots n}}\lim_{\begin{array}{c}
+a\rightarrow\infty\\
+b\rightarrow-\infty
+\end{array}}\left[\psi_{\ell}([\xi_{1}\:\xi_{2\ldots n}];\alpha)\Pr_{x}([\xi_{1}\:\xi_{2\ldots n}])\right]_{b}^{a}d\xi_{2\ldots n}.
+\end{align*}
+
+\end_inset
+
+We must assume the following:
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\psi(\xi)\Pr_{x}(\xi)$
+\end_inset
+
+ goes to zero at infinity,
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\Pr_{x}(\xi)$
+\end_inset
+
+ is differentiable,
+\end_layout
+
+\begin_layout Enumerate
+Both 
+\begin_inset Formula $\Ex_{x}\left\Vert \psi(\xi;\alpha)\right\Vert ^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\Ex_{x}\left\Vert \psi_{x}(\xi)\right\Vert ^{2}$
+\end_inset
+
+ are finite
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "/Users/arthur/Documents/gatsby/bibfile/bibNew/trunk/bibfile"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
