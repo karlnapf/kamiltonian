@@ -226,7 +226,7 @@ smoothing the chain history, we directly model its
 \emph on
 global
 \emph default
- log-density as an RKHS function.
+ log-density as an RKHS function via score matching.
  This is not only a more interpretable and well-posed problem, but it also
  provides a differentiable energy function that directly can be used to
  simulate trajectories from a Hamiltonian dynamical system a.k.a.
