@@ -236,33 +236,9 @@ global
  
 \emph default
 MCMC algorithm that (i) behaves similar to HMC in terms of autocorrelation
- and acceptance rates, but (ii) does not require target gradients, and in
- particular (iii) works well in high dimensions.
- We support our claims with thorough theoretical analysis and experimental
- studies.
-\end_layout
-
-\begin_layout Abstract
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Our algorithms i.
- We propose Kernel HMC, an aweseome sampler.
- Recently: Kameleon MCMC for pseudo marginal, kernel methods for learning
- target covariance.
- Downside: only local moves, random walk.
- Desired: HMC like: high acceptance & large jumps.
- But needs gradient.
- Now: without gradient.
- HMC on kernel induced energy function.
- Energy function has desirable properties.
- Studies show dominance.
-\end_layout
-
-\end_inset
-
-
+ and acceptance rates, but that (ii) does not require target gradients,
+ and that in particular (iii) works well in high dimensions.
+ We support our claims with theoretical analysis and experimental studies.
 \end_layout
 
 \begin_layout Section
