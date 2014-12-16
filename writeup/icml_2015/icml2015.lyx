@@ -199,7 +199,56 @@ inal}
 \end_layout
 
 \begin_layout Abstract
-We propose Kernel HMC, an aweseome sampler.
+We propose an adaptive Kernel Hamiltonian Monte Carlo (K-HMC) algorithm
+ to simulate from an arbritary target probability density.
+ Our sampler fills a gap: when neither gradients, higher order information,
+ nor the likelihood function itself are available, most of the existing
+ HMC methodology 
+\emph on
+cannot
+\emph default
+ be applied -- one is left with random walk methods which suffer from bad
+ mixing behaviour.
+ We extend recent ideas from 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, who adaptively learn target covariance structure in a Reproducing Kernel
+ Hilbert Space (RKHS), based on the history of the Markov chain.
+ But rather than 
+\emph on
+locally 
+\emph default
+smoothing the chain history, we directly model its 
+\emph on
+global
+\emph default
+ log-density as an RKHS function.
+ This is not only a more interpretable and well-posed problem, but it also
+ provides a differentiable energy function that directly can be used to
+ simulate trajectories from a Hamiltonian dynamical system a.k.a.
+ HMC.
+ We construct an exact
+\emph on
+ 
+\emph default
+MCMC algorithm that (i) behaves similar to HMC in terms of autocorrelation
+ and acceptance rates, but (ii) does not require target gradients, and in
+ particular (iii) works well in high dimensions.
+ We support our claims with thorough theoretical analysis and experimental
+ studies.
+\end_layout
+
+\begin_layout Abstract
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Our algorithms i.
+ We propose Kernel HMC, an aweseome sampler.
  Recently: Kameleon MCMC for pseudo marginal, kernel methods for learning
  target covariance.
  Downside: only local moves, random walk.
@@ -209,6 +258,11 @@ We propose Kernel HMC, an aweseome sampler.
  HMC on kernel induced energy function.
  Energy function has desirable properties.
  Studies show dominance.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -343,6 +397,17 @@ Mushroom?
 
 \begin_layout Section
 Conclusions
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "local"
+options "icml2014stylefiles/icml2014"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
