@@ -37,7 +37,7 @@
 
 % Packages hyperref and algorithmic misbehave sometimes.  We can fix
 % this with the following command.
-\newcommand{\theHalgorithm}{\arabic{algorithm}}
+%\newcommand{\theHalgorithm}{\arabic{algorithm}}
 
 % Employ the following version of the ``usepackage'' statement for
 % submitting the draft version of the paper for review.  This will set
@@ -270,6 +270,17 @@ Idea: Hamiltonian dynamics on kernel energy as proposal
 
 \begin_layout Itemize
 Give paper outline
+\end_layout
+
+\begin_layout Itemize
+Here are some plots that might be useful to put in 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://nbviewer.ipython.org/gist/anonymous/329d11916eb29743a7de"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
