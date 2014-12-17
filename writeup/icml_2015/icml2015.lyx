@@ -250,7 +250,14 @@ Why MCMC
 \end_layout
 
 \begin_layout Itemize
-Kernel Metropolis Hastings and pros/cons
+Kernel Metropolis Hastings 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+ and pros/cons
 \end_layout
 
 \begin_layout Itemize
@@ -271,14 +278,33 @@ Background
 
 \begin_layout Subsection
 Hamiltonian Monte Carlo
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+AG: we don't really need a separate section on mean embeddings
 \end_layout
 
-\begin_layout Subsection
-Kernel Embeddings of Distributions
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
 Score Matching
+\end_layout
+
+\begin_layout Standard
+Score matching references, 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Hyvarinen-05,Hyvarinen-07"
+
+\end_inset
+
+.
+ The latter gave solutions in terms of a finite mixture at fixed centres.
+ 
 \end_layout
 
 \begin_layout Section
@@ -295,14 +321,40 @@ Kernel Hamiltonian Dynamics
 
 \begin_layout Subsection
 Kernel Score Matching
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+AG: I think 
+\begin_inset Quotes eld
+\end_inset
+
+regularization and smoothing
+\begin_inset Quotes erd
+\end_inset
+
+ should go here: any empirical solution will already be regularized, so
+ it doesn't make sense to have a separate regularization section.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Kernel score matching: 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
 Kernel Hamiltonian Dynamics
-\end_layout
-
-\begin_layout Subsection
-Regularisation and Smoothing
 \end_layout
 
 \begin_layout Section
