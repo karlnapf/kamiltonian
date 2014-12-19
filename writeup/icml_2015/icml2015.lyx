@@ -56,7 +56,7 @@
 theorems-std
 \end_modules
 \maintain_unincluded_children false
-\language english
+\language british
 \language_package none
 \inputencoding auto
 \fontencoding default
@@ -284,13 +284,62 @@ target "http://nbviewer.ipython.org/gist/anonymous/329d11916eb29743a7de"
 \end_layout
 
 \begin_layout Section
-Background
+Background & Previous work
+\end_layout
+
+\begin_layout Subsection
+Notation
+\end_layout
+
+\begin_layout Itemize
+Unnormalised target density 
+\begin_inset Formula $\pi:\mathbb{R}\to[0,1]$
+\end_inset
+
+, unbiased estimator 
+\begin_inset Formula $\hat{\pi}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Markov chain history 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+History subsample 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Problem setting
+\end_layout
+
+\begin_layout Standard
+Write what we want to do and what are important parts of it.
+\end_layout
+
+\begin_layout Subsection
+Kernel Adaptive Metropolis-Hastings
+\end_layout
+
+\begin_layout Standard
+Write about Kameleon MCMC and how it improves over adaptive MH.
+ Mention downsides and what we would like to have
 \end_layout
 
 \begin_layout Subsection
 Hamiltonian Monte Carlo
 \begin_inset Note Note
-status collapsed
+status open
 
 \begin_layout Plain Layout
 AG: we don't really need a separate section on mean embeddings
@@ -301,12 +350,222 @@ AG: we don't really need a separate section on mean embeddings
 
 \end_layout
 
+\begin_layout Standard
+Following 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Neal2010"
+
+\end_inset
+
+, Hamiltonian Monte Carlo is based around a fictious dynamical system of
+ particles 
+\begin_inset Formula $(p,q)\in{\cal X}\times{\cal X}$
+\end_inset
+
+ whose evolution in time is described by the Hamiltonian,
+\begin_inset Formula 
+\begin{align*}
+H(p,q) & =K(p)+U(q),
+\end{align*}
+
+\end_inset
+
+which consists of potential energy 
+\begin_inset Formula $U(q)$
+\end_inset
+
+, the log-pdf of the target 
+\begin_inset Formula $\pi$
+\end_inset
+
+, and a kinetic energy function 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $K(p)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+, usually a Gaussian.
+ Evolution of the system,
+\begin_inset Formula 
+\begin{align*}
+\frac{dq_{i}}{dt} & =\frac{\partial H}{\partial p_{i}}\\
+\frac{dp_{i}}{dt} & =-\frac{\partial H}{\partial q_{i}},
+\end{align*}
+
+\end_inset
+
+leaves the value of 
+\begin_inset Formula $H$
+\end_inset
+
+ constant.
+ Refering to 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Neal2010"
+
+\end_inset
+
+ for details, such trajectories of 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+ along the contour lines of 
+\begin_inset Formula $H$
+\end_inset
+
+ can be used to construct proposals for a Metropolis-Hastings type algorithm:
+\end_layout
+
+\begin_layout Enumerate
+Re-sample momentum 
+\begin_inset Formula $p$
+\end_inset
+
+' from 
+\begin_inset Formula $K(p)$
+\end_inset
+
+.
+ This produces a new point 
+\begin_inset Formula $(p',q)$
+\end_inset
+
+ which has the same distribution as 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+ since 
+\begin_inset Formula $p'$
+\end_inset
+
+ comes from the true marginal distribution of the chain.
+ Note that the value of 
+\begin_inset Formula $H$
+\end_inset
+
+ is changed in this step, i.e., we jump to another contour of 
+\begin_inset Formula $H$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Starting from 
+\begin_inset Formula $(p',q)$
+\end_inset
+
+, simulate the system for a number of discrete time steps to obtain 
+\begin_inset Formula $(p^{*},q^{*})$
+\end_inset
+
+.
+ This step requires access to gradients of 
+\begin_inset Formula $K$
+\end_inset
+
+ and 
+\begin_inset Formula $U$
+\end_inset
+
+, and therefore of the log-pdf of the target 
+\begin_inset Formula $\pi$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+In order to correct for discretisation errors arising from numerical simulation,
+ accept this proposal according to its new value of 
+\begin_inset Formula $H(p^{*},q^{*})$
+\end_inset
+
+ using a Metorpolis-Hastings step with an acceptance probability 
+\begin_inset Formula 
+\begin{align*}
+ & \min\left[1,\exp\left(H(p^{*},q^{*})-H(p',q)\right)\right]
+\end{align*}
+
+\end_inset
+
+Note that this step does not require gradients but evaluation of the target.
+\end_layout
+
+\begin_layout Standard
+When iterating, the resulting Markov chain in 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+-space can be marginalised by simply dropping all 
+\begin_inset Formula $p$
+\end_inset
+
+ components.
+ One can show that 
+\begin_inset Formula $\exp(-U(\cdot))\propto\pi(\cdot)$
+\end_inset
+
+ is the invariant distribution.
+ Furthermore, acceptance rate of the third step will be usually large, while
+ autocorrelation is small.
+\end_layout
+
+\begin_layout Standard
+Kamiltonian Monte Carlo is based on the idea of replacing potential energy
+ 
+\begin_inset Formula $U$
+\end_inset
+
+ in the second step by a kernel induced surrogate, that does not require
+ gradients of the log-pdf of the target.
+ Invariant distribution will remain unchanged as we 
+\emph on
+do not
+\emph default
+ change anything in the third step.
+ We now give a brief review of score matching that we use to estimate potential
+ energy.
+\end_layout
+
 \begin_layout Subsection
 Score Matching
 \end_layout
 
 \begin_layout Standard
-Score matching references, 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+AG:
+\series default
+ Score matching references, 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "Hyvarinen-05,Hyvarinen-07"
@@ -318,12 +577,165 @@ key "Hyvarinen-05,Hyvarinen-07"
  
 \end_layout
 
-\begin_layout Section
-Previous work
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Write about Kameleon MCMC and how it can be improved
+Following 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Hyvarinen-05"
+
+\end_inset
+
+, we assume that a variable 
+\begin_inset Formula $\xi\sim p_{x}$
+\end_inset
+
+ has some unknown probability density function 
+\begin_inset Formula $p_{x}(\cdot)$
+\end_inset
+
+ defined on 
+\begin_inset Formula $\mathbb{R}^{d}$
+\end_inset
+
+, and that the log probability takes the form 
+\begin_inset Formula 
+\[
+\log p(\xi;\alpha)=\log q(\xi;\alpha)-\log Z(\alpha),
+\]
+
+\end_inset
+
+ where 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is a vector of parameters of yet unspecified dimension.
+ We aim to approximate 
+\begin_inset Formula $p_{x}(\cdot)$
+\end_inset
+
+ by 
+\begin_inset Formula $p(\cdot;\hat{\theta})$
+\end_inset
+
+, i.e., to find 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ from only a set of fixed i.i.d.
+ samples 
+\begin_inset Formula $\{x_{i}\sim p_{x}\}_{i=1}^{n}$
+\end_inset
+
+.
+ From 
+\begin_inset CommandInset citation
+LatexCommand citet
+after "equation. 2"
+key "Hyvarinen-05"
+
+\end_inset
+
+, the criterion being optimized is the expected squared distance between
+ score functions,
+\emph on
+ 
+\emph default
+
+\begin_inset Formula 
+\begin{equation}
+J(\alpha)=\frac{1}{2}\int_{\xi}p_{x}(\xi)\left\Vert \psi(\xi;\alpha)-\psi_{x}(\xi)\right\Vert ^{2}d\xi,\label{eq:originalScoreFunction}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula 
+\[
+\psi(\xi;\alpha)=\nabla_{\xi}\log p(\xi;\alpha),
+\]
+
+\end_inset
+
+and 
+\begin_inset Formula $\psi_{x}(\xi)$
+\end_inset
+
+ is the derivative wrt 
+\begin_inset Formula $\xi$
+\end_inset
+
+ of the unknown true density 
+\begin_inset Formula $p_{x}(\xi)$
+\end_inset
+
+.
+ As proved in 
+\begin_inset CommandInset citation
+LatexCommand citet
+after "Theorem 1"
+key "Hyvarinen-05"
+
+\end_inset
+
+, it is possible to express 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ without access to the unknown 
+\begin_inset Formula $\psi_{x}(\xi)$
+\end_inset
+
+ as
+\begin_inset Formula 
+\begin{equation}
+J(\alpha)=\int_{\xi}p_{x}(\xi)\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(\xi;\alpha)+\frac{1}{2}\psi_{\ell}(\xi;\alpha)^{2}\right]d\xi,\label{eq:scoreMatchCriterion}
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\[
+\psi_{\ell}(\xi;\alpha)=\frac{\partial\log q(\xi;\alpha)}{\partial\xi_{\ell}}
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+\partial_{\ell}\psi_{\ell}(\xi;\alpha)=\frac{\partial^{2}\log q(\xi;\alpha)}{\partial\xi_{\ell}^{2}}.
+\]
+
+\end_inset
+
+Replacing the integral 
+\begin_inset Formula $\int_{\xi}p_{x}(\xi)$
+\end_inset
+
+ with an average over the samples 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ gives us a sample version of 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+, minimising of which is consistent,
+\begin_inset Formula 
+\[
+\hat{J}(\alpha)=\frac{1}{m}\sum_{\ell=1}^{d}\sum_{i=1}^{m}\left[\partial_{\ell}\psi_{\ell}(x_{i};\alpha)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};\alpha)\right].
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -332,6 +744,9 @@ Kernel Hamiltonian Dynamics
 
 \begin_layout Subsection
 Kernel Score Matching
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
