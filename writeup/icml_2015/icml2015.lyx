@@ -355,8 +355,30 @@ Kernel Adaptive Metropolis-Hastings
 \end_layout
 
 \begin_layout Standard
-Write about Kameleon MCMC and how it improves over adaptive MH.
- Mention downsides and what we would like to have
+Write about Adaptive MCMC, 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Andrieu2008,Haario1999"
+
+\end_inset
+
+, Kameleon MCMC, 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, and how it improves over adaptive MH.
+ Mention downsides and what we would like to have.
+ In particular the pseudo-marginal case, 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "beaumont2003estimation,Andrieu2009a"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -822,7 +844,7 @@ We now implement score matching for the well known Gaussian kernel
 \end_inset
 
 .
- Note that its corresponding RKHS is infinite dimensional, so we are fitting
+ Note that its corresponding RKHS is infinite dimensional, we are fitting
  an infinite exponential family model in the RKHS, see also 
 \begin_inset CommandInset citation
 LatexCommand citet
@@ -859,9 +881,9 @@ reference "eq:score_matching_objective_sample_version"
 
  is globally minimised for
 \begin_inset Formula 
-\[
-\hat{\alpha}=\frac{-\sigma}{2}(C+\lambda I)^{-1}b,
-\]
+\begin{equation}
+\hat{\alpha}=\frac{-\sigma}{2}(C+\lambda I)^{-1}b,\label{eq:kernel_score_matching_linear_system}
+\end{equation}
 
 \end_inset
 
@@ -893,6 +915,94 @@ D_{x_{\ell}} & :=\diag(x_{\ell}).
 
 \end_layout
 
+\begin_layout Paragraph
+Linear costs via Incomplete Cholesky (TODO write properly)
+\end_layout
+
+\begin_layout Standard
+Solving the linear system in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+ for 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ requires 
+\begin_inset Formula ${\cal O}(n^{3})$
+\end_inset
+
+ computation and 
+\begin_inset Formula ${\cal O}(n^{2})$
+\end_inset
+
+ storage.
+ This can be limiting, in particular if training data comes from an increasingly
+ long Markov chain.
+ 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+ sidestepped a similar problem via fixing the number of training data when
+ computing MCMC proposals.
+ However, we would ideally like to use 
+\emph on
+all
+\emph default
+ available data.
+ We therefore compute an incomplete Cholesky factorisation 
+\begin_inset Formula $K\approx LL^{T},$
+\end_inset
+
+ where 
+\begin_inset Formula $L$
+\end_inset
+
+ is 
+\begin_inset Formula $n\times t$
+\end_inset
+
+ and 
+\begin_inset Formula $t\ll n$
+\end_inset
+
+, which costs 
+\begin_inset Formula ${\cal O}(nt)$
+\end_inset
+
+ storage.
+ Using the Woodbury identity, we can then rewrite the linear system into
+ a form similar to 
+\begin_inset Formula $L(L^{T}L+\lambda I)^{-1}L^{T}$
+\end_inset
+
+ which costs 
+\begin_inset Formula ${\cal O}(t^{3}+t^{2}n)$
+\end_inset
+
+ computation.
+ Treating 
+\begin_inset Formula $t$
+\end_inset
+
+ as fixed, this is linear in both storage and computation, allowing to use
+ all Markov chain history.
+ See appendix 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sec:appendix_kernel_score_matching"
+
+\end_inset
+
+ for details.
+\end_layout
+
 \begin_layout Subsection
 Kernel Hamiltonian Dynamics
 \end_layout
@@ -914,11 +1024,11 @@ Properties
 \end_layout
 
 \begin_layout Itemize
-Properties of kernel energy function
+Properties of kernel energy function, Consequences for algorithm
 \end_layout
 
 \begin_layout Itemize
-Consequences for algorithm
+Kernel choice via cross-validation
 \end_layout
 
 \begin_layout Itemize
@@ -927,7 +1037,14 @@ Extensions:
 
 \begin_deeper
 \begin_layout Itemize
-Second order information?
+Second order information? 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Girolami2011"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -951,6 +1068,10 @@ Conparison of trajectories
 Higher dimensions, projections
 \end_layout
 
+\begin_layout Itemize
+Kernel choice via cross-validation and how we get most similar trajectories
+\end_layout
+
 \begin_layout Subsection
 Pseudo-Marginal MCMC
 \end_layout
@@ -960,7 +1081,19 @@ Reproduce Kameleon experiments with KHMC
 \end_layout
 
 \begin_layout Itemize
-Mushroom?
+Higher dimensional, compare to plain HMC, (and random walk)
+\end_layout
+
+\begin_layout Itemize
+Plot 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ and ESS, and see whether cross-validation kernel is good for mixing
+\end_layout
+
+\begin_layout Itemize
+Mushroom as a cool dataset?
 \end_layout
 
 \begin_layout Section
@@ -979,7 +1112,29 @@ options "icml2014stylefiles/icml2014"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage pagebreak
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+normalsize
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onecolumn
+\end_layout
+
 \end_inset
 
 
@@ -1000,7 +1155,7 @@ name "sec:appendix_kernel_score_matching"
 Kernel Score Matching Details
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Paragraph
 Objective function
 \end_layout
 
@@ -1044,7 +1199,7 @@ and
 Substituting this into 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:empiricalScore"
+reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
@@ -1061,7 +1216,7 @@ J(\alpha) & =\frac{1}{m}\sum_{i=1}^{m}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Paragraph
 Matrix form for the cost function
 \end_layout
 
@@ -1217,7 +1372,7 @@ We then take the entrywise square and sum the resulting vector, where both
 .
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Paragraph
 Solving 
 \begin_inset Formula $J(\alpha)$
 \end_inset
@@ -1306,29 +1461,14 @@ Assuming
 \end_inset
 
 
-\emph default
-If 
-\begin_inset Formula $C$
-\end_inset
+\end_layout
 
- is not invertible or poorly conditioned, we can regularise using the norm
- of 
-\begin_inset Formula $\alpha$
-\end_inset
+\begin_layout Paragraph
+Incomplete Cholesky
+\end_layout
 
- to give 
-\begin_inset Formula $\hat{\alpha}=\frac{-\sigma}{2}\left(C+\lambda I\right)^{-1}b$
-\end_inset
-
-.
- In practice, we might not want to compute the matrix inverse: if we only
- need an approximate density, a couple of steps of conjugate gradient should
- be enough (this would further allow us to easily exploit a Cholesky approximati
-on of 
-\begin_inset Formula $K$
-\end_inset
-
-, without complicated Woodbury arguments for the matrix inverse).
+\begin_layout Standard
+TODO
 \end_layout
 
 \begin_layout Subsection
