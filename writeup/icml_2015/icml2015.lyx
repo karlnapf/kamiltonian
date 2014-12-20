@@ -34,6 +34,7 @@
 % following usepackage line and replace \usepackage{icml2014} with
 % \usepackage[nohyperref]{icml2014} above.
 \usepackage{hyperref}
+\usepackage{breakurl}
 
 % Packages hyperref and algorithmic misbehave sometimes.  We can fix
 % this with the following command.
@@ -196,6 +197,12 @@ inal}
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\diag}{\text{diag}}
+{\text{diag}}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Abstract
@@ -211,7 +218,7 @@ cannot
  mixing behaviour.
  We extend recent ideas from 
 \begin_inset CommandInset citation
-LatexCommand citep
+LatexCommand citet
 key "sejdinovic_kernel_2014"
 
 \end_inset
@@ -226,7 +233,14 @@ smoothing the chain history, we directly model its
 \emph on
 global
 \emph default
- log-density as an RKHS function via score matching.
+ log-density as an RKHS function via score matching, 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Hyvarinen-05"
+
+\end_inset
+
+.
  This is not only a more interpretable and well-posed problem, but it also
  provides a differentiable energy function that directly can be used to
  simulate trajectories from a Hamiltonian dynamical system a.k.a.
@@ -273,10 +287,19 @@ Give paper outline
 \end_layout
 
 \begin_layout Itemize
-Here are some plots that might be useful to put in 
+Here are some plots that might be useful
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
 \begin_inset CommandInset href
 LatexCommand href
 target "http://nbviewer.ipython.org/gist/anonymous/329d11916eb29743a7de"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -380,33 +403,9 @@ which consists of potential energy
 \end_inset
 
 , and a kinetic energy function 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
 \begin_inset Formula $K(p)$
 \end_inset
 
-
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
 , usually a Gaussian.
  Evolution of the system,
 \begin_inset Formula 
@@ -442,11 +441,7 @@ key "Neal2010"
 
 \begin_layout Enumerate
 Re-sample momentum 
-\begin_inset Formula $p$
-\end_inset
-
-' from 
-\begin_inset Formula $K(p)$
+\begin_inset Formula $p'\sim K(p)$
 \end_inset
 
 .
@@ -485,15 +480,11 @@ Starting from
 
 .
  This step requires access to gradients of 
-\begin_inset Formula $K$
-\end_inset
-
- and 
-\begin_inset Formula $U$
+\begin_inset Formula $H$
 \end_inset
 
 , and therefore of the log-pdf of the target 
-\begin_inset Formula $\pi$
+\begin_inset Formula $\log\pi(\cdot)=U(\cdot)$
 \end_inset
 
 .
@@ -513,7 +504,8 @@ In order to correct for discretisation errors arising from numerical simulation,
 
 \end_inset
 
-Note that this step does not require gradients but evaluation of the target.
+Note that this step does not require gradients but only evaluation of the
+ target.
 \end_layout
 
 \begin_layout Standard
@@ -627,7 +619,7 @@ key "Hyvarinen-05"
 \begin_inset Formula $\hat{\theta}$
 \end_inset
 
- from only a set of fixed i.i.d.
+ from a set of fixed i.i.d.
  samples 
 \begin_inset Formula $\{x_{i}\sim p_{x}\}_{i=1}^{n}$
 \end_inset
@@ -648,9 +640,9 @@ key "Hyvarinen-05"
 \emph default
 
 \begin_inset Formula 
-\begin{equation}
-J(\alpha)=\frac{1}{2}\int_{\xi}p_{x}(\xi)\left\Vert \psi(\xi;\alpha)-\psi_{x}(\xi)\right\Vert ^{2}d\xi,\label{eq:originalScoreFunction}
-\end{equation}
+\[
+J(\alpha)=\frac{1}{2}\int_{\xi}p_{x}(\xi)\left\Vert \psi(\xi;\alpha)-\psi_{x}(\xi)\right\Vert ^{2}d\xi,
+\]
 
 \end_inset
 
@@ -693,9 +685,9 @@ key "Hyvarinen-05"
 
  as
 \begin_inset Formula 
-\begin{equation}
-J(\alpha)=\int_{\xi}p_{x}(\xi)\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(\xi;\alpha)+\frac{1}{2}\psi_{\ell}(\xi;\alpha)^{2}\right]d\xi,\label{eq:scoreMatchCriterion}
-\end{equation}
+\[
+J(\alpha)=\int_{\xi}p_{x}(\xi)\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(\xi;\alpha)+\frac{1}{2}\psi_{\ell}(\xi;\alpha)^{2}\right]d\xi,
+\]
 
 \end_inset
 
@@ -729,9 +721,9 @@ Replacing the integral
 
 , minimising of which is consistent,
 \begin_inset Formula 
-\[
-\hat{J}(\alpha)=\frac{1}{m}\sum_{\ell=1}^{d}\sum_{i=1}^{m}\left[\partial_{\ell}\psi_{\ell}(x_{i};\alpha)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};\alpha)\right].
-\]
+\begin{equation}
+\hat{J}(\alpha)=\frac{1}{m}\sum_{\ell=1}^{d}\sum_{i=1}^{n}\left[\partial_{\ell}\psi_{\ell}(x_{i};\alpha)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};\alpha)\right].\label{eq:score_matching_objective_sample_version}
+\end{equation}
 
 \end_inset
 
@@ -769,7 +761,69 @@ regularization and smoothing
 \end_layout
 
 \begin_layout Standard
-Kernel score matching: 
+Recall our aim is to replace the potential energy function in HMC, which
+ is the log-pdf of the target 
+\begin_inset Formula $\pi$
+\end_inset
+
+, by a surrogate whose gradients can be computed easily.
+ More specifically, we will use kernelised score matching to fit the target
+ log-pdf with a RKHS function, which corresponds to fitting an exponential
+ family model in the RKHS.
+ Elements 
+\begin_inset Formula $f:{\cal X}\to\mathbb{R}$
+\end_inset
+
+ of an RKHS 
+\begin_inset Formula ${\cal H}$
+\end_inset
+
+ uniquely induced by a reproducing kernel 
+\begin_inset Formula $k:{\cal X}\times{\cal X}\to\mathbb{R}$
+\end_inset
+
+ can be written as linear combinations of feature maps, 
+\begin_inset Formula $f(\cdot)=\sum_{i=1}^{m}\alpha_{i}k(x_{i},\cdot)$
+\end_inset
+
+.
+ That is, we simply assume the parametric form for the unnormalised log-pdf
+\begin_inset Formula 
+\[
+\log q(\xi;\alpha)=\log\Pr(\xi;\alpha)+\log Z(\alpha)=\sum_{i=1}^{n}\alpha_{i}k(x_{i},\xi),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\alpha\in\mathbb{R}^{n}$
+\end_inset
+
+ is an 
+\begin_inset Formula $n$
+\end_inset
+
+-dimensional parameter vector.
+ Note that where we did not specify its dimension previously, its dimensionality
+ now equals the number of training points 
+\begin_inset Formula $\{x_{i}\sim p_{x}\}_{i=1}^{n}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Gaussian Kernel
+\end_layout
+
+\begin_layout Standard
+We now implement score matching for the well known Gaussian kernel 
+\begin_inset Formula $k(x,y)=\exp\left(-\frac{\|x-y\|^{2}}{\sigma}\right)$
+\end_inset
+
+.
+ Note that its corresponding RKHS is infinite dimensional, so we are fitting
+ an infinite exponential family model in the RKHS, see also 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "SriFukKumGreHyv14"
@@ -777,6 +831,66 @@ key "SriFukKumGreHyv14"
 \end_inset
 
 .
+ The score function is then given by
+\begin_inset Formula 
+\[
+\psi_{\ell}(\xi;\alpha)=\frac{2}{\sigma}\sum_{i=1}^{m}\alpha_{i}(x_{i\ell}-\xi_{\ell})\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right).
+\]
+
+\end_inset
+
+Omitting intermediate details (see appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:appendix_kernel_score_matching"
+
+\end_inset
+
+), the resulting sample objective function 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ is globally minimised for
+\begin_inset Formula 
+\[
+\hat{\alpha}=\frac{-\sigma}{2}(C+\lambda I)^{-1}b,
+\]
+
+\end_inset
+
+where we added a regulariser using the norm of 
+\begin_inset Formula $\alpha$
+\end_inset
+
+, and defined
+\begin_inset Formula 
+\begin{align*}
+b & =\sum_{\ell=1}^{D}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{n}\\
+C & =\sum_{\ell=1}^{D}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\in\mathbb{R}^{n\times n},
+\end{align*}
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{align*}
+K_{ij}: & =\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\\
+s_{i\ell} & :=x_{i\ell}^{2}\\
+x_{\ell} & :=\left[\begin{array}{ccc}
+x_{1\ell} & \dots & x_{m\ell}\end{array}\right]^{\top}\\
+D_{x_{\ell}} & :=\diag(x_{\ell}).
+\end{align*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -864,19 +978,357 @@ options "icml2014stylefiles/icml2014"
 
 \end_layout
 
-\begin_layout Section
-\start_of_appendix
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Proofs"
-
+\begin_layout Standard
+\begin_inset Newpage pagebreak
 \end_inset
 
+
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
 Proofs
 \end_layout
 
 \begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:appendix_kernel_score_matching"
+
+\end_inset
+
 Kernel Score Matching Details
+\end_layout
+
+\begin_layout Subsubsection
+Objective function
+\end_layout
+
+\begin_layout Standard
+Assume
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\log q(\xi;\alpha):=\log\Pr(\xi;\alpha)+\log Z(\alpha)=\sum_{i=1}^{m}\alpha_{i}k(x_{i},\xi)
+\]
+
+\end_inset
+
+where
+\begin_inset Formula 
+\[
+k(x_{i},\xi)=\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)=\exp\left(-\frac{1}{\sigma}\sum_{\ell=1}^{d}(x_{i\ell}-\xi_{\ell})^{2}\right)
+\]
+
+\end_inset
+
+Thus
+\begin_inset Formula 
+\[
+\psi_{\ell}(\xi;\alpha)=\frac{2}{\sigma}\sum_{i=1}^{m}\alpha_{i}(x_{i\ell}-\xi_{\ell})\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{align*}
+\partial_{\ell}\psi_{\ell}(\xi;\alpha) & =\frac{-2}{\sigma}\sum_{i=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)+\left(\frac{2}{\sigma}\right)^{2}\sum_{i=1}^{m}\alpha_{i}(x_{i\ell}-\xi_{\ell})^{2}\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)\\
+ & =\frac{2}{\sigma}\sum_{i=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-\xi_{\ell})^{2}\right].
+\end{align*}
+
+\end_inset
+
+Substituting this into 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:empiricalScore"
+
+\end_inset
+
+ yields
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{1}{m}\sum_{i=1}^{m}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\alpha)+\frac{1}{2}\psi_{\ell}(x_{i};\alpha)^{2}\right]\\
+ & =\frac{2}{m\sigma}\sum_{\ell=1}^{d}\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{j\ell})^{2}\right]\\
+ & \qquad+\frac{2}{m\sigma^{2}}\sum_{\ell=1}^{d}\sum_{i=1}^{m}\left[\sum_{j=1}^{m}\alpha_{j}(x_{j\ell}-x_{i\ell})\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Matrix form for the cost function
+\end_layout
+
+\begin_layout Standard
+The expression for the term 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ being optimized is the sum of two terms.
+ 
+\end_layout
+
+\begin_layout Standard
+Consider the 
+\series bold
+first term
+\series default
+:
+\begin_inset Formula 
+\[
+\sum_{\ell=1}^{d}\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{j\ell})^{2}\right]
+\]
+
+\end_inset
+
+ The term we need to compute is
+\begin_inset Formula 
+\begin{align*}
+ & \sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)(x_{i\ell}-x_{j\ell})^{2},\\
+= & \sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left(x_{i\ell}^{2}+x_{j\ell}^{2}-2x_{i\ell}x_{j\ell}\right).
+\end{align*}
+
+\end_inset
+
+Define 
+\begin_inset Formula 
+\[
+x_{\ell}:=\left[\begin{array}{ccc}
+x_{1\ell} & \hdots & x_{m\ell}\end{array}\right]^{\top}.
+\]
+
+\end_inset
+
+The final term may be computed cheaply with the right ordering of operations,
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+We assume we have an incomplete Cholesy representation of 
+\begin_inset Formula $K_{ij}:=\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)$
+\end_inset
+
+, 
+\begin_inset Formula 
+\[
+K\approx LL^{\top},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $L$
+\end_inset
+
+ is 
+\begin_inset Formula $m\times t$
+\end_inset
+
+ and 
+\begin_inset Formula $t\ll m$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+-2(\alpha\odot x_{\ell})^{\top}Kx_{\ell}\approx-2(\alpha\odot x_{\ell})^{\top}LL^{\top}x_{\ell},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\alpha\odot x_{\ell}$
+\end_inset
+
+ is the entrywise product.
+ The remaining terms are sums with constant row or column terms, and can
+ likewise be computed cheaply: define 
+\begin_inset Formula $s_{\ell}:=x_{\ell}\odot x_{\ell}$
+\end_inset
+
+ with components 
+\begin_inset Formula $s_{i\ell}=x_{i\ell}^{2}$
+\end_inset
+
+.
+ Then
+\begin_inset Formula 
+\begin{align*}
+\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}k_{ij}s_{j\ell} & =\alpha^{\top}Ks_{\ell}\\
+ & \approx\alpha^{\top}LL^{\top}s_{\ell},
+\end{align*}
+
+\end_inset
+
+which is cheap to compute.
+ Likewise
+\begin_inset Formula 
+\[
+\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}x_{i\ell}^{2}k_{ij}\approx(\alpha\odot s_{\ell})^{\top}LL^{\top}1.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We now write out the 
+\series bold
+second term
+\series default
+.
+ Considering only the 
+\begin_inset Formula $\ell$
+\end_inset
+
+th dimension, this is
+\begin_inset Formula 
+\begin{align*}
+ & \sum_{i=1}^{m}\left[\sum_{j=1}^{m}\alpha_{j}(x_{j\ell}-x_{i\ell})\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}
+\end{align*}
+
+\end_inset
+
+In matrix notation, the inner sum is a column vector,
+\begin_inset Formula 
+\[
+K(\alpha\odot x_{\ell})-\left(K\alpha\right)\odot x_{\ell}\approx LL^{\top}(\alpha\odot x_{\ell})-\left(LL^{\top}\alpha\right)\odot x_{\ell}.
+\]
+
+\end_inset
+
+We then take the entrywise square and sum the resulting vector, where both
+ operations cost 
+\begin_inset Formula $O(m)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Solving 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ for 
+\begin_inset Formula $\alpha$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we denote by 
+\begin_inset Formula $D_{x}$
+\end_inset
+
+ the matrix with the vector 
+\begin_inset Formula $x$
+\end_inset
+
+ on its diagonal, then the following two relations hold
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+K(\alpha\odot x) & =KD_{x}\alpha\\
+(K\alpha)\odot x & =D_{x}K\alpha
+\end{align}
+
+\end_inset
+
+This means that 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ as defined previously,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{2}{m\sigma}\sum_{\ell=1}^{D}\left[\frac{2}{\sigma}\left[\alpha^{T}Ks_{\ell}+(\alpha\odot s_{\ell})^{T}K\mathbf{1}-2(\alpha\odot x_{\ell})^{T}Kx_{\ell}\right]-\alpha^{T}K\mathbf{1}\right]\\
+ & +\frac{2}{m\sigma^{2}}\sum_{\ell=1}^{D}\left[(\alpha\odot x_{\ell})^{T}K-x_{\ell}^{T}\odot(\alpha^{T}K)\right]\left[K(\alpha\odot x_{\ell})-(K\alpha)\odot x_{\ell}\right],
+\end{align*}
+
+\end_inset
+
+can be rewritten
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{2}{m\sigma}\alpha^{T}\sum_{\ell=1}^{D}\left[\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right]\\
+ & +\frac{2}{m\sigma^{2}}\alpha^{T}\left(\sum_{\ell=1}^{D}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\right)\alpha\\
+ & =\frac{2}{m\sigma}\alpha^{T}b+\frac{2}{m\sigma^{2}}\alpha^{T}C\alpha
+\end{align*}
+
+\end_inset
+
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+b & =\sum_{\ell=1}^{D}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{m}\\
+C & =\sum_{\ell=1}^{D}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\in\mathbb{R}^{m\times m}.
+\end{align*}
+
+\end_inset
+
+Assuming 
+\begin_inset Formula $C$
+\end_inset
+
+ is invertible, this is minimised by 
+\emph on
+
+\begin_inset Formula 
+\[
+\hat{\alpha}=\frac{-\sigma}{2}C^{-1}b.
+\]
+
+\end_inset
+
+
+\emph default
+If 
+\begin_inset Formula $C$
+\end_inset
+
+ is not invertible or poorly conditioned, we can regularise using the norm
+ of 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ to give 
+\begin_inset Formula $\hat{\alpha}=\frac{-\sigma}{2}\left(C+\lambda I\right)^{-1}b$
+\end_inset
+
+.
+ In practice, we might not want to compute the matrix inverse: if we only
+ need an approximate density, a couple of steps of conjugate gradient should
+ be enough (this would further allow us to easily exploit a Cholesky approximati
+on of 
+\begin_inset Formula $K$
+\end_inset
+
+, without complicated Woodbury arguments for the matrix inverse).
 \end_layout
 
 \begin_layout Subsection
