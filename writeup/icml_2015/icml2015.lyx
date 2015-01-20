@@ -47,7 +47,7 @@
 % Employ this version of the ``usepackage'' statement after the paper has
 % been accepted, when creating the final version.  This will set the
 % note in the first column to ``Proceedings of the...''
-\usepackage{icml2014}
+\usepackage{icml2015}
 %\usepackage[accepted]{icml2014stylefiles/icml2014}
 
 \icmltitlerunning{Kamiltonian Monte Carlo}
@@ -208,23 +208,16 @@ inal}
 \begin_layout Abstract
 We propose an adaptive Kernel Hamiltonian Monte Carlo (K-HMC) algorithm
  to simulate from an arbritary target probability density.
- Our sampler fills a gap: when neither gradients, higher order information,
- nor the likelihood function itself are available, most of the existing
- HMC methodology 
+ Our sampler fills a gap: when the density is intractable, classic HMC methodolo
+gy 
 \emph on
 cannot
 \emph default
  be applied -- one is left with random walk methods which suffer from bad
  mixing behaviour.
- We extend recent ideas from 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "sejdinovic_kernel_2014"
-
-\end_inset
-
-, who adaptively learn target covariance structure in a Reproducing Kernel
- Hilbert Space (RKHS), based on the history of the Markov chain.
+ We extend recent ideas of adaptively learning target covariance structure
+ in a Reproducing Kernel Hilbert Space (RKHS), based on the history of the
+ Markov chain.
  But rather than 
 \emph on
 locally 
@@ -233,26 +226,18 @@ smoothing the chain history, we directly model its
 \emph on
 global
 \emph default
- log-density as an RKHS function via score matching, 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Hyvarinen-05"
-
-\end_inset
-
-.
+ log-density as an RKHS function via score matching.
  This is not only a more interpretable and well-posed problem, but it also
- provides a differentiable energy function that directly can be used to
- simulate trajectories from a Hamiltonian dynamical system a.k.a.
- HMC.
- We construct an exact
+ provides a differentiable log-density approximation, which can directly
+ be used to simulate trajectories from a Hamiltonian dynamical system.
+ We construct an 
 \emph on
- 
+exact 
 \emph default
 MCMC algorithm that (i) behaves similar to HMC in terms of autocorrelation
  and acceptance rates, but that (ii) does not require target gradients,
  and that in particular (iii) works well in high dimensions.
- We support our claims with theoretical analysis and experimental studies.
+ We support our claims with experimental studies.
 \end_layout
 
 \begin_layout Section
@@ -306,8 +291,26 @@ target "http://nbviewer.ipython.org/gist/anonymous/329d11916eb29743a7de"
 
 \end_layout
 
+\begin_layout Paragraph
+Paper outline
+\end_layout
+
+\begin_layout Standard
+Section
+\end_layout
+
 \begin_layout Section
 Background & Previous work
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:previous_work"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -316,18 +319,26 @@ Notation
 
 \begin_layout Itemize
 Unnormalised target density 
-\begin_inset Formula $\pi:\mathbb{R}\to[0,1]$
+\begin_inset Formula $\pi:\mathbb{R^{d}}\to\mathbb{R}$
 \end_inset
 
-, unbiased estimator 
-\begin_inset Formula $\hat{\pi}$
+ , unbiased estimator 
+\begin_inset Formula $\mathbb{E}[\hat{\pi}(\theta)]=\pi(\theta)$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-Markov chain history 
+Markov chain history at iteration 
+\begin_inset Formula $t$
+\end_inset
+
+ with current position 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+: 
 \begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
 \end_inset
 
@@ -336,10 +347,10 @@ Markov chain history
 
 \begin_layout Itemize
 History subsample 
-\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}\subseteq\left\{ x_{i}\right\} _{i=0}^{t-1}$
 \end_inset
 
-
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -351,7 +362,7 @@ Write what we want to do and what are important parts of it.
 \end_layout
 
 \begin_layout Subsection
-Kernel Adaptive Metropolis-Hastings
+Previous work
 \end_layout
 
 \begin_layout Standard
@@ -393,6 +404,11 @@ AG: we don't really need a separate section on mean embeddings
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+We really would like to do HMC.
+ Here is what it is.
 \end_layout
 
 \begin_layout Standard
@@ -513,8 +529,9 @@ Starting from
 \end_layout
 
 \begin_layout Enumerate
-In order to correct for discretisation errors arising from numerical simulation,
- accept this proposal according to its new value of 
+In order to correct for discretisaKamiltonian Monte Carlotion errors arising
+ from numerical simulation, accept this proposal according to its new value
+ of 
 \begin_inset Formula $H(p^{*},q^{*})$
 \end_inset
 
@@ -547,6 +564,14 @@ When iterating, the resulting Markov chain in
  is the invariant distribution.
  Furthermore, acceptance rate of the third step will be usually large, while
  autocorrelation is small.
+\end_layout
+
+\begin_layout Paragraph
+HMC and intractable densities
+\end_layout
+
+\begin_layout Standard
+Write about how HMC cannot be applied if gradients is not known.
 \end_layout
 
 \begin_layout Standard
@@ -752,8 +777,22 @@ Replacing the integral
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:kernel_hmc"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We now combine score matching with HMC.
+\end_layout
+
 \begin_layout Section
-Kernel Hamiltonian Dynamics
+Kernel Hamiltonian Dynamics for MCMC
 \end_layout
 
 \begin_layout Subsection
@@ -915,6 +954,209 @@ D_{x_{\ell}} & :=\diag(x_{\ell}).
 
 \end_layout
 
+\begin_layout Subsection
+Examples
+\end_layout
+
+\begin_layout Standard
+Put some nice plots to illustrate ideas (no experiments yet)
+\end_layout
+
+\begin_layout Itemize
+Low dimensional Banana
+\end_layout
+
+\begin_layout Itemize
+Smoothing property of regularisation
+\end_layout
+
+\begin_layout Itemize
+High dimensional banana, projected to 2D
+\end_layout
+
+\begin_layout Itemize
+Comparison of HMC and KHMC trajectories
+\end_layout
+
+\begin_layout Subsection
+Geometry extension (TODO)
+\end_layout
+
+\begin_layout Itemize
+Can we use second order information of our density estimate? Then run RM-HMC
+ or M-MALA
+\end_layout
+
+\begin_layout Itemize
+What about the Kameleon proposal as a Hessian estimate? Formal relationship?
+ In practice
+\end_layout
+
+\begin_layout Section
+Kamiltonian Monte Carlo
+\end_layout
+
+\begin_layout Subsection
+Proposal construction
+\end_layout
+
+\begin_layout Standard
+Describe in words and then give algorithm
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+Kamiltonian Monte Carlo (TODO)
+\end_layout
+
+\begin_layout Plain Layout
+
+\emph on
+Input
+\emph default
+: unnormalized target 
+\begin_inset Formula $\pi$
+\end_inset
+
+, subsample size 
+\begin_inset Formula $n$
+\end_inset
+
+, scaling parameters 
+\begin_inset Formula $\nu,\gamma,$
+\end_inset
+
+ kernel 
+\begin_inset Formula $k$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Itemize
+At iteration 
+\begin_inset Formula $t+1$
+\end_inset
+
+,
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Obtain a random subsample 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+\end_inset
+
+ of the chain history 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Enumerate
+Sample proposed point 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ from 
+\begin_inset Formula $q_{\mathbf{z}}(\cdot|x_{t})=\mathcal{N}(x_{t},\gamma^{2}I+\nu^{2}M_{\mathbf{z},x_{t}}HM_{\mathbf{z},x_{t}}^{\top})$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Enumerate
+Accept/Reject with the Metropolis-Hastings acceptance probability 
+\begin_inset Formula $A(x_{t},x^{*})$
+\end_inset
+
+ in eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:MetAcceptProb"
+
+\end_inset
+
+,
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-0.5cm}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+x_{t+1} & = & \begin{cases}
+x^{*}, & \textrm{w.p.}\; A(x_{t},x^{*}),\\
+x_{t}, & \textrm{w.p.}\;1-A(x_{t},x^{*}).
+\end{cases}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Properties
+\end_layout
+
+\begin_layout Itemize
+Properties of kernel energy function, consequences for algorithm
+\end_layout
+
+\begin_layout Itemize
+Kernel choice via cross-validation (plot of objective function)
+\end_layout
+
+\begin_layout Itemize
+Extensions:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Second order information? 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Girolami2011"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Relation to geometry once again
+\end_layout
+
+\end_deeper
 \begin_layout Paragraph
 Linear costs via Incomplete Cholesky (TODO write properly)
 \end_layout
@@ -1003,61 +1245,24 @@ reference "sec:appendix_kernel_score_matching"
  for details.
 \end_layout
 
-\begin_layout Subsection
-Kernel Hamiltonian Dynamics
-\end_layout
-
-\begin_layout Section
-Kamiltonian Monte Carlo
-\end_layout
-
-\begin_layout Enumerate
-Proposal construction
-\end_layout
-
-\begin_layout Subsection
-Full algorithm
-\end_layout
-
-\begin_layout Subsection
-Properties
-\end_layout
-
-\begin_layout Itemize
-Properties of kernel energy function, Consequences for algorithm
-\end_layout
-
-\begin_layout Itemize
-Kernel choice via cross-validation
-\end_layout
-
-\begin_layout Itemize
-Extensions:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Second order information? 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "Girolami2011"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Relation to geometry once again
-\end_layout
-
-\end_deeper
 \begin_layout Section
 Experiments
 \end_layout
 
 \begin_layout Subsection
-Conparison of trajectories
+Comparison of trajectories
+\end_layout
+
+\begin_layout Standard
+Empirically compare on how well we can approximate the true HMC trajectories
+\end_layout
+
+\begin_layout Itemize
+How to put in numbers? Maybe run leapfrog with same momentum and step size
+ for the same number of steps.
+ Then somehow compute how far this travelled, and the average acceptance
+ probability.
+ Latter is in particular interesting.
 \end_layout
 
 \begin_layout Itemize
@@ -1072,28 +1277,36 @@ Higher dimensions, projections
 Kernel choice via cross-validation and how we get most similar trajectories
 \end_layout
 
-\begin_layout Subsection
-Pseudo-Marginal MCMC
-\end_layout
-
 \begin_layout Itemize
-Reproduce Kameleon experiments with KHMC
-\end_layout
-
-\begin_layout Itemize
-Higher dimensional, compare to plain HMC, (and random walk)
-\end_layout
-
-\begin_layout Itemize
-Plot 
+Optimise acceptance rate? Is this even well conditioned? Plot 
 \begin_inset Formula $J(\alpha)$
 \end_inset
 
  and ESS, and see whether cross-validation kernel is good for mixing
 \end_layout
 
+\begin_layout Subsection
+Pseudo-Marginal MCMC
+\end_layout
+
+\begin_layout Itemize
+Reproduce Kameleon experiments from Kameleon paper with KHMC
+\end_layout
+
+\begin_layout Itemize
+Higher dimensional, also compare to plain HMC, (and random walk)
+\end_layout
+
 \begin_layout Itemize
 Mushroom as a cool dataset?
+\end_layout
+
+\begin_layout Subsection
+Comparisons to geometry HMC?
+\end_layout
+
+\begin_layout Standard
+For that, first need to work out how we would even do that.
 \end_layout
 
 \begin_layout Section
@@ -1104,7 +1317,7 @@ Conclusions
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 bibfiles "local"
-options "icml2014stylefiles/icml2014"
+options "icml2015"
 
 \end_inset
 
