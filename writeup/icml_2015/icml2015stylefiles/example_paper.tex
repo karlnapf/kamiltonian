@@ -1,9 +1,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%% ICML 2014 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
+%%%%%%%% ICML 2015 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Use the following line _only_ if you're still using LaTeX 2.09.
-%\documentstyle[icml2014,epsf,natbib]{article}
+%\documentstyle[icml2015,epsf,natbib]{article}
 % If you rely on Latex2e packages, like most moden people use this:
 \documentclass{article}
 
@@ -23,8 +23,8 @@
 
 % As of 2011, we use the hyperref package to produce hyperlinks in the
 % resulting PDF.  If this breaks your system, please commend out the
-% following usepackage line and replace \usepackage{icml2014} with
-% \usepackage[nohyperref]{icml2014} above.
+% following usepackage line and replace \usepackage{icml2015} with
+% \usepackage[nohyperref]{icml2015} above.
 \usepackage{hyperref}
 
 % Packages hyperref and algorithmic misbehave sometimes.  We can fix
@@ -34,26 +34,27 @@
 % Employ the following version of the ``usepackage'' statement for
 % submitting the draft version of the paper for review.  This will set
 % the note in the first column to ``Under review.  Do not distribute.''
-\usepackage{icml2014} 
+\usepackage{icml2015} 
+
 % Employ this version of the ``usepackage'' statement after the paper has
 % been accepted, when creating the final version.  This will set the
 % note in the first column to ``Proceedings of the...''
-%\usepackage[accepted]{icml2014}
+%\usepackage[accepted]{icml2015}
 
 
 % The \icmltitle you define below is probably too long as a header.
 % Therefore, a short form for the running title is supplied here:
-\icmltitlerunning{Submission and Formatting Instructions for ICML 2014}
+\icmltitlerunning{Submission and Formatting Instructions for ICML 2015}
 
 \begin{document} 
 
 \twocolumn[
-\icmltitle{Submission and Formatting Instructions for the Thirty-first \\ 
-           International Conference on Machine Learning (ICML 2014)}
+\icmltitle{Submission and Formatting Instructions for \\ 
+           International Conference on Machine Learning (ICML 2015)}
 
 % It is OKAY to include author information, even for blind
 % submissions: the style file will automatically remove it for you
-% unless you've provided the [accepted] option to the icml2014
+% unless you've provided the [accepted] option to the icml2015
 % package.
 \icmlauthor{Your Name}{email@yourdomain.edu}
 \icmladdress{Your Fantastic Institute,
@@ -71,58 +72,44 @@
 ]
 
 \begin{abstract} 
-There are two review cycles for ICML 2014, with full paper submissions 
-due on October 4, 2013 and January 31, 2014. Reviewing 
-will be blind to the identities of the authors, and therefore identifying
-information must not appear in any way in papers submitted for review. 
-Submissions must be in PDF, with an 8 page length limit ( 9 pages are allowed if the 9-th page contains \emph{only} references).
+The purpose of this document is to provide both the basic paper template and
+submission guidelines.
 \end{abstract} 
 
 \section{Electronic Submission}
 \label{submission}
 
-As in the past few years, ICML will rely exclusively on
-electronic formats for submission and review. 
-
-
-\subsection{Templates for Papers}
-
-Electronic templates for producing papers for submission are available
-for \LaTeX\/ . Templates are accessible on the World
-Wide Web at:\\
-\textbf{\texttt{http://icml.cc/2014/}}
-
-\noindent
-Send questions about these electronic templates to
+Submission to ICML 2015 will be entirely electronic, via a web site
+(not email).  Information about the submission process and \LaTeX\ templates
+are available on the conference web site at:
+\begin{center}
+\textbf{\texttt{http://icml.cc/2015/}}
+\end{center}
+Send questions about submission and electronic templates to
 \texttt{program@icml.cc}.
 
-The formatting instructions below will be enforced for initial submissions and camera-ready copies. 
+The guidelines below will be enforced for initial submissions and
+camera-ready copies.  Here is a brief summary:
 \begin{itemize}
-\item The maximum paper length is 8 pages excluding references, and 
-9 pages including references.
-\item Do not alter the style template; in particular, do not compress the paper format 
-by reducing the vertical spaces.
-\item Do not include author information or acknowledgments in your
-  initial submission. 
-\item Place figure captions {\em under} the figure (and omit titles from
-  inside the graphic file itself).  Place table captions {\em over}
-  the table.
-\item References must include page numbers whenever possible and be as
-  complete as possible.  Place multiple citations in chronological order.  
+\item Submissions must be in PDF.
+\item The maximum paper length is \textbf{8 pages excluding references, and 10 pages
+  including references} (pages 9 and 10 must contain only references).
+\item Do \textbf{not include author information or acknowledgments} in your initial
+submission. 
+\item Your paper should be in \textbf{10 point Times font}.
+\item Make sure your PDF file only uses Type-1 fonts.
+\item Place figure captions {\em under} the figure (and omit titles from inside
+the graphic file itself).  Place table captions {\em over} the table.
+\item References must include page numbers whenever possible and be as complete
+as possible.  Place multiple citations in chronological order.  
+\item Do not alter the style template; in particular, do not compress the paper
+format by reducing the vertical spaces.
 \end{itemize}
-Please see below for details on each of these items.
 
 \subsection{Submitting Papers}
 
-Submission to ICML 2014 will be entirely electronic, via a web site
-(not email).  The URL and information about the submission process
-are available on the conference web site at
-
-\textbf{\texttt{http://icml.cc/2014/}}
-
-{\bf Paper Deadline:} The deadline for paper submission to ICML 2014
-is at 23:59 Universal Time (3:59 Pacific Daylight Time) on the due dates
-(October 4, or January 31, depending on the review cycle).  
+{\bf Paper Deadline:} The deadline for paper submission to ICML 2015
+is at \textbf{23:59 Universal Time (3:59 Pacific Daylight Time) on February 6, 2015}.
 If your full submission does not reach us by this time, it will 
 not be considered for publication. There is no separate abstract submission.
 
@@ -157,34 +144,36 @@ of the latest versions of Word have the facility to do this
 automatically.  Submissions will not be accepted in Word format or any
 format other than PDF. Really. We're not joking. Don't send Word.
 
-Those who use \textbf{\LaTeX} to format their accepted papers need to
-pay close attention to the typefaces used.  Specifically, when
-producing the PDF by first converting the dvi output of \LaTeX\ to Postscript
-the default behavior is to use non-scalable Type-3 PostScript bitmap
-fonts to represent the standard \LaTeX\ fonts. The resulting document
-is difficult to read in electronic form; the type appears fuzzy. To
-avoid this problem, dvips must be instructed to use an alternative
-font map.  This can be achieved with
-something like the following commands:\\[0.5em]
-{\bf dvips -Ppdf -tletter -G0 -o paper.ps paper.dvi}\\
-{\bf ps2pdf paper.ps}\\[0.5em]
+Those who use \textbf{\LaTeX} to format their accepted papers need to pay close
+attention to the typefaces used.  Specifically, when producing the PDF by first
+converting the dvi output of \LaTeX\ to Postscript the default behavior is to
+use non-scalable Type-3 PostScript bitmap fonts to represent the standard
+\LaTeX\ fonts. The resulting document is difficult to read in electronic form;
+the type appears fuzzy. To avoid this problem, dvips must be instructed to use
+an alternative font map.  This can be achieved with the following two commands:
+
+{\footnotesize
+\begin{verbatim}
+dvips -Ppdf -tletter -G0 -o paper.ps paper.dvi
+ps2pdf paper.ps
+\end{verbatim}}
 Note that it is a zero following the ``-G''.  This tells dvips to use
 the config.pdf file (and this file refers to a better font mapping).
 
-Another alternative is to use the \textbf{pdflatex} program instead of
-straight \LaTeX. This program avoids the Type-3 font problem, however
-you must ensure that all of the fonts are embedded (use {\tt
-pdffonts}). If they are not, you need to configure pdflatex to use a
-font map file that specifies that the fonts be embedded. Also you
-should ensure that images are not downsampled or otherwise compressed
-in a lossy way.
+A better alternative is to use the \textbf{pdflatex} program instead of
+straight \LaTeX. This program avoids the Type-3 font problem, however you must
+ensure that all of the fonts are embedded (use {\tt pdffonts}). If they are
+not, you need to configure pdflatex to use a font map file that specifies that
+the fonts be embedded. Also you should ensure that images are not downsampled
+or otherwise compressed in a lossy way.
 
-Note that the 2014 style files use the {\tt hyperref} package to
+Note that the 2015 style files use the {\tt hyperref} package to
 make clickable links in documents.  If this causes problems for you,
-add {\tt nohyperref} as one of the options to the {\tt icml2014}
+add {\tt nohyperref} as one of the options to the {\tt icml2015}
 usepackage statement.
 
 \subsection{Reacting to Reviews}
+
 We will continue the ICML tradition in which the authors are given the
 option of providing a short reaction to the initial reviews. These
 reactions will be taken into account in the discussion among the
@@ -202,13 +191,13 @@ The footnote, ``Preliminary work.  Under review by the International
 Conference on Machine Learning (ICML).  Do not distribute.'' must be
 modified to ``\textit{Proceedings of the
 $\mathit{31}^{st}$ International Conference on Machine Learning},
-Beijing, China, 2014.  JMLR: W\&CP volume 32. 
-Copyright 2014 by the author(s).''
+Lille, France, 2015.  JMLR: W\&CP volume 37. 
+Copyright 2015 by the author(s).''
 
 For those using the \textbf{\LaTeX} style file, simply change
-$\mathtt{\backslash usepackage\{icml2014\}}$ to 
+$\mathtt{\backslash usepackage\{icml2015\}}$ to 
 
-\verb|\usepackage[accepted]{icml2014}|
+$$\mathtt{\backslash usepackage[accepted]\{icml2015\}}$$
 
 \noindent
 Authors using \textbf{Word} must edit the
@@ -221,7 +210,7 @@ The running head should be centered, bold and in $9$ point type.  The
 rule should be $10$ points above the main text.  For those using the
 \textbf{\LaTeX} style file, the original title is automatically set as running
 head using the {\tt fancyhdr} package which is included in the ICML
-2014 style file package.  In case that the original title exceeds the
+2015 style file package.  In case that the original title exceeds the
 size restrictions, a shorter form can be supplied by using
 
 \verb|\icmltitlerunning{...}|
@@ -239,7 +228,7 @@ the information that they desire.
 
 Papers must not exceed eight (8) pages, including all figures, tables,
 and appendices, but excluding references. When references are included,
-the paper must not exceed nine (9) pages. Any submission that exceeds 
+the paper must not exceed ten (10) pages. Any submission that exceeds 
 this page limit or that diverges significantly from the format specified 
 herein will be rejected without review.
 
@@ -251,8 +240,7 @@ whether you print on US letter or A4 paper, but all final versions
 must be produced for US letter size.
 
 The paper body should be set in 10~point type with a vertical spacing
-of 11~points. Please use Times  typeface throughout the text.
-%Please use the default typeface (Computer Modern) throughout the text.
+of 11~points. Please use Times typeface throughout the text.
 
 \subsection{Title}
 
@@ -266,7 +254,7 @@ case.
 \label{author info}
 
 To facilitate blind review, author information must not appear.  If
-you are using \LaTeX\/ and the \texttt{icml2014.sty} file, you may use
+you are using \LaTeX\/ and the \texttt{icml2015.sty} file, you may use
 \verb+\icmlauthor{...}+ to specify authors.  The author information
 will simply not be printed until {\tt accepted} is an argument to the
 style file. Submissions that include the author information will not
@@ -305,7 +293,7 @@ should appear flush left on the ensuing line, on a single line if
 possible. If successive authors have the same affiliation, then give
 their physical address only once.
 
-A sample file (in PDF) with author names is included in the ICML2014 
+A sample file (in PDF) with author names is included in the ICML2015 
 style file package.
 
 \subsection{Abstract}
@@ -475,7 +463,7 @@ top or bottom of the page.
 
 Please use APA reference format regardless of your formatter
 or word processor. If you rely on the \LaTeX\/ bibliographic 
-facility, use {\tt natbib.sty} and {\tt icml2014.bst} 
+facility, use {\tt natbib.sty} and {\tt icml2015.bst} 
 included in the style-file package to obtain this format.
 
 Citations within the text should include the authors' last names and
@@ -538,7 +526,7 @@ support.
 \nocite{langley00}
 
 \bibliography{example_paper}
-\bibliographystyle{icml2014}
+\bibliographystyle{icml2015}
 
 \end{document} 
 
