@@ -1,3 +1,16 @@
+# pydev project files
+.project
+.pydevproject
+
+# lyx backups
+*.lyx#
+
+# gedit backups
+*.*~
+
+# vim backups
+*.swp
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
