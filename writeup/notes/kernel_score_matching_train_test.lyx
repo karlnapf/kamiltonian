@@ -1,0 +1,328 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass scrartcl
+\use_default_options true
+\begin_modules
+theorems-ams
+theorems-sec
+\end_modules
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type numerical
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+
+\lang english
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{1}{m}\sum_{i=1}^{m}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\alpha)+\frac{1}{2}\psi_{\ell}(x_{i};\alpha)^{2}\right]\\
+ & =\frac{2}{m\sigma}\sum_{\ell=1}^{d}\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-y_{j}\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-y_{j\ell})^{2}\right]\\
+ & \qquad+\frac{2}{m\sigma^{2}}\sum_{\ell=1}^{d}\sum_{i=1}^{m}\left[\sum_{j=1}^{m}\alpha_{j}(x_{j\ell}-y_{i\ell})\exp\left(-\frac{\|y_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+The expression for the term 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ being optimized is the sum of two terms.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+Consider the 
+\series bold
+first term
+\series default
+:
+\begin_inset Formula 
+\[
+\sum_{\ell=1}^{d}\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-y_{j}\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-y_{j\ell})^{2}\right]
+\]
+
+\end_inset
+
+ The term we need to compute is
+\begin_inset Formula 
+\begin{align*}
+ & \sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-y_{j}\|^{2}}{\sigma}\right)(x_{i\ell}-y_{j\ell})^{2},\\
+= & \sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-y_{j}\|^{2}}{\sigma}\right)\left(x_{i\ell}^{2}+y_{j\ell}^{2}-2x_{i\ell}y_{j\ell}\right).
+\end{align*}
+
+\end_inset
+
+Define 
+\begin_inset Formula 
+\[
+x_{\ell}:=\left[\begin{array}{ccc}
+x_{1\ell} & \hdots & x_{m\ell}\end{array}\right]^{\top}.
+\]
+
+\end_inset
+
+The final term may be computed cheaply with the right ordering of operations,
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+
+\lang english
+We assume we have an incomplete Cholesy representation of 
+\begin_inset Formula $K_{ij}:=\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)$
+\end_inset
+
+, 
+\begin_inset Formula 
+\[
+K\approx LL^{\top},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $L$
+\end_inset
+
+ is 
+\begin_inset Formula $m\times t$
+\end_inset
+
+ and 
+\begin_inset Formula $t\ll m$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+-2(\alpha\odot x_{\ell})^{\top}K_{XY}y_{\ell}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\alpha\odot x_{\ell}$
+\end_inset
+
+ is the entrywise product.
+ The remaining terms are sums with constant row or column terms, and can
+ likewise be computed cheaply: define 
+\begin_inset Formula $s_{\ell}:=x_{\ell}\odot x_{\ell}$
+\end_inset
+
+ with components 
+\begin_inset Formula $s_{i\ell}=x_{i\ell}^{2}$
+\end_inset
+
+, and 
+\begin_inset Formula $t_{\ell}:=y_{\ell}\odot y_{\ell}$
+\end_inset
+
+ Then
+\begin_inset Formula 
+\begin{align*}
+\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}k_{ij}t_{j\ell} & =\alpha^{\top}K_{XY}t_{\ell}
+\end{align*}
+
+\end_inset
+
+which is cheap to compute.
+ Likewise
+\begin_inset Formula 
+\[
+\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}x_{i\ell}^{2}k_{ij}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+We now write out the 
+\series bold
+second term
+\series default
+.
+ Considering only the 
+\begin_inset Formula $\ell$
+\end_inset
+
+th dimension, this is
+\begin_inset Formula 
+\begin{align*}
+ & \sum_{i=1}^{m}\left[\sum_{j=1}^{m}\alpha_{j}(x_{j\ell}-y{}_{i\ell})\exp\left(-\frac{\|y_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}
+\end{align*}
+
+\end_inset
+
+In matrix notation, the inner sum is a column vector,
+\begin_inset Formula 
+\[
+K_{XY}^{T}(\alpha\odot x_{\ell})-\left(K_{XY}^{T}\alpha\right)\odot y_{\ell}
+\]
+
+\end_inset
+
+We then take the entrywise square and sum the resulting vector, where both
+ operations cost 
+\begin_inset Formula $O(m)$
+\end_inset
+
+.
+ More concretely
+\begin_inset Formula 
+\begin{align*}
+\left\Vert K_{XY}^{T}(\alpha\odot x_{\ell})-\left(\alpha^{T}K_{XY}\right)\odot y_{\ell}\right\Vert  & =\left(K_{XY}^{T}(\alpha\odot x_{\ell})-\left(K_{XY}^{T}\alpha\right)\odot y_{\ell}\right)^{T}\left(K_{XY}^{T}(\alpha\odot x_{\ell})-\left(K_{XY}^{T}\alpha\right)\odot y_{\ell}\right)\\
+ & =\left(K_{XY}^{T}D_{x_{\ell}}\alpha-D_{y_{\ell}}K_{XY}^{T}\alpha\right)^{T}\left(K_{XY}^{T}D_{x_{\ell}}\alpha-D_{y_{\ell}}K_{XY}^{T}\alpha\right)\\
+ & =\alpha^{T}\left(D_{x_{\ell}}K_{XY}-K_{XY}D_{y_{\ell}}\right)^{T}\left(K_{XY}^{T}D_{x_{\ell}}-D_{y_{\ell}}K_{XY}^{T}\right)\alpha
+\end{align*}
+
+\end_inset
+
+- 
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+Together:
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{2}{m\sigma}\sum_{\ell=1}^{D}\left[\frac{2}{\sigma}\left[\alpha^{T}K_{XY}t_{\ell}+(\alpha\odot s_{\ell})^{T}K_{XY}\mathbf{1}-2(\alpha\odot x_{\ell})^{T}K_{XY}y_{\ell}\right]-\alpha^{T}K_{XY}\mathbf{1}\right]\\
+ & +\frac{2}{m\sigma^{2}}\sum_{\ell=1}^{D}\left[(\alpha\odot x_{\ell})^{T}K_{XY}-y_{\ell}\odot(\alpha^{T}K_{XY})\right]\left[K_{XY}^{T}(\alpha\odot x_{\ell})-(\alpha^{T}K_{XY})\odot y_{\ell}\right]\\
+ & =\frac{2}{m\sigma}\alpha^{T}b+\frac{2}{m\sigma^{2}}\alpha^{T}C\alpha
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+In terms of 
+\begin_inset Formula $b$
+\end_inset
+
+ and 
+\begin_inset Formula $C$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset Formula 
+\begin{align*}
+b & =\sum_{\ell=1}^{D}\left(\frac{2}{\sigma}(K_{XY}t_{\ell}+D_{s_{\ell}}K_{XY}\mathbf{1}-2D_{x_{\ell}}K_{XY}y_{\ell})-K_{XY}\mathbf{1}\right)\in\mathbb{R}^{m}\\
+C & =\sum_{\ell=1}^{D}\left(D_{x_{\ell}}K_{XY}-K_{XY}D_{y_{\ell}}\right)^{T}\left(K_{XY}^{T}D_{x_{\ell}}-D_{y_{\ell}}K_{XY}^{T}\right)\in\mathbb{R}^{m\times m}.
+\end{align*}
+
+\end_inset
+
+Recall that
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset Formula 
+\begin{align}
+K(\alpha\odot x) & =KD_{x}\alpha\\
+(K\alpha)\odot x & =D_{x}K\alpha
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
