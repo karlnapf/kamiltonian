@@ -240,6 +240,26 @@ MCMC algorithm that (i) behaves similar to HMC in terms of autocorrelation
  We support our claims with experimental studies.
 \end_layout
 
+\begin_layout Paragraph
+Next steps (Heiko)
+\end_layout
+
+\begin_layout Itemize
+Proof read Gaussian kernel score matching
+\end_layout
+
+\begin_layout Itemize
+Implement carefully
+\end_layout
+
+\begin_layout Itemize
+Implement trajectories, possibly within a given framework
+\end_layout
+
+\begin_layout Itemize
+Create plots for illustration
+\end_layout
+
 \begin_layout Section
 Introduction
 \end_layout
