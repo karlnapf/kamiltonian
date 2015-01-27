@@ -1,3 +1,6 @@
+# python cma creates these
+*.dat
+
 # pydev project files
 .project
 .pydevproject
