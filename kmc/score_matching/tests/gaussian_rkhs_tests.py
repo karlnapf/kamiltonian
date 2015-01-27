@@ -14,6 +14,48 @@ from kmc.score_matching.kernel.kernels import gaussian_kernel
 import numpy as np
 
 
+def test_compute_b_against_initial_notebook():
+    D = 2
+    sigma = 1.
+    Z = np.random.randn(100, D)
+    K = gaussian_kernel(Z, sigma=sigma)
+    
+    # build matrix expressions from notes
+    m = Z.shape[0]
+    D = Z.shape[1]
+    S = Z * Z
+    
+    b = np.zeros(m)
+    for l in np.arange(D):
+        s_l = S[:, l]
+        x_l = Z[:, l]
+        b += 2. / sigma * (K.dot(s_l) \
+                        + np.diag(s_l).dot(K).dot(np.ones(m)) \
+                        - 2 * np.diag(x_l).dot(K).dot(x_l)) - K.dot(np.ones(m))
+    
+    b_test = _compute_b_sym(Z, K, sigma)
+    
+    assert_allclose(b, b_test)
+
+def test_compute_C_against_initial_notebook():
+    D = 2
+    sigma = 1.
+    Z = np.random.randn(100, D)
+    K = gaussian_kernel(Z, sigma=sigma)
+    
+    # build matrix expressions from notes
+    m = Z.shape[0]
+    D = Z.shape[1]
+    
+    C = np.zeros((m, m))
+    for l in np.arange(D):
+        x_l = Z[:, l]
+        C += (np.diag(x_l).dot(K) - K.dot(np.diag(x_l))).dot(K.dot(np.diag(x_l)) - np.diag(x_l).dot(K))
+    
+    C_test = _compute_C_sym(Z, K, sigma)
+    
+    assert_allclose(C, C_test)
+
 def test_compute_b_sym_against_paper():
     sigma = 1.
     D = 1
@@ -299,6 +341,20 @@ def test_objective_matches_sym():
     sigma = 1.
     lmbda = 1.
     Z = np.random.randn(100, 2)
+    
+    alpha = np.random.randn(len(Z))
+    
+    J_sym = _objective_sym(Z, sigma, lmbda, alpha)
+    J = _objective(Z, Z, sigma, lmbda, alpha)
+    
+    print type(J)
+    print type(J_sym)
+    assert_equal(J, J_sym)
+    
+def test_objective_matches_sym_precomputed_KbC():
+    sigma = 1.
+    lmbda = 1.
+    Z = np.random.randn(100, 2)
     K = gaussian_kernel(Z, sigma=sigma)
     
     alpha = np.random.randn(len(Z))
@@ -306,11 +362,9 @@ def test_objective_matches_sym():
     b = _compute_b_sym(Z, K, sigma)
     
     K = gaussian_kernel(Z, sigma=sigma)
-    J_sym = _objective_sym(Z, sigma, lmbda, alpha, K, C, b)
-    J = _objective(Z, Z, sigma, lmbda, alpha, K, C, b)
+    J_sym = _objective_sym(Z, sigma, lmbda, alpha, K, b, C)
+    J = _objective(Z, Z, sigma, lmbda, alpha, K, b, C)
     
-    print type(J)
-    print type(J_sym)
     assert_equal(J, J_sym)
 
 def test_score_matching_objective_matches_sym():
@@ -357,7 +411,7 @@ def test_objective_low_rank_matches_full():
     K_XY = kernel(X, Y)
     C = _compute_C(X, Y, K_XY, sigma)
     b = _compute_b(X, Y, K_XY, sigma)
-    J_full = _objective(X, Y, sigma, lmbda, alpha, K_XY, C, b)
+    J_full = _objective(X, Y, sigma, lmbda, alpha, K_XY, b, C)
     
     temp = incomplete_cholesky(X, kernel, eta=low_rank_dim)
     I, R, nu = (temp["I"], temp["R"], temp["nu"])
@@ -390,7 +444,7 @@ def test_objective_sym_same_as_from_estimation():
     a = score_matching_sym(Z, sigma, lmbda, K)
     C = _compute_C_sym(Z, K, sigma)
     b = _compute_b_sym(Z, K, sigma)
-    J = _objective_sym(Z, sigma, lmbda, a, K, C, b)
+    J = _objective_sym(Z, sigma, lmbda, a, K, b, C)
     
     J2 = _objective_sym(Z, sigma, lmbda, a, K)
     assert_almost_equal(J, J2)
