@@ -190,8 +190,12 @@ def _apply_left_C_sym_low_rank(v, Z, L, lmbda):
         # add both terms times v to result
         result += x - y
     
-    # regularise 
-    result += lmbda * v
+    if lmbda>0:
+        # regularise with K=L_X.dot(L_X.T)
+        result += lmbda * L.dot(L.T.dot(v))
+        
+        # regularise with I
+        result += lmbda * v
     
     return result
 
@@ -242,8 +246,12 @@ def _apply_left_C_low_rank(v, X, Y, L_X, L_Y, lmbda):
         # add both terms times v to result
         result += x - y
      
-    # regularise 
-    result += lmbda * v
+    if lmbda>0:
+        # regularise with K=L_X.dot(L_X.T)
+        result += lmbda * L_X.dot(L_X.T.dot(v))
+    
+        # regularise with I
+        result += lmbda * v
      
     return result
 
@@ -259,7 +267,8 @@ def score_matching_sym(Z, sigma, lmbda, K=None, b=None, C=None):
             C = _compute_C_sym(Z, K, sigma)
 
         # solve regularised linear system
-        a = -sigma / 2. * np.linalg.solve(C + np.eye(C.shape[0]) * lmbda, b)
+        a = -sigma / 2. * np.linalg.solve(C + (K + np.eye(len(C))) * lmbda,
+                                          b)
         
         return a
 
@@ -272,7 +281,8 @@ def score_matching(X, Y, sigma, lmbda, K=None):
         C = _compute_C(X, Y, K, sigma)
 
         # solve regularised linear system
-        a = -sigma / 2. * np.linalg.solve(C + np.eye(C.shape[0]) * lmbda, b)
+        a = -sigma / 2. * np.linalg.solve(C + (K + np.eye(len(C))) * lmbda,
+                                          b)
         
         return a
     
@@ -319,7 +329,7 @@ def score_matching_low_rank(X, Y, sigma, lmbda, L_X, L_Y,
         return a
 
 def _objective_sym(Z, sigma, lmbda, alpha, K=None, b=None, C=None):
-    if K is None:
+    if K is None and ((b is None or C is None) or lmbda > 0):
         K = gaussian_kernel(Z, sigma=sigma)
     
     if C is None:
@@ -330,24 +340,37 @@ def _objective_sym(Z, sigma, lmbda, alpha, K=None, b=None, C=None):
     
     N = len(Z)
     first = 2. / (N * sigma) * alpha.dot(b)
-    second = 2. / (N * sigma ** 2) * alpha.dot((C + np.eye(len(C)) * lmbda).dot(alpha))
+    second = 2. / (N * sigma ** 2) * alpha.dot(
+                                               (C + (K + np.eye(len(C))) * lmbda).dot(alpha)
+                                               )
     J = first + second
     return J
 
-def _objective(X, Y, sigma, lmbda, alpha, K=None, b=None, C=None):
-    if K is None:
-        K = gaussian_kernel(X, Y, sigma=sigma)
+def _objective(X, Y, sigma, lmbda, alpha, K=None, K_XY=None, b=None, C=None):
+    if K_XY is None:
+        K_XY = gaussian_kernel(X, Y, sigma=sigma)
+    
+    if K is None and lmbda > 0:
+        if X is Y:
+            K = K_XY
+        else:
+            K = gaussian_kernel(X, sigma=sigma)
     
     if b is None:
-        b = _compute_b(X, Y, K, sigma)
+        b = _compute_b(X, Y, K_XY, sigma)
 
     if C is None:
-        C = _compute_C(X, Y, K, sigma)
+        C = _compute_C(X, Y, K_XY, sigma)
     
     
     NX = len(X)
     first = 2. / (NX * sigma) * alpha.dot(b)
-    second = 2. / (NX * sigma ** 2) * alpha.dot((C + np.eye(len(C)) * lmbda).dot(alpha))
+    if lmbda > 0:
+        second = 2. / (NX * sigma ** 2) * alpha.dot(
+                                                    (C + (K + np.eye(len(C))) * lmbda).dot(alpha)
+                                                    )
+    else:
+        second = 2. / (NX * sigma ** 2) * alpha.dot((C).dot(alpha))
     J = first + second
     return J
 
@@ -381,15 +404,15 @@ def xvalidate(Z, n_folds, sigma, lmbda, K):
     Js = np.zeros(n_folds)
     for i, (train, test) in enumerate(kf):
         # train
-        a = score_matching_sym(Z[train], sigma, lmbda, K[train][:,train])
+        a = score_matching_sym(Z[train], sigma, lmbda, K[train][:, train])
         
         # precompute test statistics
-        C = _compute_C(Z[train], Z[test], K[train][:,test], sigma)
-        b = _compute_b(Z[train], Z[test], K[train][:,test], sigma)
+        C = _compute_C(Z[train], Z[test], K[train][:, test], sigma)
+        b = _compute_b(Z[train], Z[test], K[train][:, test], sigma)
         
         # evaluate *without* the lambda
         lmbda_equals_0 = 0.
-        Js[i] = _objective(Z[train], Z[test], sigma, lmbda_equals_0, a, K[train][:,test], b, C)
+        Js[i] = _objective(Z[train], Z[test], sigma, lmbda_equals_0, a, K[train][:, test], b, C)
     
     return Js
 

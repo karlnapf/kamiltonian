@@ -128,7 +128,7 @@ def test_objective_against_naive():
     X = np.random.randn(NX, D)
     Y = np.random.randn(NY, D)
     
-    K = gaussian_kernel(X, Y, sigma=sigma)
+    K_XY = gaussian_kernel(X, Y, sigma=sigma)
     
     num_trials = 10
     for _ in range(num_trials):
@@ -138,7 +138,7 @@ def test_objective_against_naive():
         for d in range(D):
             for i in range(NX):
                 for j in range(NY):
-                    J_naive_a += alpha[i] * K[i, j] * \
+                    J_naive_a += alpha[i] * K_XY[i, j] * \
                                 (-1 + 2. / sigma * ((X[i][d] - Y[j][d]) ** 2))
         J_naive_a *= (2. / (NX * sigma))
         
@@ -147,7 +147,7 @@ def test_objective_against_naive():
             for i in range(NY):
                 temp = 0
                 for j in range(NX):
-                    temp += alpha[j] * (X[j, d] - Y[i, d]) * K[j, i]
+                    temp += alpha[j] * (X[j, d] - Y[i, d]) * K_XY[j, i]
                 J_naive_b += (temp ** 2)
         J_naive_b *= (2. / (NX * (sigma ** 2)))
         
@@ -155,7 +155,7 @@ def test_objective_against_naive():
         
         # compare to unregularised objective
         lmbda = 0.
-        J = _objective(X, Y, sigma, lmbda, alpha, K)
+        J = _objective(X, Y, sigma, lmbda, alpha, K_XY=K_XY)
         assert_close(J_naive, J)
     
 
@@ -230,7 +230,7 @@ def test_apply_C_left_sym_low_rank_matches_full():
     v = np.random.randn(Z.shape[0])
     lmbda = 1.
     
-    x = (_compute_C_sym(Z, K, sigma) + np.eye(N)).dot(v)
+    x = (_compute_C_sym(Z, K, sigma) + lmbda * (K + np.eye(len(K)))).dot(v)
     y = _apply_left_C_sym_low_rank(v, Z, R.T, lmbda)
     assert_allclose(x, y, atol=1e-1)
 
@@ -242,6 +242,7 @@ def test_apply_C_left_low_rank_matches_full():
     low_rank_dim = int(len(X) * .9)
     kernel = lambda X, Y = None: gaussian_kernel(X, Y, sigma=sigma)
     K_XY = kernel(X, Y)
+    K = kernel(X)
     
     temp = incomplete_cholesky(X, kernel, eta=low_rank_dim)
     I, R, nu = (temp["I"], temp["R"], temp["nu"])
@@ -250,7 +251,7 @@ def test_apply_C_left_low_rank_matches_full():
     v = np.random.randn(X.shape[0])
     lmbda = 1.
     
-    x = (_compute_C(X, Y, K_XY, sigma) + np.eye(N) * lmbda).dot(v)
+    x = (_compute_C(X, Y, K_XY, sigma) + (K + np.eye(len(X))) * lmbda).dot(v)
     y = _apply_left_C_low_rank(v, X, Y, R.T, R_test.T, lmbda)
     assert_allclose(x, y, atol=1e-1)
 
@@ -363,7 +364,7 @@ def test_objective_matches_sym_precomputed_KbC():
     
     K = gaussian_kernel(Z, sigma=sigma)
     J_sym = _objective_sym(Z, sigma, lmbda, alpha, K, b, C)
-    J = _objective(Z, Z, sigma, lmbda, alpha, K, b, C)
+    J = _objective(Z, Z, sigma, lmbda, alpha, K_XY=K, b=b, C=C)
     
     assert_equal(J, J_sym)
 
@@ -411,7 +412,7 @@ def test_objective_low_rank_matches_full():
     K_XY = kernel(X, Y)
     C = _compute_C(X, Y, K_XY, sigma)
     b = _compute_b(X, Y, K_XY, sigma)
-    J_full = _objective(X, Y, sigma, lmbda, alpha, K_XY, b, C)
+    J_full = _objective(X, Y, sigma, lmbda, alpha, K_XY=K_XY, b=b, C=C)
     
     temp = incomplete_cholesky(X, kernel, eta=low_rank_dim)
     I, R, nu = (temp["I"], temp["R"], temp["nu"])
