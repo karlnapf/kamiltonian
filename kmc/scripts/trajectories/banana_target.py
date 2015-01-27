@@ -1,3 +1,6 @@
+from kameleon_mcmc.tools.Visualise import Visualise
+
+from kmc.densities.banana import log_banana_pdf, sample_banana
 from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
 from kmc.score_matching.estimator import log_pdf_estimate, log_pdf_estimate_grad
 from kmc.score_matching.gaussian_rkhs import _compute_b_sym, _compute_C_sym, \
@@ -11,22 +14,18 @@ import numpy as np
 
 # if __name__ == "__main__":
 while True:
-    D = 10
+    D = 2
     
     # true target log density
-    Sigma = np.diag(np.linspace(0.01, 1, D))
-    Sigma[:2, :2] = np.array([[1, .95], [.95, 1]])
-#     Sigma = np.eye(D)
-    L = np.linalg.cholesky(Sigma)
-    dlogq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=True)
-    logq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=False)
+    logq = lambda x: log_banana_pdf(x, compute_grad=False)
+    dlogq = lambda x: log_banana_pdf(x, compute_grad=True)
 
     # estimate density in rkhs
-    N = 1000
+    N = 200
     mu = np.zeros(D)
-    Z = sample_gaussian(N, mu, Sigma=L, is_cholesky=True)
-    sigma = 10.
-    lmbda = 100
+    Z = sample_banana(N, D)
+    sigma = 5.
+    lmbda = 1000.
     
     K = gaussian_kernel(Z, sigma=sigma)
     b = _compute_b_sym(Z, K, sigma)
@@ -43,7 +42,7 @@ while True:
     dlogq_est = lambda x: log_pdf_estimate_grad(x, a, Z, kernel_grad)
     
     # momentum
-    Sigma_p = np.eye(D)
+    Sigma_p = np.eye(D)*.1
     L_p = np.linalg.cholesky(Sigma_p)
     logp = lambda x: log_gaussian_pdf(x, Sigma=L_p, compute_grad=False, is_cholesky=True)
     dlogp = lambda x: log_gaussian_pdf(x, Sigma=L_p, compute_grad=True, is_cholesky=True)
@@ -52,13 +51,21 @@ while True:
     # starting state
     p0 = p_sample()
     q0 = np.zeros(D)
-    q0[:2] = np.array([-1, -1])
+    q0[:2] = np.array([0, -3])
     
     # parameters
-    num_steps = 500
+    num_steps = 1500
     step_size = .1
 
-    plot_kamiltonian_dnyamics(q0, p0, logq, dlogq, logq_est, dlogq_est, logp, dlogp,
-                              Z, num_steps, step_size)
+    Xs_q = np.linspace(-20, 20)
+    Ys_q = np.linspace(-10, 10)
+    Xs_p = np.linspace(-1, 1)
+    Ys_p = np.linspace(-1, 1)
+
+    plot_grad_target = False
+    plot_kamiltonian_dnyamics(q0, p0,
+                              logq, dlogq, logq_est, dlogq_est, logp, dlogp, Z,
+                              num_steps, step_size,
+                              Xs_q, Ys_q, Xs_p, Ys_p, plot_dlogq=plot_grad_target)
     plt.suptitle(r"Score match, $J(\alpha)=%.2f$, $\lambda=%.2f$, $\sigma=%.2f$" % (J, lmbda, sigma))
     plt.show()

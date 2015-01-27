@@ -1,4 +1,6 @@
-from kmc.hamiltonian.leapfrog import leapfrog
+from kameleon_mcmc.tools.Visualise import Visualise
+
+from kmc.hamiltonian.leapfrog import leapfrog, compute_hamiltonian
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -27,23 +29,97 @@ def evaluate_density_grid(Xs, Ys, log_pdf, exponentiate=False):
     
     return D if exponentiate is False else np.exp(D)
 
-def plot_hamiltonian_trajectory(q, logq, dlogq, logp, dlogp, 
-                                p=None, num_steps=50, step_size=.1, plot_H=False):
+def evaluate_density_grad_grid(Xs, Ys, grad):
+    G = np.zeros((len(Xs), len(Ys)))
+    for i in range(len(Xs)):
+        for j in range(len(Ys)):
+            x = np.array([Xs[i], Ys[j]])
+            G[j, i] = np.linalg.norm(grad(x))
     
-    if p is None:
-        p=np.random.randn(len(q))
+    return G
+
+def plot_2d_trajectory(X):
+    plt.plot(X[:, 0], X[:, 1], 'r-')
+    plt.plot(X[0, 0], X[0, 1], 'r*', markersize=15)
+    plt.plot(X[-1, 0], X[-1, 1], 'b*', markersize=15)
+
+def plot_kamiltonian_dnyamics(q0, p0, logq, dlogq, logq_est, dlogq_est,
+                              logp, dlogp, Z=None, num_steps=500, step_size=.1,
+                              Xs_q=None, Ys_q=None, Xs_p=None, Ys_p=None,
+                              plot_dlogq=False):
+    D = len(q0)
     
-    # run leapfrog  from initial point and momentum
-    Qs, Ps = leapfrog(q, dlogq, p, dlogp, step_size, num_steps)
-    
-    if plot_H:
-        plt.subplot(121)
+    # compute and plot log-density, if D==2
+    plt.figure(figsize=(12, 12))
+
+    if D is 2:
+        if Xs_q is None:
+            Xs_q = np.linspace(-3, 3)
         
-    plt.plot(Qs[:, 0], Qs[:, 1], 'r-')
-    plt.plot(Qs[0,0], Qs[0, 1], 'r*', markersize=15)
+        if Ys_q is None:
+            Ys_q = np.linspace(-3, 3)
+        
+        if Xs_p is None:
+            Xs_p = np.linspace(-3, 3)
+        
+        if Ys_p is None:
+            Ys_p = np.linspace(-3, 3)
+        
+        if plot_dlogq:
+            G = evaluate_density_grad_grid(Xs_q, Ys_q, dlogq)
+            G_est = evaluate_density_grad_grid(Xs_q, Ys_q, dlogq_est)
+        else:
+            G = evaluate_density_grid(Xs_q, Ys_q, logq)
+            G_est = evaluate_density_grid(Xs_q, Ys_q, logq_est)
+            
+        M = evaluate_density_grid(Xs_p, Ys_p, logp)
+        M_est = evaluate_density_grid(Xs_p, Ys_p, logp)
     
-    if plot_H:
-        plt.subplot(122)
-        plt.plot([-logq(Qs[i]) - logp(Ps[i]) for i in range(num_steps)])
+        plt.subplot(321)
+        if not plot_dlogq:
+            plot_array(Xs_q, Ys_q, np.exp(G))
+        else:
+            plot_array(Xs_q, Ys_q, G)
+            
+        if Z is not None:
+            plt.plot(Z[:, 0], Z[:, 1], 'bx')
+            
+        plt.subplot(322)
+        plot_array(Xs_q, Ys_q, np.exp(G_est))
+        if Z is not None:
+            plt.plot(Z[:, 0], Z[:, 1], 'bx')
+        
+        plt.subplot(323)
+        plot_array(Xs_p, Ys_p, np.exp(M))
+        plt.subplot(324)
+        plot_array(Xs_p, Ys_p, np.exp(M_est))
     
-    return Qs, Ps
+    Qs, Ps = leapfrog(q0, dlogq, p0, dlogp, step_size, num_steps)
+    Qs_est, Ps_est = leapfrog(q0, dlogq_est, p0, dlogp, step_size, num_steps)
+    Hs = compute_hamiltonian(Qs, Ps, logq, logp)
+    Hs_est = compute_hamiltonian(Qs_est, Ps_est, logq_est, logp)
+    
+    plt.subplot(321)
+    plot_2d_trajectory(Qs)
+    plt.title("True density")
+    plt.subplot(322)
+    plot_2d_trajectory(Qs_est)
+    plt.title("Estimated density")
+    
+    plt.subplot(323)
+    plt.title("Momentum")
+    plot_2d_trajectory(Ps)
+    plt.subplot(324)
+    plt.title("Momentum")
+    plot_2d_trajectory(Ps_est)
+    
+    plt.subplot(325)
+    plt.title("Hamiltonian")
+    plt.plot(Hs)
+    
+    plt.subplot(326)
+    plt.title("Hamiltonian")
+    plt.plot(Hs_est)
+    
+    plt.tight_layout()
+    
