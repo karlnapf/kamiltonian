@@ -1,5 +1,3 @@
-
-
 from nose.tools import timed, assert_almost_equal, assert_equal
 from numpy.ma.testutils import assert_close
 from numpy.testing.utils import assert_allclose
@@ -8,19 +6,123 @@ from kmc.score_matching.gaussian_rkhs import _compute_b_sym, _compute_b_low_rank
     _compute_C_sym, _apply_left_C_sym_low_rank, score_matching_sym, \
     score_matching_sym_low_rank, _objective_sym, _objective_sym_low_rank, \
     _compute_b, _compute_C, score_matching, _apply_left_C_low_rank, \
-    _compute_b_low_rank, _objective_low_rank, _objective
+    _compute_b_low_rank, _objective_low_rank, _objective, \
+    score_matching_low_rank
 from kmc.score_matching.kernel.incomplete_cholesky import incomplete_cholesky_gaussian, \
     incomplete_cholesky_new_points, incomplete_cholesky
 from kmc.score_matching.kernel.kernels import gaussian_kernel
 import numpy as np
 
 
+def test_compute_b_sym_against_paper():
+    sigma = 1.
+    D = 1
+    Z = np.random.randn(1, D)
+    K = gaussian_kernel(Z, sigma=sigma)
+    b = _compute_b_sym(Z, K, sigma)
+    
+    # compute by hand, well, it's just -k since rest is zero (look at it)
+    x = Z[0]
+    k = K[0, 0]
+    b_paper = 2. / sigma * (k * (x ** 2) + (x ** 2) * k - 2 * x * k * x) - k
+    
+    assert_equal(b, b_paper)
+
+def test_compute_C_sym_against_paper():
+    sigma = 1.
+    D = 1
+    Z = np.random.randn(1, D)
+    K = gaussian_kernel(Z, sigma=sigma)
+    C = _compute_C_sym(Z, K, sigma)
+    
+    # compute by hand, well, it's just zero (look at it)
+    x = Z[0]
+    k = K[0, 0]
+    C_paper = (x * k - k * x) * (k * x - x * k)
+    
+    assert_equal(C, C_paper)
+
+def test_objective_sym_against_naive():
+    sigma = 1.
+    D = 2
+    N = 10
+    Z = np.random.randn(N, D)
+    
+    K = gaussian_kernel(Z, sigma=sigma)
+    
+    num_trials = 10
+    for _ in range(num_trials):
+        alpha = np.random.randn(N)
+        
+        J_naive_a = 0
+        for d in range(D):
+            for i in range(N):
+                for j in range(N):
+                    J_naive_a += alpha[i] * K[i, j] * \
+                                (-1 + 2. / sigma * ((Z[i][d] - Z[j][d]) ** 2))
+        J_naive_a *= (2. / (N * sigma))
+        
+        J_naive_b = 0
+        for d in range(D):
+            for i in range(N):
+                temp = 0
+                for j in range(N):
+                    temp += alpha[j] * (Z[j, d] - Z[i, d]) * K[i, j]
+                J_naive_b += (temp ** 2)
+        J_naive_b *= (2. / (N * (sigma ** 2)))
+        
+        J_naive = J_naive_a + J_naive_b
+        
+        # compare to unregularised objective
+        lmbda = 0.
+        J = _objective_sym(Z, sigma, lmbda, alpha, K)
+        assert_close(J_naive, J)
+
+def test_objective_against_naive():
+    sigma = 1.
+    D = 2
+    NX = 10
+    NY = 20
+    X = np.random.randn(NX, D)
+    Y = np.random.randn(NY, D)
+    
+    K = gaussian_kernel(X, Y, sigma=sigma)
+    
+    num_trials = 10
+    for _ in range(num_trials):
+        alpha = np.random.randn(NX)
+        
+        J_naive_a = 0
+        for d in range(D):
+            for i in range(NX):
+                for j in range(NY):
+                    J_naive_a += alpha[i] * K[i, j] * \
+                                (-1 + 2. / sigma * ((X[i][d] - Y[j][d]) ** 2))
+        J_naive_a *= (2. / (NX * sigma))
+        
+        J_naive_b = 0
+        for d in range(D):
+            for i in range(NY):
+                temp = 0
+                for j in range(NX):
+                    temp += alpha[j] * (X[j, d] - Y[i, d]) * K[j, i]
+                J_naive_b += (temp ** 2)
+        J_naive_b *= (2. / (NX * (sigma ** 2)))
+        
+        J_naive = J_naive_a + J_naive_b
+        
+        # compare to unregularised objective
+        lmbda = 0.
+        J = _objective(X, Y, sigma, lmbda, alpha, K)
+        assert_close(J_naive, J)
+    
+
 def test_broadcast_diag_matrix_multiply():
     K = np.random.randn(3, 3)
     x = np.array([1, 2, 3])
     assert(np.allclose(x[:, np.newaxis] * K , np.diag(x).dot(K)))
 
-def test_score_matching_sym():
+def test_score_matching_sym_execute_only():
     sigma = 1.
     lmbda = 1.
     Z = np.random.randn(100, 2)
@@ -166,6 +268,23 @@ def test_score_matching_matches_sym():
     
     assert_allclose(a, a_sym)
 
+def test_score_matching_low_rank_matches_sym():
+    sigma = 1.
+    lmbda = 1.
+    Z = np.random.randn(100, 2)
+    low_rank_dim = int(len(Z) * .9)
+    
+    kernel = lambda X, Y: gaussian_kernel(X, Y, sigma=sigma)
+    
+    temp = incomplete_cholesky(Z, kernel, eta=low_rank_dim)
+    I, R, nu = (temp["I"], temp["R"], temp["nu"])
+    R_test = incomplete_cholesky_new_points(Z, Z, kernel, I, R, nu)
+    
+    a_sym = score_matching_low_rank(Z, Z, sigma, lmbda, R.T, R_test.T)
+    a = score_matching_sym_low_rank(Z, sigma, lmbda, R.T)
+    
+    assert_allclose(a, a_sym)
+
 @timed(5)
 def test_score_matching_sym_low_rank_time():
     sigma = 1.
@@ -190,6 +309,8 @@ def test_objective_matches_sym():
     J_sym = _objective_sym(Z, sigma, lmbda, alpha, K, C, b)
     J = _objective(Z, Z, sigma, lmbda, alpha, K, C, b)
     
+    print type(J)
+    print type(J_sym)
     assert_equal(J, J_sym)
 
 def test_score_matching_objective_matches_sym():
@@ -198,10 +319,8 @@ def test_score_matching_objective_matches_sym():
     Z = np.random.randn(100, 2)
     
     K = gaussian_kernel(Z, sigma=sigma)
-    _, J_sym = score_matching_sym(Z, sigma, lmbda, K,
-                                              compute_objective=True)
-    _, J = score_matching(Z, Z, sigma, lmbda, K,
-                                              compute_objective=True)
+    J_sym = score_matching_sym(Z, sigma, lmbda, K)
+    J = score_matching(Z, Z, sigma, lmbda, K)
     
     assert_allclose(J, J_sym)
 
@@ -223,7 +342,7 @@ def test_objective_low_rank_matches_sym():
     J_sym = _objective_sym_low_rank(Z, sigma, lmbda, alpha, R.T, b)
     J = _objective_low_rank(Z, Z, sigma, lmbda, alpha, R.T, R_test.T, b)
     
-    assert_allclose(J, J_sym)
+    assert_close(J, J_sym)
 
 def test_objective_low_rank_matches_full():
     sigma = 1.
@@ -254,12 +373,13 @@ def test_objective_sym_optimum():
     Z = np.random.randn(100, 2)
     
     K = gaussian_kernel(Z, sigma=sigma)
-    _, J_opt = score_matching_sym(Z, sigma, lmbda, K,
-                                              compute_objective=True)
+    a = score_matching_sym(Z, sigma, lmbda, K)
+    J_opt = _objective_sym(Z, sigma, lmbda, a, K)
     
-    a = np.random.randn(len(Z))
-    J = _objective_sym(Z, sigma, lmbda, a, K)
-    assert J >= J_opt
+    for _ in range(10):
+        a_random = np.random.randn(len(Z))
+        J = _objective_sym(Z, sigma, lmbda, a_random, K)
+        assert J >= J_opt
 
 def test_objective_sym_same_as_from_estimation():
     sigma = 1.
@@ -267,25 +387,13 @@ def test_objective_sym_same_as_from_estimation():
     Z = np.random.randn(100, 2)
     
     K = gaussian_kernel(Z, sigma=sigma)
-    a, J = score_matching_sym(Z, sigma, lmbda, K,
-                                          compute_objective=True)
+    a = score_matching_sym(Z, sigma, lmbda, K)
+    C = _compute_C_sym(Z, K, sigma)
+    b = _compute_b_sym(Z, K, sigma)
+    J = _objective_sym(Z, sigma, lmbda, a, K, C, b)
     
     J2 = _objective_sym(Z, sigma, lmbda, a, K)
     assert_almost_equal(J, J2)
-
-
-def test_objective_sym_low_rank_same_as_from_estimation():
-    sigma = 1.
-    lmbda = 1.
-    Z = np.random.randn(100, 2)
-    
-    L = incomplete_cholesky_gaussian(Z, sigma, eta=0.1)["R"].T
-    a, J = score_matching_sym_low_rank(Z, sigma, lmbda, L,
-                                                          compute_objective=True)
-    
-    J2 = _objective_sym_low_rank(Z, sigma, lmbda, a, L)
-    assert_almost_equal(J, J2)
-
 
 def test_objective_sym_low_rank_optimum():
     sigma = 1.
@@ -293,12 +401,14 @@ def test_objective_sym_low_rank_optimum():
     Z = np.random.randn(100, 2)
     
     L = incomplete_cholesky_gaussian(Z, sigma, eta=0.1)["R"].T
-    _, J_opt = score_matching_sym_low_rank(Z, sigma, lmbda, L,
-                                                          compute_objective=True)
+    a = score_matching_sym_low_rank(Z, sigma, lmbda, L)
+    b = _compute_b_low_rank_sym(Z, L, sigma)
+    J_opt = _objective_sym_low_rank(Z, sigma, lmbda, a, L, b)
     
-    a = np.random.randn(len(Z))
-    J = _objective_sym_low_rank(Z, sigma, lmbda, a, L)
-    assert J >= J_opt
+    for _ in range(10):
+        a_random = np.random.randn(len(Z))
+        J = _objective_sym_low_rank(Z, sigma, lmbda, a_random, L)
+        assert J >= J_opt
 
 def test_objective_sym_low_rank_matches_full():
     sigma = 1.
@@ -314,13 +424,3 @@ def test_objective_sym_low_rank_matches_full():
     J_opt_chol = _objective_sym_low_rank(Z, sigma, lmbda, a_opt_chol, L)
     
     assert_almost_equal(J_opt, J_opt_chol, delta=2.)
-
-# def test_xvalidate_sigmas():
-#     lmbda = 1.
-#     Z = np.random.randn(100, 2)
-#     
-#     sigmas = np.ones(3)
-#     Js = xvalidate_sigmas(Z, sigmas, lmbda)
-#     
-#     assert len(Js) == len(sigmas)
-#     assert np.all(Js == Js[0])
