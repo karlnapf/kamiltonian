@@ -1,26 +1,60 @@
-from kmc.score_matching.gaussian_rkhs import xvalidate_sigmas,\
-    score_matching_sym
+from itertools import product
+from multiprocessing.pool import Pool
+
+from kmc.densities.gaussian import sample_gaussian
+from kmc.score_matching.gaussian_rkhs import xvalidate
+from kmc.score_matching.kernel.kernels import gaussian_kernel
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-if __name__ == "__main__":
-    sigma = 1.
-    lmbda = 1.
-    N = 1000
-    Z = np.random.randn(N, 2)
+def fun(sigma_lmbda, num_repetitions=1):
+    log2_sigma = sigma_lmbda[0]
+    log2_lmbda = sigma_lmbda[1]
     
-    num_folds = 10
-    num_repetitions = 30
-    sigmas = 2**np.linspace(-5, 15, 20)
-#     Js = xvalidate_sigmas(Z, sigmas, lmbda,
-#                           num_folds=num_folds, num_repetitions=num_repetitions)
+    sigma = 2**log2_sigma
+    lmbda = 2**log2_lmbda
+    K = gaussian_kernel(Z, sigma=sigma)
+    folds = [xvalidate(Z, num_folds, sigma, lmbda, K) for _ in range(num_repetitions)]
+    J = np.mean(folds)
+    J_std = np.std(folds)
+    print "fun: log2_sigma=%.2f, log_lmbda=%.2f, J(a)=%.2f" % (log2_sigma, log2_lmbda, J)
+    return J, J_std
 
-    Js = np.zeros(len(sigmas))
-    for i,sigma in enumerate(sigmas):
-        _, Js[i] = score_matching_sym(Z, sigma, lmbda,
-                                                  compute_objective=True)
+if __name__ == "__main__":
+    D = 2
     
-    plt.plot(np.log2(sigmas), Js)
+    # true target log density
+    Sigma = np.diag(np.linspace(0.01, 1, D))
+    Sigma[:2, :2] = np.array([[1, .95], [.95, 1]])
+    Sigma = np.eye(D)
+    L = np.linalg.cholesky(Sigma)
+
+    # estimate density in rkhs
+    N = 500
+    mu = np.zeros(D)
+    Z = sample_gaussian(N, mu, Sigma=L, is_cholesky=True)
     
+    num_folds = 5
+    resolution = 10
+    log2_sigmas = np.linspace(-10, 10, resolution)
+    log2_lambdas = np.linspace(-10, 10, resolution)
+     
+    Js = np.zeros((len(log2_sigmas), len(log2_lambdas)))
+    Js_std = np.zeros(Js.shape)
+    pool = Pool(2)
+    chunksize = 1
+    for ind, res in enumerate(pool.imap(fun, product(log2_sigmas, log2_lambdas)), chunksize):
+        Js.flat[ind - 1], Js_std.flat[ind - 1] = res
+     
+    im = plt.pcolor(log2_lambdas, log2_sigmas, Js)
+    plt.title(r"X-validated $J(\alpha)$")
+    plt.xlabel(r"$\log_2 \lambda$")
+    plt.ylabel(r"$\log_2 \sigma$")
+     
+    min_idx = np.unravel_index(Js.argmin(), Js.shape)
+    log2_sigma, log2_lmbda = log2_sigmas[min_idx[0]], log2_lambdas[min_idx[1]]
+    plt.plot([log2_lmbda], [log2_sigma], "m*", markersize=20)
+    plt.colorbar()
+    plt.tight_layout()
     plt.show()
