@@ -412,7 +412,11 @@ def xvalidate(Z, n_folds, sigma, lmbda, K):
         
         # evaluate *without* the lambda
         lmbda_equals_0 = 0.
-        Js[i] = _objective(Z[train], Z[test], sigma, lmbda_equals_0, a, K[train][:, test], b, C)
+        Js[i] = _objective(Z[train], Z[test], sigma, lmbda_equals_0, a,
+                           K=K[train][:, train],
+                           K_XY=K[train][:, test],
+                           b=b,
+                           C=C)
     
     return Js
 
