@@ -302,7 +302,7 @@ In terms of
 \begin_inset Formula 
 \begin{align*}
 b & =\sum_{\ell=1}^{D}\left(\frac{2}{\sigma}(K_{XY}t_{\ell}+D_{s_{\ell}}K_{XY}\mathbf{1}-2D_{x_{\ell}}K_{XY}y_{\ell})-K_{XY}\mathbf{1}\right)\in\mathbb{R}^{m}\\
-C & =\sum_{\ell=1}^{D}\left(D_{x_{\ell}}K_{XY}-K_{XY}D_{y_{\ell}}\right)^{T}\left(K_{XY}^{T}D_{x_{\ell}}-D_{y_{\ell}}K_{XY}^{T}\right)\in\mathbb{R}^{m\times m}.
+C & =\sum_{\ell=1}^{D}\left(D_{x_{\ell}}K_{XY}-K_{XY}D_{y_{\ell}}\right)\left(K_{XY}^{T}D_{x_{\ell}}-D_{y_{\ell}}K_{XY}^{T}\right)\in\mathbb{R}^{m\times m}.
 \end{align*}
 
 \end_inset
