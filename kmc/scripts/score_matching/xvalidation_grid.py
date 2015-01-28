@@ -31,24 +31,26 @@ if __name__ == "__main__":
     L = np.linalg.cholesky(Sigma)
 
     # estimate density in rkhs
-    N = 500
+    N = 200
     mu = np.zeros(D)
+    np.random.seed(0)
     Z = sample_gaussian(N, mu, Sigma=L, is_cholesky=True)
+#     print np.sum(Z) * np.std(Z) * np.sum(Z**2) * np.std(Z**2)
     
     num_folds = 5
     resolution = 10
-    log2_sigmas = np.linspace(-10, 10, resolution)
-    log2_lambdas = np.linspace(-10, 10, resolution)
+    log2_sigmas = np.linspace(-10, 25, resolution)
+    log2_lambdas = np.linspace(-35, 2, resolution)
      
     Js = np.zeros((len(log2_sigmas), len(log2_lambdas)))
     Js_std = np.zeros(Js.shape)
-    pool = Pool(2)
+    pool = Pool()
     chunksize = 1
     for ind, res in enumerate(pool.imap(fun, product(log2_sigmas, log2_lambdas)), chunksize):
         Js.flat[ind - 1], Js_std.flat[ind - 1] = res
-     
-    im = plt.pcolor(log2_lambdas, log2_sigmas, Js)
-    plt.title(r"X-validated $J(\alpha)$")
+    
+    im = plt.pcolor(log2_lambdas, log2_sigmas, np.log2(Js-Js.min() + 1))
+    plt.title(r"log of X-validated $J(\alpha)$")
     plt.xlabel(r"$\log_2 \lambda$")
     plt.ylabel(r"$\log_2 \sigma$")
      
