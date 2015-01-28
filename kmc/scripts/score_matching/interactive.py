@@ -97,7 +97,7 @@ def update_plot(val=None):
     
     ax.clear()
     ax.plot(Z[:, 0], Z[:, 1], 'bx')
-    plot_array(Xs, Ys, D, ax)
+    plot_array(Xs, Ys, D, ax, plot_contour=True)
     
         
     ax.set_title(description)
@@ -110,12 +110,12 @@ def plot_true():
     
     plt.figure(figsize=(12,4))
     plt.subplot(121)
-    plot_array(Xs, Ys, G)
+    plot_array(Xs, Ys, G, plot_contour=True)
     plt.plot(Z[:, 0], Z[:, 1], 'bx')
     plt.title("True log-pdf")
     
     plt.subplot(122)
-    plot_array(Xs, Ys, G_grad)
+    plot_array(Xs, Ys, G_grad, plot_contour=True)
     plt.plot(Z[:, 0], Z[:, 1], 'bx')
     plt.title("True gradient norm log-pdf")
 
