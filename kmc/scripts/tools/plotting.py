@@ -1,24 +1,31 @@
-from kameleon_mcmc.tools.Visualise import Visualise
-
 from kmc.hamiltonian.leapfrog import leapfrog, compute_hamiltonian
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_array(Xs, Ys, D):
+def plot_array(Xs, Ys, D, ax=None, plot_contour = False):
     """
     Plots a 2D array
     
     Xs - x values the density is evaluated at
     Ys - y values the density is evaluated at
     D - array to plot
+    ax - optional axes object to plot on, default is gca()
     """
-    im = plt.imshow(D, origin='lower')
+    
+    if ax is None:
+        ax = plt.gca()
+    
+    if plot_contour:
+        im = ax.contour(Xs, Ys, D)
+        plt.clabel(im, inline=1, fontsize=10)
+        
+    im = ax.imshow(D, origin='lower')
     im.set_extent([Xs.min(), Xs.max(), Ys.min(), Ys.max()])
     im.set_interpolation('nearest')
     im.set_cmap('gray')
-    plt.ylim([Ys.min(), Ys.max()])
-    plt.xlim([Xs.min(), Xs.max()])
+    ax.set_ylim([Ys.min(), Ys.max()])
+    ax.set_xlim([Xs.min(), Xs.max()])
     
 def evaluate_density_grid(Xs, Ys, log_pdf, exponentiate=False):
     D = np.zeros((len(Xs), len(Ys)))
