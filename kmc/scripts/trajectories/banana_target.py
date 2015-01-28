@@ -5,6 +5,7 @@ from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
 from kmc.score_matching.estimator import log_pdf_estimate, log_pdf_estimate_grad
 from kmc.score_matching.gaussian_rkhs import _compute_b_sym, _compute_C_sym, \
     score_matching_sym, _objective_sym, xvalidate
+from kmc.score_matching.gaussian_rkhs_xvalidation import select_sigma_grid
 from kmc.score_matching.kernel.kernels import gaussian_kernel, \
     gaussian_kernel_grad
 from kmc.scripts.tools.plotting import plot_kamiltonian_dnyamics
@@ -24,8 +25,8 @@ while True:
     N = 200
     mu = np.zeros(D)
     Z = sample_banana(N, D)
-    sigma = 5.
-    lmbda = 1000.
+    lmbda = 1.
+    sigma = select_sigma_grid(Z, lmbda=lmbda)
     
     K = gaussian_kernel(Z, sigma=sigma)
     b = _compute_b_sym(Z, K, sigma)

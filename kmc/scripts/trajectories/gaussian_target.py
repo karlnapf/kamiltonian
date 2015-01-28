@@ -7,11 +7,12 @@ from kmc.score_matching.kernel.kernels import gaussian_kernel, \
 from kmc.scripts.tools.plotting import plot_kamiltonian_dnyamics
 import matplotlib.pyplot as plt
 import numpy as np
+from kmc.score_matching.gaussian_rkhs_xvalidation import select_sigma_grid
 
 
 # if __name__ == "__main__":
 while True:
-    D = 10
+    D = 2
     
     # true target log density
     Sigma = np.diag(np.linspace(0.01, 1, D))
@@ -22,11 +23,11 @@ while True:
     logq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=False)
 
     # estimate density in rkhs
-    N = 1000
+    N = 200
     mu = np.zeros(D)
     Z = sample_gaussian(N, mu, Sigma=L, is_cholesky=True)
-    sigma = 10.
-    lmbda = 100
+    lmbda = 1.
+    sigma = select_sigma_grid(Z, lmbda=lmbda, plot_surface=True)
     
     K = gaussian_kernel(Z, sigma=sigma)
     b = _compute_b_sym(Z, K, sigma)
