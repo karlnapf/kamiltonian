@@ -1,5 +1,3 @@
-from kameleon_mcmc.tools.Visualise import Visualise
-
 from kmc.densities.banana import log_banana_pdf, sample_banana
 from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
 from kmc.score_matching.estimator import log_pdf_estimate, log_pdf_estimate_grad
