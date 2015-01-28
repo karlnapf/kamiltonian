@@ -190,7 +190,7 @@ def _apply_left_C_sym_low_rank(v, Z, L, lmbda):
         # add both terms times v to result
         result += x - y
     
-    if lmbda>0:
+    if lmbda > 0:
         # regularise with K=L_X.dot(L_X.T)
         result += lmbda * L.dot(L.T.dot(v))
         
@@ -246,7 +246,7 @@ def _apply_left_C_low_rank(v, X, Y, L_X, L_Y, lmbda):
         # add both terms times v to result
         result += x - y
      
-    if lmbda>0:
+    if lmbda > 0:
         # regularise with K=L_X.dot(L_X.T)
         result += lmbda * L_X.dot(L_X.T.dot(v))
     
@@ -398,25 +398,26 @@ def _objective_low_rank(X, Y, sigma, lmbda, alpha, L_X, L_Y, b=None):
     J = first + second
     return J
 
-def xvalidate(Z, n_folds, sigma, lmbda, K):
-    kf = KFold(len(Z), n_folds=n_folds, shuffle=True)
+def xvalidate(Z, n_folds, sigma, lmbda, K, num_repetitions=1):
+    Js = np.zeros((num_repetitions, n_folds))
     
-    Js = np.zeros(n_folds)
-    for i, (train, test) in enumerate(kf):
-        # train
-        a = score_matching_sym(Z[train], sigma, lmbda, K[train][:, train])
-        
-        # precompute test statistics
-        C = _compute_C(Z[train], Z[test], K[train][:, test], sigma)
-        b = _compute_b(Z[train], Z[test], K[train][:, test], sigma)
-        
-        # evaluate *without* the lambda
-        lmbda_equals_0 = 0.
-        Js[i] = _objective(Z[train], Z[test], sigma, lmbda_equals_0, a,
-                           K=K[train][:, train],
-                           K_XY=K[train][:, test],
-                           b=b,
-                           C=C)
+    for j in range(num_repetitions):
+        kf = KFold(len(Z), n_folds=n_folds, shuffle=True)
+        for i, (train, test) in enumerate(kf):
+            # train
+            a = score_matching_sym(Z[train], sigma, lmbda, K[train][:, train])
+            
+            # precompute test statistics
+            C = _compute_C(Z[train], Z[test], K[train][:, test], sigma)
+            b = _compute_b(Z[train], Z[test], K[train][:, test], sigma)
+            
+            # evaluate *without* the lambda
+            lmbda_equals_0 = 0.
+            Js[j, i] = _objective(Z[train], Z[test], sigma, lmbda_equals_0, a,
+                               K=K[train][:, train],
+                               K_XY=K[train][:, test],
+                               b=b,
+                               C=C)
     
-    return Js
+    return np.mean(Js, 0)
 
