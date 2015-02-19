@@ -4,53 +4,45 @@
 \begin_header
 \textclass article
 \begin_preamble
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%% ICML 2014 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Use the following line _only_ if you're still using LaTeX 2.09.
-%\documentstyle[icml2014,epsf,natbib]{article}
-% If you rely on Latex2e packages, like most moden people use this:
-
-%comment this out in lyx, as it defines document class internally
-%\documentclass{article}
-
-% use Times
-\usepackage{times}
-% For figures
-\usepackage{graphicx} % more modern
-%\usepackage{epsfig} % less modern
-\usepackage{subfigure} 
-
-% For citations
-\usepackage{natbib}
-
-% For algorithms
-\usepackage{algorithm}
-\usepackage{algorithmic}
-
-% As of 2011, we use the hyperref package to produce hyperlinks in the
-% resulting PDF.  If this breaks your system, please commend out the
-% following usepackage line and replace \usepackage{icml2014} with
-% \usepackage[nohyperref]{icml2014} above.
+\usepackage{nips14submit_e,times}
 \usepackage{hyperref}
-\usepackage{breakurl}
+\usepackage{url}
+%\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
 
-% Packages hyperref and algorithmic misbehave sometimes.  We can fix
-% this with the following command.
-%\newcommand{\theHalgorithm}{\arabic{algorithm}}
 
-% Employ the following version of the ``usepackage'' statement for
-% submitting the draft version of the paper for review.  This will set
-% the note in the first column to ``Under review.  Do not distribute.''
-%\usepackage{icml2014} 
-% Employ this version of the ``usepackage'' statement after the paper has
-% been accepted, when creating the final version.  This will set the
-% note in the first column to ``Proceedings of the...''
-\usepackage{icml2015}
-%\usepackage[accepted]{icml2014stylefiles/icml2014}
+\title{Kamiltonian Monte Carlo}
 
-\icmltitlerunning{Kamiltonian Monte Carlo}
+
+\author{
+Heiko Strathmann%\thanks{ Use footnote for providing further information about author (webpage, alternative address)---\emph{not} for acknowledging funding agencies.}
+\\
+Gatsby Unit\\
+University College London \\
+\texttt{heiko.strathmann@gmail.com} \\
+\And
+Dino Sejdinovoc \\
+Department of Statistics \\
+University of Oxford \\
+\texttt{dino.sejdinovic@gmail.com} \\
+\AND
+Arthur Gretton \\
+Gatsby Unit\\
+University College London \\
+\texttt{athur.gretton@gmail.com} 
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+%\nipsfinalcopy % Uncomment for camera-ready version
 \end_preamble
 \use_default_options false
 \begin_modules
@@ -91,8 +83,8 @@ theorems-std
 \use_package stackrel 1
 \use_package stmaryrd 1
 \use_package undertilde 1
-\cite_engine natbib
-\cite_engine_type authoryear
+\cite_engine basic
+\cite_engine_type default
 \biblio_style plainnat
 \use_bibtopic false
 \use_indices false
@@ -122,81 +114,6 @@ theorems-std
 \begin_body
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-twocolumn[
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-icmltitle{Kamiltonian Monte Carlo}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-icmlauthor{Heiko Strathmann}{heiko.strathmann@gmail.com}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-icmladdress{Gatsby Unit, CSML, University College London, UK}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-icmlauthor{Dino Sejdinovic}{dino.sejdinovic}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-icmladdress{Department of Statistics, University of Oxford, UK}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-icmlauthor{Arthur Gretton}{arthur.gretton@gmail.com}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-icmladdress{Gatsby Unit, CSML, University College London, UK}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-icmlkeywords{kernel methods, hamiltonian monte carlo, adaptive mcmc, pseudo-marg
-inal}
-\end_layout
-
-\begin_layout Plain Layout
-
-]
-\end_layout
-
-\end_inset
-
-
 \begin_inset FormulaMacro
 \newcommand{\diag}{\text{diag}}
 {\text{diag}}
@@ -205,9 +122,13 @@ inal}
 
 \end_layout
 
+\begin_layout Title
+Kamiltonian Monte Carlo
+\end_layout
+
 \begin_layout Abstract
-We propose an adaptive Kernel Hamiltonian Monte Carlo (K-HMC) algorithm
- to simulate from an arbritary target probability density.
+We propose an adaptive Kernel Hamiltonian Monte Carlo (KMC) algorithm to
+ simulate from an arbritary target probability density.
  Our sampler fills a gap: when the density is intractable, classic HMC methodolo
 gy 
 \emph on
@@ -226,7 +147,8 @@ smoothing the chain history, we directly model its
 \emph on
 global
 \emph default
- log-density as an RKHS function via score matching.
+ log-density as an RKHS function via fitting an approximate infinite exponential
+ family model.
  This is not only a more interpretable and well-posed problem, but it also
  provides a differentiable log-density approximation, which can directly
  be used to simulate trajectories from a Hamiltonian dynamical system.
@@ -245,19 +167,72 @@ Next steps (Heiko)
 \end_layout
 
 \begin_layout Itemize
+
+\strikeout on
 Proof read Gaussian kernel score matching
 \end_layout
 
 \begin_layout Itemize
+
+\strikeout on
 Implement carefully
 \end_layout
 
 \begin_layout Itemize
+
+\strikeout on
 Implement trajectories, possibly within a given framework
 \end_layout
 
 \begin_layout Itemize
+
+\strikeout on
 Create plots for illustration
+\end_layout
+
+\begin_layout Itemize
+Write framework to compute average acceptance probability of a trajectory
+\end_layout
+
+\begin_layout Itemize
+Write section on optimising 
+\begin_inset Formula $\lambda,\sigma$
+\end_inset
+
+ via x-validation or stochastic optimisation
+\end_layout
+
+\begin_layout Itemize
+find out whats next
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Open questions:
+\end_layout
+
+\begin_layout Itemize
+Is the value of the hamiltonian bounded?
+\end_layout
+
+\begin_layout Itemize
+Maximum distance of trajectory to Hamiltonian contour (2d plot), how does
+ it behave?
+\end_layout
+
+\begin_layout Itemize
+What do the tails of the desnity estimate do?
+\end_layout
+
+\begin_layout Itemize
+Convergence rates of estimator translated into 
+\emph on
+something
+\end_layout
+
+\begin_layout Itemize
+Multimodality smoothing might be nice as an extension
 \end_layout
 
 \begin_layout Section
@@ -266,6 +241,10 @@ Introduction
 
 \begin_layout Itemize
 Why MCMC
+\end_layout
+
+\begin_layout Itemize
+Intractable densities
 \end_layout
 
 \begin_layout Itemize
@@ -373,6 +352,26 @@ History subsample
  
 \end_layout
 
+\begin_layout Standard
+HMC:
+\end_layout
+
+\begin_layout Itemize
+Number of leapfrog steps, 
+\begin_inset Formula $L$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Step size 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Problem setting
 \end_layout
@@ -388,8 +387,15 @@ Previous work
 \begin_layout Standard
 Write about Adaptive MCMC, 
 \begin_inset CommandInset citation
-LatexCommand citet
-key "Andrieu2008,Haario1999"
+LatexCommand cite
+key "Haario1999"
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Andrieu2008"
 
 \end_inset
 
@@ -404,8 +410,15 @@ key "sejdinovic_kernel_2014"
  Mention downsides and what we would like to have.
  In particular the pseudo-marginal case, 
 \begin_inset CommandInset citation
-LatexCommand citet
-key "beaumont2003estimation,Andrieu2009a"
+LatexCommand cite
+key "beaumont2003estimation"
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Andrieu2009a"
 
 \end_inset
 
@@ -998,6 +1011,134 @@ High dimensional banana, projected to 2D
 Comparison of HMC and KHMC trajectories
 \end_layout
 
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/banana_trajectories_hmc.eps
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/banana_trajectories_kmc.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/banana_trajectories_momentum_hmc.eps
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/banana_trajectories_momentum_kmc.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/banana_trajectories_hamiltonian_hmc.eps
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/banana_trajectories_hamiltonian_kmc.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Hamiltonian trajectories on 2-dimensional Banana target with a standard
+ Gaussian momentum.
+ Starting (red stars) at 
+\begin_inset Formula $q_{0}=(0,-3)^{\top}$
+\end_inset
+
+, we randomly sample momentum 
+\begin_inset Formula $p_{0}\approx(-0.33,-0.27)$
+\end_inset
+
+ and simulate for 
+\begin_inset Formula $L=300$
+\end_inset
+
+ leap-frog steps of size 
+\begin_inset Formula $\epsilon=0.1$
+\end_inset
+
+.
+ The resulting 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+ (blue stars) is the proposal of HMC-like algorithms.
+ The values of the Hamiltonians (
+\series bold
+bottom
+\series default
+) are shifted to a comparable level.
+ 
+\series bold
+Left:
+\series default
+ Plain Hamiltonian trajectories.
+ 
+\series bold
+Right:
+\series default
+ Kernel induced trajectories on an empirical energy function estimated from
+ 
+\begin_inset Formula $N=200$
+\end_inset
+
+ samples (blue points) with 
+\begin_inset Formula $\lambda=1$
+\end_inset
+
+ and a Gaussian kernel with 
+\begin_inset Formula $\sigma=50$
+\end_inset
+
+.
+ The trajectories explore the target density in a similar way as plain HMC.
+ Values of the Hamiltonian oscilate more.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Geometry extension (TODO)
 \end_layout
@@ -1337,7 +1478,7 @@ Conclusions
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 bibfiles "local"
-options "icml2015"
+options "unsrt"
 
 \end_inset
 
