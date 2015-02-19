@@ -47,8 +47,8 @@ def evaluate_density_grad_grid(Xs, Ys, grad):
 
 def plot_2d_trajectory(X):
     plt.plot(X[:, 0], X[:, 1], 'r-')
-    plt.plot(X[0, 0], X[0, 1], 'r*', markersize=15)
-    plt.plot(X[-1, 0], X[-1, 1], 'b*', markersize=15)
+    plt.plot(X[0, 0], X[0, 1], 'r*', markersize=5)
+    plt.plot(X[-1, 0], X[-1, 1], 'b*', markersize=5)
 
 def plot_kamiltonian_dnyamics(q0, p0, logq, dlogq, logq_est, dlogq_est,
                               logp, dlogp, Z=None, num_steps=500, step_size=.1,
