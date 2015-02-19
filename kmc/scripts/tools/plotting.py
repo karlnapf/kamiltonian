@@ -1,9 +1,12 @@
-from kmc.hamiltonian.leapfrog import leapfrog, compute_hamiltonian
+from kmc.hamiltonian.hamiltonian import compute_hamiltonian,\
+    compute_log_accept_pr, compute_log_det_trajectory
+from kmc.hamiltonian.leapfrog import leapfrog
+from kmc.tools.numerics import log_mean_exp
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_array(Xs, Ys, D, ax=None, plot_contour = False):
+def plot_array(Xs, Ys, D, ax=None, plot_contour=False):
     """
     Plots a 2D array
     
@@ -53,7 +56,7 @@ def plot_2d_trajectory(X):
 def plot_kamiltonian_dnyamics(q0, p0, logq, dlogq, logq_est, dlogq_est,
                               logp, dlogp, Z=None, num_steps=500, step_size=.1,
                               Xs_q=None, Ys_q=None, Xs_p=None, Ys_p=None,
-                              plot_dlogq=False):
+                              plot_dlogq=False, plot_H_or_acc=True):
     D = len(q0)
     
     # compute and plot log-density, if D==2
@@ -104,7 +107,19 @@ def plot_kamiltonian_dnyamics(q0, p0, logq, dlogq, logq_est, dlogq_est,
     Qs, Ps = leapfrog(q0, dlogq, p0, dlogp, step_size, num_steps)
     Qs_est, Ps_est = leapfrog(q0, dlogq_est, p0, dlogp, step_size, num_steps)
     Hs = compute_hamiltonian(Qs, Ps, logq, logp)
-    Hs_est = compute_hamiltonian(Qs_est, Ps_est, logq_est, logp)
+    Hs_est = compute_hamiltonian(Qs_est, Ps_est, logq, logp)
+    
+    log_acc = compute_log_accept_pr(q0, p0, Qs, Ps, logq, logp)
+    log_acc_est = compute_log_accept_pr(q0, p0, Qs_est, Ps_est, logq, logp)
+    acc_mean = np.exp(log_mean_exp(log_acc))
+    acc_est_mean = np.exp(log_mean_exp(log_acc_est))
+    print "HMC acceptance prob: %.2f" % acc_mean
+    print "KMC acceptance prob: %.2f" % acc_est_mean
+
+    spread = compute_log_det_trajectory(Qs, Ps)
+    spread_est = compute_log_det_trajectory(Qs_est, Ps_est)
+    print "HMC spread: %.2f" % (spread)
+    print "KMC spread: %.2f" % (spread_est)
     
     plt.subplot(321)
     plot_2d_trajectory(Qs)
@@ -120,13 +135,33 @@ def plot_kamiltonian_dnyamics(q0, p0, logq, dlogq, logq_est, dlogq_est,
     plt.title("Momentum")
     plot_2d_trajectory(Ps_est)
     
-    plt.subplot(325)
-    plt.title("Hamiltonian")
-    plt.plot(Hs)
-    
-    plt.subplot(326)
-    plt.title("Hamiltonian")
-    plt.plot(Hs_est)
-    
+    if plot_H_or_acc:
+        ylim = [np.min([Hs.min(), Hs_est.min()]),
+                np.max([Hs.max(), Hs_est.max()])]
+            
+        plt.subplot(325)
+        plt.title("Hamiltonian")
+        plt.plot(Hs)
+        plt.ylim(ylim)
+        plt.gca().get_yaxis().get_major_formatter().set_useOffset(False)
+        
+        plt.subplot(326)
+        plt.title("Hamiltonian")
+        plt.plot(Hs_est)
+        plt.ylim(ylim)
+        plt.gca().get_yaxis().get_major_formatter().set_useOffset(False)
+    else:
+        plt.subplot(325)
+        plt.title("Acceptance prob.")
+        plt.plot(np.exp(log_acc))
+        plt.plot([0,len(log_acc)], [acc_mean, acc_mean], "r")
+        plt.gca().get_yaxis().get_major_formatter().set_useOffset(False)
+        
+        plt.subplot(326)
+        plt.title("Acceptance prob.")
+        plt.plot(np.exp(log_acc_est))
+        plt.plot([0,len(log_acc_est)], [acc_est_mean, acc_est_mean], "r")
+        plt.gca().get_yaxis().get_major_formatter().set_useOffset(False)
+        
     plt.tight_layout()
     

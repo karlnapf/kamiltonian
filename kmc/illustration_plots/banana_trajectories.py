@@ -2,7 +2,8 @@ import os
 
 from kmc.densities.banana import log_banana_pdf, sample_banana
 from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
-from kmc.hamiltonian.leapfrog import leapfrog, compute_hamiltonian
+from kmc.hamiltonian.hamiltonian import compute_hamiltonian
+from kmc.hamiltonian.leapfrog import leapfrog
 from kmc.score_matching.estimator import log_pdf_estimate, log_pdf_estimate_grad
 from kmc.score_matching.gaussian_rkhs import _compute_b_sym, _compute_C_sym, \
     score_matching_sym, _objective_sym, xvalidate

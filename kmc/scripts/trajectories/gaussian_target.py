@@ -12,7 +12,7 @@ from kmc.score_matching.gaussian_rkhs_xvalidation import select_sigma_grid
 
 # if __name__ == "__main__":
 while True:
-    D = 2
+    D = 10
     
     # true target log density
     Sigma = np.diag(np.linspace(0.01, 1, D))
@@ -27,7 +27,7 @@ while True:
     mu = np.zeros(D)
     Z = sample_gaussian(N, mu, Sigma=L, is_cholesky=True)
     lmbda = 1.
-    sigma = select_sigma_grid(Z, lmbda=lmbda, plot_surface=True)
+    sigma = select_sigma_grid(Z, lmbda=lmbda, plot_surface=False)
     
     K = gaussian_kernel(Z, sigma=sigma)
     b = _compute_b_sym(Z, K, sigma)

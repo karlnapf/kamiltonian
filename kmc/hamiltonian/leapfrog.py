@@ -1,9 +1,5 @@
 import numpy as np
 
-def compute_hamiltonian(Qs, Ps, logq, logp):
-    assert len(Ps) == len(Qs)
-    return np.asarray([-logq(Qs[i]) - logp(Ps[i]) for i in range(len(Qs))])
-
 def leapfrog(q, dlogq, p, dlogp, step_size=0.3, num_steps=1):
     # for storing trajectory
     Ps = np.zeros((num_steps + 1, len(p)))
