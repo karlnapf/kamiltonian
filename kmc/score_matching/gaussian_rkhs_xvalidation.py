@@ -1,7 +1,9 @@
 from kmc.score_matching.gaussian_rkhs import xvalidate
 from kmc.score_matching.kernel.kernels import gaussian_kernel
-import numpy as np
+from kmc.tools.Log import logger
 import matplotlib.pyplot as plt
+import numpy as np
+
 
 def select_sigma_grid(Z, num_folds=5, num_repetitions=1,
                         log2_sigma_min=-3, log2_sigma_max=10, resolution_sigma=25,
@@ -11,10 +13,10 @@ def select_sigma_grid(Z, num_folds=5, num_repetitions=1,
 
     Js = np.zeros(len(sigmas))
     for i, sigma in enumerate(sigmas):
-#             print "sigma: %.2f, lambda: %.2f" % (sigma, lmbda)
-            K = gaussian_kernel(Z, sigma=sigma)
-            folds = xvalidate(Z, num_folds, sigma, lmbda, K)
-            Js[i] = np.mean(folds)
+        logger.info("sigma: %.2f, lambda: %.2f" % (sigma, lmbda))
+        K = gaussian_kernel(Z, sigma=sigma)
+        folds = xvalidate(Z, num_folds, sigma, lmbda, K)
+        Js[i] = np.mean(folds)
     
     if plot_surface:
         plt.figure()
@@ -40,9 +42,7 @@ def select_sigma_lambda_cma(Z, num_folds=5, num_repetitions=1,
             sigma = 2 ** log2_sigma
             lmbda = 2 ** log2_lmbda
             
-#             print "sigma: %.2f, lambda: %.2f" % (sigma, lmbda)
-            
-#             print "log2_sigma: %.2f, log2_lmbda: %.2f" % (log2_sigma, log2_lmbda) 
+            logger.info("sigma: %.2f, lambda: %.2f" % (sigma, lmbda))
             K = gaussian_kernel(Z, sigma=sigma)
             folds = xvalidate(Z, num_folds, sigma, lmbda, K)
             values[i] = np.mean(folds)
