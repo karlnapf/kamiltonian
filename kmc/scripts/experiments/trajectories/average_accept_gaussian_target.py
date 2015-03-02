@@ -1,4 +1,5 @@
 import os
+import time
 
 from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
 from independent_jobs.engines.SerialComputationEngine import SerialComputationEngine
@@ -41,6 +42,7 @@ def compute(Ds, num_repetitions, N, lmbda, num_steps, step_size):
                         (D, Ds.max(), j+1, num_repetitions))
             job = GaussianTrajectoryJob(N, mu, L, lmbda, L_p, num_steps, step_size)
             aggregators[j] += [engine.submit_job(job)]
+            time.sleep(0.1)
     
     engine.wait_for_all()
     
