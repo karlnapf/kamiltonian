@@ -30,17 +30,13 @@ def compute(Ds, num_repetitions, N, lmbda, num_steps, step_size):
     
     aggregators = [[] for _ in range(num_repetitions)]
     for i, D in enumerate(Ds):
-        Sigma = np.eye(D)
-        L = np.linalg.cholesky(Sigma)
-        mu = np.zeros(D)
-        
-        Sigma_p = np.eye(D)
-        L_p = np.linalg.cholesky(Sigma_p)
+        sigma_q = 1.
+        sigma_p = 1.
         
         for j in range(num_repetitions):
             logger.info("Gaussian trajectory, D=%d/%d, repetition %d/%d" %\
                         (D, Ds.max(), j+1, num_repetitions))
-            job = GaussianTrajectoryJob(N, mu, L, lmbda, L_p, num_steps, step_size)
+            job = GaussianTrajectoryJob(N, D, sigma_q, lmbda, sigma_p, num_steps, step_size)
             aggregators[j] += [engine.submit_job(job)]
             time.sleep(0.1)
     

@@ -19,39 +19,41 @@ import numpy as np
 
 class GaussianTrajectoryJob(IndependentJob):
     def __init__(self,
-                 N, mu, L, lmbda,
-                 L_p,
+                 N, D, sigma_q, lmbda,
+                 sigma_p,
                  num_steps, step_size):
         IndependentJob.__init__(self, TrajectoryJobResultAggregator())
         
         self.N = N
-        self.mu = mu
-        self.L = L
+        self.D = D
+        self.sigma_q = sigma_q
         self.lmbda = lmbda
-        self.L_p = L_p
+        self.sigma_p = sigma_p
         self.num_steps = num_steps
         self.step_size = step_size
 
     def compute(self):
         logger.debug("Entering")
         
+        L = np.linalg.cholesky(np.eye(self.D) * self.sigma_q)
+        L_p = np.linalg.cholesky(np.eye(self.D) * self.sigma_p)
+        
         # momentum
-        D = self.L.shape[0]
-        self.logp = lambda x: log_gaussian_pdf(x, Sigma=self.L_p, compute_grad=False, is_cholesky=True)
-        self.dlogp = lambda x: log_gaussian_pdf(x, Sigma=self.L_p, compute_grad=True, is_cholesky=True)
+        self.logp = lambda x: log_gaussian_pdf(x, Sigma=L_p, compute_grad=False, is_cholesky=True)
+        self.dlogp = lambda x: log_gaussian_pdf(x, Sigma=L_p, compute_grad=True, is_cholesky=True)
         
         # target density
-        self.dlogq = lambda x: log_gaussian_pdf(x, Sigma=self.L, is_cholesky=True, compute_grad=True)
-        self.logq = lambda x: log_gaussian_pdf(x, Sigma=self.L, is_cholesky=True, compute_grad=False)
+        self.dlogq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=True)
+        self.logq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=False)
     
         # starting state
-        self.q_sample = lambda: sample_gaussian(N=1, mu=np.zeros(D), Sigma=self.L, is_cholesky=True)[0]
-        self.p_sample = lambda: sample_gaussian(N=1, mu=np.zeros(D), Sigma=self.L_p, is_cholesky=True)[0]
+        self.q_sample = lambda: sample_gaussian(N=1, mu=np.zeros(self.D), Sigma=L, is_cholesky=True)[0]
+        self.p_sample = lambda: sample_gaussian(N=1, mu=np.zeros(self.D), Sigma=L_p, is_cholesky=True)[0]
         
-        logger.info("N=%d, D=%d" % (self.N, D))
+        logger.info("N=%d, D=%d" % (self.N, self.D))
         
         logger.info("Estimate density in RKHS")
-        Z = sample_gaussian(self.N, self.mu, Sigma=self.L, is_cholesky=True)
+        Z = sample_gaussian(self.N, mu=np.zeros(self.D), Sigma=L, is_cholesky=True)
         sigma = select_sigma_grid(Z, lmbda=self.lmbda, log2_sigma_max=15)
         
         K = gaussian_kernel(Z, sigma=sigma)
