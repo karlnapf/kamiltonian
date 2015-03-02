@@ -6,7 +6,7 @@ from kmc.hamiltonian.hamiltonian import compute_log_accept_pr, \
 from kmc.hamiltonian.leapfrog import leapfrog
 from kmc.score_matching.estimator import log_pdf_estimate_grad
 from kmc.score_matching.gaussian_rkhs import _compute_b_sym, _compute_C_sym, \
-    score_matching_sym, _objective_sym, xvalidate
+    score_matching_sym
 from kmc.score_matching.gaussian_rkhs_xvalidation import select_sigma_grid
 from kmc.score_matching.kernel.kernels import gaussian_kernel, \
     gaussian_kernel_grad
@@ -51,19 +51,25 @@ class GaussianTrajectoryJob(IndependentJob):
         self.p_sample = lambda: sample_gaussian(N=1, mu=np.zeros(self.D), Sigma=L_p, is_cholesky=True)[0]
         
         logger.info("N=%d, D=%d" % (self.N, self.D))
+        Z = sample_gaussian(self.N, mu=np.zeros(self.D), Sigma=L, is_cholesky=True)
+        
+        logger.info("Learning kernel bandwidth")
+        sigma = select_sigma_grid(Z, lmbda=self.lmbda, log2_sigma_max=15)
+        logger.info("Using lmbda=%.2f, sigma: %.2f" % (self.lmbda,sigma))
+        
+        logger.info("Computing kernel matrix")
+        K = gaussian_kernel(Z, sigma=sigma)
         
         logger.info("Estimate density in RKHS")
-        Z = sample_gaussian(self.N, mu=np.zeros(self.D), Sigma=L, is_cholesky=True)
-        sigma = select_sigma_grid(Z, lmbda=self.lmbda, log2_sigma_max=15)
-        
-        K = gaussian_kernel(Z, sigma=sigma)
         b = _compute_b_sym(Z, K, sigma)
         C = _compute_C_sym(Z, K, sigma)
         a = score_matching_sym(Z, sigma, self.lmbda, K, b, C)
-        J = _objective_sym(Z, sigma, self.lmbda, a, K, b, C)
-        J_xval = np.mean(xvalidate(Z, 5, sigma, self.lmbda, K))
-        logger.info("N=%d, sigma: %.2f, lambda: %.2f, J(a)=%.2f, XJ(a)=%.2f" % \
-                (self.N, sigma, self.lmbda, J, J_xval))
+        
+#         logger.info("Computing objective function")
+#         J = _objective_sym(Z, sigma, self.lmbda, a, K, b, C)
+#         J_xval = np.mean(xvalidate(Z, 5, sigma, self.lmbda, K))
+#         logger.info("N=%d, sigma: %.2f, lambda: %.2f, J(a)=%.2f, XJ(a)=%.2f" % \
+#                 (self.N, sigma, self.lmbda, J, J_xval))
         
         kernel_grad = lambda x, X = None: gaussian_kernel_grad(x, X, sigma)
         dlogq_est = lambda x: log_pdf_estimate_grad(x, a, Z, kernel_grad)
