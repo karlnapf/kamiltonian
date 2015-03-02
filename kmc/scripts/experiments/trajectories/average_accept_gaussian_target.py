@@ -15,7 +15,7 @@ modulename = __file__.split(os.sep)[-1].split('.')[-2]
 
 
 def compute(Ds, num_repetitions, N, lmbda, num_steps, step_size):
-    if not FileSystem.cmd_exists("sbatch") or True:
+    if not FileSystem.cmd_exists("sbatch"):
         engine = SerialComputationEngine()
         
     else:
