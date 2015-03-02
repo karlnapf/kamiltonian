@@ -12,7 +12,7 @@ from kmc.score_matching.gaussian_rkhs_xvalidation import select_sigma_grid
 
 # if __name__ == "__main__":
 while True:
-    D = 10
+    D = 20
     
     # true target log density
     Sigma = np.diag(np.linspace(0.01, 1, D))
@@ -56,10 +56,19 @@ while True:
     q0[:2] = np.array([-1, -1])
     
     # parameters
-    num_steps = 500
+    num_steps = 1500
     step_size = .1
+    
+    Xs_q = np.linspace(-20, 20)
+    Ys_q = np.linspace(-10, 10)
+    Xs_p = np.linspace(-1, 1)
+    Ys_p = np.linspace(-1, 1)
 
-    plot_kamiltonian_dnyamics(q0, p0, logq, dlogq, logq_est, dlogq_est, logp, dlogp,
-                              Z, num_steps, step_size)
+    plot_grad_target = False
+    plot_kamiltonian_dnyamics(q0, p0,
+                              logq, dlogq, logq_est, dlogq_est, logp, dlogp, Z,
+                              num_steps, step_size,
+                              Xs_q, Ys_q, Xs_p, Ys_p, plot_dlogq=plot_grad_target,
+                              plot_H_or_acc=False)
     plt.suptitle(r"Score match, $J(\alpha)=%.2f$, $\lambda=%.2f$, $\sigma=%.2f$" % (J, lmbda, sigma))
     plt.show()
