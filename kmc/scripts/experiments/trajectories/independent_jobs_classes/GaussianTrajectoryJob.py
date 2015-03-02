@@ -78,17 +78,20 @@ class GaussianTrajectoryJob(IndependentJob):
         Qs, Ps = leapfrog(q0, self.dlogq, p0, self.dlogp, self.step_size, self.num_steps)
         Qs_est, Ps_est = leapfrog(q0, dlogq_est, p0, self.dlogp, self.step_size, self.num_steps)
         
-        logger.debug("Computing average acceptance probabilities")
+        logger.info("Computing average acceptance probabilities")
         log_acc = compute_log_accept_pr(q0, p0, Qs, Ps, self.logq, self.logp)
         log_acc_est = compute_log_accept_pr(q0, p0, Qs_est, Ps_est, self.logq, self.logp)
         acc_mean = np.exp(log_mean_exp(log_acc))
         acc_est_mean = np.exp(log_mean_exp(log_acc_est))
         
-        logger.debug("Computing average volumes")
+        logger.info("Computing average volumes")
         log_det = compute_log_det_trajectory(Qs, Ps)
         log_det_est = compute_log_det_trajectory(Qs_est, Ps_est)
         
-        logger.debug("Submitting results to aggregator")
+        logger.info("Average acceptance prob: %.2f, %.2f" % (acc_mean, acc_est_mean))
+        logger.info("Log-determinant: %.2f, %.2f" % (log_det, log_det_est))
+        
+        logger.info("Submitting results to aggregator")
         result = TrajectoryJobResult(acc_mean, acc_est_mean, log_det, log_det_est)
         self.aggregator.submit_result(result)
         
