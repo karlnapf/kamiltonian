@@ -13,6 +13,7 @@ def compute_log_accept_pr(q0, p0, Qs, Ps, logq, logp):
 
 def compute_log_det_trajectory(Qs, Ps):
     joint = np.hstack((Qs, Ps))
-    Sigma = np.cov(joint.T)
+    Sigma = np.cov(joint.T) 
+    Sigma +=np.eye(Sigma.shape[0])*1e-5
     L = np.linalg.cholesky(Sigma)
     return 2 * np.sum(np.log(np.diag(L)))
