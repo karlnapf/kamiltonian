@@ -48,7 +48,9 @@ class GaussianTrajectoryJob(IndependentJob):
         self.q_sample = lambda: sample_gaussian(N=1, mu=np.zeros(D), Sigma=self.L, is_cholesky=True)[0]
         self.p_sample = lambda: sample_gaussian(N=1, mu=np.zeros(D), Sigma=self.L_p, is_cholesky=True)[0]
         
-        logger.debug("Estimate density in RKHS")
+        logger.info("N=%d, D=%d" % (self.N, D))
+        
+        logger.info("Estimate density in RKHS")
         Z = sample_gaussian(self.N, self.mu, Sigma=self.L, is_cholesky=True)
         sigma = select_sigma_grid(Z, lmbda=self.lmbda, log2_sigma_max=15)
         
@@ -58,14 +60,14 @@ class GaussianTrajectoryJob(IndependentJob):
         a = score_matching_sym(Z, sigma, self.lmbda, K, b, C)
         J = _objective_sym(Z, sigma, self.lmbda, a, K, b, C)
         J_xval = np.mean(xvalidate(Z, 5, sigma, self.lmbda, K))
-        print("N=%d, sigma: %.2f, lambda: %.2f, J(a)=%.2f, XJ(a)=%.2f" % \
+        logger.info("N=%d, sigma: %.2f, lambda: %.2f, J(a)=%.2f, XJ(a)=%.2f" % \
                 (self.N, sigma, self.lmbda, J, J_xval))
         
         kernel_grad = lambda x, X = None: gaussian_kernel_grad(x, X, sigma)
         dlogq_est = lambda x: log_pdf_estimate_grad(x, a, Z, kernel_grad)
         
         
-        logger.debug("Simulating trajectory for L=%d steps of size %.2f" % \
+        logger.info("Simulating trajectory for L=%d steps of size %.2f" % \
                      (self.num_steps, self.step_size))
         # starting state
         p0 = self.p_sample()
