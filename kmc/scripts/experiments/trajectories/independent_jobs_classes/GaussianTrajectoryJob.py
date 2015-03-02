@@ -1,14 +1,14 @@
 from independent_jobs.jobs.IndependentJob import IndependentJob
 
 from kmc.densities.gaussian import sample_gaussian, log_gaussian_pdf
-from kmc.hamiltonian.hamiltonian import compute_log_accept_pr,\
+from kmc.hamiltonian.hamiltonian import compute_log_accept_pr, \
     compute_log_det_trajectory
 from kmc.hamiltonian.leapfrog import leapfrog
 from kmc.score_matching.estimator import log_pdf_estimate_grad
-from kmc.score_matching.gaussian_rkhs import _compute_b_sym, _compute_C_sym,\
+from kmc.score_matching.gaussian_rkhs import _compute_b_sym, _compute_C_sym, \
     score_matching_sym, _objective_sym, xvalidate
 from kmc.score_matching.gaussian_rkhs_xvalidation import select_sigma_grid
-from kmc.score_matching.kernel.kernels import gaussian_kernel,\
+from kmc.score_matching.kernel.kernels import gaussian_kernel, \
     gaussian_kernel_grad
 from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResult import TrajectoryJobResult
 from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResultAggregator import TrajectoryJobResultAggregator
@@ -31,22 +31,22 @@ class GaussianTrajectoryJob(IndependentJob):
         self.L_p = L_p
         self.num_steps = num_steps
         self.step_size = step_size
-        
-        # momentum
-        D = L.shape[0]
-        self.logp = lambda x: log_gaussian_pdf(x, Sigma=L_p, compute_grad=False, is_cholesky=True)
-        self.dlogp = lambda x: log_gaussian_pdf(x, Sigma=L_p, compute_grad=True, is_cholesky=True)
-        
-        # target density
-        self.dlogq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=True)
-        self.logq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=False)
-    
-        # starting state
-        self.q_sample = lambda: sample_gaussian(N=1, mu=np.zeros(D), Sigma=L, is_cholesky=True)[0]
-        self.p_sample = lambda: sample_gaussian(N=1, mu=np.zeros(D), Sigma=L_p, is_cholesky=True)[0]
-    
+
     def compute(self):
         logger.debug("Entering")
+        
+        # momentum
+        D = self.L.shape[0]
+        self.logp = lambda x: log_gaussian_pdf(x, Sigma=self.L_p, compute_grad=False, is_cholesky=True)
+        self.dlogp = lambda x: log_gaussian_pdf(x, Sigma=self.L_p, compute_grad=True, is_cholesky=True)
+        
+        # target density
+        self.dlogq = lambda x: log_gaussian_pdf(x, Sigma=self.L, is_cholesky=True, compute_grad=True)
+        self.logq = lambda x: log_gaussian_pdf(x, Sigma=self.L, is_cholesky=True, compute_grad=False)
+    
+        # starting state
+        self.q_sample = lambda: sample_gaussian(N=1, mu=np.zeros(D), Sigma=self.L, is_cholesky=True)[0]
+        self.p_sample = lambda: sample_gaussian(N=1, mu=np.zeros(D), Sigma=self.L_p, is_cholesky=True)[0]
         
         logger.debug("Estimate density in RKHS")
         Z = sample_gaussian(self.N, self.mu, Sigma=self.L, is_cholesky=True)
