@@ -191,7 +191,14 @@ Create plots for illustration
 \end_layout
 
 \begin_layout Itemize
+
+\strikeout on
 Write framework to compute average acceptance probability of a trajectory
+\end_layout
+
+\begin_layout Itemize
+Write section that empirically analyses approximate trajectories on Gaussians
+ and Banana in terms of dimension
 \end_layout
 
 \begin_layout Itemize
@@ -203,7 +210,95 @@ Write section on optimising
 \end_layout
 
 \begin_layout Itemize
+Adapt notation and keywords from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Betancourt2015"
+
+\end_inset
+
+: Hamiltonian flow, level set
+\end_layout
+
+\begin_layout Itemize
 find out whats next
+\end_layout
+
+\begin_layout Paragraph*
+Experiments to do
+\end_layout
+
+\begin_layout Itemize
+Write framework for doing trajectory comparisons on cluster
+\end_layout
+
+\begin_layout Itemize
+Set up NUTS sampler for using pymc for kamiltonian and hamiltonian
+\end_layout
+
+\begin_layout Itemize
+Set up sampling on cluster
+\end_layout
+
+\begin_layout Itemize
+Create surface plots for the x-validation of 
+\begin_inset Formula $\lambda,\sigma$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Trajectory experiment on Gaussian.
+ To illustrate that it maintains acceptance prob in high dimensions
+\end_layout
+
+\begin_layout Enumerate
+Increase 
+\begin_inset Formula $d$
+\end_inset
+
+ for a fixed number of data.
+ Should at some point fall apart
+\end_layout
+
+\begin_layout Enumerate
+Increase number of data to show that 
+\begin_inset Quotes eld
+\end_inset
+
+falling apart
+\begin_inset Quotes erd
+\end_inset
+
+ happens later.
+\end_layout
+
+\begin_layout Enumerate
+Translate to a guideline how many samples one needs to achieve similar performan
+ce in high dimensions (exponential?)
+\end_layout
+
+\begin_layout Enumerate
+Use low-rank Cholesky to exlore limitations of scaling (appendix: compare
+ low-rank with exact)
+\end_layout
+
+\begin_layout Enumerate
+Sanity check: is covered volume roughly equal?
+\end_layout
+
+\begin_layout Standard
+Quantiles on Banana.
+ To illustrate that it continues to explore tails in high dimensions
+\end_layout
+
+\begin_layout Enumerate
+Same as above, but with MCMC and NUTS
+\end_layout
+
+\begin_layout Standard
+Need something on burnin time.
 \end_layout
 
 \begin_layout Standard
@@ -213,7 +308,15 @@ Open questions:
 \end_layout
 
 \begin_layout Itemize
-Is the value of the hamiltonian bounded?
+Is the value of the approximate hamiltonian bounded?
+\end_layout
+
+\begin_layout Itemize
+Is the distance of the approximate hamiltonian and the true hamiltonian
+ bounded? Sam mentioned that for leapfrog, the distance between true level
+ set and discretised version is bounded.
+ See Geometric Numerical Integration by Hairer and Lubich and reference
+ is Neal's chapter 5
 \end_layout
 
 \begin_layout Itemize
@@ -226,9 +329,8 @@ What do the tails of the desnity estimate do?
 \end_layout
 
 \begin_layout Itemize
-Convergence rates of estimator translated into 
-\emph on
-something
+Convergence rates of estimator translated into guarantees of the markov
+ chain?
 \end_layout
 
 \begin_layout Itemize
@@ -562,9 +664,8 @@ Starting from
 \end_layout
 
 \begin_layout Enumerate
-In order to correct for discretisaKamiltonian Monte Carlotion errors arising
- from numerical simulation, accept this proposal according to its new value
- of 
+In order to correct for discretisation errors arising from numerical simulation,
+ accept this proposal according to its new value of 
 \begin_inset Formula $H(p^{*},q^{*})$
 \end_inset
 
@@ -1133,6 +1234,84 @@ Right:
 \begin_layout Plain Layout
 
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Approximate Hamiltonian flow
+\end_layout
+
+\begin_layout Standard
+We now examine how well trajectories along the level set of the approximate
+ Hamiltonian are aligned with their true counterparts.
+ This is essential for performance within an MCMC algorithm as deviations
+ from the true Hamiltonian level set result in decreasing acceptance probability.
+ We begin with a simple toy example of a Hamiltonian defined by standard
+ Gaussian momentum 
+\begin_inset Formula $K(p)=\log{\cal N}(\mathbf{0},I)$
+\end_inset
+
+, and a standard Gaussian target density, i.e.
+ 
+\begin_inset Formula $U(q)=\log{\cal N}(\mathbf{0},I)$
+\end_inset
+
+.
+ We use an approximate density 
+\begin_inset Formula $\tilde{U}(q)$
+\end_inset
+
+ obtained via the above approximate infinite exponential family model, fitted
+ on 
+\begin_inset Formula $n=500$
+\end_inset
+
+ points.
+ Starting from a random sample from both 
+\begin_inset Formula $K(p)$
+\end_inset
+
+ and 
+\begin_inset Formula $U(q)$
+\end_inset
+
+, we simulate trajectories on both exact and approximate Hamiltonian 
+\begin_inset Formula $H(p,q)$
+\end_inset
+
+ and 
+\begin_inset Formula $\tilde{H}(p,q,)$
+\end_inset
+
+ respectively.
+ We use 
+\begin_inset Formula $L=1000$
+\end_inset
+
+ leapfrog step of size 
+\begin_inset Formula $\epsilon=0.1$
+\end_inset
+
+.
+ This procecure gives an average acceptance probability that quantifies
+ how well the leap-frog integration along 
+\begin_inset Formula $H(p,q)$
+\end_inset
+
+ and 
+\begin_inset Formula $\tilde{H}(p,q,)$
+\end_inset
+
+ aligns with the true level set.
+ We plot this probability as a function of dimension in the same spirit
+ as 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Figure 3"
+key "Betancourt2015"
 
 \end_inset
 
