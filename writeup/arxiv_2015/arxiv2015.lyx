@@ -1714,11 +1714,11 @@ We now illustrate how well trajectories along the level set of the kernel
 \begin_inset Formula $H(p,q)=K(p)+U(q)$
 \end_inset
 
- defined by standard Gaussian momentum 
+ defined by standard Gaussian both momentum 
 \begin_inset Formula $K(p)=-\frac{1}{2}p^{T}p$
 \end_inset
 
-, and a standard Gaussian target density, i.e.
+ target density, i.e.
  
 \begin_inset Formula $U(q)=\frac{1}{2}q^{T}q$
 \end_inset
@@ -1894,10 +1894,10 @@ name "fig:kmc_trajectories"
 
 \end_inset
 
-Hamiltonian trajectories on 2-dimensional standard Gaussian target with
- a standard Gaussian momentum.
+Hamiltonian trajectories on 2-dimensional standard Gaussian both target
+ and momentum.
  Starting (red stars) at 
-\begin_inset Formula $q_{0}=(0,-3)^{\top}$
+\begin_inset Formula $q_{0}=(0,-3)^{T}$
 \end_inset
 
 , we randomly sample momentum and simulate for 
