@@ -1827,8 +1827,23 @@ cheat
  via oscilating in small areas of the space, we also report the volume of
  the trajectories, obtained via computing the log-determinant of a covariance
  matrix fitted to all points.
- for a single trajectory and TODO for a plot of average aceptance probability
- as a function of the dimension.
+ See Figure 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "fig:kmc_trajectories"
+
+\end_inset
+
+ for a single trajectory and a plot of average aceptance probability as
+ a function of the dimension.
+ See Figure 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "fig:kmc_trajectories_mean_acceptance"
+
+\end_inset
+
+ for a plot of the mean acceptance rate as a function of dimension.
 \end_layout
 
 \begin_layout Subsection
@@ -1942,7 +1957,7 @@ Hamiltonian trajectories on 2-dimensional standard Gaussian both target
 Left:
 \series default
  Plain Hamiltonian trajectories oscilate on a stable orbit.
- Acceptance prbability according to  
+ Acceptance prbability according to 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:kmc_accept_prob"
@@ -1967,7 +1982,7 @@ Right:
 \end_inset
 
 .
- Acceptance prbability according to  
+ Acceptance prbability according to 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:kmc_accept_prob"
@@ -1978,6 +1993,61 @@ reference "eq:kmc_accept_prob"
  The trajectories slightly drift compared to the true Hamiltonian flow.
  Acceptance probability oscilates in a larger interval and its average is
  lower.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/gaussian_trajectories_mean_acceptance.eps
+	scale 40
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/gaussian_trajectories_mean_acceptance.eps
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:kmc_trajectories_mean_acceptance"
+
+\end_inset
+
+TODO: Not yet done properly.
+ Behaviour in high dimensions.
+ 
+\series bold
+Left:
+\series default
+ Mean acceptance rate.
+ 
+\series bold
+Right:
+\series default
+ Volume of trajectory
 \end_layout
 
 \end_inset
