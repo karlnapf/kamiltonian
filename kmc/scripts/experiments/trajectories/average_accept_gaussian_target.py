@@ -49,7 +49,11 @@ def compute(Ds, num_repetitions, N, lmbda, num_steps, step_size):
     
     for j in range(len(aggregators)):
         for i in range(len(aggregators[j])):
-            result = aggregators[j][i].result
+            agg = aggregators[j][i]
+            agg.finalize()
+            result = agg.get_final_result()
+            agg.clean_up()
+            
             avg_accept[j, i] = result.acc_mean
             avg_accept_est[j, i] = result.acc_est_mean
             log_dets[j,i] = result.vol
