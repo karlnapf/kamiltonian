@@ -1800,8 +1800,16 @@ reference "fig:kmc_trajectories"
 \end_inset
 
  for an example trajectory.
- Average acceptance probabilities allows to quantidy how well the leap-frog
- integration of the level sets align with the true level set.
+ For plain HMC, the average acceptance probability quantifies how well the
+ leap-frog integration of the level sets align with the true level set --
+ and is usually large.
+ For kernel induced Hamiltonian dynamics, the mean acceptance probability
+ quantifies both the integration error 
+\emph on
+and
+\emph default
+ how well the kernel induced Hamiltonian flow matches the true Hamiltonian
+ flow -- where we are interested in the latter.
  We plot this probability as a function of dimension in the same spirit
  as 
 \begin_inset CommandInset citation
@@ -1830,20 +1838,20 @@ cheat
  See Figure 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "fig:kmc_trajectories"
-
-\end_inset
-
- for a single trajectory and a plot of average aceptance probability as
- a function of the dimension.
- See Figure 
-\begin_inset CommandInset ref
-LatexCommand eqref
 reference "fig:kmc_trajectories_mean_acceptance"
 
 \end_inset
 
- for a plot of the mean acceptance rate as a function of dimension.
+ for a plot of the mean acceptance rate and trajectory volume as a function
+ in dimension of 
+\begin_inset Formula $p$
+\end_inset
+
+ and 
+\begin_inset Formula $q$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -1991,8 +1999,10 @@ reference "eq:kmc_accept_prob"
 
 .
  The trajectories slightly drift compared to the true Hamiltonian flow.
- Acceptance probability oscilates in a larger interval and its average is
- lower.
+ The acceptance probability oscilates in a larger interval and its average
+ is slightly lower.
+ Quantification of this difference is crucial for kernel induced Hamiltonian
+ dynamics being useful in practice.
 \end_layout
 
 \end_inset
