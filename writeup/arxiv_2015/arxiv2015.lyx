@@ -617,7 +617,7 @@ Hamiltonian flow
 \begin_inset Formula 
 \begin{align*}
 \phi_{t}^{H}:(p,q) & \mapsto(p^{*},q^{*}),\forall t\in\mathbb{R}\\
-\phi_{t}^{H}\circ\phi_{s}^{H} & =\phi_{t+t}^{H}
+\phi_{t}^{H}\circ\phi_{s}^{H} & =\phi_{s+t}^{H}
 \end{align*}
 
 \end_inset
@@ -636,7 +636,7 @@ The flow preserves the joint distribution, i.e.
  
 \begin_inset Formula 
 \[
-\phi_{t}^{H}\exp\left(H(p,q)\right)=\exp\left(H(\phi_{t}^{H}(p,q)\right)
+\exp\left(-H(p,q)\right)=\exp\left(-H(\phi_{t}^{H}(p,q)\right)
 \]
 
 \end_inset
@@ -658,7 +658,11 @@ re-sample the axuiliary momentum
 \end_layout
 
 \begin_layout Enumerate
-apply the Hamiltonian flow, which gives 
+apply the Hamiltonian flow for time 
+\begin_inset Formula $t$
+\end_inset
+
+, which gives 
 \begin_inset Formula $(p^{*},q^{*})=\phi_{t}^{H}(p',q$
 \end_inset
 
@@ -1408,7 +1412,7 @@ key "SriFukKumGreHyv14"
 .
  In order to save computation, we project the original solution onto the
  (growing) span of 
-\begin_inset Formula $\left\{ k(x_{i},\cdot)\right\} _{i=1}^{n}$
+\begin_inset Formula $\left\{ k(z_{i},\cdot)\right\} _{i=1}^{n}$
 \end_inset
 
 
@@ -1422,10 +1426,10 @@ Note that other (growing) basis sets might equally be used
 \end_inset
 
 , where 
-\begin_inset Formula $\left\{ x_{i}\right\} _{i=1}^{n}$
+\begin_inset Formula $\left\{ z_{i}\right\} _{i=1}^{n}$
 \end_inset
 
- is the history of the Markov chain.
+ are points from the history of the Markov chain (details in the next section).
  Consequently, this approximate solution can be written as 
 \begin_inset Formula $\sum_{i=1}^{m}\alpha_{i}k(x_{i},\cdot)$
 \end_inset
@@ -1678,20 +1682,24 @@ reference "eq:leap_frog_flow"
 .
  We therefore need to controll the approximation quality of the kernel induced
  potential energy to maintain good performance in practice.
- At this point, it is unclear, whether and how bounds on estimating infinite
- exponential family models, 
+ At this point, it is unclear, whether and how finite sample rates for estimatin
+g infinite exponential family models, 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
 
 \end_inset
 
-, can be utilised to bound the difference in acceptance probabilities 
-\begin_inset Formula $\vert\alpha(\phi_{\epsilon,\tau}^{\tilde{H}_{k}}(p',q))-\alpha(\phi_{\epsilon,\tau}^{\tilde{H}}(p',q))\vert$
+, can be translated to (bound?) the difference in acceptance probabilities
+ 
+\begin_inset Formula 
+\[
+\vert\alpha(\phi_{\epsilon,\tau}^{\tilde{H}_{k}}(p',q))-\alpha(\phi_{\epsilon,\tau}^{\tilde{H}}(p',q))\vert
+\]
+
 \end_inset
 
-.
- Further complication comes from the approximation to the solution of the
+Further complication comes from the approximation to the solution of the
  density estimator described in section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1700,7 +1708,24 @@ reference "sub:exp_family_lite"
 \end_inset
 
 .
- We provide a thorough experimental study in the experiments.
+ Consistency here is does not really help as gradient subsamples in the
+ sense of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ChenICML2014"
+
+\end_inset
+
+ are consistent but are shown to exhibit catastrophic performance as demonstrate
+d in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Betancourt2015"
+
+\end_inset
+
+.
+ However, we provide a thorough experimental study in the experiments.
 \end_layout
 
 \begin_layout Paragraph
@@ -1983,12 +2008,129 @@ What about the Kameleon proposal as a Hessian estimate? Formal relationship?
 Kamiltonian Monte Carlo
 \end_layout
 
+\begin_layout Standard
+We now describe how to utilise the described kernel induced Hamiltonian
+ flow in order to construct a gradient free, adaptive kernel Hamiltonian
+ Monte Carlo algorithm.
+ We first cover necessary details on adaptive MCMC, then introduce the Kamiltoni
+an Monte Carlo algorithm and describe its properties.
+\end_layout
+
 \begin_layout Subsection
-Proposal construction
+Constructing an adaptive MCMC proposal
 \end_layout
 
 \begin_layout Standard
-Describe in words and then give algorithm
+It is well known that construction of MCMC algorithms that utilise the history
+ of the Markov chain for constructing proposals yields asymptotic bias.
+ We follow 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, who adapted the idea of 
+\begin_inset Quotes eld
+\end_inset
+
+vanishing adaptation
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Andrieu2008"
+
+\end_inset
+
+, to avoid such biases.
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+\end_inset
+
+ be the history of the Markov chain at iteration 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ To guarantee convergence to the correct stationary distirbution, we introduce
+ adaptation probabilities 
+\begin_inset Formula $\left\{ p_{t}\right\} _{i=0}^{\infty}$
+\end_inset
+
+ such that 
+\begin_inset Formula 
+\[
+\lim_{t\to\infty}p_{t}=0\quad\text{and}\quad\sum_{t=0}^{\infty}=\infty.
+\]
+
+\end_inset
+
+Using 
+\begin_inset Formula $\mathbf{z}_{0}=\emptyset$
+\end_inset
+
+, at iteration 
+\begin_inset Formula $t$
+\end_inset
+
+, we update the current 
+\begin_inset Quotes eld
+\end_inset
+
+state
+\begin_inset Quotes erd
+\end_inset
+
+ of the history of the Markov chain by setting 
+\begin_inset Formula 
+\begin{equation}
+\mathbf{z}_{t}=\begin{cases}
+\left\{ x_{i}\right\} _{i=0}^{t-1} & \text{with probability }p_{t}\\
+\mathbf{z}_{t-1} & \text{otherwise}
+\end{cases}\label{eq:proposal_update}
+\end{equation}
+
+\end_inset
+
+and construct our kernel induced Hamiltonian flow based proposal with 
+\begin_inset Formula $\mathbf{z}_{t}$
+\end_inset
+
+.
+ Intuitively, the probability for updating the chain history to the latest
+ state gets arbritarily small, while the scheme never stops updating 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Theorem 1"
+key "RobertsRosenthal2007"
+
+\end_inset
+
+ guarantees that the resulting Markov kernel is ergodic and converges to
+ the correct target.
+\end_layout
+
+\begin_layout Standard
+We now have everything needed to construct a valid MCMC algorithm.
+ Algorithm 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "alg:Kamiltonian-Monte-Carlo"
+
+\end_inset
+
+ summarises the Kamiltonian Monte Carlo algorithm.
 \end_layout
 
 \begin_layout Standard
@@ -2000,7 +2142,13 @@ status open
 \begin_layout Plain Layout
 
 \series bold
-Kamiltonian Monte Carlo (TODO)
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Kamiltonian-Monte-Carlo"
+
+\end_inset
+
+Kamiltonian Monte Carlo
 \end_layout
 
 \begin_layout Plain Layout
@@ -2037,27 +2185,22 @@ At iteration
 
 \begin_deeper
 \begin_layout Enumerate
-Obtain a random subsample 
-\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+Update state of the chain history 
+\begin_inset Formula $\mathbf{z}_{t}$
 \end_inset
 
- of the chain history 
-\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+, using 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:proposal_update"
+
 \end_inset
 
-,
+
 \end_layout
 
 \begin_layout Enumerate
-Sample proposed point 
-\begin_inset Formula $x^{*}$
-\end_inset
-
- from 
-\begin_inset Formula $q_{\mathbf{z}}(\cdot|x_{t})=\mathcal{N}(x_{t},\gamma^{2}I+\nu^{2}M_{\mathbf{z},x_{t}}HM_{\mathbf{z},x_{t}}^{\top})$
-\end_inset
-
-, 
+Fit infinite exponential familty desnity estimator, 
 \end_layout
 
 \begin_layout Enumerate
