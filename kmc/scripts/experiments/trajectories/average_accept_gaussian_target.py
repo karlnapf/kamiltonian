@@ -78,7 +78,7 @@ if __name__ == "__main__":
         do_compute = True
     
     if do_compute:
-        Ds = 2 ** np.arange(0, 15)
+        Ds = 2 ** np.arange(12)
         num_repetitions = 100
         N = 500
         lmbda = 1.
