@@ -86,5 +86,8 @@ if __name__ == "__main__":
         step_size = .1
         compute(Ds, num_repetitions, N, lmbda, num_steps, step_size)
     
-    plot_trajectory_result(fname)
+    try:
+        plot_trajectory_result(fname)
+    except Exception:
+        pass
     
