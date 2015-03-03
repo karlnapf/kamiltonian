@@ -78,11 +78,11 @@ if __name__ == "__main__":
         do_compute = True
     
     if do_compute:
-        Ds = 2 ** np.arange(0, 10)
-        num_repetitions = 20
+        Ds = 2 ** np.arange(0, 15)
+        num_repetitions = 100
         N = 500
         lmbda = 1.
-        num_steps = 1000
+        num_steps =  1000
         step_size = .1
         compute(Ds, num_repetitions, N, lmbda, num_steps, step_size)
     
