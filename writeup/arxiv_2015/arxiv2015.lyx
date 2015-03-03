@@ -2018,7 +2018,7 @@ status open
 
 
 \begin_inset Graphics
-	filename figures/gaussian_trajectories_mean_acceptance.eps
+	filename figures/gaussian_trajectories_volume.eps
 	scale 40
 
 \end_inset
@@ -2037,17 +2037,20 @@ name "fig:kmc_trajectories_mean_acceptance"
 \end_inset
 
 TODO: Not yet done properly.
+ X axis is dimension.
  Behaviour in high dimensions.
  
 \series bold
 Left:
 \series default
  Mean acceptance rate.
+ Unstable (large error bars) but the mean behaves really well.
  
 \series bold
 Right:
 \series default
- Volume of trajectory
+ Volume of trajectory (log-determinant of covariance of descretised trajectory
+ -- as long as blue and red match, all is good).
 \end_layout
 
 \end_inset
