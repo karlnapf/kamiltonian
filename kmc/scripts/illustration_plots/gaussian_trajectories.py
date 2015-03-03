@@ -1,6 +1,5 @@
 import os
 
-from kmc.densities.banana import log_banana_pdf, sample_banana
 from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
 from kmc.hamiltonian.hamiltonian import compute_hamiltonian, \
     compute_log_accept_pr
@@ -8,7 +7,6 @@ from kmc.hamiltonian.leapfrog import leapfrog
 from kmc.score_matching.estimator import log_pdf_estimate, log_pdf_estimate_grad
 from kmc.score_matching.gaussian_rkhs import _compute_b_sym, _compute_C_sym, \
     score_matching_sym
-from kmc.score_matching.gaussian_rkhs_xvalidation import select_sigma_grid
 from kmc.score_matching.kernel.kernels import gaussian_kernel, \
     gaussian_kernel_grad
 from kmc.scripts.tools.plotting import evaluate_density_grid, plot_array, \
@@ -167,6 +165,7 @@ if __name__ == "__main__":
     plt.plot([0, len(log_acc)], [acc_mean, acc_mean], "r")
     plt.ylim(ylim)
     plt.xlim([0, num_steps])
+    plt.grid(True)
     plt.xlabel("Iteration")
     plt.ylabel("Acc. prob.")
     plt.savefig(fname_base + "_acceptance_hmc.eps", axis_inches="tight")
@@ -177,6 +176,7 @@ if __name__ == "__main__":
     plt.plot([0, len(log_acc_est)], [acc_est_mean, acc_est_mean], "r")
     plt.ylim(ylim)
     plt.xlim([0, num_steps])
+    plt.grid(True)
     plt.xlabel("Iteration")
     plt.savefig(fname_base + "_acceptance_kmc.eps", axis_inches="tight")
     
