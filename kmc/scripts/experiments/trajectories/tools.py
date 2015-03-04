@@ -30,9 +30,9 @@ def compute(fname_base, job_generator, Ds, num_repetitions, N, lmbda, num_steps,
         
         # hack that distributes jobs across different queues
         if D > 200:
-            engine.max_walltime = 24 * 60 * 60
+            engine.batch_parameters.max_walltime = 24 * 60 * 60
         else:
-            engine.max_walltime = 60 * 60
+            engine.batch_parameters.max_walltime = 60 * 60
             
         for j in range(num_repetitions):
             logger.info("%s trajectory, D=%d/%d, repetition %d/%d" % \
