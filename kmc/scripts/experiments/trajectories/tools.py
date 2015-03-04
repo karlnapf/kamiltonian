@@ -28,6 +28,12 @@ def compute(fname_base, job_generator, Ds, num_repetitions, N, lmbda, num_steps,
     aggregators = [[] for _ in range(num_repetitions)]
     for i, D in enumerate(Ds):
         
+        # hack that distributes jobs across different queues
+        if D > 200:
+            engine.max_walltime = 24 * 60 * 60
+        else:
+            engine.max_walltime = 60 * 60
+            
         for j in range(num_repetitions):
             logger.info("%s trajectory, D=%d/%d, repetition %d/%d" % \
                         (str(job_generator), D, Ds.max(), j + 1, num_repetitions))
