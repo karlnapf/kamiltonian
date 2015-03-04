@@ -1033,6 +1033,184 @@ We now describe a technique to obtain a kernel induced potential energy
  using score matching.
 \end_layout
 
+\begin_layout Section
+Kernel Hamiltonian dynamics
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:kernel_hmc"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recall our aim is to replace the potential energy operator 
+\begin_inset Formula $\hat{U}$
+\end_inset
+
+ in  
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:potential_energy_operator"
+
+\end_inset
+
+ by a kernel induced surraget that is tractable and does not require gradients
+ of the log-target.
+ To that end, we fit an infinite exponential family model,
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+, of the form
+\begin_inset Formula 
+\begin{equation}
+\exp\left(\langle f,k(x,\cdot)\rangle_{{\cal H}}-A(f)\right).\label{eq:infinite_exp_family}
+\end{equation}
+
+\end_inset
+
+Here, 
+\begin_inset Formula ${\cal H}$
+\end_inset
+
+ is a reproducing kernel Hilbert space (RKHS) of real valued functions on
+ 
+\begin_inset Formula ${\cal X}$
+\end_inset
+
+.
+ It has a uniquely associated symmetric, positive definite function (
+\emph on
+kernel
+\emph default
+) 
+\begin_inset Formula $k:{\cal X}\times{\cal X}\rightarrow\mathbb{R}$
+\end_inset
+
+, which satisfies 
+\begin_inset Formula $f(x)=\langle f,k(x,\cdot)\rangle$
+\end_inset
+
+ for any 
+\begin_inset Formula $f\in{\cal H}$
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "BerTho04"
+
+\end_inset
+
+.
+ The cannonical feature map 
+\begin_inset Formula $\varphi\in{\cal H}$
+\end_inset
+
+ defined as 
+\begin_inset Formula $\varphi:\mathcal{X}\to\mathcal{H},\varphi:x\mapsto k(\cdot,x)$
+\end_inset
+
+ here takes the role of the 
+\emph on
+sufficient statistics
+\emph default
+ and 
+\begin_inset Formula $f\in{\cal H}$
+\end_inset
+
+ are the 
+\emph on
+natural parameters
+\emph default
+.
+ 
+\begin_inset Formula $A(f):=\log\int_{{\cal X}}\exp(\langle f,k(x,\cdot)\rangle_{{\cal H}})dx$
+\end_inset
+
+ is the cimulant generating function.
+  
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ defines a very rich class of probability distributions and a broad class
+ of denisties (for example continuous densities defined on compact domains)
+ can be approximated arbritarily well.
+ It was shown in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+ that, under mild conditions, it is possible to consistently fit an 
+\emph on
+unnormalised
+\emph default
+ version of  
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ using score matching, and convergences rates in Kullback-Leibler divergence,
+ Hellinger and total-variation distances were established.
+ Furthermore, experimental results suggest good performance in high dimensions,
+ as for example opposed to kernel density estimation.
+\end_layout
+
+\begin_layout Standard
+The proposed empirical estimator in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+ requires to invert an 
+\begin_inset Formula $(n\times d)^{2}$
+\end_inset
+
+ matrix, where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of 
+\begin_inset Formula $d$
+\end_inset
+
+-dimensional data, resulting in computational costs of 
+\begin_inset Formula ${\cal O}(n^{6}d^{6})$
+\end_inset
+
+.
+ As we are eventually interested in constructing an adaptive MCMC sampler
+ that uses the (increasingly long) history of the Markov chain to guide
+ proposals, a cost scaling as a sixth order polynomial is infeasible.
+ We therefore now develop a pragmatic approximation that involves inverting
+ an 
+\begin_inset Formula $n$
+\end_inset
+
+-dimensional matrix, which scales as 
+\begin_inset Formula ${\cal O}(n^{3})$
+\end_inset
+
+.
+ To that end, we first give a brief review of score matching.
+\end_layout
+
 \begin_layout Subsection
 Score Matching
 \end_layout
@@ -1220,181 +1398,11 @@ Replacing the integral
 \end_layout
 
 \begin_layout Standard
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:kernel_hmc"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We next combine score matching with Hamiltonian dynamics.
-\end_layout
-
-\begin_layout Section
-Kernel Hamiltonian dynamics
-\end_layout
-
-\begin_layout Standard
-Recall our aim is to replace the potential energy operator 
-\begin_inset Formula $\hat{U}$
-\end_inset
-
- in  
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:potential_energy_operator"
-
-\end_inset
-
- by a kernel induced surraget that is tractable and does not require gradients
- of the log-target.
- To that end, we fit an infinite exponential family model,
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SriFukKumGreHyv14"
-
-\end_inset
-
-, of the form
-\begin_inset Formula 
-\begin{equation}
-\exp\left(\langle f,k(x,\cdot)\rangle_{{\cal H}}-A(f)\right).\label{eq:infinite_exp_family}
-\end{equation}
-
-\end_inset
-
-Here, 
-\begin_inset Formula ${\cal H}$
-\end_inset
-
- is a reproducing kernel Hilbert space (RKHS) of real valued functions on
- 
-\begin_inset Formula ${\cal X}$
-\end_inset
-
-.
- It has a uniquely associated symmetric, positive definite function (
-\emph on
-kernel
-\emph default
-) 
-\begin_inset Formula $k:{\cal X}\times{\cal X}\rightarrow\mathbb{R}$
-\end_inset
-
-, which satisfies 
-\begin_inset Formula $f(x)=\langle f,k(x,\cdot)\rangle$
-\end_inset
-
- for any 
-\begin_inset Formula $f\in{\cal H}$
-\end_inset
-
-, 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "BerTho04"
-
-\end_inset
-
-.
- The cannonical feature map 
-\begin_inset Formula $\varphi\in{\cal H}$
-\end_inset
-
- defined as 
-\begin_inset Formula $\varphi:\mathcal{X}\to\mathcal{H},\varphi:x\mapsto k(\cdot,x)$
-\end_inset
-
- here takes the role of the 
-\emph on
-sufficient statistics
-\emph default
- and 
-\begin_inset Formula $f\in{\cal H}$
-\end_inset
-
- are the 
-\emph on
-natural parameters
-\emph default
-.
- 
-\begin_inset Formula $A(f):=\log\int_{{\cal X}}\exp(\langle f,k(x,\cdot)\rangle_{{\cal H}})dx$
-\end_inset
-
- is the cimulant generating function.
-  
+We next combine score matching with an approximation to 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
 
-\end_inset
-
- defines a very rich class of probability distributions and a broad class
- of denisties (for example continuous densities defined on compact domains)
- can be approximated arbritarily well.
- It was shown in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SriFukKumGreHyv14"
-
-\end_inset
-
- that, under mild conditions, it is possible to consistently fit an 
-\emph on
-unnormalised
-\emph default
- version of  
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
- using score matching, and convergences rates in Kullback-Leibler divergence,
- Hellinger and total-variation distances were established.
- Furthermore, experimental results suggest good performance in high dimensions,
- as for example opposed to kernel density estimation.
-\end_layout
-
-\begin_layout Standard
-The proposed empirical estimator in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SriFukKumGreHyv14"
-
-\end_inset
-
- requires to invert an 
-\begin_inset Formula $(n\times d)^{2}$
-\end_inset
-
- matrix, where 
-\begin_inset Formula $n$
-\end_inset
-
- is the number of 
-\begin_inset Formula $d$
-\end_inset
-
--dimensional data, resulting in computational costs of 
-\begin_inset Formula ${\cal O}(n^{6}d^{6})$
-\end_inset
-
-.
- As we are eventually interested in constructing an adaptive MCMC sampler
- that uses the (increasingly long) history of the Markov chain to guide
- proposals, a cost scaling as a sixth order polynomial is infeasible.
- We therefore now develop a pragmatic approximation that involves inverting
- an 
-\begin_inset Formula $n$
-\end_inset
-
--dimensional matrix, which scales as 
-\begin_inset Formula ${\cal O}(n^{3})$
 \end_inset
 
 .
@@ -1609,8 +1617,12 @@ Kernel induced Hamiltonian flow
 \end_layout
 
 \begin_layout Standard
-We now define an kernel Hamiltonian flow using the infinite exponential
- family density estimator.
+We now combine the (approximate) infinite exponential family estimator with
+ Hamiltonian dynamics to define a 
+\emph on
+kernel induced Hamiltonian flow
+\emph default
+.
  More precisely, we define a kernel induced Hamiltonian operator 
 \begin_inset Formula $\hat{H}_{k}=\hat{K}+\hat{U}_{k}$
 \end_inset
@@ -1635,9 +1647,18 @@ reference "eq:potential_energy_operator"
 \end_inset
 
 with 
-\begin_inset Formula $U_{k}=\log q(\xi;\alpha).$
+\begin_inset Formula $\nabla U_{k}=\nabla\log q(\xi;\alpha)$
 \end_inset
 
+ being the gradient of the fitted infinite exponential family model from
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:density_estimate_gradient"
+
+\end_inset
+
+.
  Using the described numerical leap-frog integration, the approximate kernel
  induced Hamiltonian flow then follows similar to  
 \begin_inset CommandInset ref
