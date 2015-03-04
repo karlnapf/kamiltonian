@@ -1803,7 +1803,7 @@ reference "fig:kmc_trajectories"
  For plain HMC, the average acceptance probability quantifies how well the
  leap-frog integration of the level sets align with the true level set --
  and is usually large.
- For kernel induced Hamiltonian dynamics, the mean acceptance probability
+ For kernel induced Hamiltonian dynamics, the average acceptance probability
  quantifies both the integration error 
 \emph on
 and
@@ -1834,17 +1834,17 @@ key "Betancourt2015"
 \end_inset
 
 .
- Boxplots are obtained over 
+ Error bars are obtained over 
 \begin_inset Formula $100$
 \end_inset
 
  trials in each of which we fit the infinite exponential family estimator
- on randomly sampled data.
- We run at a random number of leapfrog steps in 
+ on randomly sampled data and then run a random number of leapfrog steps
+ in 
 \begin_inset Formula $[100,1000]$
 \end_inset
 
-.
+ on both true and kernel induced flow.
  The plot shows that while the spread of the acceptance rate gets worse
  in high dimensions, most of the time, it is close to the true Hamiltonian
  ground truth.
@@ -2046,13 +2046,11 @@ name "fig:kmc_trajectories_mean_acceptance"
 \end_inset
 
 Behaviour of kernel induced Hamiltonian flow in high dimensions.
- We show boxplots of the distribution of the average acceptance probability
- along a simulated trajectory.
- Red points correspond to acceptance probability along the true Hamiltonian
- flow (neglectible variance).
- While worst-case acceptance probability suffers in high dimensions, the
- mean and median acceptance probability is remarkably high and close to
- the true Hamiltonian ground truth.
+ We show quantiles of the distribution of the average acceptance probability
+ along a simulated trajectory (true Hamiltonian flow has neglectible variance).
+ While worst-case acceptance probability of the kernel induced flow suffers
+ in high dimensions, the median acceptance probability is remarkably high
+ and close to the true Hamiltonian ground truth.
 \end_layout
 
 \end_inset

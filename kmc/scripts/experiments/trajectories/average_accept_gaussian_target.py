@@ -8,8 +8,9 @@ from independent_jobs.tools.FileSystem import FileSystem
 
 from big_mcmc.tools.Log import logger
 from kmc.scripts.experiments.trajectories.independent_jobs_classes.GaussianTrajectoryJob import GaussianTrajectoryJob
+from kmc.scripts.experiments.trajectories.plots import plot_trajectory_result_boxplot_mix,\
+    plot_trajectory_result_mean_median
 import numpy as np
-from kmc.scripts.experiments.trajectories.plots import plot_trajectory_result_boxplot_mix
 
 
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
@@ -90,9 +91,9 @@ if __name__ == "__main__":
         compute(Ds, num_repetitions, N, lmbda, num_steps, step_size, max_steps)
     
     try:
-#         plot_trajectory_result_mean_median(fname)
+        plot_trajectory_result_mean_median(fname)
 #         plot_trajectory_result_boxplot(fname)
-        plot_trajectory_result_boxplot_mix(fname)
+#         plot_trajectory_result_boxplot_mix(fname)
     except Exception:
         pass
     
