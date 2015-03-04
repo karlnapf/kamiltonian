@@ -1624,7 +1624,7 @@ reference "eq:leap_frog_flow"
 
 It is clear that the kernel induced potential energy operator 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:kernel_potential_energy_operator"
 
 \end_inset
@@ -1660,16 +1660,16 @@ true
 
 \end_inset
 
-Consequently, any deviations of 
+Consequently, any deviations of the level sets induced by 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:kernel_leap_frog_flow"
 
 \end_inset
 
- from 
+ from those induced by 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:leap_frog_flow"
 
 \end_inset
@@ -1702,7 +1702,7 @@ key "SriFukKumGreHyv14"
 Further complication comes from the approximation to the solution of the
  density estimator described in section 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "sub:exp_family_lite"
 
 \end_inset
@@ -1725,11 +1725,21 @@ key "Betancourt2015"
 \end_inset
 
 .
- However, we provide a thorough experimental study in the experiments.
+ However, we provide a thorough numerical study in the experiments.
 \end_layout
 
 \begin_layout Paragraph
 An illustrative example
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "par:illustrative_example"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1810,55 +1820,7 @@ and
 \emph default
  how well the kernel induced Hamiltonian flow matches the true Hamiltonian
  flow -- where we are interested in the latter.
- Figure 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "fig:kmc_trajectories_mean_acceptance"
-
-\end_inset
-
- shows this probability as a function of dimension of 
-\begin_inset Formula $p$
-\end_inset
-
- and 
-\begin_inset Formula $q$
-\end_inset
-
- in the same spirit as 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Figure 3"
-key "Betancourt2015"
-
-\end_inset
-
-.
- Error bars are obtained over 
-\begin_inset Formula $100$
-\end_inset
-
- trials in each of which we fit the infinite exponential family estimator
- on randomly sampled data and then run a random number of leapfrog steps
- in 
-\begin_inset Formula $[100,1000]$
-\end_inset
-
- on both true and kernel induced flow.
- The plot shows that while the spread of the acceptance rate gets worse
- in high dimensions, most of the time, it is close to the true Hamiltonian
- ground truth.
- Note that in order to ensure that the kernel induced Hamiltonian flow cannot
  
-\begin_inset Quotes eld
-\end_inset
-
-cheat
-\begin_inset Quotes erd
-\end_inset
-
- via oscilating in small areas of the space, we monitored the volume of
- the levels sets and ensured they are roughly equal.
 \end_layout
 
 \begin_layout Subsection
@@ -2010,47 +1972,6 @@ reference "eq:kmc_accept_prob"
  is slightly lower.
  Quantification of this difference is crucial for kernel induced Hamiltonian
  dynamics being useful in practice.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figures/average_accept_gaussian_target.eps
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:kmc_trajectories_mean_acceptance"
-
-\end_inset
-
-Behaviour of kernel induced Hamiltonian flow in high dimensions.
- We show quantiles of the distribution of the average acceptance probability
- along a simulated trajectory (true Hamiltonian flow has neglectible variance).
- While worst-case acceptance probability of the kernel induced flow suffers
- in high dimensions, the median acceptance probability is remarkably high
- and close to the true Hamiltonian ground truth.
 \end_layout
 
 \end_inset
@@ -2233,86 +2154,79 @@ Input
 \begin_inset Formula $\pi$
 \end_inset
 
-, subsample size 
-\begin_inset Formula $n$
+, momentum 
+\begin_inset Formula $\exp(-K(p))$
 \end_inset
 
-, scaling parameters 
-\begin_inset Formula $\nu,\gamma,$
+, adaptation schedule 
+\begin_inset Formula $p_{t}$
 \end_inset
 
- kernel 
-\begin_inset Formula $k$
+, kernel width 
+\begin_inset Formula $\sigma$
 \end_inset
 
-, 
+ 
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Plain Layout
+
+\series bold
 At iteration 
 \begin_inset Formula $t+1$
 \end_inset
 
-,
+, previous state 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\shape italic
+Update density estimate
 \end_layout
 
 \begin_deeper
 \begin_layout Enumerate
 Update state of the chain history 
-\begin_inset Formula $\mathbf{z}_{t}$
-\end_inset
-
-, using 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:proposal_update"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-Fit infinite exponential familty desnity estimator, 
-\end_layout
-
-\begin_layout Enumerate
-Accept/Reject with the Metropolis-Hastings acceptance probability 
-\begin_inset Formula $A(x_{t},x^{*})$
-\end_inset
-
- in  
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:MetAcceptProb"
-
-\end_inset
-
-,
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{-0.5cm}
-\end_layout
-
-\end_inset
-
- 
-\end_layout
-
-\begin_deeper
-\begin_layout Plain Layout
 \begin_inset Formula 
-\begin{eqnarray*}
-x_{t+1} & = & \begin{cases}
-x^{*}, & \textrm{w.p.}\; A(x_{t},x^{*}),\\
-x_{t}, & \textrm{w.p.}\;1-A(x_{t},x^{*}).
+\[
+\mathbf{z}_{t}=\begin{cases}
+\left\{ x_{i}\right\} _{i=0}^{t-1} & \text{with probability }p_{t}\\
+\mathbf{z}_{t-1} & \text{otherwise}
 \end{cases}
-\end{eqnarray*}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+If 
+\begin_inset Formula $\mathbf{z}_{t}\neq\mathbf{z}_{t-1}$
+\end_inset
+
+, update density estimator in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+, i.e.
+ solve
+\begin_inset Formula 
+\[
+\hat{\alpha}=\frac{-\sigma}{2}(C+\lambda(K+I))^{-1}b
+\]
 
 \end_inset
 
@@ -2320,6 +2234,60 @@ x_{t}, & \textrm{w.p.}\;1-A(x_{t},x^{*}).
 \end_layout
 
 \end_deeper
+\begin_layout Itemize
+
+\shape italic
+Kernel induced Hamiltonian proposal
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[5.]
+\backslash
+setcounter{enumi}{3}
+\end_layout
+
+\end_inset
+
+Sample momentum 
+\begin_inset Formula $p'\sim\exp(-K(p))$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Using 
+\begin_inset Formula $\hat{\alpha}$
+\end_inset
+
+, simulate kernel Hamiltonian flow 
+\begin_inset Formula $(p^{*},x^{*})=\phi_{\epsilon,\tau}^{\tilde{H}_{k}}(p',x_{t})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Perform Metropolis step 
+\begin_inset Formula 
+\begin{align*}
+x_{t+1} & =\begin{cases}
+x^{*} & \text{with probability }\alpha(\phi_{\epsilon,\tau}^{\tilde{H}_{k}}(p',x_{t}))\\
+x_{t} & \text{otherwise}
+\end{cases}
+\end{align*}
+
+\end_inset
+
+ 
+\end_layout
+
 \end_deeper
 \end_inset
 
@@ -2447,27 +2415,147 @@ Experiments
 \end_layout
 
 \begin_layout Subsection
+Trajectories in high dimensions
+\end_layout
+
+\begin_layout Standard
+In order to quantify KMC's behaviour in high dimensions, we study average
+ acceptance probabilities along trajectories as described in section 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "par:illustrative_example"
+
+\end_inset
+
+.
+ We use the following two synthetic examples with increasing dimension:
+ a standard Gaussian and the Banana described in 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Haario1999"
+
+\end_inset
+
+, both with standard Gaussian momentum.
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "fig:kmc_trajectories_mean_acceptance"
+
+\end_inset
+
+ shows the average acceptance probability along a trajectory as a function
+ of dimension of 
+\begin_inset Formula $p$
+\end_inset
+
+ and 
+\begin_inset Formula $q$
+\end_inset
+
+ in the same spirit as 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Figure 3"
+key "Betancourt2015"
+
+\end_inset
+
+.
+ Error bars are obtained over 
+\begin_inset Formula $100$
+\end_inset
+
+ trials in each of which we fit the infinite exponential family estimator
+ on 
+\begin_inset Formula $n=500$
+\end_inset
+
+ randomly sampled data and then run a random number of leapfrog steps in
+ 
+\begin_inset Formula $[100,1000]$
+\end_inset
+
+ on both true and kernel induced flow.
+ The plot shows that while the spread of the acceptance rate gets worse
+ in high dimensions, most of the time, it is close to the true Hamiltonian
+ ground truth.
+ Note that in order to ensure that the kernel induced Hamiltonian flow cannot
+ 
+\begin_inset Quotes eld
+\end_inset
+
+cheat
+\begin_inset Quotes erd
+\end_inset
+
+ via oscilating in small areas of the space, we monitored the volume of
+ the levels sets and ensured they are roughly equal.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/average_accept_gaussian_target.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:kmc_trajectories_mean_acceptance"
+
+\end_inset
+
+Behaviour of kernel induced Hamiltonian flow in high dimensions.
+ We show quantiles of the distribution of the average acceptance probability
+ along a simulated trajectory (true Hamiltonian flow has neglectible variance).
+ While worst-case acceptance probability of the kernel induced flow suffers
+ in high dimensions, the median acceptance probability is remarkably high
+ and close to the true Hamiltonian ground truth.
+ 
+\series bold
+Left:
+\series default
+ Gaussian.
+ 
+\series bold
+Right:
+\series default
+ Banana.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Comparison of trajectories
 \end_layout
 
 \begin_layout Standard
 Empirically compare on how well we can approximate the true HMC trajectories
-\end_layout
-
-\begin_layout Itemize
-How to put in numbers? Maybe run leapfrog with same momentum and step size
- for the same number of steps.
- Then somehow compute how far this travelled, and the average acceptance
- probability.
- Latter is in particular interesting.
-\end_layout
-
-\begin_layout Itemize
-2D Banana & other synthetic
-\end_layout
-
-\begin_layout Itemize
-Higher dimensions, projections
 \end_layout
 
 \begin_layout Itemize
