@@ -1768,7 +1768,7 @@ We now illustrate how well trajectories along the level set of the kernel
 
 -space, we simulate approximate trajectories on both true and kernel induced
  Hamiltonian level sets, using 
-\begin_inset Formula $L=1000$
+\begin_inset Formula $L=300$
 \end_inset
 
  leapfrog steps of size 
@@ -1810,40 +1810,14 @@ and
 \emph default
  how well the kernel induced Hamiltonian flow matches the true Hamiltonian
  flow -- where we are interested in the latter.
- We plot this probability as a function of dimension in the same spirit
- as 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Figure 3"
-key "Betancourt2015"
-
-\end_inset
-
-, with error bars obtained over 
-\begin_inset Formula $100$
-\end_inset
-
- trials.
- In order to ensure that the kernel induced Hamiltonian flow cannot 
-\begin_inset Quotes eld
-\end_inset
-
-cheat
-\begin_inset Quotes erd
-\end_inset
-
- via oscilating in small areas of the space, we also report the volume of
- the trajectories, obtained via computing the log-determinant of a covariance
- matrix fitted to all points.
- See Figure 
+ Figure 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "fig:kmc_trajectories_mean_acceptance"
 
 \end_inset
 
- for a plot of the mean acceptance rate and trajectory volume as a function
- in dimension of 
+ shows this probability as a function of dimension of 
 \begin_inset Formula $p$
 \end_inset
 
@@ -1851,7 +1825,40 @@ reference "fig:kmc_trajectories_mean_acceptance"
 \begin_inset Formula $q$
 \end_inset
 
+ in the same spirit as 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Figure 3"
+key "Betancourt2015"
+
+\end_inset
+
 .
+ Boxplots are obtained over 
+\begin_inset Formula $100$
+\end_inset
+
+ trials in each of which we fit the infinite exponential family estimator
+ on randomly sampled data.
+ We run at a random number of leapfrog steps in 
+\begin_inset Formula $[100,1000]$
+\end_inset
+
+.
+ The plot shows that while the spread of the acceptance rate gets worse
+ in high dimensions, most of the time, it is close to the true Hamiltonian
+ ground truth.
+ Note that in order to ensure that the kernel induced Hamiltonian flow cannot
+ 
+\begin_inset Quotes eld
+\end_inset
+
+cheat
+\begin_inset Quotes erd
+\end_inset
+
+ via oscilating in small areas of the space, we monitored the volume of
+ the levels sets and ensured they are roughly equal.
 \end_layout
 
 \begin_layout Subsection
@@ -2021,15 +2028,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figures/gaussian_trajectories_mean_acceptance.eps
-	scale 40
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename figures/gaussian_trajectories_volume.eps
-	scale 40
+	filename figures/average_accept_gaussian_target.eps
 
 \end_inset
 
@@ -2046,21 +2045,14 @@ name "fig:kmc_trajectories_mean_acceptance"
 
 \end_inset
 
-TODO: Not yet done properly.
- X axis is dimension.
- Behaviour in high dimensions.
- 
-\series bold
-Left:
-\series default
- Mean acceptance rate.
- Unstable (large error bars) but the mean behaves really well.
- 
-\series bold
-Right:
-\series default
- Volume of trajectory (log-determinant of covariance of descretised trajectory
- -- as long as blue and red match, all is good).
+Behaviour of kernel induced Hamiltonian flow in high dimensions.
+ We show boxplots of the distribution of the average acceptance probability
+ along a simulated trajectory.
+ Red points correspond to acceptance probability along the true Hamiltonian
+ flow (neglectible variance).
+ While worst-case acceptance probability suffers in high dimensions, the
+ mean and median acceptance probability is remarkably high and close to
+ the true Hamiltonian ground truth.
 \end_layout
 
 \end_inset
