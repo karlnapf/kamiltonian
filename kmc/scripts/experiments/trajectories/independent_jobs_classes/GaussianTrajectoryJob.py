@@ -21,7 +21,7 @@ class GaussianTrajectoryJob(IndependentJob):
     def __init__(self,
                  N, D, sigma_q, lmbda,
                  sigma_p,
-                 num_steps, step_size, run_until_cycle=False):
+                 num_steps, step_size, max_steps=None):
         IndependentJob.__init__(self, TrajectoryJobResultAggregator())
         
         self.N = N
@@ -31,7 +31,7 @@ class GaussianTrajectoryJob(IndependentJob):
         self.sigma_p = sigma_p
         self.num_steps = num_steps
         self.step_size = step_size
-        self.run_until_cycle = run_until_cycle
+        self.max_steps = max_steps
     
     def compute_trajectory(self, random_start_state=None):
         logger.debug("Entering")
@@ -87,15 +87,12 @@ class GaussianTrajectoryJob(IndependentJob):
         p0 = self.p_sample()
         q0 = self.q_sample()
         
-        Qs, Ps = leapfrog(q0, self.dlogq, p0, self.dlogp, self.step_size, self.num_steps, self.run_until_cycle)
+        Qs, Ps = leapfrog(q0, self.dlogq, p0, self.dlogp, self.step_size, self.num_steps, self.max_steps)
         
         # run second integrator for same amount of steps
-        if self.run_until_cycle:
-            steps_taken = len(Qs)
-            logger.info("%d steps until cycle appeared" % steps_taken)
-        else:
-            steps_taken = self.num_steps
-        Qs_est, Ps_est = leapfrog(q0, dlogq_est, p0, self.dlogp, self.step_size, steps_taken, run_until_cycle=False)
+        steps_taken = len(Qs)
+        logger.info("%d steps taken" % steps_taken)
+        Qs_est, Ps_est = leapfrog(q0, dlogq_est, p0, self.dlogp, self.step_size, steps_taken)
         
         logger.info("Computing average acceptance probabilities")
         log_acc = compute_log_accept_pr(q0, p0, Qs, Ps, self.logq, self.logp)
@@ -111,18 +108,18 @@ class GaussianTrajectoryJob(IndependentJob):
         logger.info("Log-determinant: %.2f, %.2f" % (log_det, log_det_est))
         
         logger.debug("Leaving")
-        return acc_mean, acc_est_mean, log_det, log_det_est, random_start_state
+        return acc_mean, acc_est_mean, log_det, log_det_est, steps_taken, random_start_state
     
     def compute(self):
         logger.debug("Entering")
         random_start_state = np.random.get_state()
         
-        acc_mean, acc_est_mean, log_det, log_det_est, random_start_state = \
+        acc_mean, acc_est_mean, log_det, log_det_est, steps_taken, random_start_state = \
             self.compute_trajectory(random_start_state)
         
         logger.info("Submitting results to aggregator")
         result = TrajectoryJobResult(acc_mean, acc_est_mean, log_det,
-                                     log_det_est, random_start_state)
+                                     log_det_est, steps_taken, random_start_state)
         self.aggregator.submit_result(result)
         
         logger.debug("Leaving")

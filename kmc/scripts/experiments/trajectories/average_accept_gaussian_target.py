@@ -8,14 +8,14 @@ from independent_jobs.tools.FileSystem import FileSystem
 
 from big_mcmc.tools.Log import logger
 from kmc.scripts.experiments.trajectories.independent_jobs_classes.GaussianTrajectoryJob import GaussianTrajectoryJob
-from kmc.scripts.experiments.trajectories.plots import plot_trajectory_result
 import numpy as np
+from kmc.scripts.experiments.trajectories.plots import plot_trajectory_result_boxplot_mix
 
 
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
 
 
-def compute(Ds, num_repetitions, N, lmbda, num_steps, step_size, run_until_cycle):
+def compute(Ds, num_repetitions, N, lmbda, num_steps, step_size, max_steps=None):
     if not FileSystem.cmd_exists("sbatch"):
         engine = SerialComputationEngine()
         
@@ -34,9 +34,9 @@ def compute(Ds, num_repetitions, N, lmbda, num_steps, step_size, run_until_cycle
         sigma_p = 1.
         
         for j in range(num_repetitions):
-            logger.info("Gaussian trajectory, D=%d/%d, repetition %d/%d" %\
-                        (D, Ds.max(), j+1, num_repetitions))
-            job = GaussianTrajectoryJob(N, D, sigma_q, lmbda, sigma_p, num_steps, step_size, run_until_cycle)
+            logger.info("Gaussian trajectory, D=%d/%d, repetition %d/%d" % \
+                        (D, Ds.max(), j + 1, num_repetitions))
+            job = GaussianTrajectoryJob(N, D, sigma_q, lmbda, sigma_p, num_steps, step_size, max_steps)
             aggregators[j] += [engine.submit_job(job)]
             time.sleep(0.1)
     
@@ -46,6 +46,7 @@ def compute(Ds, num_repetitions, N, lmbda, num_steps, step_size, run_until_cycle
     avg_accept_est = np.zeros((num_repetitions, len(Ds)))
     log_dets = np.zeros((num_repetitions, len(Ds)))
     log_dets_est = np.zeros((num_repetitions, len(Ds)))
+    avg_steps_taken = np.zeros((num_repetitions, len(Ds)))
     
     for j in range(len(aggregators)):
         for i in range(len(aggregators[j])):
@@ -56,13 +57,14 @@ def compute(Ds, num_repetitions, N, lmbda, num_steps, step_size, run_until_cycle
             
             avg_accept[j, i] = result.acc_mean
             avg_accept_est[j, i] = result.acc_est_mean
-            log_dets[j,i] = result.vol
-            log_dets_est[j,i] = result.vol_est
+            log_dets[j, i] = result.vol
+            log_dets_est[j, i] = result.vol_est
+            avg_steps_taken[j, i] = result.steps_taken
             
             
     with open(fname, 'w+') as f:
         np.savez(f, Ds=Ds, avg_accept=avg_accept, avg_accept_est=avg_accept_est,
-                 vols=log_dets, vols_est=log_dets_est)
+                 vols=log_dets, vols_est=log_dets_est, steps_taken=avg_steps_taken)
 
 if __name__ == "__main__":
     fname = modulename + ".npy"
@@ -82,13 +84,15 @@ if __name__ == "__main__":
         num_repetitions = 100
         N = 500
         lmbda = 1.
-        num_steps =  100
+        num_steps = 100
+        max_steps = 1000
         step_size = .1
-        run_until_cycle = True
-        compute(Ds, num_repetitions, N, lmbda, num_steps, step_size, run_until_cycle)
+        compute(Ds, num_repetitions, N, lmbda, num_steps, step_size, max_steps)
     
     try:
-        plot_trajectory_result(fname)
+#         plot_trajectory_result_mean_median(fname)
+#         plot_trajectory_result_boxplot(fname)
+        plot_trajectory_result_boxplot_mix(fname)
     except Exception:
         pass
     
