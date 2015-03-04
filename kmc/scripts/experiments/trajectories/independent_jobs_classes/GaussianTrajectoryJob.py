@@ -31,9 +31,14 @@ class GaussianTrajectoryJob(IndependentJob):
         self.sigma_p = sigma_p
         self.num_steps = num_steps
         self.step_size = step_size
-
-    def compute(self):
+    
+    def compute_trajectory(self, random_start_state=None):
         logger.debug("Entering")
+        
+        if random_start_state is not None:
+            np.random.set_state(random_start_state)
+        else:
+            random_start_state = np.random.get_state()
         
         L = np.linalg.cholesky(np.eye(self.D) * self.sigma_q)
         L_p = np.linalg.cholesky(np.eye(self.D) * self.sigma_p)
@@ -97,8 +102,19 @@ class GaussianTrajectoryJob(IndependentJob):
         logger.info("Average acceptance prob: %.2f, %.2f" % (acc_mean, acc_est_mean))
         logger.info("Log-determinant: %.2f, %.2f" % (log_det, log_det_est))
         
+        logger.debug("Leaving")
+        return acc_mean, acc_est_mean, log_det, log_det_est, random_start_state
+    
+    def compute(self):
+        logger.debug("Entering")
+        random_start_state = np.random.get_state()
+        
+        acc_mean, acc_est_mean, log_det, log_det_est, random_start_state = \
+            self.compute_trajectory(random_start_state)
+        
         logger.info("Submitting results to aggregator")
-        result = TrajectoryJobResult(acc_mean, acc_est_mean, log_det, log_det_est)
+        result = TrajectoryJobResult(acc_mean, acc_est_mean, log_det,
+                                     log_det_est, random_start_state)
         self.aggregator.submit_result(result)
         
         logger.debug("Leaving")
