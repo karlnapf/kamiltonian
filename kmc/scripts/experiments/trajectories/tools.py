@@ -28,14 +28,6 @@ def compute(fname_base, job_generator, Ds, num_repetitions, N, lmbda, num_steps,
     aggregators = [[] for _ in range(num_repetitions)]
     for i, D in enumerate(Ds):
         
-        # hack that distributes jobs across different queues
-        if D > 200:
-            engine.batch_parameters.max_walltime = 24 * 60 * 60
-            engine.batch_parameters.qos = engine._infer_slurm_qos(engine.batch_parameters.max_walltime,
-                                                                  engine.batch_parameters.nodes)
-        else:
-            engine.batch_parameters.max_walltime = 60 * 60
-            
         for j in range(num_repetitions):
             logger.info("%s trajectory, D=%d/%d, repetition %d/%d" % \
                         (str(job_generator), D, Ds.max(), j + 1, num_repetitions))
