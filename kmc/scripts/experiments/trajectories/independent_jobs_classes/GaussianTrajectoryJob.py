@@ -21,7 +21,7 @@ class GaussianTrajectoryJob(IndependentJob):
     def __init__(self,
                  N, D, sigma_q, lmbda,
                  sigma_p,
-                 num_steps, step_size):
+                 num_steps, step_size, run_until_cycle=False):
         IndependentJob.__init__(self, TrajectoryJobResultAggregator())
         
         self.N = N
@@ -31,6 +31,7 @@ class GaussianTrajectoryJob(IndependentJob):
         self.sigma_p = sigma_p
         self.num_steps = num_steps
         self.step_size = step_size
+        self.run_until_cycle = run_until_cycle
     
     def compute_trajectory(self, random_start_state=None):
         logger.debug("Entering")
@@ -86,8 +87,15 @@ class GaussianTrajectoryJob(IndependentJob):
         p0 = self.p_sample()
         q0 = self.q_sample()
         
-        Qs, Ps = leapfrog(q0, self.dlogq, p0, self.dlogp, self.step_size, self.num_steps)
-        Qs_est, Ps_est = leapfrog(q0, dlogq_est, p0, self.dlogp, self.step_size, self.num_steps)
+        Qs, Ps = leapfrog(q0, self.dlogq, p0, self.dlogp, self.step_size, self.num_steps, self.run_until_cycle)
+        
+        # run second integrator for same amount of steps
+        if self.run_until_cycle:
+            steps_taken = len(Qs)
+            logger.info("%d steps until cycle appeared" % steps_taken)
+        else:
+            steps_taken = self.num_steps
+        Qs_est, Ps_est = leapfrog(q0, dlogq_est, p0, self.dlogp, self.step_size, steps_taken, run_until_cycle=False)
         
         logger.info("Computing average acceptance probabilities")
         log_acc = compute_log_accept_pr(q0, p0, Qs, Ps, self.logq, self.logp)

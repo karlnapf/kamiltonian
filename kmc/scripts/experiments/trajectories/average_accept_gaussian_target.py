@@ -15,7 +15,7 @@ import numpy as np
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
 
 
-def compute(Ds, num_repetitions, N, lmbda, num_steps, step_size):
+def compute(Ds, num_repetitions, N, lmbda, num_steps, step_size, run_until_cycle):
     if not FileSystem.cmd_exists("sbatch"):
         engine = SerialComputationEngine()
         
@@ -36,7 +36,7 @@ def compute(Ds, num_repetitions, N, lmbda, num_steps, step_size):
         for j in range(num_repetitions):
             logger.info("Gaussian trajectory, D=%d/%d, repetition %d/%d" %\
                         (D, Ds.max(), j+1, num_repetitions))
-            job = GaussianTrajectoryJob(N, D, sigma_q, lmbda, sigma_p, num_steps, step_size)
+            job = GaussianTrajectoryJob(N, D, sigma_q, lmbda, sigma_p, num_steps, step_size, run_until_cycle)
             aggregators[j] += [engine.submit_job(job)]
             time.sleep(0.1)
     
@@ -78,13 +78,14 @@ if __name__ == "__main__":
         do_compute = True
     
     if do_compute:
-        Ds = 2 ** np.arange(12)
+        Ds = 2 ** np.arange(11)
         num_repetitions = 100
         N = 500
         lmbda = 1.
-        num_steps =  1000
+        num_steps =  100
         step_size = .1
-        compute(Ds, num_repetitions, N, lmbda, num_steps, step_size)
+        run_until_cycle = True
+        compute(Ds, num_repetitions, N, lmbda, num_steps, step_size, run_until_cycle)
     
     try:
         plot_trajectory_result(fname)
