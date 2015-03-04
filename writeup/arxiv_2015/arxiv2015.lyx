@@ -282,6 +282,8 @@ Trajectory experiment on Gaussian.
 \end_layout
 
 \begin_layout Enumerate
+
+\strikeout on
 Increase 
 \begin_inset Formula $d$
 \end_inset
@@ -313,11 +315,13 @@ Use low-rank Cholesky to exlore limitations of scaling (appendix: compare
 \end_layout
 
 \begin_layout Enumerate
+
+\strikeout on
 Sanity check: is covered volume roughly equal?
 \end_layout
 
 \begin_layout Standard
-Quantiles on Banana.
+Quantiles on Gaussian/Banana.
  To illustrate that it continues to explore tails in high dimensions
 \end_layout
 
