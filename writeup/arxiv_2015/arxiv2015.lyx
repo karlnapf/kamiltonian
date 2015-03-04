@@ -197,6 +197,8 @@ Write framework to compute average acceptance probability of a trajectory
 \end_layout
 
 \begin_layout Itemize
+
+\strikeout on
 Write section that empirically analyses approximate trajectories on Gaussians
  and Banana in terms of dimension
 \end_layout
@@ -210,6 +212,12 @@ Write section on optimising
 \end_layout
 
 \begin_layout Itemize
+Translate finite sample convergence rates into all HMC quantities (
+\end_layout
+
+\begin_layout Itemize
+
+\strikeout on
 Adapt notation and keywords from 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -221,14 +229,20 @@ key "Betancourt2015"
 \end_layout
 
 \begin_layout Itemize
+Work over notation and unify the score matching with the HMC parts
+\end_layout
+
+\begin_layout Itemize
 find out whats next
 \end_layout
 
 \begin_layout Paragraph*
-Experiments to do
+Experiment & co
 \end_layout
 
 \begin_layout Itemize
+
+\strikeout on
 Write framework for doing trajectory comparisons on cluster
 \end_layout
 
@@ -241,6 +255,20 @@ Set up sampling on cluster
 \end_layout
 
 \begin_layout Itemize
+Banana quantile experiment, comparing against HMC and Kameleon
+\end_layout
+
+\begin_layout Itemize
+GP experiment, comparing against Kameleon
+\end_layout
+
+\begin_layout Itemize
+some new experiment?
+\end_layout
+
+\begin_layout Itemize
+
+\strikeout on
 Create surface plots for the x-validation of 
 \begin_inset Formula $\lambda,\sigma$
 \end_inset
@@ -2167,15 +2195,9 @@ Input
 \end_inset
 
  
-\begin_inset Newline newline
-\end_inset
-
-
 \end_layout
 
-\begin_layout Plain Layout
-
-\series bold
+\begin_layout Itemize
 At iteration 
 \begin_inset Formula $t+1$
 \end_inset
@@ -2295,38 +2317,14 @@ x_{t} & \text{otherwise}
 \end_layout
 
 \begin_layout Subsection
-Properties
+Practical considerations
 \end_layout
 
-\begin_layout Itemize
-Properties of kernel energy function, consequences for algorithm
+\begin_layout Standard
+We now list properties of the algorithm and point out how to tune it in
+ practice.
 \end_layout
 
-\begin_layout Itemize
-Kernel choice via cross-validation (plot of objective function)
-\end_layout
-
-\begin_layout Itemize
-Extensions:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Second order information? 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "Girolami2011"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Relation to geometry once again
-\end_layout
-
-\end_deeper
 \begin_layout Paragraph
 Linear costs via Incomplete Cholesky (TODO write properly)
 \end_layout
@@ -2408,6 +2406,38 @@ reference "sec:appendix_kernel_score_matching"
 \end_inset
 
  for details.
+\end_layout
+
+\begin_layout Paragraph
+Choosing kernel parameters
+\end_layout
+
+\begin_layout Standard
+Here goes the x-validation paragraph
+\end_layout
+
+\begin_layout Paragraph
+Smoothing via regularisation
+\end_layout
+
+\begin_layout Standard
+Write about the fact that we have an 
+\begin_inset Quotes eld
+\end_inset
+
+annealing
+\begin_inset Quotes erd
+\end_inset
+
+ interpretation of the smoothing.
+\end_layout
+
+\begin_layout Paragraph
+Incorporating second order information
+\end_layout
+
+\begin_layout Standard
+Write about how this can be turned into a geometric version aka RM-HMC
 \end_layout
 
 \begin_layout Section
