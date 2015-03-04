@@ -1,23 +1,24 @@
 import numpy as np
 
-def leapfrog(q, dlogq, p, dlogp, step_size=0.3, num_steps=1):
+def leapfrog(q, dlogq, p, dlogp, step_size=0.3, num_steps=1, run_until_cycle=False):
     # for storing trajectory
-    Ps = np.zeros((num_steps + 1, len(p)))
-    Qs = np.zeros(Ps.shape)
+    Ps = []
+    Qs = []
     
     # create copy of state
     p = np.array(p)
     q = np.array(q)
-    Ps[0] = p
-    Qs[0] = q
+    Ps += [p]
+    Qs += [q]
     
     # half momentum update
     p = p - (step_size / 2) * -dlogq(q)
     
     # alternate full variable and momentum updates
-    for i in range(num_steps):
+    i = 0
+    while True:
         q = q + step_size * -dlogp(p)
-        Qs[i + 1] = q
+        Qs += [q]
 
         # precompute since used for two half-steps
         dlogq_eval = dlogq(q)
@@ -26,10 +27,20 @@ def leapfrog(q, dlogq, p, dlogp, step_size=0.3, num_steps=1):
         p = p - (step_size / 2) * -dlogq_eval
         
         # store p as now fully updated
-        Ps[i + 1] = p
+        Ps += [p]
+        
+        # check whether to stop (epsilon close to start point) and maybe stop
+        if i >= num_steps-1:
+            if run_until_cycle:
+                if np.sqrt(np.linalg.norm(Ps[0] - Ps[-1]) ** 2 + np.linalg.norm(Qs[0] - Qs[-1]) ** 2) < step_size:
+                    break
+            else:
+                break
         
         # second half momentum update
-        if i != num_steps - 1:
-            p = p - (step_size / 2) * -dlogq_eval
-
+        p = p - (step_size / 2) * -dlogq_eval
+        
+        i += 1
+    Qs = np.asarray(Qs)
+    Ps = np.asarray(Ps)
     return Qs, Ps
