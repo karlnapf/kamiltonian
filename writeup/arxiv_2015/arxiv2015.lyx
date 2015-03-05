@@ -212,7 +212,7 @@ Write section on optimising
 \end_layout
 
 \begin_layout Itemize
-Translate finite sample convergence rates into all HMC quantities (
+Translate finite sample convergence rates into all HMC quantities
 \end_layout
 
 \begin_layout Itemize
@@ -337,6 +337,19 @@ Need something on burnin time.
 
 \series bold
 Open questions:
+\end_layout
+
+\begin_layout Itemize
+Linear time is still too expensive.
+ Random featues? Since we need to estimate 
+\begin_inset Formula $\alpha\in\mathbb{R}^{n}$
+\end_inset
+
+, plugging in the approximate features naively still gives an 
+\begin_inset Formula $n$
+\end_inset
+
+-dimensional linear system
 \end_layout
 
 \begin_layout Itemize
@@ -576,8 +589,8 @@ AG: we don't really need a separate section on mean embeddings
 \begin_layout Standard
 We follow the presentation in 
 \begin_inset CommandInset citation
-LatexCommand citet
-key "Neal2010"
+LatexCommand cite
+key "neal2011mcmc"
 
 \end_inset
 
@@ -797,8 +810,8 @@ symplectic integrators,
  In this work, we limit ourselves to the standard leap-frog integrator,
  see 
 \begin_inset CommandInset citation
-LatexCommand citet
-key "Neal2010"
+LatexCommand cite
+key "neal2011mcmc"
 
 \end_inset
 
@@ -959,7 +972,7 @@ key "Andrieu2008"
  efficeint sampling, 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Neal2010"
+key "neal2011mcmc"
 
 \end_inset
 
@@ -1196,7 +1209,7 @@ key "SriFukKumGreHyv14"
 
 .
  As we are eventually interested in constructing an adaptive MCMC sampler
- that uses the (increasingly long) history of the Markov chain to guide
+ that uses at least a large part of the history of the Markov chain to guide
  proposals, a cost scaling as a sixth order polynomial is infeasible.
  We therefore now develop a pragmatic approximation that involves inverting
  an 
@@ -1208,7 +1221,17 @@ key "SriFukKumGreHyv14"
 \end_inset
 
 .
- To that end, we first give a brief review of score matching.
+ Eventually, we will add another layer of approximate standard in kernel
+ methods to estimate the density in 
+\emph on
+linear 
+\emph default
+time
+\emph on
+.
+ 
+\emph default
+We first give a brief review of score matching.
 \end_layout
 
 \begin_layout Subsection
@@ -1575,10 +1598,10 @@ and
 
 , and defined
 \begin_inset Formula 
-\begin{align*}
-b & =\sum_{\ell=1}^{D}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{n}\\
-C & =\sum_{\ell=1}^{D}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\in\mathbb{R}^{n\times n},
-\end{align*}
+\begin{align}
+b & =\sum_{\ell=1}^{D}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{n}\label{eq:score_match_b}\\
+C & =\sum_{\ell=1}^{D}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\in\mathbb{R}^{n\times n},\label{eq:score_match_C}
+\end{align}
 
 \end_inset
 
@@ -1729,7 +1752,7 @@ reference "eq:leap_frog_flow"
 
  will result in a decreased acceptance probability of approximate integrations
  
-\begin_inset Formula $\alpha(\phi_{\epsilon,\tau}^{\tilde{H}}(p',q))$
+\begin_inset Formula $\alpha(\phi_{\epsilon,\tau}^{\tilde{H_{k}}}(p',q))$
 \end_inset
 
 .
@@ -1872,32 +1895,8 @@ reference "fig:kmc_trajectories"
 and
 \emph default
  how well the kernel induced Hamiltonian flow matches the true Hamiltonian
- flow -- where we are interested in the latter.
- 
-\end_layout
-
-\begin_layout Subsection
-Examples
-\end_layout
-
-\begin_layout Standard
-Put some nice plots to illustrate ideas (no experiments yet)
-\end_layout
-
-\begin_layout Itemize
-Low dimensional Banana
-\end_layout
-
-\begin_layout Itemize
-Smoothing property of regularisation
-\end_layout
-
-\begin_layout Itemize
-High dimensional banana, projected to 2D
-\end_layout
-
-\begin_layout Itemize
-Comparison of HMC and KHMC trajectories
+ flow -- where we are interested in the latter and will investigate it in
+ the experiments.
 \end_layout
 
 \begin_layout Standard
@@ -2058,130 +2057,29 @@ Kamiltonian Monte Carlo
 \begin_layout Standard
 We now describe how to utilise the described kernel induced Hamiltonian
  flow in order to construct a gradient free, adaptive kernel Hamiltonian
- Monte Carlo algorithm.
- We first cover necessary details on adaptive MCMC, then introduce the Kamiltoni
-an Monte Carlo algorithm and describe its properties.
-\end_layout
-
-\begin_layout Subsection
-Constructing an adaptive MCMC proposal
-\end_layout
-
-\begin_layout Standard
-It is well known that construction of MCMC algorithms that utilise the history
- of the Markov chain for constructing proposals yields asymptotic bias.
- We follow 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sejdinovic_kernel_2014"
-
-\end_inset
-
-, who adapted the idea of 
-\begin_inset Quotes eld
-\end_inset
-
-vanishing adaptation
-\begin_inset Quotes erd
-\end_inset
-
-, 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Andrieu2008"
-
-\end_inset
-
-, to avoid such biases.
-\end_layout
-
-\begin_layout Standard
-Let 
-\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
-\end_inset
-
- be the history of the Markov chain at iteration 
-\begin_inset Formula $t$
-\end_inset
-
-.
- To guarantee convergence to the correct stationary distirbution, we introduce
- adaptation probabilities 
-\begin_inset Formula $\left\{ p_{t}\right\} _{i=0}^{\infty}$
-\end_inset
-
- such that 
-\begin_inset Formula 
-\[
-\lim_{t\to\infty}p_{t}=0\quad\text{and}\quad\sum_{t=0}^{\infty}=\infty.
-\]
-
-\end_inset
-
-Using 
-\begin_inset Formula $\mathbf{z}_{0}=\emptyset$
-\end_inset
-
-, at iteration 
-\begin_inset Formula $t$
-\end_inset
-
-, we update the current 
-\begin_inset Quotes eld
-\end_inset
-
-state
-\begin_inset Quotes erd
-\end_inset
-
- of the history of the Markov chain by setting 
-\begin_inset Formula 
-\begin{equation}
-\mathbf{z}_{t}=\begin{cases}
-\left\{ x_{i}\right\} _{i=0}^{t-1} & \text{with probability }p_{t}\\
-\mathbf{z}_{t-1} & \text{otherwise}
-\end{cases}\label{eq:proposal_update}
-\end{equation}
-
-\end_inset
-
-and construct our kernel induced Hamiltonian flow based proposal with 
-\begin_inset Formula $\mathbf{z}_{t}$
-\end_inset
-
-.
- Intuitively, the probability for updating the chain history to the latest
- state gets arbritarily small, while the scheme never stops updating 
-\begin_inset Formula $\mathbf{z}$
-\end_inset
-
-.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Theorem 1"
-key "RobertsRosenthal2007"
-
-\end_inset
-
- guarantees that the resulting Markov kernel is ergodic and converges to
- the correct target.
-\end_layout
-
-\begin_layout Standard
-We now have everything needed to construct a valid MCMC algorithm.
- Algorithm 
+ Monte Carlo algorithm: 
+\emph on
+Kamiltonian Monte Carlo, 
+\emph default
+see Algorithm 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "alg:Kamiltonian-Monte-Carlo"
 
 \end_inset
 
- summarises the Kamiltonian Monte Carlo algorithm.
+.
+\end_layout
+
+\begin_layout Standard
+The remainder of this section covers details on adaptive proposal distributions
+ needed to ensure both anyptotic correctness and computational feasability,
+ and describe various tuning mechanisms for applying KMC in practice.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float algorithm
+placement H
 wide false
 sideways false
 status open
@@ -2189,13 +2087,24 @@ status open
 \begin_layout Plain Layout
 
 \series bold
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Kamiltonian Monte Carlo
 \begin_inset CommandInset label
 LatexCommand label
 name "alg:Kamiltonian-Monte-Carlo"
 
 \end_inset
 
-Kamiltonian Monte Carlo
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Plain Layout
@@ -2237,38 +2146,31 @@ At iteration
 \begin_layout Itemize
 
 \shape italic
-Update density estimate
+Update density estimate.
+ 
+\shape default
+With probability 
+\begin_inset Formula $p_{t}$
+\end_inset
+
+,
 \end_layout
 
 \begin_deeper
 \begin_layout Enumerate
-Update state of the chain history 
-\begin_inset Formula 
-\[
-\mathbf{z}_{t}=\begin{cases}
-\left\{ x_{i}\right\} _{i=0}^{t-1} & \text{with probability }p_{t}\\
-\mathbf{z}_{t-1} & \text{otherwise}
-\end{cases}
-\]
+Draw a random subsample 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+\end_inset
 
+ of the chain history 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Enumerate
-If 
-\begin_inset Formula $\mathbf{z}_{t}\neq\mathbf{z}_{t-1}$
-\end_inset
-
-, update density estimator in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:kernel_score_matching_linear_system"
-
-\end_inset
-
-, i.e.
+Update density estimator, i.e.
  solve
 \begin_inset Formula 
 \[
@@ -2284,7 +2186,7 @@ reference "eq:kernel_score_matching_linear_system"
 \begin_layout Itemize
 
 \shape italic
-Kernel induced Hamiltonian proposal
+Kernel induced Hamiltonian proposal.
 \end_layout
 
 \begin_deeper
@@ -2342,16 +2244,122 @@ x_{t} & \text{otherwise}
 \end_layout
 
 \begin_layout Subsection
-Practical considerations
+Constructing a feasible adaptive MCMC proposal
 \end_layout
 
 \begin_layout Standard
-We now list properties of the algorithm and point out how to tune it in
- practice.
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:adaptive_subsampling"
+
+\end_inset
+
+
 \end_layout
 
-\begin_layout Paragraph
-Linear costs via Incomplete Cholesky (TODO write properly)
+\begin_layout Standard
+It is well known that construction of MCMC algorithms that utilise the history
+ of the Markov chain for constructing proposals yields asymptotic bias.
+ We follow 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, who adapted the idea of 
+\begin_inset Quotes eld
+\end_inset
+
+vanishing adaptation
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Andrieu2008"
+
+\end_inset
+
+, to avoid such biases.
+ They update random subsamples of the Markov chain history with a decaying
+ probability.
+ The approach also has the advantage that it limits 
+\begin_inset Formula $n$
+\end_inset
+
+ -- computational costs will remain constant as the length of the Markov
+ chain approaches infinity.
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+\end_inset
+
+ be the history of the Markov chain at iteration 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ To guarantee convergence to the correct stationary distirbution, we introduce
+ adaptation probabilities 
+\begin_inset Formula $\left\{ p_{t}\right\} _{i=0}^{\infty}$
+\end_inset
+
+ such that 
+\begin_inset Formula 
+\[
+\lim_{t\to\infty}p_{t}=0\quad\text{and}\quad\sum_{t=0}^{\infty}=\infty.
+\]
+
+\end_inset
+
+At iteration 
+\begin_inset Formula $t>n$
+\end_inset
+
+, we update the current subsample 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+\end_inset
+
+ of the history, and construct our kernel induced Hamiltonian flow based
+ proposal with 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+.
+ Intuitively, the probability for updating the chain history to the latest
+ state gets arbritarily small, while the scheme never stops updating 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Theorem 1"
+key "RobertsRosenthal2007"
+
+\end_inset
+
+ guarantees that the resulting Markov kernel is ergodic and converges to
+ the correct target.
+\end_layout
+
+\begin_layout Subsection
+Reducing computational costs via incomplete Cholesky
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:linear_computational_costs"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2360,10 +2368,6 @@ Solving the linear system in
 LatexCommand eqref
 reference "eq:kernel_score_matching_linear_system"
 
-\end_inset
-
- for 
-\begin_inset Formula $\alpha$
 \end_inset
 
  requires 
@@ -2375,74 +2379,329 @@ reference "eq:kernel_score_matching_linear_system"
 \end_inset
 
  storage.
- This can be limiting, in particular if training data comes from an increasingly
+ This can be limiting, in particular if data comes from an increasingly
  long Markov chain.
- 
+ We therefore now apply a low-rank approximation to the kernel matrix via
+ incomplete Cholesky 
 \begin_inset CommandInset citation
-LatexCommand citet
-key "sejdinovic_kernel_2014"
+LatexCommand cite
+after "Alg. 5.12"
+key "shawe2004kernel"
 
 \end_inset
 
- sidestepped a similar problem via fixing the number of training data when
- computing MCMC proposals.
- However, we would ideally like to use 
-\emph on
-all
-\emph default
- available data.
- We therefore compute an incomplete Cholesky factorisation 
-\begin_inset Formula $K\approx LL^{T},$
+, that is a standard way to achieve linear computational costs for kernel
+ methods.
+ We rewrite any kernel matrix of the form 
+\begin_inset Formula $K_{ij}=k(x_{i},x_{j})$
 \end_inset
 
- where 
-\begin_inset Formula $L$
+ as
+\begin_inset Formula 
+\[
+K\approx LL^{T},
+\]
+
 \end_inset
 
- is 
-\begin_inset Formula $n\times\ell$
+where 
+\begin_inset Formula $L\in\mathbb{R}^{n\times\ell}$
 \end_inset
 
- and 
+ is obtained via dual partial Gram–Schmidt orthonormalisation and costs
+ both 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ computation and storage.
+ Usually 
 \begin_inset Formula $\ell\ll n$
 \end_inset
 
-, which costs 
+, and 
+\begin_inset Formula $\ell$
+\end_inset
+
+ can be chosen via an accuarcy cut-off parameter on the kernel spectrum
+ in the same fashion as for other low-rank approximations, such as PCA
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In this paper, we solely use the Gaussian kernel, whose spectrum decays
+ exponentially fast.
+\end_layout
+
+\end_inset
+
+.
+ Given such representation of 
+\begin_inset Formula $K$
+\end_inset
+
+, we can rewrite any dot product with a vector 
+\begin_inset Formula $b\in\mathbb{R}^{n}$
+\end_inset
+
+ as 
+\begin_inset Formula 
+\[
+Kb\approx(LL^{T})b=L(L^{T}b),
+\]
+
+\end_inset
+
+where each left multiplication of 
+\begin_inset Formula $L$
+\end_inset
+
+ costs 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ and we never need to store 
+\begin_inset Formula $LL^{T}$
+\end_inset
+
+.
+ This idea can be used to achieve costs of 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ when (approximately) computing 
+\begin_inset Formula $b$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_b"
+
+\end_inset
+
+, and left-multiplying 
+\begin_inset Formula $C$
+\end_inset
+
+ and 
+\begin_inset Formula $C+\lambda(K+I)$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_C"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+.
+ Combining the technique with conjugate gradient (CG) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "shewchuk1994introduction"
+
+\end_inset
+
+ allows to solve 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+ with a maximum of 
+\begin_inset Formula $n$
+\end_inset
+
+ such matrix-vector products, yielding a total computational cost of 
+\begin_inset Formula ${\cal O}(n^{2}\ell)$
+\end_inset
+
+.
+ In practice, we are not interested in an exact solution of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+ and we therefore can stop CG after a fixed number of iterations 
+\begin_inset Formula $\tau\ll n$
+\end_inset
+
+.
+ We arrive at a total cost of 
+\begin_inset Formula ${\cal O}(n\ell\tau)$
+\end_inset
+
+ computation and 
 \begin_inset Formula ${\cal O}(n\ell)$
 \end_inset
 
  storage.
- Using the incomplete Cholesky, we can solve the linear system in 
-\begin_inset Formula ${\cal O}(\ell^{3}+\ell^{2}n)$
-\end_inset
-
- computation costs.
- Treating 
-\begin_inset Formula $t$
-\end_inset
-
- as fixed, this is linear in both storage and computation, allowing to use
- all Markov chain history.
- See appendix 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "sec:appendix_kernel_score_matching"
-
-\end_inset
-
- for details.
-\end_layout
-
-\begin_layout Paragraph
-Choosing kernel parameters
+ We will publish the implementation in the near future for further reference.
 \end_layout
 
 \begin_layout Standard
-Here goes the x-validation paragraph
+Combined with a random subsample 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+\end_inset
+
+ of the chain history 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+\end_inset
+
+ as described in Section 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sub:adaptive_subsampling"
+
+\end_inset
+
+, we arrive at the same computational costs as previous kernel adaptive
+ MCMC methods, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+.
 \end_layout
 
-\begin_layout Paragraph
-Smoothing via regularisation
+\begin_layout Subsection
+Learning free parameters
+\end_layout
+
+\begin_layout Standard
+KMC has two free parameters, the Gaussian kernel bandwith 
+\begin_inset Formula $\sigma$
+\end_inset
+
+, and the regularisation parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ Earlier adaptive kernel-based MCMC methods, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, did not cover chover choice of kernel parameters, i.e.
+ the Gaussian bandwidth 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ in our case.
+ As the choice of such parameters ius crucial to obtain an efficient sampler,
+ this clearly limits its generality.
+ While in practice, pilot runs can to be devised in order to tune the parameter,
+ a general framework to cover their choice is desirable.
+\end_layout
+
+\begin_layout Standard
+As KMC's performance is eventually tied with the accuracy of the infinite
+ exponential family model in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sub:exp_family_lite"
+
+\end_inset
+
+ and its approximate estimator in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_b"
+
+\end_inset
+
+, we can the score matching objective function in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ to learn 
+\begin_inset Formula $\sigma,\lambda$
+\end_inset
+
+.
+ In order to avoid overfitting, we use a standard cross-validation procedure
+ to evaluate the objective function on a test set that was held out during
+ the fitting procedure.
+ We can then use the cross-validated estimate of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ to compare different 
+\begin_inset Formula $\sigma,\lambda$
+\end_inset
+
+ pairs with each other.
+ As the 
+\begin_inset Formula $\sigma,\lambda$
+\end_inset
+
+ surface is highly non-convex, we have to resort to global optimisation
+ procedures, such as the computationally expensive grid-search 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hsu2003practical"
+
+\end_inset
+
+, or faster alternatives from stochastic 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hansen1996adapting"
+
+\end_inset
+
+ or Bayesian optimisation 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hernandez2014predictive"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Figure shows the 
+\begin_inset Formula $\sigma,\lambda$
+\end_inset
+
+ for the 
+\begin_inset Formula $2$
+\end_inset
+
+-dimensional Gaussian and Banana examples from Section 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "par:illustrative_example"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Smoothing and and annealing interpretation
 \end_layout
 
 \begin_layout Standard
@@ -2457,8 +2716,8 @@ annealing
  interpretation of the smoothing.
 \end_layout
 
-\begin_layout Paragraph
-Incorporating second order information
+\begin_layout Subsection
+Incorporating geometric approaches
 \end_layout
 
 \begin_layout Standard
