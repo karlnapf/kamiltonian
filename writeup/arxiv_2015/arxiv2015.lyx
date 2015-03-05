@@ -147,8 +147,8 @@ smoothing the chain history, we directly model its
 \emph on
 global
 \emph default
- log-density as an RKHS function via fitting an approximate infinite exponential
- family model.
+ log-density as an RKHS function via fitting a infinite exponential family
+ model.
  This is not only a more interpretable and well-posed problem, but it also
  provides a differentiable log-density approximation, which can directly
  be used to simulate trajectories from a Hamiltonian dynamical system.
@@ -201,6 +201,10 @@ Write framework to compute average acceptance probability of a trajectory
 \strikeout on
 Write section that empirically analyses approximate trajectories on Gaussians
  and Banana in terms of dimension
+\end_layout
+
+\begin_layout Itemize
+Random features
 \end_layout
 
 \begin_layout Itemize
@@ -337,19 +341,6 @@ Need something on burnin time.
 
 \series bold
 Open questions:
-\end_layout
-
-\begin_layout Itemize
-Linear time is still too expensive.
- Random featues? Since we need to estimate 
-\begin_inset Formula $\alpha\in\mathbb{R}^{n}$
-\end_inset
-
-, plugging in the approximate features naively still gives an 
-\begin_inset Formula $n$
-\end_inset
-
--dimensional linear system
 \end_layout
 
 \begin_layout Itemize
@@ -1184,7 +1175,14 @@ reference "eq:infinite_exp_family"
 \end_layout
 
 \begin_layout Standard
-The proposed empirical estimator in 
+The proposed empirical estimator to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
@@ -1209,29 +1207,29 @@ key "SriFukKumGreHyv14"
 
 .
  As we are eventually interested in constructing an adaptive MCMC sampler
- that uses at least a large part of the history of the Markov chain to guide
- proposals, a cost scaling as a sixth order polynomial is infeasible.
- We therefore now develop a pragmatic approximation that involves inverting
- an 
-\begin_inset Formula $n$
-\end_inset
-
--dimensional matrix, which scales as 
-\begin_inset Formula ${\cal O}(n^{3})$
-\end_inset
-
-.
- Eventually, we will add another layer of approximate standard in kernel
- methods to estimate the density in 
+ that uses 
+\emph on
+all
+\emph default
+ of the history of the Markov chain to guide proposals, a cost scaling as
+ a sixth order polynomial is infeasible.
+ We therefore will develop an approximate estimator that, after a 
 \emph on
 linear 
 \emph default
-time
+one-off cost, uses rank-one updates whose costs are 
 \emph on
-.
- 
+constant 
 \emph default
-We first give a brief review of score matching.
+in 
+\begin_inset Formula $n$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We begin by giving a brief review of score matching.
 \end_layout
 
 \begin_layout Subsection
@@ -1272,37 +1270,54 @@ key "Hyvarinen-05"
 
 \end_inset
 
-, we assume that a variable 
-\begin_inset Formula $\xi\sim p_{x}$
+ (using a slightly different notation), we assume that a variable 
+\begin_inset Formula $\xi\sim\pi$
 \end_inset
 
  has some unknown probability density function 
-\begin_inset Formula $p_{x}(\cdot)$
+\begin_inset Formula $\pi(\cdot)$
 \end_inset
 
  defined on 
 \begin_inset Formula $\mathbb{R}^{d}$
 \end_inset
 
-, and that the log probability takes the form 
+.
+ We model the log probability with a parametric model of the form 
 \begin_inset Formula 
-\[
-\log p(\xi;\alpha)=\log q(\xi;\alpha)-\log Z(\alpha),
-\]
+\begin{equation}
+\log\tilde{\pi}(\xi;\theta)=\log q(\xi;\theta)-\log Z(f),\label{eq:score_matching_parametric_model}
+\end{equation}
 
 \end_inset
 
  where 
-\begin_inset Formula $\alpha$
+\begin_inset Formula $f$
 \end_inset
 
- is a vector of parameters of yet unspecified dimension.
+ is a vector of parameters of yet unspecified dimension (c.f.
+ natural parameters 
+\begin_inset Formula $f$
+\end_inset
+
+ of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+), and 
+\begin_inset Formula $Z(\theta)$
+\end_inset
+
+ an unknown normalising constant.
  We aim to approximate 
-\begin_inset Formula $p_{x}(\cdot)$
+\begin_inset Formula $\pi(\cdot)$
 \end_inset
 
  by 
-\begin_inset Formula $p(\cdot;\hat{\theta})$
+\begin_inset Formula $\tilde{\pi}(\cdot;\hat{\theta})$
 \end_inset
 
 , i.e., to find 
@@ -1311,7 +1326,15 @@ key "Hyvarinen-05"
 
  from a set of fixed i.i.d.
  samples 
-\begin_inset Formula $\{x_{i}\sim p_{x}\}_{i=1}^{n}$
+\begin_inset Formula $\{x_{i}\sim\pi\}_{i=1}^{n}$
+\end_inset
+
+ -- 
+\emph on
+without 
+\emph default
+estimating 
+\begin_inset Formula $Z(\theta)$
 \end_inset
 
 .
@@ -1331,7 +1354,7 @@ key "Hyvarinen-05"
 
 \begin_inset Formula 
 \[
-J(\alpha)=\frac{1}{2}\int_{\xi}p_{x}(\xi)\left\Vert \psi(\xi;\alpha)-\psi_{x}(\xi)\right\Vert ^{2}d\xi,
+J(\theta)=\frac{1}{2}\int_{\xi}\pi(\xi)\left\Vert \psi(\xi;\theta)-\psi_{\pi}(\xi)\right\Vert ^{2}d\xi,
 \]
 
 \end_inset
@@ -1339,13 +1362,13 @@ J(\alpha)=\frac{1}{2}\int_{\xi}p_{x}(\xi)\left\Vert \psi(\xi;\alpha)-\psi_{x}(\x
 where 
 \begin_inset Formula 
 \[
-\psi(\xi;\alpha)=\nabla_{\xi}\log p(\xi;\alpha),
+\psi(\xi;\theta)=\nabla_{\xi}\log\tilde{\pi}(\xi;\theta),
 \]
 
 \end_inset
 
 and 
-\begin_inset Formula $\psi_{x}(\xi)$
+\begin_inset Formula $\psi_{\pi}(\xi)$
 \end_inset
 
  is the derivative wrt 
@@ -1353,7 +1376,7 @@ and
 \end_inset
 
  of the unknown true density 
-\begin_inset Formula $p_{x}(\xi)$
+\begin_inset Formula $\pi(\xi)$
 \end_inset
 
 .
@@ -1365,40 +1388,40 @@ key "Hyvarinen-05"
 
 \end_inset
 
-, it is possible to express 
-\begin_inset Formula $J(\alpha)$
+ using partial integration, it is possible to express 
+\begin_inset Formula $J(f)$
 \end_inset
 
  without access to the unknown 
-\begin_inset Formula $\psi_{x}(\xi)$
+\begin_inset Formula $\psi_{\pi}(\xi)$
 \end_inset
 
  as
 \begin_inset Formula 
 \[
-J(\alpha)=\int_{\xi}p_{x}(\xi)\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(\xi;\alpha)+\frac{1}{2}\psi_{\ell}(\xi;\alpha)^{2}\right]d\xi,
+J(\theta)=\int_{\xi}\pi(\xi)\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(\xi;\theta)+\frac{1}{2}\psi_{\ell}(\xi;\theta)^{2}\right]d\xi,
 \]
 
 \end_inset
 
 where
 \begin_inset Formula 
-\[
-\psi_{\ell}(\xi;\alpha)=\frac{\partial\log q(\xi;\alpha)}{\partial\xi_{\ell}}
-\]
+\begin{equation}
+\psi_{\ell}(\xi;\theta)=\frac{\partial\log q(\xi;\theta)}{\partial\xi_{\ell}}\label{eq:score_match_first_score}
+\end{equation}
 
 \end_inset
 
 and
 \begin_inset Formula 
-\[
-\partial_{\ell}\psi_{\ell}(\xi;\alpha)=\frac{\partial^{2}\log q(\xi;\alpha)}{\partial\xi_{\ell}^{2}}.
-\]
+\begin{equation}
+\partial_{\ell}\psi_{\ell}(\xi;\theta)=\frac{\partial^{2}\log q(\xi;\theta)}{\partial\xi_{\ell}^{2}}.\label{eq:score_match_second_score}
+\end{equation}
 
 \end_inset
 
 Replacing the integral 
-\begin_inset Formula $\int_{\xi}p_{x}(\xi)$
+\begin_inset Formula $\int_{\xi}\pi(\xi)$
 \end_inset
 
  with an average over the samples 
@@ -1406,13 +1429,13 @@ Replacing the integral
 \end_inset
 
  gives us a sample version of 
-\begin_inset Formula $J(\alpha)$
+\begin_inset Formula $J(\theta)$
 \end_inset
 
 , minimising of which is consistent,
 \begin_inset Formula 
 \begin{equation}
-\hat{J}(\alpha)=\frac{1}{m}\sum_{\ell=1}^{d}\sum_{i=1}^{n}\left[\partial_{\ell}\psi_{\ell}(x_{i};\alpha)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};\alpha)\right].\label{eq:score_matching_objective_sample_version}
+\hat{J}(\theta)=\frac{1}{m}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\theta)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};\theta)\right].\label{eq:score_matching_objective_sample_version}
 \end{equation}
 
 \end_inset
@@ -1421,218 +1444,378 @@ Replacing the integral
 \end_layout
 
 \begin_layout Standard
-We next combine score matching with an approximation to 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
-Infinite exponential family 
-\begin_inset Quotes eld
-\end_inset
-
-lite
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:exp_family_lite"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-From the representer theorem, a consistent estimator to  
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
- is a linear combination of 
-\begin_inset Formula $n\times d$
-\end_inset
-
- terms, 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SriFukKumGreHyv14"
-
-\end_inset
-
-.
- In order to save computation, we project the original solution onto the
- (growing) span of 
-\begin_inset Formula $\left\{ k(z_{i},\cdot)\right\} _{i=1}^{n}$
-\end_inset
-
-
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-Note that other (growing) basis sets might equally be used
-\end_layout
-
-\end_inset
-
-, where 
-\begin_inset Formula $\left\{ z_{i}\right\} _{i=1}^{n}$
-\end_inset
-
- are points from the history of the Markov chain (details in the next section).
- Consequently, this approximate solution can be written as 
-\begin_inset Formula $\sum_{i=1}^{m}\alpha_{i}k(x_{i},\cdot)$
-\end_inset
-
-.
- We then assume the following parametric form for the unnormalised log-target
-\begin_inset Formula 
-\[
-\log q(\xi;\alpha)=\log\Pr(\xi;\alpha)+\log Z(\alpha)=\sum_{i=1}^{n}\alpha_{i}k(x_{i},\xi),
-\]
-
-\end_inset
-
-where 
-\begin_inset Formula $\alpha\in\mathbb{R}^{n}$
-\end_inset
-
- is the 
-\begin_inset Formula $n$
-\end_inset
-
--dimensional parameter vector.
- Given an empirical fit of 
-\begin_inset Formula $\hat{\alpha}$
-\end_inset
-
-, the resulting unnormalised log-density estimator has gradients
-\begin_inset Formula 
-\begin{equation}
-\nabla_{\theta}\log q(\theta;\hat{\alpha})=\sum_{i=1}^{n}\hat{\alpha}_{i}\nabla_{\theta}k(x_{i},\theta),\label{eq:density_estimate_gradient}
-\end{equation}
-
-\end_inset
-
-which are easily obtained for common kernels.
-\end_layout
-
-\begin_layout Paragraph
-Gaussian Kernel
-\end_layout
-
-\begin_layout Standard
-We now provide an example implementation of score matching for the well
- known Gaussian kernel 
-\begin_inset Formula 
-\[
-k(x,y)=\exp\left(-\frac{\|x-y\|^{2}}{\sigma}\right),
-\]
-
-\end_inset
-
-whose corresponding RKHS is infinite dimensional.
- The score function is then given by
-\begin_inset Formula 
-\[
-\psi_{\ell}(\xi;\alpha)=\frac{2}{\sigma}\sum_{i=1}^{m}\alpha_{i}(x_{i\ell}-\xi_{\ell})\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right).
-\]
-
-\end_inset
-
-Omitting intermediate details (see appendix 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:appendix_kernel_score_matching"
-
-\end_inset
-
-), the resulting sample objective function 
-\begin_inset Formula $J(\alpha)$
-\end_inset
-
- in  
+We next apply the score matching estimator in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
- is globally minimised for
-\begin_inset Formula 
-\begin{equation}
-\hat{\alpha}=\frac{-\sigma}{2}(C+\lambda(K+I))^{-1}b,\label{eq:kernel_score_matching_linear_system}
-\end{equation}
-
-\end_inset
-
-which is a 
-\begin_inset Formula $n$
-\end_inset
-
--dimensional linear system where we added a regulariser using the norm of
+ to estimate the parameters of the infinite exponential family model in
  
-\begin_inset Formula $\alpha$
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
 \end_inset
 
+.
+ But rather than following the 
+\begin_inset Formula ${\cal O}(n^{6}d^{6})$
+\end_inset
+
+ approach from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+, we use an approximate feature space version with a finite set of random
+ set of basis functions.
+\end_layout
+
+\begin_layout Subsection
+Random Fourier features for score matching
+\end_layout
+
+\begin_layout Standard
+Estimating 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ requires 
+\begin_inset Formula ${\cal O}(n^{6}d^{6})$
+\end_inset
+
+ computation and 
+\begin_inset Formula ${\cal O}(n^{2}d^{2})$
+\end_inset
+
+ storage.
+ This is clearly limiting, in particular if training samples comes from
+ an increasingly long Markov chain.
  
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, whose computational costs are 
+\begin_inset Formula ${\cal O}(nd^{2})$
+\end_inset
+
+ side stepped the problem of increasing computation via repeatedly updating
+ a random subsample of fixed size from the Markov chain history, and recomputing
+ their proposal mechanism.
+ In this section, we take a different approach: indead of fitting an exact
+ infinite dimensional model on a subset of the available data, we fit an
+ approximation to the infinite model to 
 \emph on
-and
+all
 \emph default
- the norm of the solution 
-\begin_inset Formula $\hat{f}$
+ available data.
+ To that end, we construct an approximate estimator of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
 \end_inset
 
-, and defined
+, whose computational costs remain constant as 
+\begin_inset Formula $n\to\infty$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We follow the framework developed by 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rahimi2007"
+
+\end_inset
+
+.
+ Assume a translation invariant kernel 
+\begin_inset Formula $k(x,y)=\tilde{k}(x-y)$
+\end_inset
+
+.
+ Bochners theorem gives the representation
 \begin_inset Formula 
-\begin{align}
-b & =\sum_{\ell=1}^{D}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{n}\label{eq:score_match_b}\\
-C & =\sum_{\ell=1}^{D}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\in\mathbb{R}^{n\times n},\label{eq:score_match_C}
-\end{align}
+\[
+k(x,y)=\tilde{k}(x-y)=\int_{\mathbb{R}^{d}}\exp\left(i\omega^{T}(x-y)\right)d\Gamma(\omega),
+\]
 
 \end_inset
 
-and
+where 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ is the Fourier transform of the kernel.
+ One can define an 
+\begin_inset Formula $m$
+\end_inset
+
+-dimensional approximate feature space 
+\begin_inset Formula ${\cal H}_{m}=\mathbb{R}^{m}$
+\end_inset
+
+ with a (fixed) set of random basis vectors 
+\begin_inset Formula $\omega_{i}\sim\Gamma$
+\end_inset
+
+.
+ Denote by 
+\begin_inset Formula $\phi_{x}\in\mathbb{R}^{m}$
+\end_inset
+
+ the embedding of a point 
+\begin_inset Formula $x\in{\cal X}=\mathbb{R^{d}}$
+\end_inset
+
+ into 
+\begin_inset Formula ${\cal H}_{m}=\mathbb{R}^{m}$
+\end_inset
+
+.
+ We then can approximate the kernel function using the finite rank expansion
+ 
+\begin_inset Formula $K_{ij}:=k(z_{i},z_{j})\approx\phi_{i}^{T}\phi_{j}$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rahimi2007"
+
+\end_inset
+
+ established consistency, finite sample convergence rates, and good performance
+ in practice.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Finite dimensional approximate infinite exponential family estimators
+\end_layout
+
+\begin_layout Standard
+The infinite dimensional exponential family form in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ can be expressed in this approximate feature space via replacing natural
+ parameters 
+\begin_inset Formula $f\in{\cal H}$
+\end_inset
+
+ by 
+\begin_inset Formula $\theta\in{\cal H}_{m}$
+\end_inset
+
+ and sufficient statistics 
+\begin_inset Formula $k(x,\cdot)\in{\cal H}$
+\end_inset
+
+ by 
+\begin_inset Formula $\phi_{x}\in{\cal H}_{m}$
+\end_inset
+
+ as
 \begin_inset Formula 
 \begin{align*}
-K_{ij}: & =\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\\
-s_{i\ell} & :=x_{i\ell}^{2}\\
-x_{\ell} & :=\left[\begin{array}{ccc}
-x_{1\ell} & \dots & x_{m\ell}\end{array}\right]^{\top}\\
-D_{x_{\ell}} & :=\diag(x_{\ell}).
+\exp\left(\langle f,k(x,\cdot)\rangle_{{\cal H}}-A(f)\right) & \approx\exp\left(\langle\theta,k(x,\cdot)\rangle_{{\cal H}_{m}}-A(f)\right)\\
+ & =\exp\left(\theta^{T}\phi_{x}-A(f)\right)
 \end{align*}
 
 \end_inset
 
-See appendix 
+Via setting the unnormalised log-density of the parametric form in 
 \begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:appendix_kernel_score_matching"
+LatexCommand eqref
+reference "eq:score_matching_parametric_model"
 
 \end_inset
 
- for an expression in terms of 
-\emph on
-training
-\emph default
+ to 
+\begin_inset Formula $\log q(\xi;\theta)=\theta^{T}\phi_{x}$
+\end_inset
+
+, we obtain an approximate infinite exponential family model of the target
+ density 
+\begin_inset Formula $\pi$
+\end_inset
+
+.
+ In order to fit, we need to compute the score matching functions in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_first_score"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_second_score"
+
+\end_inset
+
+, which have the simple form
+\begin_inset Formula 
+\begin{align*}
+\psi_{\ell}(\xi;\theta) & =\theta^{T}\dot{\phi}_{x}^{\ell}\quad\text{and}\quad\partial_{l}\psi_{\ell}(\xi;\theta)=\theta^{T}\ddot{\phi}_{x}^{\ell},
+\end{align*}
+
+\end_inset
+
+where we defined the 
+\begin_inset Formula $m$
+\end_inset
+
+-dimensional feature vector derivatives 
+\begin_inset Formula $\dot{\phi}_{\xi}^{\ell}:=\frac{\partial}{\partial\xi_{\ell}}\phi_{\xi}$
+\end_inset
+
  and 
-\emph on
-testing
-\emph default
- data.
+\begin_inset Formula $\ddot{\phi}_{\xi}^{\ell}:=\frac{\partial^{2}}{\partial\xi_{\ell}^{2}}\phi_{\xi}$
+\end_inset
+
+.
+ Plugging those into the empirical score matching objective in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+, we arrive at
+\begin_inset Formula 
+\begin{align*}
+J(\theta) & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\theta)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};\theta)\right]\\
+ & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\theta^{T}\ddot{\phi}_{x_{i}}^{\ell}+\frac{1}{2}\theta^{T}\left(\ddot{\phi}_{\xi}^{\ell}\ddot{\phi}_{\xi}^{\ell T}\right)\theta\right]\\
+ & =\theta^{T}C\theta-\theta^{T}b
+\end{align*}
+
+\end_inset
+
+ where
+\begin_inset Formula 
+\[
+b:=-\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}\quad\text{and}\quad C:=\frac{1}{2n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\dot{\phi}_{x_{i}}^{\ell}{}^{T}\right)\in\mathbb{R}^{m\times m}.
+\]
+
+\end_inset
+
+Assuming 
+\begin_inset Formula $C$
+\end_inset
+
+ is invertible (trivial for 
+\begin_inset Formula $n\geq m$
+\end_inset
+
+), the objective is uniquely minimised by
+\begin_inset Formula 
+\[
+\hat{\theta}=C^{-1}b.
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Example: Gaussian kernel
+\end_layout
+
+\begin_layout Standard
+The approximate feature mapping for the well known Gaussian kernel
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+k(x,y)={\cal \exp}\left(\frac{\Vert x-y\Vert_{2}^{2}}{2\sigma^{2}}\right)
+\]
+
+\end_inset
+
+is given by
+\begin_inset Formula 
+\[
+\phi_{x}=\left[\cos(\omega_{1}^{T}x+u_{1}),\dots,\cos(\omega_{m}^{T}x+u_{m})\right],
+\]
+
+\end_inset
+
+with random basis vectors
+\begin_inset Formula 
+\begin{align*}
+w_{i}\sim{\cal N}\left(w_{i}\Big\vert\mathbf{0},\frac{1}{2}\sigma^{-2}I_{m}\right),
+\end{align*}
+
+\end_inset
+
+and random offsets 
+\begin_inset Formula 
+\[
+u_{i}\sim\texttt{Uniform}[0,2\pi]
+\]
+
+\end_inset
+
+for 
+\begin_inset Formula $i=1\dots m$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Rank-one updates
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand cite
+key "seeger2004low"
+
+\end_inset
+
+ and 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/jcrudy/choldate
+\end_layout
+
+\end_inset
+
+ write how 
+\begin_inset Formula $C^{-1}$
+\end_inset
+
+ can be updated if a new point 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ arrives.
 \end_layout
 
 \begin_layout Subsection
@@ -2349,234 +2532,6 @@ key "RobertsRosenthal2007"
 \end_layout
 
 \begin_layout Subsection
-Reducing computational costs via incomplete Cholesky
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:linear_computational_costs"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Solving the linear system in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:kernel_score_matching_linear_system"
-
-\end_inset
-
- requires 
-\begin_inset Formula ${\cal O}(n^{3})$
-\end_inset
-
- computation and 
-\begin_inset Formula ${\cal O}(n^{2})$
-\end_inset
-
- storage.
- This can be limiting, in particular if data comes from an increasingly
- long Markov chain.
- We therefore now apply a low-rank approximation to the kernel matrix via
- incomplete Cholesky 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Alg. 5.12"
-key "shawe2004kernel"
-
-\end_inset
-
-, that is a standard way to achieve linear computational costs for kernel
- methods.
- We rewrite any kernel matrix of the form 
-\begin_inset Formula $K_{ij}=k(x_{i},x_{j})$
-\end_inset
-
- as
-\begin_inset Formula 
-\[
-K\approx LL^{T},
-\]
-
-\end_inset
-
-where 
-\begin_inset Formula $L\in\mathbb{R}^{n\times\ell}$
-\end_inset
-
- is obtained via dual partial Gram–Schmidt orthonormalisation and costs
- both 
-\begin_inset Formula ${\cal O}(n\ell)$
-\end_inset
-
- computation and storage.
- Usually 
-\begin_inset Formula $\ell\ll n$
-\end_inset
-
-, and 
-\begin_inset Formula $\ell$
-\end_inset
-
- can be chosen via an accuarcy cut-off parameter on the kernel spectrum
- in the same fashion as for other low-rank approximations, such as PCA
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-In this paper, we solely use the Gaussian kernel, whose spectrum decays
- exponentially fast.
-\end_layout
-
-\end_inset
-
-.
- Given such representation of 
-\begin_inset Formula $K$
-\end_inset
-
-, we can rewrite any dot product with a vector 
-\begin_inset Formula $b\in\mathbb{R}^{n}$
-\end_inset
-
- as 
-\begin_inset Formula 
-\[
-Kb\approx(LL^{T})b=L(L^{T}b),
-\]
-
-\end_inset
-
-where each left multiplication of 
-\begin_inset Formula $L$
-\end_inset
-
- costs 
-\begin_inset Formula ${\cal O}(n\ell)$
-\end_inset
-
- and we never need to store 
-\begin_inset Formula $LL^{T}$
-\end_inset
-
-.
- This idea can be used to achieve costs of 
-\begin_inset Formula ${\cal O}(n\ell)$
-\end_inset
-
- when (approximately) computing 
-\begin_inset Formula $b$
-\end_inset
-
- in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_match_b"
-
-\end_inset
-
-, and left-multiplying 
-\begin_inset Formula $C$
-\end_inset
-
- and 
-\begin_inset Formula $C+\lambda(K+I)$
-\end_inset
-
- in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_match_C"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:kernel_score_matching_linear_system"
-
-\end_inset
-
-.
- Combining the technique with conjugate gradient (CG) 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "shewchuk1994introduction"
-
-\end_inset
-
- allows to solve 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:kernel_score_matching_linear_system"
-
-\end_inset
-
- with a maximum of 
-\begin_inset Formula $n$
-\end_inset
-
- such matrix-vector products, yielding a total computational cost of 
-\begin_inset Formula ${\cal O}(n^{2}\ell)$
-\end_inset
-
-.
- In practice, we are not interested in an exact solution of 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:kernel_score_matching_linear_system"
-
-\end_inset
-
- and we therefore can stop CG after a fixed number of iterations 
-\begin_inset Formula $\tau\ll n$
-\end_inset
-
-.
- We arrive at a total cost of 
-\begin_inset Formula ${\cal O}(n\ell\tau)$
-\end_inset
-
- computation and 
-\begin_inset Formula ${\cal O}(n\ell)$
-\end_inset
-
- storage.
- We will publish the implementation in the near future for further reference.
-\end_layout
-
-\begin_layout Standard
-Combined with a random subsample 
-\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
-\end_inset
-
- of the chain history 
-\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
-\end_inset
-
- as described in Section 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "sub:adaptive_subsampling"
-
-\end_inset
-
-, we arrive at the same computational costs as previous kernel adaptive
- MCMC methods, 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sejdinovic_kernel_2014"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
 Learning free parameters
 \end_layout
 
@@ -3275,12 +3230,436 @@ Assuming
 
 \end_layout
 
-\begin_layout Paragraph
-Incomplete Cholesky
+\begin_layout Subsection
+Infinite exponential family 
+\begin_inset Quotes eld
+\end_inset
+
+lite
+\begin_inset Quotes erd
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-TODO
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:exp_family_lite"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From the representer theorem, a consistent estimator to  
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ is a linear combination of 
+\begin_inset Formula $n\times d$
+\end_inset
+
+ terms, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+.
+ In order to save computation, we project the original solution onto the
+ (growing) span of 
+\begin_inset Formula $\left\{ k(z_{i},\cdot)\right\} _{i=1}^{n}$
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Note that other (growing) basis sets might equally be used
+\end_layout
+
+\end_inset
+
+, where 
+\begin_inset Formula $\left\{ z_{i}\right\} _{i=1}^{n}$
+\end_inset
+
+ are points from the history of the Markov chain (details in the next section).
+ Consequently, this approximate solution can be written as 
+\begin_inset Formula $\sum_{i=1}^{m}\alpha_{i}k(x_{i},\cdot)$
+\end_inset
+
+.
+ We then assume the following parametric form for the unnormalised log-target
+\begin_inset Formula 
+\[
+\log q(\xi;\alpha)=\log\Pr(\xi;\alpha)+\log Z(\alpha)=\sum_{i=1}^{n}\alpha_{i}k(x_{i},\xi),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\alpha\in\mathbb{R}^{n}$
+\end_inset
+
+ is the 
+\begin_inset Formula $n$
+\end_inset
+
+-dimensional parameter vector.
+ Given an empirical fit of 
+\begin_inset Formula $\hat{\alpha}$
+\end_inset
+
+, the resulting unnormalised log-density estimator has gradients
+\begin_inset Formula 
+\begin{equation}
+\nabla_{\theta}\log q(\theta;\hat{\alpha})=\sum_{i=1}^{n}\hat{\alpha}_{i}\nabla_{\theta}k(x_{i},\theta),\label{eq:density_estimate_gradient}
+\end{equation}
+
+\end_inset
+
+which are easily obtained for common kernels.
+\end_layout
+
+\begin_layout Paragraph
+Gaussian Kernel
+\end_layout
+
+\begin_layout Standard
+We now provide an example implementation of score matching for the well
+ known Gaussian kernel 
+\begin_inset Formula 
+\[
+k(x,y)=\exp\left(-\frac{\|x-y\|^{2}}{\sigma}\right),
+\]
+
+\end_inset
+
+whose corresponding RKHS is infinite dimensional.
+ The score function is then given by
+\begin_inset Formula 
+\[
+\psi_{\ell}(\xi;\alpha)=\frac{2}{\sigma}\sum_{i=1}^{m}\alpha_{i}(x_{i\ell}-\xi_{\ell})\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right).
+\]
+
+\end_inset
+
+Omitting intermediate details (see appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:appendix_kernel_score_matching"
+
+\end_inset
+
+), the resulting sample objective function 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ in  
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ is globally minimised for
+\begin_inset Formula 
+\begin{equation}
+\hat{\alpha}=\frac{-\sigma}{2}(C+\lambda(K+I))^{-1}b,\label{eq:kernel_score_matching_linear_system}
+\end{equation}
+
+\end_inset
+
+which is a 
+\begin_inset Formula $n$
+\end_inset
+
+-dimensional linear system where we added a regulariser using the norm of
+ 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ 
+\emph on
+and
+\emph default
+ the norm of the solution 
+\begin_inset Formula $\hat{f}$
+\end_inset
+
+, and defined
+\begin_inset Formula 
+\begin{align}
+b & =\sum_{\ell=1}^{D}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{n}\label{eq:score_match_b}\\
+C & =\sum_{\ell=1}^{D}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\in\mathbb{R}^{n\times n},\label{eq:score_match_C}
+\end{align}
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{align*}
+K_{ij}: & =\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\\
+s_{i\ell} & :=x_{i\ell}^{2}\\
+x_{\ell} & :=\left[\begin{array}{ccc}
+x_{1\ell} & \dots & x_{m\ell}\end{array}\right]^{\top}\\
+D_{x_{\ell}} & :=\diag(x_{\ell}).
+\end{align*}
+
+\end_inset
+
+See appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:appendix_kernel_score_matching"
+
+\end_inset
+
+ for an expression in terms of 
+\emph on
+training
+\emph default
+ and 
+\emph on
+testing
+\emph default
+ data.
+\end_layout
+
+\begin_layout Subsection
+Reducing computational costs via incomplete Cholesky
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:linear_computational_costs"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Solving the linear system in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+ requires 
+\begin_inset Formula ${\cal O}(n^{3})$
+\end_inset
+
+ computation and 
+\begin_inset Formula ${\cal O}(n^{2})$
+\end_inset
+
+ storage.
+ This can be limiting, in particular if data comes from an increasingly
+ long Markov chain.
+ We therefore now apply a low-rank approximation to the kernel matrix via
+ incomplete Cholesky 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Alg. 5.12"
+key "shawe2004kernel"
+
+\end_inset
+
+, that is a standard way to achieve linear computational costs for kernel
+ methods.
+ We rewrite any kernel matrix of the form 
+\begin_inset Formula $K_{ij}=k(x_{i},x_{j})$
+\end_inset
+
+ as
+\begin_inset Formula 
+\[
+K\approx LL^{T},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $L\in\mathbb{R}^{n\times\ell}$
+\end_inset
+
+ is obtained via dual partial Gram–Schmidt orthonormalisation and costs
+ both 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ computation and storage.
+ Usually 
+\begin_inset Formula $\ell\ll n$
+\end_inset
+
+, and 
+\begin_inset Formula $\ell$
+\end_inset
+
+ can be chosen via an accuarcy cut-off parameter on the kernel spectrum
+ in the same fashion as for other low-rank approximations, such as PCA
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In this paper, we solely use the Gaussian kernel, whose spectrum decays
+ exponentially fast.
+\end_layout
+
+\end_inset
+
+.
+ Given such representation of 
+\begin_inset Formula $K$
+\end_inset
+
+, we can rewrite any dot product with a vector 
+\begin_inset Formula $b\in\mathbb{R}^{n}$
+\end_inset
+
+ as 
+\begin_inset Formula 
+\[
+Kb\approx(LL^{T})b=L(L^{T}b),
+\]
+
+\end_inset
+
+where each left multiplication of 
+\begin_inset Formula $L$
+\end_inset
+
+ costs 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ and we never need to store 
+\begin_inset Formula $LL^{T}$
+\end_inset
+
+.
+ This idea can be used to achieve costs of 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ when (approximately) computing 
+\begin_inset Formula $b$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_b"
+
+\end_inset
+
+, and left-multiplying 
+\begin_inset Formula $C$
+\end_inset
+
+ and 
+\begin_inset Formula $C+\lambda(K+I)$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_C"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+.
+ Combining the technique with conjugate gradient (CG) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "shewchuk1994introduction"
+
+\end_inset
+
+ allows to solve 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+ with a maximum of 
+\begin_inset Formula $n$
+\end_inset
+
+ such matrix-vector products, yielding a total computational cost of 
+\begin_inset Formula ${\cal O}(n^{2}\ell)$
+\end_inset
+
+.
+ In practice, we are not interested in an exact solution of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+ and we therefore can stop CG after a fixed number of iterations 
+\begin_inset Formula $\tau\ll n$
+\end_inset
+
+.
+ We arrive at a total cost of 
+\begin_inset Formula ${\cal O}(n\ell\tau)$
+\end_inset
+
+ computation and 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ storage.
+ We will publish the implementation in the near future for further reference.
+\end_layout
+
+\begin_layout Standard
+Combined with a random subsample 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+\end_inset
+
+ of the chain history 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+\end_inset
+
+ as described in Section 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sub:adaptive_subsampling"
+
+\end_inset
+
+, we arrive at the same computational costs as previous kernel adaptive
+ MCMC methods, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
