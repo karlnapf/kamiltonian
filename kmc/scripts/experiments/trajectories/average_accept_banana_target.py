@@ -11,7 +11,7 @@ if __name__ == "__main__":
     V = 100.
     bananicity = 0.03
     sigma_p = 1.
-    Ds = 2 ** np.arange(11)
+    Ds = 2 ** np.arange(2,11)
     num_repetitions = 100
     N = 500
     lmbda = 1.
