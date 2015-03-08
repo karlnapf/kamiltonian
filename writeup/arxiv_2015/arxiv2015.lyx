@@ -43,6 +43,8 @@ University College London \\
 \newcommand{\new}{\marginpar{NEW}}
 
 %\nipsfinalcopy % Uncomment for camera-ready version
+
+\DeclareMathOperator*{\argmin}{arg\,min}
 \end_preamble
 \use_default_options false
 \begin_modules
@@ -127,14 +129,14 @@ Kamiltonian Monte Carlo
 \end_layout
 
 \begin_layout Abstract
-We propose an adaptive Kernel Hamiltonian Monte Carlo (KMC) algorithm to
- simulate from an arbritary target probability density.
- Our sampler fills a gap: when the density is intractable, classic HMC methodolo
-gy 
+We propose an adaptive, gradient free Hamiltonian Monte Carlo (HMC) algorithm
+ to simulate from an arbritary target probability density.
+ Our sampler fills a gap: when the target density is intractable or its
+ gradients are not available, classic HMC methodology 
 \emph on
 cannot
 \emph default
- be applied -- one is left with random walk methods which suffer from bad
+ be applied -- one is left with random walk methods, which suffer from bad
  mixing behaviour.
  We extend recent ideas of adaptively learning target covariance structure
  in a Reproducing Kernel Hilbert Space (RKHS), based on the history of the
@@ -147,11 +149,13 @@ smoothing the chain history, we directly model its
 \emph on
 global
 \emph default
- log-density as an RKHS function via fitting a infinite exponential family
- model.
- This is not only a more interpretable and well-posed problem, but it also
- provides a differentiable log-density approximation, which can directly
- be used to simulate trajectories from a Hamiltonian dynamical system.
+ log-density as an RKHS function.
+ To that end, we take recent ideas of fitting an unnormalised infinite exponenti
+al family models, and reduce excessive computational costs via efficient
+ approximations using random basis functions.
+ This provides a robust kernel induced Hamiltonian flow which can be used
+ to simulate trajectories on a level set that converges to the true level
+ set in the Markov chain's asymptotic limit.
  We construct an 
 \emph on
 exact 
@@ -159,7 +163,8 @@ exact
 MCMC algorithm that (i) behaves similar to HMC in terms of autocorrelation
  and acceptance rates, but that (ii) does not require target gradients,
  and that in particular (iii) works well in high dimensions.
- We support our claims with experimental studies.
+ We support our claims with theoretical analysis in the form of finite sample
+ convergence rates and experimental studies.
 \end_layout
 
 \begin_layout Paragraph
@@ -1038,7 +1043,7 @@ We now describe a technique to obtain a kernel induced potential energy
 \end_layout
 
 \begin_layout Section
-Kernel Hamiltonian dynamics
+Kernel induced Hamiltonian dynamics
 \end_layout
 
 \begin_layout Standard
@@ -1270,7 +1275,7 @@ key "Hyvarinen-05"
 
 \end_inset
 
- (using a slightly different notation), we assume that a variable 
+, we assume that a variable 
 \begin_inset Formula $\xi\sim\pi$
 \end_inset
 
@@ -1534,7 +1539,7 @@ reference "eq:infinite_exp_family"
 \end_layout
 
 \begin_layout Standard
-We follow the framework developed by 
+We use the framework developed by 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Rahimi2007"
@@ -1568,7 +1573,7 @@ where
 \begin_inset Formula ${\cal H}_{m}=\mathbb{R}^{m}$
 \end_inset
 
- with a (fixed) set of random basis vectors 
+ with a fixed set of random basis vectors 
 \begin_inset Formula $\omega_{i}\sim\Gamma$
 \end_inset
 
@@ -1653,13 +1658,17 @@ reference "eq:score_matching_parametric_model"
 \begin_inset Formula $\log q(\xi;\theta)=\theta^{T}\phi_{x}$
 \end_inset
 
-, we obtain an approximate infinite exponential family model of the target
- density 
+, we obtain an finite dimensional approximate infinite exponential family
+ model of the target density 
 \begin_inset Formula $\pi$
 \end_inset
 
 .
- In order to fit, we need to compute the score matching functions in 
+ In order to fit 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+, we need to compute the score matching functions in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_match_first_score"
@@ -1675,9 +1684,9 @@ reference "eq:score_match_second_score"
 
 , which have the simple form
 \begin_inset Formula 
-\begin{align*}
-\psi_{\ell}(\xi;\theta) & =\theta^{T}\dot{\phi}_{x}^{\ell}\quad\text{and}\quad\partial_{l}\psi_{\ell}(\xi;\theta)=\theta^{T}\ddot{\phi}_{x}^{\ell},
-\end{align*}
+\begin{align}
+\psi_{\ell}(\xi;\theta) & =\theta^{T}\dot{\phi}_{x}^{\ell}\quad\text{and}\quad\partial_{l}\psi_{\ell}(\xi;\theta)=\theta^{T}\ddot{\phi}_{x}^{\ell},\label{eq:score_function_fourier}
+\end{align}
 
 \end_inset
 
@@ -1703,19 +1712,19 @@ reference "eq:score_matching_objective_sample_version"
 
 , we arrive at
 \begin_inset Formula 
-\begin{align*}
-J(\theta) & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\theta)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};\theta)\right]\\
- & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\theta^{T}\ddot{\phi}_{x_{i}}^{\ell}+\frac{1}{2}\theta^{T}\left(\ddot{\phi}_{\xi}^{\ell}\ddot{\phi}_{\xi}^{\ell T}\right)\theta\right]\\
- & =\theta^{T}C\theta-\theta^{T}b
-\end{align*}
+\begin{align}
+J(\theta) & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\theta)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};\theta)\right]\nonumber \\
+ & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\theta^{T}\dot{\phi}_{x_{i}}^{\ell}+\frac{1}{2}\theta^{T}\left(\ddot{\phi}_{x_{i}}^{\ell}\left(\ddot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\theta\right]\nonumber \\
+ & =\theta^{T}C\theta-\theta^{T}b\label{eq:score_match_objective_random_feats}
+\end{align}
 
 \end_inset
 
  where
 \begin_inset Formula 
-\[
-b:=-\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}\quad\text{and}\quad C:=\frac{1}{2n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\dot{\phi}_{x_{i}}^{\ell}{}^{T}\right)\in\mathbb{R}^{m\times m}.
-\]
+\begin{equation}
+b:=-\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\dot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}\quad\text{and}\quad C:=\frac{1}{2n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\ddot{\phi}_{x_{i}}^{\ell}\left(\ddot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\in\mathbb{R}^{m\times m}.\label{eq:b_and_C_random_feats}
+\end{equation}
 
 \end_inset
 
@@ -1729,9 +1738,9 @@ Assuming
 
 ), the objective is uniquely minimised by
 \begin_inset Formula 
-\[
-\hat{\theta}=C^{-1}b.
-\]
+\begin{equation}
+\hat{\theta}=C^{-1}b.\label{eq:score_match_linear_system_random_feats}
+\end{equation}
 
 \end_inset
 
@@ -1783,20 +1792,203 @@ for
 \end_inset
 
 .
+ The score functions 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:score_function_fourier"
+
+\end_inset
+
+ are given by
+\begin_inset Formula 
+\begin{align*}
+\dot{\phi}_{\xi}^{\ell} & =\frac{\partial}{\partial\xi_{\ell}}\left[\cos(\omega_{1}^{T}\xi+u_{1}),\dots,\cos(\omega_{m}^{T}\xi+u_{m})\right]\\
+ & =-\left[\sin(\omega_{1}^{T}\xi+u_{1})\omega_{1\ell},\dots,\sin(\omega_{m}^{T}\xi+u_{m})\omega_{1\ell}\right],
+\end{align*}
+
+\end_inset
+
+where 
+\begin_inset Formula $\omega_{1\ell}$
+\end_inset
+
+ is the 
+\begin_inset Formula $\ell$
+\end_inset
+
+-th component of 
+\begin_inset Formula $\omega_{1}$
+\end_inset
+
+, and
+\begin_inset Formula 
+\begin{align*}
+\ddot{\phi}_{\xi}^{\ell}: & =-\frac{\partial}{\partial\xi_{\ell}}\left[\sin(\omega_{1}^{T}\xi+u_{1})\omega_{1\ell},\dots,\sin(\omega_{m}^{T}\xi+u_{m})\omega_{1\ell}\right]\\
+ & =-\phi_{\xi}\odot\left[\omega_{1\ell}^{2},\dots,\omega_{1\ell}^{2}\right],
+\end{align*}
+
+\end_inset
+
+where 
+\begin_inset Formula $\odot$
+\end_inset
+
+ is the element-wise product.
 \end_layout
 
 \begin_layout Subsubsection
-Rank-one updates
+Rank-
+\begin_inset Formula $d$
+\end_inset
+
+ updates
 \end_layout
 
 \begin_layout Standard
+A convenient property of the above approximation is that it is possible
+ to update 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:b_and_C_random_feats"
+
+\end_inset
+
+ in an online fashion.
+ Each new point of the Markov chain history only adds a term of the form
+ 
+\begin_inset Formula $-\sum_{\ell=1}^{d}\dot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}$
+\end_inset
+
+ and 
+\begin_inset Formula $\frac{1}{2}\sum_{\ell=1}^{d}\left(\ddot{\phi}_{x_{i}}^{\ell}\left(\ddot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\in\mathbb{R}^{m\times m}$
+\end_inset
+
+ to the moving averages of 
+\begin_inset Formula $b$
+\end_inset
+
+ and 
+\begin_inset Formula $C$
+\end_inset
+
+ respectively.
+ Consequently, we can use rank-one updates to construct the minimiser of
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:score_match_objective_random_feats"
+
+\end_inset
+
+ from the solution of the previous iteration.
+ Pulling any scalling factors outside the matrix inversion, assume we have
+ computed the sum of the moving average terms, 
+\begin_inset Formula 
+\[
+\tilde{C}_{n}^{-1}:=\left(\frac{1}{2}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\ddot{\phi}_{x_{i}}^{\ell}\left(\ddot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\right)^{-1}
+\]
+
+\end_inset
+
+ from feature vectors derivatives 
+\begin_inset Formula $\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}$
+\end_inset
+
+ of some set of points 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=1}^{n}$
+\end_inset
+
+, and subsequently receive receive a new data 
+\begin_inset Formula $x_{n+1}$
+\end_inset
+
+.
+ We can then write the inverse of the resulting sum as
+\begin_inset Formula 
+\begin{align*}
+\tilde{C}_{n+1}^{-1}: & =\left(\tilde{C}_{n}+\frac{1}{2}\sum_{\ell=1}^{d}\left(\ddot{\phi}_{x_{n+1}}^{\ell}\left(\ddot{\phi}_{x_{n+1}}^{\ell}\right)^{T}\right)\right)^{-1}.
+\end{align*}
+
+\end_inset
+
+This is an inversion of the rank-
+\begin_inset Formula $d$
+\end_inset
+
+ perturbed previous matrix 
+\begin_inset Formula $\tilde{C}_{n}$
+\end_inset
+
+.
+ We can therefore construct this inverse using 
+\begin_inset Formula $d$
+\end_inset
+
+ successive applications of the Sherman-Morrison-Woodbury formula, using
+ 
+\begin_inset Formula ${\cal O}(dm^{2})$
+\end_inset
+
+ computation.
+ However, since such explicit inversions become numerically unstable, and
+ since 
+\begin_inset Formula $\tilde{C}_{n}$
+\end_inset
+
+ is positive definite
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $C$
+\end_inset
+
+ essentially the empirical covariance of the second order feature derivatives
+ 
+\begin_inset Formula $\ddot{\phi}_{x_{i}}^{\ell}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+, we can represent its inverse as a much more stable Cholesky factorisation
+ 
+\begin_inset Formula $\tilde{C}_{n}^{-1}=(\tilde{L}_{n}\tilde{L}_{n}^{T})^{-1}=\tilde{L}_{n}^{-T}\tilde{L}_{n}^{-1}$
+\end_inset
+
+.
+ Rather than storing 
+\begin_inset Formula $\tilde{C}_{n}^{-1}$
+\end_inset
+
+, we solve any linear system involving 
+\begin_inset Formula $\tilde{C}_{n}^{-1}$
+\end_inset
+
+ using cheap triangular back-substitution from 
+\begin_inset Formula $\tilde{L}_{n}$
+\end_inset
+
+.
+ It is also possible to perform cheap rank-
+\begin_inset Formula $d$
+\end_inset
+
+ updates of such Cholesky factors, see 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "seeger2004low"
 
 \end_inset
 
- and 
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+We use the implementation provided at 
 \begin_inset Flex URL
 status open
 
@@ -1807,15 +1999,35 @@ https://github.com/jcrudy/choldate
 
 \end_inset
 
- write how 
-\begin_inset Formula $C^{-1}$
+
+\end_layout
+
 \end_inset
 
- can be updated if a new point 
-\begin_inset Formula $x_{i}$
+.
+\end_layout
+
+\begin_layout Standard
+Using such rank-one updates, the computational costs for updating the approximat
+e infinite exponential family model in 
+\emph on
+every 
+\emph default
+iteration of the Markov chain are 
+\emph on
+constant in 
+\begin_inset Formula $n$
 \end_inset
 
- arrives.
+.
+ 
+\emph default
+We can therefore use 
+\emph on
+all
+\emph default
+ points in the history for constructing a proposal -- without exploding
+ computational costs.
 \end_layout
 
 \begin_layout Subsection
