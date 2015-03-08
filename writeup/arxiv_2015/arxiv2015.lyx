@@ -1860,7 +1860,7 @@ reference "eq:b_and_C_random_feats"
 \end_inset
 
  and 
-\begin_inset Formula $\frac{1}{2}\sum_{\ell=1}^{d}\left(\ddot{\phi}_{x_{i}}^{\ell}\left(\ddot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\in\mathbb{R}^{m\times m}$
+\begin_inset Formula $\frac{1}{2}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}(\ddot{\phi}_{x_{i}}^{\ell})^{T}\in\mathbb{R}^{m\times m}$
 \end_inset
 
  to the moving averages of 
@@ -1872,8 +1872,22 @@ reference "eq:b_and_C_random_feats"
 \end_inset
 
  respectively.
- Consequently, we can use rank-one updates to construct the minimiser of
- 
+ Consequently, rather than fully re-computing 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:score_match_linear_system_random_feats"
+
+\end_inset
+
+ at the cost of 
+\begin_inset Formula ${\cal O}(nm^{3})$
+\end_inset
+
+ for every new point, we can use rank-
+\begin_inset Formula $d$
+\end_inset
+
+ updates to construct the minimiser of 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:score_match_objective_random_feats"
@@ -1898,7 +1912,7 @@ reference "eq:score_match_objective_random_feats"
 \begin_inset Formula $\left\{ x_{i}\right\} _{i=1}^{n}$
 \end_inset
 
-, and subsequently receive receive a new data 
+, and subsequently receive receive a new point 
 \begin_inset Formula $x_{n+1}$
 \end_inset
 
@@ -2008,12 +2022,16 @@ https://github.com/jcrudy/choldate
 \end_layout
 
 \begin_layout Standard
-Using such rank-one updates, the computational costs for updating the approximat
-e infinite exponential family model in 
+Using such updates, the computational costs for updating the approximate
+ infinite exponential family model in 
 \emph on
 every 
 \emph default
 iteration of the Markov chain are 
+\begin_inset Formula ${\cal O}(m^{2})$
+\end_inset
+
+, which 
 \emph on
 constant in 
 \begin_inset Formula $n$
@@ -2026,8 +2044,12 @@ We can therefore use
 \emph on
 all
 \emph default
- points in the history for constructing a proposal -- without exploding
- computational costs.
+ points in the history for constructing a proposal -- without the previously
+ exploding computational costs of 
+\begin_inset Formula ${\cal O}(nm^{3})$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
