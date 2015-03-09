@@ -1,0 +1,827 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass scrartcl
+\use_default_options true
+\begin_modules
+theorems-ams
+theorems-sec
+\end_modules
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type numerical
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:appendix_kernel_score_matching"
+
+\end_inset
+
+Kernel Score Matching Details
+\end_layout
+
+\begin_layout Paragraph
+Objective function
+\end_layout
+
+\begin_layout Standard
+Assume
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\log q(\xi;\alpha):=\log\Pr(\xi;\alpha)+\log Z(\alpha)=\sum_{i=1}^{m}\alpha_{i}k(x_{i},\xi)
+\]
+
+\end_inset
+
+where
+\begin_inset Formula 
+\[
+k(x_{i},\xi)=\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)=\exp\left(-\frac{1}{\sigma}\sum_{\ell=1}^{d}(x_{i\ell}-\xi_{\ell})^{2}\right)
+\]
+
+\end_inset
+
+Thus
+\begin_inset Formula 
+\[
+\psi_{\ell}(\xi;\alpha)=\frac{2}{\sigma}\sum_{i=1}^{m}\alpha_{i}(x_{i\ell}-\xi_{\ell})\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{align*}
+\partial_{\ell}\psi_{\ell}(\xi;\alpha) & =\frac{-2}{\sigma}\sum_{i=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)+\left(\frac{2}{\sigma}\right)^{2}\sum_{i=1}^{m}\alpha_{i}(x_{i\ell}-\xi_{\ell})^{2}\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)\\
+ & =\frac{2}{\sigma}\sum_{i=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-\xi_{\ell})^{2}\right].
+\end{align*}
+
+\end_inset
+
+Substituting this into 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ yields
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{1}{m}\sum_{i=1}^{m}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\alpha)+\frac{1}{2}\psi_{\ell}(x_{i};\alpha)^{2}\right]\\
+ & =\frac{2}{m\sigma}\sum_{\ell=1}^{d}\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{j\ell})^{2}\right]\\
+ & \qquad+\frac{2}{m\sigma^{2}}\sum_{\ell=1}^{d}\sum_{i=1}^{m}\left[\sum_{j=1}^{m}\alpha_{j}(x_{j\ell}-x_{i\ell})\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Matrix form for the cost function
+\end_layout
+
+\begin_layout Standard
+The expression for the term 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ being optimized is the sum of two terms.
+ 
+\end_layout
+
+\begin_layout Standard
+Consider the 
+\series bold
+first term
+\series default
+:
+\begin_inset Formula 
+\[
+\sum_{\ell=1}^{d}\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{j\ell})^{2}\right]
+\]
+
+\end_inset
+
+ The term we need to compute is
+\begin_inset Formula 
+\begin{align*}
+ & \sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)(x_{i\ell}-x_{j\ell})^{2},\\
+= & \sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left(x_{i\ell}^{2}+x_{j\ell}^{2}-2x_{i\ell}x_{j\ell}\right).
+\end{align*}
+
+\end_inset
+
+Define 
+\begin_inset Formula 
+\[
+x_{\ell}:=\left[\begin{array}{ccc}
+x_{1\ell} & \hdots & x_{m\ell}\end{array}\right]^{\top}.
+\]
+
+\end_inset
+
+The final term may be computed cheaply with the right ordering of operations,
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+We assume we have an incomplete Cholesy representation of 
+\begin_inset Formula $K_{ij}:=\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)$
+\end_inset
+
+, 
+\begin_inset Formula 
+\[
+K\approx LL^{\top},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $L$
+\end_inset
+
+ is 
+\begin_inset Formula $m\times t$
+\end_inset
+
+ and 
+\begin_inset Formula $t\ll m$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+-2(\alpha\odot x_{\ell})^{\top}Kx_{\ell}\approx-2(\alpha\odot x_{\ell})^{\top}LL^{\top}x_{\ell},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\alpha\odot x_{\ell}$
+\end_inset
+
+ is the entrywise product.
+ The remaining terms are sums with constant row or column terms, and can
+ likewise be computed cheaply: define 
+\begin_inset Formula $s_{\ell}:=x_{\ell}\odot x_{\ell}$
+\end_inset
+
+ with components 
+\begin_inset Formula $s_{i\ell}=x_{i\ell}^{2}$
+\end_inset
+
+.
+ Then
+\begin_inset Formula 
+\begin{align*}
+\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}k_{ij}s_{j\ell} & =\alpha^{\top}Ks_{\ell}\\
+ & \approx\alpha^{\top}LL^{\top}s_{\ell},
+\end{align*}
+
+\end_inset
+
+which is cheap to compute.
+ Likewise
+\begin_inset Formula 
+\[
+\sum_{i=1}^{m}\sum_{j=1}^{m}\alpha_{i}x_{i\ell}^{2}k_{ij}\approx(\alpha\odot s_{\ell})^{\top}LL^{\top}1.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We now write out the 
+\series bold
+second term
+\series default
+.
+ Considering only the 
+\begin_inset Formula $\ell$
+\end_inset
+
+th dimension, this is
+\begin_inset Formula 
+\begin{align*}
+ & \sum_{i=1}^{m}\left[\sum_{j=1}^{m}\alpha_{j}(x_{j\ell}-x_{i\ell})\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}
+\end{align*}
+
+\end_inset
+
+In matrix notation, the inner sum is a column vector,
+\begin_inset Formula 
+\[
+K(\alpha\odot x_{\ell})-\left(K\alpha\right)\odot x_{\ell}\approx LL^{\top}(\alpha\odot x_{\ell})-\left(LL^{\top}\alpha\right)\odot x_{\ell}.
+\]
+
+\end_inset
+
+We then take the entrywise square and sum the resulting vector, where both
+ operations cost 
+\begin_inset Formula $O(m)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Solving 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ for 
+\begin_inset Formula $\alpha$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we denote by 
+\begin_inset Formula $D_{x}$
+\end_inset
+
+ the matrix with the vector 
+\begin_inset Formula $x$
+\end_inset
+
+ on its diagonal, then the following two relations hold
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+K(\alpha\odot x) & =KD_{x}\alpha\\
+(K\alpha)\odot x & =D_{x}K\alpha
+\end{align}
+
+\end_inset
+
+This means that 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ as defined previously,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{2}{m\sigma}\sum_{\ell=1}^{D}\left[\frac{2}{\sigma}\left[\alpha^{T}Ks_{\ell}+(\alpha\odot s_{\ell})^{T}K\mathbf{1}-2(\alpha\odot x_{\ell})^{T}Kx_{\ell}\right]-\alpha^{T}K\mathbf{1}\right]\\
+ & +\frac{2}{m\sigma^{2}}\sum_{\ell=1}^{D}\left[(\alpha\odot x_{\ell})^{T}K-x_{\ell}^{T}\odot(\alpha^{T}K)\right]\left[K(\alpha\odot x_{\ell})-(K\alpha)\odot x_{\ell}\right],
+\end{align*}
+
+\end_inset
+
+can be rewritten
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{2}{m\sigma}\alpha^{T}\sum_{\ell=1}^{D}\left[\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right]\\
+ & +\frac{2}{m\sigma^{2}}\alpha^{T}\left(\sum_{\ell=1}^{D}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\right)\alpha\\
+ & =\frac{2}{m\sigma}\alpha^{T}b+\frac{2}{m\sigma^{2}}\alpha^{T}C\alpha
+\end{align*}
+
+\end_inset
+
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+b & =\sum_{\ell=1}^{D}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{m}\\
+C & =\sum_{\ell=1}^{D}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\in\mathbb{R}^{m\times m}.
+\end{align*}
+
+\end_inset
+
+Assuming 
+\begin_inset Formula $C$
+\end_inset
+
+ is invertible, this is minimised by 
+\emph on
+
+\begin_inset Formula 
+\[
+\hat{\alpha}=\frac{-\sigma}{2}C^{-1}b.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Infinite exponential family 
+\begin_inset Quotes eld
+\end_inset
+
+lite
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:exp_family_lite"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From the representer theorem, a consistent estimator to  
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ is a linear combination of 
+\begin_inset Formula $n\times d$
+\end_inset
+
+ terms, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+.
+ In order to save computation, we project the original solution onto the
+ (growing) span of 
+\begin_inset Formula $\left\{ k(z_{i},\cdot)\right\} _{i=1}^{n}$
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Note that other (growing) basis sets might equally be used
+\end_layout
+
+\end_inset
+
+, where 
+\begin_inset Formula $\left\{ z_{i}\right\} _{i=1}^{n}$
+\end_inset
+
+ are points from the history of the Markov chain (details in the next section).
+ Consequently, this approximate solution can be written as 
+\begin_inset Formula $\sum_{i=1}^{m}\alpha_{i}k(x_{i},\cdot)$
+\end_inset
+
+.
+ We then assume the following parametric form for the unnormalised log-target
+\begin_inset Formula 
+\[
+\log q(\xi;\alpha)=\log\Pr(\xi;\alpha)+\log Z(\alpha)=\sum_{i=1}^{n}\alpha_{i}k(x_{i},\xi),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\alpha\in\mathbb{R}^{n}$
+\end_inset
+
+ is the 
+\begin_inset Formula $n$
+\end_inset
+
+-dimensional parameter vector.
+ Given an empirical fit of 
+\begin_inset Formula $\hat{\alpha}$
+\end_inset
+
+, the resulting unnormalised log-density estimator has gradients
+\begin_inset Formula 
+\begin{equation}
+\nabla_{\theta}\log q(\theta;\hat{\alpha})=\sum_{i=1}^{n}\hat{\alpha}_{i}\nabla_{\theta}k(x_{i},\theta),\label{eq:density_estimate_gradient}
+\end{equation}
+
+\end_inset
+
+which are easily obtained for common kernels.
+\end_layout
+
+\begin_layout Paragraph
+Gaussian Kernel
+\end_layout
+
+\begin_layout Standard
+We now provide an example implementation of score matching for the well
+ known Gaussian kernel 
+\begin_inset Formula 
+\[
+k(x,y)=\exp\left(-\frac{\|x-y\|^{2}}{\sigma}\right),
+\]
+
+\end_inset
+
+whose corresponding RKHS is infinite dimensional.
+ The score function is then given by
+\begin_inset Formula 
+\[
+\psi_{\ell}(\xi;\alpha)=\frac{2}{\sigma}\sum_{i=1}^{m}\alpha_{i}(x_{i\ell}-\xi_{\ell})\exp\left(-\frac{\|x_{i}-\xi\|^{2}}{\sigma}\right).
+\]
+
+\end_inset
+
+Omitting intermediate details (see appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:appendix_kernel_score_matching"
+
+\end_inset
+
+), the resulting sample objective function 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ in  
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ is globally minimised for
+\begin_inset Formula 
+\begin{equation}
+\hat{\alpha}=\frac{-\sigma}{2}(C+\lambda(K+I))^{-1}b,\label{eq:kernel_score_matching_linear_system}
+\end{equation}
+
+\end_inset
+
+which is a 
+\begin_inset Formula $n$
+\end_inset
+
+-dimensional linear system where we added a regulariser using the norm of
+ 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ 
+\emph on
+and
+\emph default
+ the norm of the solution 
+\begin_inset Formula $\hat{f}$
+\end_inset
+
+, and defined
+\begin_inset Formula 
+\begin{align}
+b & =\sum_{\ell=1}^{D}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{n}\label{eq:score_match_b}\\
+C & =\sum_{\ell=1}^{D}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\in\mathbb{R}^{n\times n},\label{eq:score_match_C}
+\end{align}
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{align*}
+K_{ij}: & =\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\\
+s_{i\ell} & :=x_{i\ell}^{2}\\
+x_{\ell} & :=\left[\begin{array}{ccc}
+x_{1\ell} & \dots & x_{m\ell}\end{array}\right]^{\top}\\
+D_{x_{\ell}} & :=\diag(x_{\ell}).
+\end{align*}
+
+\end_inset
+
+See appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:appendix_kernel_score_matching"
+
+\end_inset
+
+ for an expression in terms of 
+\emph on
+training
+\emph default
+ and 
+\emph on
+testing
+\emph default
+ data.
+\end_layout
+
+\begin_layout Subsection
+Reducing computational costs via incomplete Cholesky
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:linear_computational_costs"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Solving the linear system in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+ requires 
+\begin_inset Formula ${\cal O}(n^{3})$
+\end_inset
+
+ computation and 
+\begin_inset Formula ${\cal O}(n^{2})$
+\end_inset
+
+ storage.
+ This can be limiting, in particular if data comes from an increasingly
+ long Markov chain.
+ We therefore now apply a low-rank approximation to the kernel matrix via
+ incomplete Cholesky 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Alg. 5.12"
+key "shawe2004kernel"
+
+\end_inset
+
+, that is a standard way to achieve linear computational costs for kernel
+ methods.
+ We rewrite any kernel matrix of the form 
+\begin_inset Formula $K_{ij}=k(x_{i},x_{j})$
+\end_inset
+
+ as
+\begin_inset Formula 
+\[
+K\approx LL^{T},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $L\in\mathbb{R}^{n\times\ell}$
+\end_inset
+
+ is obtained via dual partial Gram–Schmidt orthonormalisation and costs
+ both 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ computation and storage.
+ Usually 
+\begin_inset Formula $\ell\ll n$
+\end_inset
+
+, and 
+\begin_inset Formula $\ell$
+\end_inset
+
+ can be chosen via an accuarcy cut-off parameter on the kernel spectrum
+ in the same fashion as for other low-rank approximations, such as PCA
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In this paper, we solely use the Gaussian kernel, whose spectrum decays
+ exponentially fast.
+\end_layout
+
+\end_inset
+
+.
+ Given such representation of 
+\begin_inset Formula $K$
+\end_inset
+
+, we can rewrite any dot product with a vector 
+\begin_inset Formula $b\in\mathbb{R}^{n}$
+\end_inset
+
+ as 
+\begin_inset Formula 
+\[
+Kb\approx(LL^{T})b=L(L^{T}b),
+\]
+
+\end_inset
+
+where each left multiplication of 
+\begin_inset Formula $L$
+\end_inset
+
+ costs 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ and we never need to store 
+\begin_inset Formula $LL^{T}$
+\end_inset
+
+.
+ This idea can be used to achieve costs of 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ when (approximately) computing 
+\begin_inset Formula $b$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_b"
+
+\end_inset
+
+, and left-multiplying 
+\begin_inset Formula $C$
+\end_inset
+
+ and 
+\begin_inset Formula $C+\lambda(K+I)$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_C"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+.
+ Combining the technique with conjugate gradient (CG) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "shewchuk1994introduction"
+
+\end_inset
+
+ allows to solve 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+ with a maximum of 
+\begin_inset Formula $n$
+\end_inset
+
+ such matrix-vector products, yielding a total computational cost of 
+\begin_inset Formula ${\cal O}(n^{2}\ell)$
+\end_inset
+
+.
+ In practice, we are not interested in an exact solution of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kernel_score_matching_linear_system"
+
+\end_inset
+
+ and we therefore can stop CG after a fixed number of iterations 
+\begin_inset Formula $\tau\ll n$
+\end_inset
+
+.
+ We arrive at a total cost of 
+\begin_inset Formula ${\cal O}(n\ell\tau)$
+\end_inset
+
+ computation and 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ storage.
+ We will publish the implementation in the near future for further reference.
+\end_layout
+
+\begin_layout Standard
+Combined with a random subsample 
+\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+\end_inset
+
+ of the chain history 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+\end_inset
+
+ as described in Section 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sub:adaptive_subsampling"
+
+\end_inset
+
+, we arrive at the same computational costs as previous kernel adaptive
+ MCMC methods, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+.
+\end_layout
+
+\end_body
+\end_document
