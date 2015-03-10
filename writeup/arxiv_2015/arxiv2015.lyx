@@ -1727,6 +1727,26 @@ reference "eq:score_match_objective_random_feats"
 
 \end_inset
 
+Having computed 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_linear_system_random_feats"
+
+\end_inset
+
+, we can evaluate gradients of the log-pdf as 
+\begin_inset Formula 
+\begin{align}
+\nabla_{x}\log q(x;\hat{\theta}) & =\nabla_{x}\left[\hat{\theta}^{T}\phi_{x}-A(f)\right]\label{eq:density_estimate_grad_random_feats}\\
+ & =\hat{\theta}^{T}\nabla_{x}\phi_{x}\nonumber 
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Note that in a similar way as in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1735,7 +1755,7 @@ key "SriFukKumGreHyv14"
 \end_inset
 
 , we in practice add a term 
-\begin_inset Formula $\lambda\Vert\theta\Vert$
+\begin_inset Formula $\lambda\Vert\theta\Vert^{2}$
 \end_inset
 
  for 
@@ -1771,24 +1791,8 @@ reference "eq:score_match_linear_system_random_feats"
 
 \end_inset
 
- for notational ease throughout the rest of the paper.
- Having computed 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_match_linear_system_random_feats"
-
-\end_inset
-
-, we can evaluate gradients of the log-pdf as 
-\begin_inset Formula 
-\begin{align}
-\nabla_{x}\log q(x;\hat{\theta}) & =\nabla_{x}\left[\hat{\theta}^{T}\phi_{x}-A(f)\right]\label{eq:density_estimate_grad_random_feats}\\
- & =\hat{\theta}^{T}\nabla_{x}\phi_{x}\nonumber 
-\end{align}
-
-\end_inset
-
-
+ for notational ease throughout the rest of the paper, but always regularise
+ in practice.
 \end_layout
 
 \begin_layout Subsubsection
