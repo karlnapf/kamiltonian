@@ -131,7 +131,7 @@ Kamiltonian Monte Carlo
 \begin_layout Abstract
 We propose an adaptive, gradient free Hamiltonian Monte Carlo (HMC) algorithm
  to simulate from an arbritary target probability density.
- Our sampler fills a gap: when the target density is intractable or its
+ Our sampler fills a gap: when the target density is intractable and its
  gradients are not available, classic HMC methodology 
 \emph on
 cannot
@@ -178,8 +178,6 @@ Proof read Gaussian kernel score matching
 \end_layout
 
 \begin_layout Itemize
-
-\strikeout on
 Implement carefully
 \end_layout
 
@@ -209,6 +207,8 @@ Write section that empirically analyses approximate trajectories on Gaussians
 \end_layout
 
 \begin_layout Itemize
+
+\strikeout on
 Random features
 \end_layout
 
@@ -242,7 +242,7 @@ Work over notation and unify the score matching with the HMC parts
 \end_layout
 
 \begin_layout Itemize
-find out whats next
+Do experiments (see below)
 \end_layout
 
 \begin_layout Paragraph*
@@ -250,9 +250,7 @@ Experiment & co
 \end_layout
 
 \begin_layout Itemize
-
-\strikeout on
-Write framework for doing trajectory comparisons on cluster
+Write framework for doing trajectory comparisons on cluster.
 \end_layout
 
 \begin_layout Itemize
@@ -276,8 +274,6 @@ some new experiment?
 \end_layout
 
 \begin_layout Itemize
-
-\strikeout on
 Create surface plots for the x-validation of 
 \begin_inset Formula $\lambda,\sigma$
 \end_inset
@@ -291,8 +287,6 @@ Trajectory experiment on Gaussian.
 \end_layout
 
 \begin_layout Enumerate
-
-\strikeout on
 Increase 
 \begin_inset Formula $d$
 \end_inset
@@ -324,8 +318,6 @@ Use low-rank Cholesky to exlore limitations of scaling (appendix: compare
 \end_layout
 
 \begin_layout Enumerate
-
-\strikeout on
 Sanity check: is covered volume roughly equal?
 \end_layout
 
@@ -1481,13 +1473,13 @@ key "SriFukKumGreHyv14"
 \end_layout
 
 \begin_layout Subsection
-Random Fourier features for score matching
+Finite dimensional approximate infinite exponential family estimators
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset label
 LatexCommand label
-name "sub:random_feats"
+name "sub:finite_approx_infinite_exp_family"
 
 \end_inset
 
@@ -1556,33 +1548,7 @@ reference "eq:infinite_exp_family"
 \end_layout
 
 \begin_layout Standard
-We use the framework developed by 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Rahimi2007"
-
-\end_inset
-
-.
- Assume a translation invariant kernel 
-\begin_inset Formula $k(x,y)=\tilde{k}(x-y)$
-\end_inset
-
-.
- Bochners theorem gives the representation
-\begin_inset Formula 
-\[
-k(x,y)=\tilde{k}(x-y)=\int_{\mathbb{R}^{d}}\exp\left(i\omega^{T}(x-y)\right)d\Gamma(\omega),
-\]
-
-\end_inset
-
-where 
-\begin_inset Formula $\Gamma$
-\end_inset
-
- is the Fourier transform of the kernel.
- One can define an 
+One can define an 
 \begin_inset Formula $m$
 \end_inset
 
@@ -1591,12 +1557,12 @@ where
 \end_inset
 
  with a fixed set of random basis vectors 
-\begin_inset Formula $\omega_{i}\sim\Gamma$
+\begin_inset Formula $\{\omega_{i}\}_{i=1}^{m}$
 \end_inset
 
 .
  Denote by 
-\begin_inset Formula $\phi_{x}\in\mathbb{R}^{m}$
+\begin_inset Formula $\phi_{x}\in\mathbb{{\cal H}}^{m}$
 \end_inset
 
  the embedding of a point 
@@ -1610,28 +1576,11 @@ where
 .
  We then can approximate the kernel function using the finite rank expansion
  
-\begin_inset Formula $K_{ij}:=k(z_{i},z_{j})\approx\phi_{i}^{T}\phi_{j}$
+\begin_inset Formula $K_{ij}:=k(x_{i},x_{j})\approx\phi_{x_{i}}^{T}\phi_{x_{j}}$
 \end_inset
 
 .
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Rahimi2007"
-
-\end_inset
-
- established consistency, finite sample convergence rates, and good performance
- in practice.
- 
-\end_layout
-
-\begin_layout Subsubsection
-Finite dimensional approximate infinite exponential family estimators
-\end_layout
-
-\begin_layout Standard
-The infinite dimensional exponential family form in 
+ The infinite dimensional exponential family form in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
@@ -1732,7 +1681,7 @@ reference "eq:score_matching_objective_sample_version"
 \begin{align}
 J(\theta) & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\theta)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};\theta)\right]\nonumber \\
  & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\theta^{T}\dot{\phi}_{x_{i}}^{\ell}+\frac{1}{2}\theta^{T}\left(\ddot{\phi}_{x_{i}}^{\ell}\left(\ddot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\theta\right]\nonumber \\
- & =\theta^{T}C\theta-\theta^{T}b\label{eq:score_match_objective_random_feats}
+ & =\frac{1}{2}\theta^{T}C\theta-\theta^{T}b\label{eq:score_match_objective_random_feats}
 \end{align}
 
 \end_inset
@@ -1740,7 +1689,7 @@ J(\theta) & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi
  where
 \begin_inset Formula 
 \begin{equation}
-b:=-\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\dot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}\quad\text{and}\quad C:=\frac{1}{2n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\ddot{\phi}_{x_{i}}^{\ell}\left(\ddot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\in\mathbb{R}^{m\times m}.\label{eq:b_and_C_random_feats}
+b:=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\dot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}\quad\text{and}\quad C:=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\ddot{\phi}_{x_{i}}^{\ell}\left(\ddot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\in\mathbb{R}^{m\times m}.\label{eq:b_and_C_random_feats}
 \end{equation}
 
 \end_inset
@@ -1753,15 +1702,77 @@ Assuming
 \begin_inset Formula $n\geq m$
 \end_inset
 
-), the objective is uniquely minimised by
+), the objective is uniquely minimised by differentiating 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_objective_random_feats"
+
+\end_inset
+
+ wrt.
+ 
+\begin_inset Formula $\theta$
+\end_inset
+
+, setting to zero, and solving for 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+ This gives
 \begin_inset Formula 
 \begin{equation}
-\hat{\theta}=C^{-1}b.\label{eq:score_match_linear_system_random_feats}
+\hat{\theta}:=C^{-1}b.\label{eq:score_match_linear_system_random_feats}
 \end{equation}
 
 \end_inset
 
-Having computed 
+Note that in a similar way as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+, we in practice add a term 
+\begin_inset Formula $\lambda\Vert\theta\Vert$
+\end_inset
+
+ for 
+\begin_inset Formula $\lambda\in\mathbb{R}^{+}$
+\end_inset
+
+ to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_objective_random_feats"
+
+\end_inset
+
+, in order to control the norm of the natural parameters 
+\begin_inset Formula $\theta\in{\cal H}^{m}$
+\end_inset
+
+.
+ This results in the regularised and numerically more stable solutution
+ 
+\begin_inset Formula $\hat{\theta}_{\lambda}:=(C+\lambda I)^{-1}b$
+\end_inset
+
+, at the cost of having to choose 
+\begin_inset Formula $\lambda$
+\end_inset
+
+, which we describe later.
+ We use the un-regularised solution 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_linear_system_random_feats"
+
+\end_inset
+
+ for notational ease throughout the rest of the paper.
+ Having computed 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_match_linear_system_random_feats"
@@ -1781,17 +1792,68 @@ reference "eq:score_match_linear_system_random_feats"
 \end_layout
 
 \begin_layout Subsubsection
-Example: Gaussian kernel
+Example: Random Fourier features for the Gaussian kernel
 \end_layout
 
 \begin_layout Standard
-The approximate feature mapping for the well known Gaussian kernel
+We now combine the finite dimensional approximate infinite exponential family
+ model with the 
+\begin_inset Quotes eld
+\end_inset
+
+random kitchen sink
+\begin_inset Quotes erd
+\end_inset
+
+ framework developed by 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rahimi2007"
+
+\end_inset
+
+.
+ Note that the approach can be combined with 
+\emph on
+any
+\emph default
+ set of finite dimensional approximate feature mappings 
+\begin_inset Formula $\phi_{x}$
+\end_inset
+
+, such as for example 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "le2013fastfood"
+
+\end_inset
+
+.
+ Assume a translation invariant kernel 
+\begin_inset Formula $k(x,y)=\tilde{k}(x-y)$
+\end_inset
+
+.
+ Bochners theorem gives the representation
+\begin_inset Formula 
+\[
+k(x,y)=\tilde{k}(x-y)=\int_{\mathbb{R}^{d}}\exp\left(i\omega^{T}(x-y)\right)d\Gamma(\omega),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ is the Fourier transform of the kernel.
+ An approximate feature mapping for the well known Gaussian kernel
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-k(x,y)={\cal \exp}\left(\frac{\Vert x-y\Vert_{2}^{2}}{2\sigma^{2}}\right)
+k(x,y)={\cal \exp}\left(-\gamma\Vert x-y\Vert_{2}^{2}\right)
 \]
 
 \end_inset
@@ -1799,7 +1861,7 @@ k(x,y)={\cal \exp}\left(\frac{\Vert x-y\Vert_{2}^{2}}{2\sigma^{2}}\right)
 is given by
 \begin_inset Formula 
 \[
-\phi_{x}=\left[\cos(\omega_{1}^{T}x+u_{1}),\dots,\cos(\omega_{m}^{T}x+u_{m})\right],
+\phi_{x}=\frac{1}{\sqrt{2}}\left[\cos(\omega_{1}^{T}x+u_{1}),\dots,\cos(\omega_{m}^{T}x+u_{m})\right],
 \]
 
 \end_inset
@@ -1807,7 +1869,7 @@ is given by
 with random basis vectors
 \begin_inset Formula 
 \begin{align*}
-w_{i}\sim{\cal N}\left(w_{i}\Big\vert\mathbf{0},\frac{1}{2}\sigma^{-2}I_{m}\right),
+\omega_{i}\sim{\cal N}\left(\omega_{i}\Big\vert\mathbf{0},\gamma^{2}I_{m}\right)=:\Gamma(\omega_{i}),
 \end{align*}
 
 \end_inset
@@ -1815,7 +1877,7 @@ w_{i}\sim{\cal N}\left(w_{i}\Big\vert\mathbf{0},\frac{1}{2}\sigma^{-2}I_{m}\righ
 and random offsets 
 \begin_inset Formula 
 \[
-u_{i}\sim\texttt{Uniform}[0,2\pi]
+u_{i}\sim\texttt{Uniform}[0,2\pi],
 \]
 
 \end_inset
@@ -1835,8 +1897,9 @@ reference "eq:score_function_fourier"
  are given by
 \begin_inset Formula 
 \begin{align*}
-\dot{\phi}_{\xi}^{\ell} & =\frac{\partial}{\partial\xi_{\ell}}\left[\cos(\omega_{1}^{T}\xi+u_{1}),\dots,\cos(\omega_{m}^{T}\xi+u_{m})\right]\\
- & =-\left[\sin(\omega_{1}^{T}\xi+u_{1})\omega_{1\ell},\dots,\sin(\omega_{m}^{T}\xi+u_{m})\omega_{1\ell}\right],
+\dot{\phi}_{\xi}^{\ell} & =\frac{1}{\sqrt{2}}\frac{\partial}{\partial\xi_{\ell}}\left[\cos(\omega_{1}^{T}\xi+u_{1}),\dots,\cos(\omega_{m}^{T}\xi+u_{m})\right]\\
+ & =-\frac{1}{\sqrt{2}}\left[\sin(\omega_{1}^{T}\xi+u_{1})\omega_{1\ell},\dots,\sin(\omega_{m}^{T}\xi+u_{m})\omega_{m\ell}\right]\\
+ & =-\frac{1}{\sqrt{2}}\left[\sin(\omega_{1}^{T}\xi+u_{1}),\dots,\sin(\omega_{m}^{T}\xi+u_{m})\right]\odot\left[\omega_{1\ell},\dots,\omega_{m\ell}\right],
 \end{align*}
 
 \end_inset
@@ -1856,8 +1919,8 @@ where
 , and
 \begin_inset Formula 
 \begin{align*}
-\ddot{\phi}_{\xi}^{\ell}: & =-\frac{\partial}{\partial\xi_{\ell}}\left[\sin(\omega_{1}^{T}\xi+u_{1})\omega_{1\ell},\dots,\sin(\omega_{m}^{T}\xi+u_{m})\omega_{1\ell}\right]\\
- & =-\phi_{\xi}\odot\left[\omega_{1\ell}^{2},\dots,\omega_{1\ell}^{2}\right],
+\ddot{\phi}_{\xi}^{\ell}: & =-\frac{1}{\sqrt{2}}\frac{\partial}{\partial\xi_{\ell}}\left[\sin(\omega_{1}^{T}\xi+u_{1}),\dots,\sin(\omega_{m}^{T}\xi+u_{m})\right]\odot\left[\omega_{1\ell},\dots,\omega_{m\ell}\right]\\
+ & =-\phi_{\xi}\odot\left[\omega_{1\ell}^{2},\dots,\omega_{m\ell}^{2}\right],
 \end{align*}
 
 \end_inset
@@ -1878,6 +1941,16 @@ Rank-
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:rank_d_updates"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 A convenient property of the above approximation is that it is possible
  to update 
 \begin_inset CommandInset ref
@@ -1893,7 +1966,7 @@ reference "eq:b_and_C_random_feats"
 \end_inset
 
  and 
-\begin_inset Formula $\frac{1}{2}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}(\ddot{\phi}_{x_{i}}^{\ell})^{T}\in\mathbb{R}^{m\times m}$
+\begin_inset Formula $\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}(\ddot{\phi}_{x_{i}}^{\ell})^{T}\in\mathbb{R}^{m\times m}$
 \end_inset
 
  to the moving averages of 
@@ -1928,11 +2001,10 @@ reference "eq:score_match_objective_random_feats"
 \end_inset
 
  from the solution of the previous iteration.
- Pulling any scalling factors outside the matrix inversion, assume we have
- computed the sum of the moving average terms, 
+ Assume we have computed the sum of all moving average terms, 
 \begin_inset Formula 
 \[
-\tilde{C}_{n}^{-1}:=\left(\frac{1}{2}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\ddot{\phi}_{x_{i}}^{\ell}\left(\ddot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\right)^{-1}
+\tilde{C}_{n}^{-1}:=\left(\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\ddot{\phi}_{x_{i}}^{\ell}\left(\ddot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\right)^{-1}
 \]
 
 \end_inset
@@ -1953,7 +2025,7 @@ reference "eq:score_match_objective_random_feats"
  We can then write the inverse of the new sum as
 \begin_inset Formula 
 \begin{align*}
-\tilde{C}_{n+1}^{-1}: & =\left(\tilde{C}_{n}+\frac{1}{2}\sum_{\ell=1}^{d}\left(\ddot{\phi}_{x_{n+1}}^{\ell}\left(\ddot{\phi}_{x_{n+1}}^{\ell}\right)^{T}\right)\right)^{-1}.
+\tilde{C}_{n+1}^{-1}: & =\left(\tilde{C}_{n}+\sum_{\ell=1}^{d}\left(\ddot{\phi}_{x_{n+1}}^{\ell}\left(\ddot{\phi}_{x_{n+1}}^{\ell}\right)^{T}\right)\right)^{-1}.
 \end{align*}
 
 \end_inset
@@ -2007,24 +2079,7 @@ status open
 
 , we can represent its inverse as a numerically much more stable Cholesky
  factorisation 
-\begin_inset Formula $\tilde{C}_{n}^{-1}=(\tilde{L}_{n}\tilde{L}_{n}^{T})^{-1}=\tilde{L}_{n}^{-T}\tilde{L}_{n}^{-1}$
-\end_inset
-
-.
- Rather than storing 
-\begin_inset Formula $\tilde{C}_{n}^{-1}$
-\end_inset
-
- or 
-\begin_inset Formula $\tilde{L}_{n}^{-1}$
-\end_inset
-
-, we solve any linear system involving 
-\begin_inset Formula $\tilde{C}_{n}^{-1}$
-\end_inset
-
- using cheap triangular back-substitution from 
-\begin_inset Formula $\tilde{L}_{n}$
+\begin_inset Formula $\tilde{C}_{n}=\tilde{L}_{n}\tilde{L}_{n}^{T}$
 \end_inset
 
 .
@@ -2068,8 +2123,43 @@ https://github.com/jcrudy/choldate
 \end_inset
 
 .
- Any pulled out scalling factors can be applied to the updated Cholesky
- factors.
+ Denote by 
+\begin_inset Formula $\tilde{b}_{n}$
+\end_inset
+
+ the sum of the moving average 
+\begin_inset Formula $b$
+\end_inset
+
+.
+ We solve 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_linear_system_random_feats"
+
+\end_inset
+
+ as 
+\begin_inset Formula 
+\begin{align*}
+\hat{\theta} & =C^{-1}b=\left(\frac{1}{n}\tilde{C}_{n}\right)^{-1}\left(\frac{1}{n}\tilde{b}_{n}\right)=\tilde{C}_{n}^{-1}\tilde{b}_{n}=\tilde{L}_{n}^{-T}\tilde{L}_{n}^{-1}\tilde{b}_{n},
+\end{align*}
+
+\end_inset
+
+using cheap triangular back-substitution from 
+\begin_inset Formula $\tilde{L}_{n}$
+\end_inset
+
+, and never storing 
+\begin_inset Formula $\tilde{C}_{n}^{-1}$
+\end_inset
+
+ or 
+\begin_inset Formula $\tilde{L}_{n}^{-1}$
+\end_inset
+
+ explicitly.
 \end_layout
 
 \begin_layout Standard
@@ -2247,7 +2337,7 @@ Further complication comes from the approximation to the solution of the
  density estimator described in section 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "sub:random_feats"
+reference "sub:finite_approx_infinite_exp_family"
 
 \end_inset
 
@@ -2540,9 +2630,9 @@ reference "alg:Kamiltonian-Monte-Carlo"
 \end_layout
 
 \begin_layout Standard
-The remainder of this section covers details on adaptive proposal distributions
- needed to ensure both anyptotic correctness and computational feasability,
- and describe various tuning mechanisms for applying KMC in practice.
+The remainder of this section covers details on adaptation schedules needed
+ to ensure both anyptotic correctness and computational feasability, and
+ describe various tuning mechanisms for applying KMC in practice.
 \end_layout
 
 \begin_layout Standard
@@ -2580,7 +2670,7 @@ name "alg:Kamiltonian-Monte-Carlo"
 \emph on
 Input
 \emph default
-: unnormalized target 
+: target 
 \begin_inset Formula $\pi$
 \end_inset
 
@@ -2588,15 +2678,15 @@ Input
 \begin_inset Formula $\exp(-K(p))$
 \end_inset
 
-, adaptation schedule 
-\begin_inset Formula $p_{t}$
+, adaptation weights 
+\begin_inset Formula $a_{t}$
 \end_inset
 
-, kernel width 
-\begin_inset Formula $\sigma$
+, random basis & offset 
+\begin_inset Formula $\{\omega_{i},b_{i}\}_{i=1}^{m}$
 \end_inset
 
- 
+
 \end_layout
 
 \begin_layout Itemize
@@ -2614,35 +2704,38 @@ At iteration
 \begin_layout Itemize
 
 \shape italic
-Update density estimate.
- 
-\shape default
-With probability 
-\begin_inset Formula $p_{t}$
-\end_inset
-
-,
+Online-update density estimate.
 \end_layout
 
 \begin_deeper
 \begin_layout Enumerate
-Draw a random subsample 
-\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
+Update sums 
+\begin_inset Formula 
+\begin{equation}
+\tilde{b}_{t}\leftarrow\tilde{b}_{t-1}-a_{t}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t}}^{\ell}\quad\text{and}\quad\tilde{C}_{t}\leftarrow\tilde{C}_{t-1}+\frac{a_{t}}{2}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t}}^{\ell}(\ddot{\phi}_{x_{t}}^{\ell})^{T}\label{eq:algo_updating_b_C}
+\end{equation}
+
 \end_inset
 
- of the chain history 
-\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+ and perform rank-
+\begin_inset Formula $d$
 \end_inset
 
+ update to obtain updated Cholesky factorisation 
+\begin_inset Formula $\tilde{L}_{t}\tilde{L}_{t}^{T}=\tilde{C}_{t}$
+\end_inset
 
+.
 \end_layout
 
 \begin_layout Enumerate
-Update density estimator, i.e.
- solve
+Update approximate infinite exponential family parameters
+\end_layout
+
+\begin_layout Plain Layout
 \begin_inset Formula 
 \[
-\hat{\alpha}=\frac{-\sigma}{2}(C+\lambda(K+I))^{-1}b
+\hat{\theta}\leftarrow\tilde{L}_{t}^{-T}\tilde{L}_{t}^{-1}\tilde{b}_{t}
 \]
 
 \end_inset
@@ -2680,7 +2773,7 @@ Sample momentum
 
 \begin_layout Enumerate
 Using 
-\begin_inset Formula $\hat{\alpha}$
+\begin_inset Formula $\hat{\theta}$
 \end_inset
 
 , simulate kernel Hamiltonian flow 
@@ -2712,7 +2805,7 @@ x_{t} & \text{otherwise}
 \end_layout
 
 \begin_layout Subsection
-Constructing a feasible adaptive MCMC proposal
+Vanishing adaptation for asymptotic correctness
 \end_layout
 
 \begin_layout Standard
@@ -2728,14 +2821,14 @@ name "sub:adaptive_subsampling"
 \begin_layout Standard
 It is well known that construction of MCMC algorithms that utilise the history
  of the Markov chain for constructing proposals yields asymptotic bias.
- We follow 
+ Recent kernel based proposals in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sejdinovic_kernel_2014"
 
 \end_inset
 
-, who adapted the idea of 
+ adapted the idea of 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2751,59 +2844,64 @@ key "Andrieu2008"
 \end_inset
 
 , to avoid such biases.
- They update random subsamples of the Markov chain history with a decaying
- probability.
- The approach also has the advantage that it limits 
+ They update a fixed number of 
 \begin_inset Formula $n$
 \end_inset
 
- -- computational costs will remain constant as the length of the Markov
- chain approaches infinity.
+ random subsamples of the Markov chain history with a decaying probability.
+ While this ensures asymptotic correctness, it is clearly undesirable to
+ only use parts of the chain history.
 \end_layout
 
 \begin_layout Standard
-Let 
-\begin_inset Formula $\left\{ x_{i}\right\} _{i=0}^{t-1}$
+As established in Section 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sub:rank_d_updates"
+
 \end_inset
 
- be the history of the Markov chain at iteration 
-\begin_inset Formula $t$
+, updating the density estimator in Algorithm 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "alg:Kamiltonian-Monte-Carlo"
+
 \end_inset
 
-.
+ for a new point costs 
+\begin_inset Formula ${\cal O}(dm^{2})$
+\end_inset
+
+, which allows us to update th
+\begin_inset space \space{}
+\end_inset
+
+e proposal in 
+\emph on
+every 
+\emph default
+itation of the Markov chain.
  To guarantee convergence to the correct stationary distirbution, we introduce
- adaptation probabilities 
-\begin_inset Formula $\left\{ p_{t}\right\} _{i=0}^{\infty}$
+ vanishing adaptation weights 
+\begin_inset Formula $\left\{ \beta_{t}\right\} _{i=0}^{\infty}$
 \end_inset
 
  such that 
 \begin_inset Formula 
 \[
-\lim_{t\to\infty}p_{t}=0\quad\text{and}\quad\sum_{t=0}^{\infty}=\infty.
+\lim_{t\to\infty}a_{t}=0\quad\text{and}\quad\sum_{t=0}^{\infty}a_{t}=\infty,
 \]
 
 \end_inset
 
-At iteration 
-\begin_inset Formula $t>n$
+and update the sums in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:algo_updating_b_C"
+
 \end_inset
 
-, we update the current subsample 
-\begin_inset Formula $\mathbf{z}=\left\{ z_{i}\right\} _{i=1}^{n}$
-\end_inset
-
- of the history, and construct our kernel induced Hamiltonian flow based
- proposal with 
-\begin_inset Formula $\mathbf{z}$
-\end_inset
-
-.
- Intuitively, the probability for updating the chain history to the latest
- state gets arbritarily small, while the scheme never stops updating 
-\begin_inset Formula $\mathbf{z}$
-\end_inset
-
-.
+ accordingly.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -2868,7 +2966,7 @@ reference "eq:infinite_exp_family_random_feats"
 , we can the score matching objective function in 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:score_matching_objective_sample_version"
+reference "eq:score_match_objective_random_feats"
 
 \end_inset
 
