@@ -1526,7 +1526,7 @@ key "sejdinovic_kernel_2014"
  side stepped the problem of increasing computation via repeatedly updating
  a random subsample of fixed size from the Markov chain history, and recomputing
  their proposal mechanism.
- In this section, we take a different approach: indead of fitting an exact
+ In this section, we take a different approach: instead of fitting an exact
  infinite dimensional model on a subset of the available data, we fit an
  approximation to the infinite model to 
 \emph on
@@ -1607,8 +1607,8 @@ reference "eq:infinite_exp_family"
  as
 \begin_inset Formula 
 \begin{align}
-\exp\left(\langle f,k(x,\cdot)\rangle_{{\cal H}}-A(f)\right) & \approx\exp\left(\langle\theta,k(x,\cdot)\rangle_{{\cal H}_{m}}-A(f)\right)\nonumber \\
- & =\exp\left(\theta^{T}\phi_{x}-A(f)\right)\label{eq:infinite_exp_family_random_feats}
+\exp\left(\langle f,k(x,\cdot)\rangle_{{\cal H}}-A(f)\right) & \approx\exp\left(\langle\theta,\phi_{x}\rangle_{{\cal H}_{m}}-A(\theta)\right)\nonumber \\
+ & =\exp\left(\theta^{T}\phi_{x}-A(\theta)\right)\label{eq:infinite_exp_family_random_feats}
 \end{align}
 
 \end_inset
@@ -1865,7 +1865,7 @@ k(x,y)={\cal \exp}\left(-\gamma\Vert x-y\Vert_{2}^{2}\right)
 is given by
 \begin_inset Formula 
 \[
-\phi_{x}=\frac{1}{\sqrt{2}}\left[\cos(\omega_{1}^{T}x+u_{1}),\dots,\cos(\omega_{m}^{T}x+u_{m})\right],
+\phi_{x}=\frac{\sqrt{2}}{m}\left[\cos(\omega_{1}^{T}x+u_{1}),\dots,\cos(\omega_{m}^{T}x+u_{m})\right],
 \]
 
 \end_inset
@@ -1901,9 +1901,9 @@ reference "eq:score_function_fourier"
  are given by
 \begin_inset Formula 
 \begin{align*}
-\dot{\phi}_{\xi}^{\ell} & =\frac{1}{\sqrt{2}}\frac{\partial}{\partial\xi_{\ell}}\left[\cos(\omega_{1}^{T}\xi+u_{1}),\dots,\cos(\omega_{m}^{T}\xi+u_{m})\right]\\
- & =-\frac{1}{\sqrt{2}}\left[\sin(\omega_{1}^{T}\xi+u_{1})\omega_{1\ell},\dots,\sin(\omega_{m}^{T}\xi+u_{m})\omega_{m\ell}\right]\\
- & =-\frac{1}{\sqrt{2}}\left[\sin(\omega_{1}^{T}\xi+u_{1}),\dots,\sin(\omega_{m}^{T}\xi+u_{m})\right]\odot\left[\omega_{1\ell},\dots,\omega_{m\ell}\right],
+\dot{\phi}_{\xi}^{\ell} & =\frac{\sqrt{2}}{m}\frac{\partial}{\partial\xi_{\ell}}\left[\cos(\omega_{1}^{T}\xi+u_{1}),\dots,\cos(\omega_{m}^{T}\xi+u_{m})\right]\\
+ & =-\frac{\sqrt{2}}{m}\left[\sin(\omega_{1}^{T}\xi+u_{1})\omega_{1\ell},\dots,\sin(\omega_{m}^{T}\xi+u_{m})\omega_{m\ell}\right]\\
+ & =-\frac{\sqrt{2}}{m}\left[\sin(\omega_{1}^{T}\xi+u_{1}),\dots,\sin(\omega_{m}^{T}\xi+u_{m})\right]\odot\left[\omega_{1\ell},\dots,\omega_{m\ell}\right],
 \end{align*}
 
 \end_inset
@@ -1923,7 +1923,7 @@ where
 , and
 \begin_inset Formula 
 \begin{align*}
-\ddot{\phi}_{\xi}^{\ell}: & =-\frac{1}{\sqrt{2}}\frac{\partial}{\partial\xi_{\ell}}\left[\sin(\omega_{1}^{T}\xi+u_{1}),\dots,\sin(\omega_{m}^{T}\xi+u_{m})\right]\odot\left[\omega_{1\ell},\dots,\omega_{m\ell}\right]\\
+\ddot{\phi}_{\xi}^{\ell}: & =-\frac{\sqrt{2}}{m}\frac{\partial}{\partial\xi_{\ell}}\left[\sin(\omega_{1}^{T}\xi+u_{1}),\dots,\sin(\omega_{m}^{T}\xi+u_{m})\right]\odot\left[\omega_{1\ell},\dots,\omega_{m\ell}\right]\\
  & =-\phi_{\xi}\odot\left[\omega_{1\ell}^{2},\dots,\omega_{m\ell}^{2}\right],
 \end{align*}
 
