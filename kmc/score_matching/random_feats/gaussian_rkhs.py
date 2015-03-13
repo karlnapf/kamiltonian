@@ -3,14 +3,14 @@ import numpy as np
 
 def feature_map_single(x, omega, u):
     m = 1 if np.isscalar(u) else len(u)
-    return np.cos(np.dot(x, omega) + u) * np.sqrt(2.) / np.sqrt(m)
+    return np.cos(np.dot(x, omega) + u) * np.sqrt(2. / m)
 
 def feature_map(X, omega, u):
     m = 1 if np.isscalar(u) else len(u)
     
     projection = np.dot(X, omega) + u
     np.cos(projection, projection)
-    projection *= np.sqrt(2.) / np.sqrt(m)
+    projection *= np.sqrt(2. / m)
     return projection
 
 def feature_map_derivative_d(X, omega, u, d):
@@ -19,15 +19,24 @@ def feature_map_derivative_d(X, omega, u, d):
     projection = np.dot(X, omega) + u
     np.sin(projection, projection)
     projection *= omega[d, :]
-    projection *= np.sqrt(2.) / np.sqrt(m)
+    projection *= np.sqrt(2. / m)
     return -projection
 
 def feature_map_derivative2_d(X, omega, u, d):
     Phi2 = feature_map(X, omega, u)
     Phi2 *= omega[d, :] ** 2
     
-    return Phi2
+    return -Phi2
+
+def feature_map_grad_single(x, omega, u):
+    D, m = omega.shape
+    grad = np.zeros((m, D))
     
+    for d in range(D):
+        grad[:, d] = feature_map_derivative_d(x, omega, u, d)
+    
+    return grad
+
 def feature_map_derivatives_loop(X, omega, u):
     m = 1 if np.isscalar(u) else len(u)
     N = X.shape[0]
@@ -57,19 +66,80 @@ def feature_map_derivatives2(X, omega, u):
     return feature_map_derivatives2_loop(X, omega, u)
 
 def compute_b(X, omega, u):
-    Phi1 = feature_map_derivatives(X, omega, u)
-    return np.mean(np.sum(Phi1, 0), 0)
+    assert len(X.shape) == 2
+    Phi1 = feature_map_derivatives2(X, omega, u)
+    return -np.mean(np.sum(Phi1, 0), 0)
 
 def compute_C(X, omega, u):
-    Phi2 = feature_map_derivatives2(X, omega, u)
+    assert len(X.shape) == 2
+    Phi2 = feature_map_derivatives(X, omega, u)
     d = X.shape[1]
-    n = X.shape[0]
+    N = X.shape[0]
     m = Phi2.shape[2]
     C = np.zeros((m, m))
     
-    for i in range(n):
+    for i in range(N):
         for ell in range(d):
             phi2 = Phi2[ell, i]
             C += np.outer(phi2, phi2)
     
-    return C / n
+    return C / N
+
+def score_matching_sym(X, lmbda, omega, u, b=None, C=None):
+    if b is None:
+        b = compute_b(X, omega, u)
+        
+    if C is None:
+        C = compute_C(X, omega, u)
+        
+    theta = np.linalg.solve(C + lmbda * np.eye(len(C)), b)
+    return theta
+    
+def _objective_sym(X, theta, lmbda, omega, u, b=None, C=None):
+    if b is None:
+        b = compute_b(X, omega, u)
+        
+    if C is None:
+        C = compute_C(X, omega, u)
+    
+    I = np.eye(len(theta))
+    return 0.5 * np.dot(theta, np.dot(C + lmbda * I, theta)) - np.dot(theta, b)
+
+def _objective_sym_completely_manual(X, theta, lmbda, omega, u):
+    N = X.shape[0]
+    D = X.shape[1]
+    m = len(theta)
+    
+    J_manual = 0.
+     
+    for n in range(N):
+        for d in range(D):
+            b_term_manual = -np.sqrt(2. / m) * np.cos(np.dot(X[n], omega) + u) * (omega[d, :] ** 2)
+            J_manual -= -np.dot(b_term_manual, theta)
+             
+            c_vec_manual = -np.sqrt(2. / m) * np.sin(np.dot(X[n], omega) + u) * omega[d, :]
+            C_term_manual = np.outer(c_vec_manual, c_vec_manual)
+            J_manual += 0.5 * np.dot(theta, np.dot(C_term_manual, theta))
+    
+    J_manual /= N
+    J_manual += 0.5 * lmbda * np.dot(theta, theta)
+    return J_manual
+
+def _objective_sym_half_manual(X, theta, lmbda, omega, u):
+    N = X.shape[0]
+    D = X.shape[1]
+    
+    J_manual = 0.
+     
+    for n in range(N):
+        for d in range(D):
+            b_term = -feature_map_derivative2_d(X[n], omega, u, d)
+            J_manual -= np.dot(b_term, theta)
+
+            c_vec = feature_map_derivative_d(X[n], omega, u, d)
+            C_term_manual = np.outer(c_vec, c_vec)
+            J_manual += 0.5 * np.dot(theta, np.dot(C_term_manual, theta))
+    
+    J_manual /= N
+    J_manual += 0.5 * lmbda * np.dot(theta, theta)
+    return J_manual
