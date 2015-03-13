@@ -1,12 +1,13 @@
 from matplotlib.widgets import Slider, Button, RadioButtons
 
 from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
-from kmc.score_matching.estimator import log_pdf_estimate, log_pdf_estimate_grad
-from kmc.score_matching.gaussian_rkhs import _compute_b_sym, _compute_C_sym, \
-    score_matching_sym, _objective_sym, xvalidate
-from kmc.score_matching.gaussian_rkhs_xvalidation import select_sigma_lambda_cma
-from kmc.score_matching.kernel.kernels import gaussian_kernel, \
+from kmc.score_matching.kernel.kernels import gaussian_kernel,\
     gaussian_kernel_grad
+from kmc.score_matching.lite.estimator import log_pdf_estimate,\
+    log_pdf_estimate_grad
+from kmc.score_matching.lite.gaussian_rkhs import xvalidate, _compute_b_sym,\
+    _compute_C_sym, score_matching_sym, _objective_sym
+from kmc.score_matching.lite.gaussian_rkhs_xvalidation import select_sigma_lambda_cma
 from kmc.scripts.tools.plotting import evaluate_density_grid,\
     evaluate_density_grad_grid, plot_array
 import matplotlib.pyplot as plt
@@ -16,7 +17,7 @@ import numpy as np
 plot_pdf=True
 
 def plot_lmbda_surface(val):
-    print "lambda"
+    print("lambda")
     log2_sigma = s_sigma.val
     sigma = 2**log2_sigma
     
