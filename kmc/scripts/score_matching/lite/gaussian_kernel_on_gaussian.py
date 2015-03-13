@@ -1,7 +1,7 @@
-from kmc.score_matching.gaussian_rkhs import score_matching_sym, \
-    score_matching_sym_low_rank
 from kmc.score_matching.kernel.incomplete_cholesky import incomplete_cholesky_gaussian
 from kmc.score_matching.kernel.kernels import gaussian_kernel
+from kmc.score_matching.lite.gaussian_rkhs import score_matching_sym,\
+    score_matching_sym_low_rank
 import matplotlib.pyplot as plt
 import numpy as np
 
