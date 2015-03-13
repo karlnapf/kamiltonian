@@ -1,5 +1,5 @@
-from kmc.score_matching.gaussian_rkhs import xvalidate
 from kmc.score_matching.kernel.kernels import gaussian_kernel
+from kmc.score_matching.lite.gaussian_rkhs import xvalidate
 from kmc.tools.Log import logger
 import matplotlib.pyplot as plt
 import numpy as np
