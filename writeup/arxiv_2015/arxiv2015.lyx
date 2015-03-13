@@ -129,15 +129,18 @@ Kamiltonian Monte Carlo
 \end_layout
 
 \begin_layout Abstract
-We propose an adaptive, gradient free Hamiltonian Monte Carlo (HMC) algorithm
- to simulate from an arbritary target probability density.
+We propose an adaptive, gradient free MCMC algorithm based on Hamiltonian
+ Monte Carlo (HMC), which allows simulation from an intractable target probabili
+ty density.
  Our sampler fills a gap: when the target density is intractable and its
- gradients are not available, classic HMC methodology 
+ gradients are not available, while pseudo-marginal MCMC framework allows
+ exact approximation, i.e., sampling from an asymptotically correct target,
+ classic HMC methodology 
 \emph on
 cannot
 \emph default
- be applied -- one is left with random walk methods, which suffer from bad
- mixing behaviour.
+ be applied -- one is left with random walk methods, which tend to suffer
+ from bad mixing behaviour.
  We extend recent ideas of adaptively learning target covariance structure
  in a Reproducing Kernel Hilbert Space (RKHS), based on the history of the
  Markov chain.
@@ -150,19 +153,20 @@ smoothing the chain history, we directly model its
 global
 \emph default
  log-density as an RKHS function.
- To that end, we take recent ideas of fitting an unnormalised infinite exponenti
-al family models, and reduce excessive computational costs via efficient
- approximations using random basis functions.
- This provides a robust kernel induced Hamiltonian flow which can be used
+ To that end, we employ recent ideas of fitting an unnormalised infinite
+ exponential family models, and reduce excessive computational costs via
+ efficient approximations using random basis functions.
+ This provides a robust kernel-induced Hamiltonian flow which can be used
  to simulate trajectories on a level set that converges to the true level
  set in the Markov chain's asymptotic limit.
- We construct an 
+ In summary, we construct an 
 \emph on
 exact 
 \emph default
-MCMC algorithm that (i) behaves similar to HMC in terms of autocorrelation
+MCMC algorithm that (i) behaves similarly to HMC in terms of autocorrelation
  and acceptance rates, but that (ii) does not require target gradients,
- and that in particular (iii) works well in high dimensions.
+ and that in particular (iii) offers substantial mixing improvements in
+ high dimensions.
  We support our claims with theoretical analysis in the form of finite sample
  convergence rates and experimental studies.
 \end_layout
@@ -313,7 +317,7 @@ ce in high dimensions (exponential?)
 \end_layout
 
 \begin_layout Enumerate
-Use low-rank Cholesky to exlore limitations of scaling (appendix: compare
+Use low-rank Cholesky to explore limitations of scaling (appendix: compare
  low-rank with exact)
 \end_layout
 
@@ -358,7 +362,7 @@ Maximum distance of trajectory to Hamiltonian contour (2d plot), how does
 \end_layout
 
 \begin_layout Itemize
-What do the tails of the desnity estimate do?
+What do the tails of the density estimate do?
 \end_layout
 
 \begin_layout Itemize
@@ -590,9 +594,9 @@ key "Betancourt2015"
 \end_inset
 
 .
- Hamiltonian Monte Carlo (HMC) is based on a fictuous dynamical system and
- utilises deterministic, measure-preserving maps to generate efficient Markov
- transitions.
+ Hamiltonian Monte Carlo (HMC) is based on a fictitious dynamical system
+ and utilises deterministic, measure-preserving maps to generate efficient
+ Markov transitions.
  Starting from the unnormalised target density of the form 
 \begin_inset Formula $\pi(q)\propto\exp(-U(q))$
 \end_inset
@@ -1774,8 +1778,7 @@ reference "eq:score_match_objective_random_feats"
 \end_inset
 
 .
- This results in the regularised and numerically more stable solutution
- 
+ This results in the regularised and numerically more stable solution 
 \begin_inset Formula $\hat{\theta}_{\lambda}:=(C+\lambda I)^{-1}b$
 \end_inset
 
@@ -1838,7 +1841,7 @@ key "le2013fastfood"
 \end_inset
 
 .
- Bochners theorem gives the representation
+ Bochner's theorem gives the representation
 \begin_inset Formula 
 \[
 k(x,y)=\tilde{k}(x-y)=\int_{\mathbb{R}^{d}}\exp\left(i\omega^{T}(x-y)\right)d\Gamma(\omega),
@@ -2318,7 +2321,7 @@ reference "eq:leap_frog_flow"
 \end_inset
 
 .
- We therefore need to controll the approximation quality of the kernel induced
+ We therefore need to control the approximation quality of the kernel induced
  potential energy to maintain good performance in practice.
  At this point, it is unclear, whether and how finite sample rates for estimatin
 g infinite exponential family models, 
@@ -2547,7 +2550,7 @@ Hamiltonian trajectories on 2-dimensional standard Gaussian both target
 \series bold
 Left:
 \series default
- Plain Hamiltonian trajectories oscilate on a stable orbit.
+ Plain Hamiltonian trajectories oscillate on a stable orbit.
  Acceptance prbability according to 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -2635,7 +2638,7 @@ reference "alg:Kamiltonian-Monte-Carlo"
 
 \begin_layout Standard
 The remainder of this section covers details on adaptation schedules needed
- to ensure both anyptotic correctness and computational feasability, and
+ to ensure both asymptotic correctness and computational feasibility, and
  describe various tuning mechanisms for applying KMC in practice.
 \end_layout
 
@@ -2876,16 +2879,12 @@ reference "alg:Kamiltonian-Monte-Carlo"
 \begin_inset Formula ${\cal O}(dm^{2})$
 \end_inset
 
-, which allows us to update th
-\begin_inset space \space{}
-\end_inset
-
-e proposal in 
+, which allows us to update the proposal in 
 \emph on
 every 
 \emph default
-itation of the Markov chain.
- To guarantee convergence to the correct stationary distirbution, we introduce
+iteration of the Markov chain.
+ To guarantee convergence to the correct stationary distribution, we introduce
  vanishing adaptation weights 
 \begin_inset Formula $\left\{ \beta_{t}\right\} _{i=0}^{\infty}$
 \end_inset
@@ -2923,7 +2922,7 @@ Learning free parameters
 \end_layout
 
 \begin_layout Standard
-KMC has two free parameters, the Gaussian kernel bandwith 
+KMC has two free parameters, the Gaussian kernel bandwidth 
 \begin_inset Formula $\sigma$
 \end_inset
 
@@ -2939,13 +2938,13 @@ key "sejdinovic_kernel_2014"
 
 \end_inset
 
-, did not cover chover choice of kernel parameters, i.e.
+, did not cover choice of kernel parameters, i.e.
  the Gaussian bandwidth 
 \begin_inset Formula $\sigma$
 \end_inset
 
  in our case.
- As the choice of such parameters ius crucial to obtain an efficient sampler,
+ As the choice of such parameters is crucial to obtain an efficient sampler,
  this clearly limits its generality.
  While in practice, pilot runs can to be devised in order to tune the parameter,
  a general framework to cover their choice is desirable.
@@ -3148,7 +3147,7 @@ cheat
 \begin_inset Quotes erd
 \end_inset
 
- via oscilating in small areas of the space, we monitored the volume of
+ via oscillating in small areas of the space, we monitored the volume of
  the levels sets and ensured they are roughly equal.
 \end_layout
 
@@ -3180,7 +3179,7 @@ name "fig:kmc_trajectories_mean_acceptance"
 
 Behaviour of kernel induced Hamiltonian flow in high dimensions.
  We show quantiles of the distribution of the average acceptance probability
- along a simulated trajectory (true Hamiltonian flow has neglectible variance).
+ along a simulated trajectory (true Hamiltonian flow has negligible variance).
  While worst-case acceptance probability of the kernel induced flow suffers
  in high dimensions, the median acceptance probability is remarkably high
  and close to the true Hamiltonian ground truth.
