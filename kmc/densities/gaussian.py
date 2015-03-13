@@ -1,5 +1,5 @@
 import numpy as np
-import scipy as sp
+from scipy.linalg import solve_triangular
 
 def log_gaussian_pdf(x, mu=None, Sigma=None, is_cholesky=False, compute_grad=False):
     if mu is None:
@@ -18,8 +18,8 @@ def log_gaussian_pdf(x, mu=None, Sigma=None, is_cholesky=False, compute_grad=Fal
     
     # solve y=K^(-1)x = L^(-T)L^(-1)x
     x = np.array(x - mu)
-    y = sp.linalg.solve_triangular(L, x.T, lower=True)
-    y = sp.linalg.solve_triangular(L.T, y, lower=False)
+    y = solve_triangular(L, x.T, lower=True)
+    y = solve_triangular(L.T, y, lower=False)
     
     if not compute_grad:
         log_determinant_part = -np.sum(np.log(np.diag(L)))
