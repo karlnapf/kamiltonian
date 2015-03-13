@@ -26,9 +26,10 @@ while True:
     Z = sample_gaussian(N, mu, Sigma=L, is_cholesky=True)
     lmbda = 1.
     sigma = 1.
-    m = 100
+    gamma = 0.5/(sigma**2)
+    m = 200
     
-    omega = sigma * np.random.randn(D, m)
+    omega = gamma * np.random.randn(D, m)
     u = np.random.uniform(0, 2 * np.pi, m)
     theta = score_matching_sym(Z, lmbda, omega, u)
     
@@ -51,10 +52,10 @@ while True:
     num_steps = 1500
     step_size = .1
     
-    Xs_q = np.linspace(-20, 20)
-    Ys_q = np.linspace(-10, 10)
-    Xs_p = np.linspace(-1, 1)
-    Ys_p = np.linspace(-1, 1)
+    Xs_q = np.linspace(-3, 3)
+    Ys_q = np.linspace(-3, 3)
+    Xs_p = np.linspace(-3, 3)
+    Ys_p = np.linspace(-3, 3)
 
     plot_grad_target = False
     plot_kamiltonian_dnyamics(q0, p0,
