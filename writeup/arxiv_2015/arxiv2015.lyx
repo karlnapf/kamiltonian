@@ -1064,7 +1064,7 @@ reference "eq:potential_energy_operator"
 
 \end_inset
 
- by a kernel induced surraget that is tractable and does not require gradients
+ by a kernel induced surrogate that is tractable and does not require gradients
  of the log-target.
  To that end, we fit an infinite exponential family model,
 \begin_inset CommandInset citation
