@@ -180,17 +180,17 @@ if __name__ == "__main__":
     s_sigma.on_changed(update_plot)
     s_lmbda.on_changed(update_plot)
     
-    ax_sigma_opt = plt.axes([0.1, 0.025, 0.1, 0.04])
-    btn_sigma_opt = Button(ax_sigma_opt, 'sigma', color=ax_color, hovercolor='0.975')
-    btn_sigma_opt.on_clicked(optimise_sigma_surface)
+    ax_sigma_btn = plt.axes([0.1, 0.025, 0.1, 0.04])
+    btn_sigma_btn = Button(ax_sigma_btn, 'sigma', color=ax_color, hovercolor='0.975')
+    btn_sigma_btn.on_clicked(optimise_sigma_surface)
     
-    ax_lmbda_opt = plt.axes([0.3, 0.025, 0.1, 0.04])
-    btn_lambda_opt = Button(ax_lmbda_opt, 'lambda', color=ax_color, hovercolor='0.975')
-    btn_lambda_opt.on_clicked(plot_lmbda_surface)
+    ax_lmbda_btn = plt.axes([0.3, 0.025, 0.1, 0.04])
+    btn_lambda_btn = Button(ax_lmbda_btn, 'lambda', color=ax_color, hovercolor='0.975')
+    btn_lambda_btn.on_clicked(plot_lmbda_surface)
     
-    ax_cma_opt = plt.axes([0.5, 0.025, 0.1, 0.04])
-    btn_cma_opt = Button(ax_cma_opt, 'cma', color=ax_color, hovercolor='0.975')
-    btn_cma_opt.on_clicked(run_cma)
+    ax_cma_btn = plt.axes([0.5, 0.025, 0.1, 0.04])
+    btn_cma_btn = Button(ax_cma_btn, 'cma', color=ax_color, hovercolor='0.975')
+    btn_cma_btn.on_clicked(run_cma)
 
     ax_radio = plt.axes([0.025, 0.5, 0.15, 0.15], axisbg=ax_color)
     radio = RadioButtons(ax_radio, ('log-pdf', 'norm-log-gradient'), active=0)
