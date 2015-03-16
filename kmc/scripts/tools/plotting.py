@@ -39,6 +39,26 @@ def evaluate_density_grid(Xs, Ys, log_pdf, exponentiate=False):
     
     return D if exponentiate is False else np.exp(D)
 
+def evaluate_gradient_grid(Xs, Ys, grad_func):
+    """
+    Plot as
+    quiver(X, Y, U, V, color='m')
+    plot_array(Xs, Ys, G_norm)
+    """
+    G_norm=np.zeros((len(Ys), len(Xs)))
+    X, Y = np.meshgrid(Xs, Ys)
+    U = np.zeros(X.shape)
+    V = np.zeros(Y.shape)
+    for i in range(len(Xs)):
+        for j in range(len(Ys)):
+            x = np.array([Xs[i], Ys[j]])
+            g = grad_func(x)
+            G_norm[j,i] = np.linalg.norm(g)
+            U[j, i] = g[0]
+            V[j, i] = g[1]
+    
+    return G_norm, U, V, X, Y
+
 def evaluate_density_grad_grid(Xs, Ys, grad):
     G = np.zeros((len(Xs), len(Ys)))
     for i in range(len(Xs)):
