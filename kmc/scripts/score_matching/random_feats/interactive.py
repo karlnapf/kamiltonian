@@ -1,9 +1,9 @@
 from matplotlib.widgets import Slider, Button, RadioButtons
 
 from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
-from kmc.score_matching.random_feats.gaussian_rkhs import score_matching_sym, \
-    _objective_sym, compute_b, compute_C, feature_map_single, \
-    feature_map_grad_single
+from kmc.score_matching.random_feats.gaussian_rkhs import xvalidate, compute_b,\
+    compute_C, score_matching_sym, feature_map_single, feature_map_grad_single,\
+    objective
 from kmc.scripts.tools.plotting import evaluate_density_grid, \
     evaluate_density_grad_grid, plot_array
 import matplotlib.pyplot as plt
@@ -13,58 +13,55 @@ import numpy as np
 plot_pdf = True
 
 def plot_lmbda_surface(val):
-    pass
-#     print("lambda")
-#     log2_sigma = s_sigma.val
-#     sigma = 2**log2_sigma
-#     
-#     K = gaussian_kernel(Z, sigma=sigma)
-#     log2_lambdas = np.linspace(s_lmbda.valmin, s_lmbda.valmax)
-#     Js = np.array([np.mean(xvalidate(Z, 5, sigma, 2**log2_lmbda, K, num_repetitions=3)) for log2_lmbda in log2_lambdas])
-#     
-#     log2_lambda_min = log2_lambdas[Js.argmin()]
-#     log_Js = np.log(Js - (Js.min() if Js.min() < 0 else 0) + 1)
-# 
-#     # update slider
-#     s_lmbda.set_val(log2_lambda_min)
-#     update_plot()
-#     
-#     plt.figure()
-#     plt.plot(log2_lambdas, log_Js)
-#     plt.plot([log2_lambda_min, log2_lambda_min], [log_Js.min(), log_Js.max()], 'r')
-#     plt.title(r"$\lambda$ surface for $\log_2 \sigma=%.2f$, best value of $J(\alpha)=%.2f$ at $\log_2 \lambda=%.2f$" % 
-#               (log2_sigma, Js.min(), log2_lambda_min))
-#     
-#     plt.show()
+    print("lambda")
+    log2_sigma = s_sigma.val
+     
+    log2_lambdas = np.linspace(s_lmbda.valmin, s_lmbda.valmax, 50)
+    Js = np.array([np.mean(xvalidate(Z, 2**log2_lmbda, omega, u, n_folds=5, num_repetitions=3)) for log2_lmbda in log2_lambdas])
+     
+    log2_lambda_min = log2_lambdas[Js.argmin()]
+    log_Js = np.log(Js - (Js.min() if Js.min() < 0 else 0) + 1)
+ 
+    # update slider
+    s_lmbda.set_val(log2_lambda_min)
+    update_plot()
+     
+    plt.figure()
+    plt.plot(log2_lambdas, log_Js)
+    plt.plot([log2_lambda_min, log2_lambda_min], [log_Js.min(), log_Js.max()], 'r')
+    plt.title(r"$\lambda$ surface for $\log_2 \sigma=%.2f$, best value of $J(\alpha)=%.2f$ at $\log_2 \lambda=%.2f$" % 
+              (log2_sigma, Js.min(), log2_lambda_min))
+     
+    plt.show()
 
 def optimise_sigma_surface(val):
-    pass
-#     print "sigma"
-#     log2_lmbda = s_lmbda.val
-#     lmbda = 2**log2_lmbda
-#     
-#     log2_sigmas = np.linspace(s_sigma.valmin, s_sigma.valmax)
-#     Js = np.zeros(len(log2_sigmas))
-#     for i,log2_sigma in enumerate(log2_sigmas):
-#         sigma = 2**log2_sigma
-#         K = gaussian_kernel(Z, sigma=sigma)
-#         Js[i] = np.mean(xvalidate(Z, 5, sigma, lmbda, K, num_repetitions=3))
-#     
-#     log2_sigma_min = log2_sigmas[Js.argmin()]
-#     log_Js = np.log(Js - (Js.min() if Js.min() < 0 else 0) + 1)
-#     
-#     # update slider
-#     s_sigma.set_val(log2_sigma_min)
-#     update_plot()
-# 
-#     plt.figure()
-#     plt.plot(log2_sigmas, log_Js)
-#     plt.plot([log2_sigma_min, log2_sigma_min], [log_Js.min(), log_Js.max()], 'r')
-#     plt.title(r"$\sigma$ surface for $\log_2 \lambda=%.2f$, best value of $J(\alpha)=%.2f$ at $\log_2 \sigma=%.2f$" % 
-#               (log2_lmbda, Js.min(), log2_sigma_min))
-#     
-#     
-#     plt.show()
+    global gamma
+    print("sigma")
+    log2_lmbda = s_lmbda.val
+    lmbda = 2**log2_lmbda
+     
+    log2_sigmas = np.linspace(s_sigma.valmin, s_sigma.valmax, 50)
+    Js = np.zeros(len(log2_sigmas))
+    for i,log2_sigma in enumerate(log2_sigmas):
+        s_sigma.val=log2_sigma
+        update_basis(val)
+        Js[i] = np.mean(xvalidate(Z, lmbda, omega, u, n_folds=5, num_repetitions=3))
+     
+    log2_sigma_min = log2_sigmas[Js.argmin()]
+    log_Js = np.log(Js - (Js.min() if Js.min() < 0 else 0) + 1)
+     
+    # update slider
+    s_sigma.set_val(log2_sigma_min)
+    update_plot()
+ 
+    plt.figure()
+    plt.plot(log2_sigmas, log_Js)
+    plt.plot([log2_sigma_min, log2_sigma_min], [log_Js.min(), log_Js.max()], 'r')
+    plt.title(r"$\sigma$ surface for $\log_2 \lambda=%.2f$, best value of $J(\alpha)=%.2f$ at $\log_2 \sigma=%.2f$" % 
+              (log2_lmbda, Js.min(), log2_sigma_min))
+     
+     
+    plt.show()
 
 def update_plot(val=None):
     global omega, u
@@ -76,14 +73,14 @@ def update_plot(val=None):
     b = compute_b(Z, omega, u)
     C = compute_C(Z, omega, u)
     theta = score_matching_sym(Z, lmbda, omega, u, b, C)
-    J = _objective_sym(Z, theta, lmbda, omega, u, b, C)
-#     J_xval = np.mean(xvalidate(Z, 5, sigma, lmbda, K, num_repetitions=3))
+    J = objective(Z, theta, lmbda, omega, u, b, C)
+    J_xval = np.mean(xvalidate(Z, lmbda, omega, u, n_folds=5, num_repetitions=3))
     
     logq_est = lambda x: np.dot(theta, feature_map_single(x, omega, u))
     dlogq_est = lambda x: np.dot(theta, feature_map_grad_single(x, omega, u))
 
-    description = "N=%d, sigma: %.2f, lambda: %.2f, m=%.d, J(a)=%.2f" % \
-        (N, sigma, lmbda, m, J,)
+    description = "N=%d, sigma: %.2f, lambda: %.2f, m=%.d, J=%.2f, J_xval=%.2f" % \
+        (N, sigma, lmbda, m, J, J_xval)
         
     if plot_pdf:
         D = evaluate_density_grid(Xs, Ys, logq_est)
@@ -147,9 +144,10 @@ def radio_callback(val):
     
 def update_basis(val):
     global omega, u, m, gamma
-    gamma = 0.5/(s_sigma.val**2)
+    sigma = 2**s_sigma.val
+    gamma = 0.5/(sigma**2)
     m = int(s_m.val)
-    print("Updating basis to %d dimensions" % m)
+    print("Updating basis for m=%d, gamma=%.2f" % (m, gamma))
     omega = gamma * np.random.randn(D, m)
     u = np.random.uniform(0, 2 * np.pi, m)
 
@@ -168,7 +166,7 @@ if __name__ == "__main__":
     # true target log density
     Sigma = np.diag(np.linspace(0.01, 1, D))
     Sigma[:2, :2] = np.array([[1, .95], [.95, 1]])
-#     Sigma = np.eye(D)
+    Sigma = np.eye(D)
     L = np.linalg.cholesky(Sigma)
     dlogq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=True)
     logq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=False)
@@ -190,8 +188,8 @@ if __name__ == "__main__":
     ax_sigma = plt.axes([0.25, 0.2, 0.65, 0.03], axisbg=ax_color)
     ax_lmbda = plt.axes([0.25, 0.1, 0.65, 0.03], axisbg=ax_color)
     ax_m = plt.axes([0.25, 0.15, 0.65, 0.03], axisbg=ax_color)
-    s_sigma = Slider(ax_sigma, 'log2 sigma', -10, 25.0, valinit=0)
-    s_lmbda = Slider(ax_lmbda, 'log2 lambda', -35, 30., valinit=0)
+    s_sigma = Slider(ax_sigma, 'log2 sigma', -3, 3, valinit=0)
+    s_lmbda = Slider(ax_lmbda, 'log2 lambda', -3, 3., valinit=0)
     s_m = Slider(ax_m, 'm', 1, 2 * N, valinit=100)
     s_sigma.on_changed(update_basis_plot)
     s_lmbda.on_changed(update_basis_plot)
