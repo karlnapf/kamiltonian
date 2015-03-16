@@ -20,7 +20,7 @@ Gatsby Unit\\
 University College London \\
 \texttt{heiko.strathmann@gmail.com} \\
 \And
-Dino Sejdinovoc \\
+Dino Sejdinovic \\
 Department of Statistics \\
 University of Oxford \\
 \texttt{dino.sejdinovic@gmail.com} \\
@@ -42,7 +42,7 @@ University College London \\
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
 
-%\nipsfinalcopy % Uncomment for camera-ready version
+\nipsfinalcopy % Uncomment for camera-ready version
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 \end_preamble
@@ -182,6 +182,8 @@ Proof read Gaussian kernel score matching
 \end_layout
 
 \begin_layout Itemize
+
+\strikeout on
 Implement carefully
 \end_layout
 
@@ -222,6 +224,14 @@ Write section on optimising
 \end_inset
 
  via x-validation or stochastic optimisation
+\end_layout
+
+\begin_layout Itemize
+Proof convergence for random feature approximation
+\end_layout
+
+\begin_layout Itemize
+Rates for the above?
 \end_layout
 
 \begin_layout Itemize
@@ -314,11 +324,6 @@ falling apart
 \begin_layout Enumerate
 Translate to a guideline how many samples one needs to achieve similar performan
 ce in high dimensions (exponential?)
-\end_layout
-
-\begin_layout Enumerate
-Use low-rank Cholesky to explore limitations of scaling (appendix: compare
- low-rank with exact)
 \end_layout
 
 \begin_layout Enumerate
@@ -566,16 +571,6 @@ key "Andrieu2009a"
 
 \begin_layout Subsection
 Hamiltonian Monte Carlo
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-AG: we don't really need a separate section on mean embeddings
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -1994,10 +1989,10 @@ where
  Consequently the gradient itself is given by 
 \begin_inset Formula 
 \[
-\nabla_{x}\phi_{x}=\begin{bmatrix}\dot{\phi}_{\xi}^{1}\\
+\nabla_{\xi}\phi_{\xi}=\begin{bmatrix}\dot{\phi}_{\xi}^{1}\\
 \vdots\\
-\dot{\phi}_{\xi}^{m}
-\end{bmatrix}\in\mathbb{R}^{m\times d}
+\dot{\phi}_{\xi}^{d}
+\end{bmatrix}\in\mathbb{R}^{d\times m}
 \]
 
 \end_inset
@@ -2614,11 +2609,11 @@ name "fig:kmc_trajectories"
 Hamiltonian trajectories on 2-dimensional standard Gaussian both target
  and momentum.
  Starting (red stars) at 
-\begin_inset Formula $q_{0}=(0,-3)^{T}$
+\begin_inset Formula $q_{0}=(-1,-1)^{T}$
 \end_inset
 
 , we randomly sample momentum and simulate for 
-\begin_inset Formula $L=300$
+\begin_inset Formula $L=200$
 \end_inset
 
  leap-frog steps of size 
@@ -2651,11 +2646,11 @@ Right:
 \end_inset
 
  samples (blue points) with 
-\begin_inset Formula $\lambda=1$
+\begin_inset Formula $\lambda=0.001$
 \end_inset
 
  and a Gaussian kernel with 
-\begin_inset Formula $\sigma=500$
+\begin_inset Formula $\sigma=1$
 \end_inset
 
 .
@@ -2668,8 +2663,8 @@ reference "eq:kmc_accept_prob"
 
 .
  The trajectories slightly drift compared to the true Hamiltonian flow.
- The acceptance probability oscilates in a larger interval and its average
- is slightly lower.
+ The acceptance probability oscilates in a larger interval while its average
+ is still high.
  Quantification of this difference is crucial for kernel induced Hamiltonian
  dynamics being useful in practice.
 \end_layout
@@ -2802,7 +2797,7 @@ Online-update density estimate.
 Update sums 
 \begin_inset Formula 
 \begin{equation}
-\tilde{b}_{t}\leftarrow\tilde{b}_{t-1}-a_{t}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t}}^{\ell}\quad\text{and}\quad\tilde{C}_{t}\leftarrow\tilde{C}_{t-1}+\frac{a_{t}}{2}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t}}^{\ell}(\ddot{\phi}_{x_{t}}^{\ell})^{T}\label{eq:algo_updating_b_C}
+\tilde{b}_{t}\leftarrow\tilde{b}_{t-1}-a_{t}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t}}^{\ell}\quad\text{and}\quad\tilde{C}_{t}\leftarrow\tilde{C}_{t-1}+\frac{a_{t}}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t}}^{\ell}(\dot{\phi}_{x_{t}}^{\ell})^{T}\label{eq:algo_updating_b_C}
 \end{equation}
 
 \end_inset
@@ -2969,7 +2964,7 @@ every
 iteration of the Markov chain.
  To guarantee convergence to the correct stationary distribution, we introduce
  vanishing adaptation weights 
-\begin_inset Formula $\left\{ \beta_{t}\right\} _{i=0}^{\infty}$
+\begin_inset Formula $\left\{ a_{t}\right\} _{i=0}^{\infty}$
 \end_inset
 
  such that 
@@ -2998,6 +2993,9 @@ key "RobertsRosenthal2007"
 
  guarantees that the resulting Markov kernel is ergodic and converges to
  the correct target.
+ 
+\emph on
+TODO: Really? Carefull here!
 \end_layout
 
 \begin_layout Subsection
