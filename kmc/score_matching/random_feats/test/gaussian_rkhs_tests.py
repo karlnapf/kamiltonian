@@ -7,8 +7,8 @@ from kmc.score_matching.random_feats.gaussian_rkhs import feature_map_single, \
     feature_map, feature_map_derivative_d, feature_map_derivative2_d, \
     feature_map_derivatives_loop, feature_map_derivatives2_loop, \
     feature_map_derivatives2, feature_map_derivatives, compute_b, compute_C, \
-    feature_map_grad_single, score_matching_sym, _objective_sym, \
-    _objective_sym_completely_manual, _objective_sym_half_manual
+    feature_map_grad_single, score_matching_sym, \
+    _objective_sym_completely_manual, _objective_sym_half_manual, objective
 import numpy as np
 
 
@@ -148,9 +148,9 @@ def test_feature_map_grad_single_equals_feature_map_derivative_d():
     
     grad = feature_map_grad_single(x, omega, u)
     
-    grad_manual = np.zeros((m, D))
+    grad_manual = np.zeros((D,m))
     for d in range(D):
-        grad_manual[:, d] = feature_map_derivative_d(x, omega, u, d)
+        grad_manual[d, :] = feature_map_derivative_d(x, omega, u, d)
     
     assert_allclose(grad_manual, grad)
 
@@ -219,7 +219,7 @@ def test_objective_sym_given_b_C():
     b = compute_b(X, omega, u)
     theta = np.random.randn(m)
     
-    J = _objective_sym(X, theta, lmbda, omega, u, b, C)
+    J = objective(X, theta, lmbda, omega, u, b, C)
     J_manual = 0.5 * np.dot(theta.T, np.dot(C + np.eye(m) * lmbda, theta)) - np.dot(theta, b)
     
     assert_close(J, J_manual)
@@ -237,8 +237,8 @@ def test_objective_sym_given_b_C_equals_given_nothing():
     b = compute_b(X, omega, u)
     theta = np.random.randn(m)
     
-    J = _objective_sym(X, theta, lmbda, omega, u, b, C)
-    J2 = _objective_sym(X, theta, lmbda, omega, u)
+    J = objective(X, theta, lmbda, omega, u, b, C)
+    J2 = objective(X, theta, lmbda, omega, u)
     
     assert_close(J, J2)
 
@@ -281,14 +281,14 @@ def test_objective_sym_equals_completely_manual_manually():
         assert_allclose(C_manual, C)
         
         # discard regularisation for these internal checks
-        J_n = _objective_sym(X[n].reshape(1, m), theta, 0, omega, u)
+        J_n = objective(X[n].reshape(1, m), theta, 0, omega, u)
         J_n_2 = 0.5 * np.dot(theta, np.dot(C, theta)) - np.dot(theta, b)
         assert_allclose(J_n_2, J_n)
         assert_allclose(J_n_manual, J_n)
         
     J_manual /= N
     J_manual += 0.5 * lmbda * np.dot(theta, theta)
-    J = _objective_sym(X, theta, lmbda, omega, u)
+    J = objective(X, theta, lmbda, omega, u)
 
     assert_close(J, J_manual)
 
@@ -302,7 +302,7 @@ def test_objective_sym_equals_completely_manual():
     lmbda = 1.
     theta = np.random.randn(m)
      
-    J = _objective_sym(X, theta, lmbda, omega, u)
+    J = objective(X, theta, lmbda, omega, u)
     J_manual = _objective_sym_completely_manual(X, theta, lmbda, omega, u)
      
     assert_close(J_manual, J)
@@ -317,7 +317,7 @@ def test_objective_sym_equals_half_manual():
     lmbda = 1.
     theta = np.random.randn(m)
      
-    J = _objective_sym(X, theta, lmbda, omega, u)
+    J = objective(X, theta, lmbda, omega, u)
     J_manual = _objective_sym_half_manual(X, theta, lmbda, omega, u)
      
     assert_close(J_manual, J)
@@ -335,13 +335,13 @@ def test_score_matching_sym_returns_min_1d_grid():
     b = compute_b(X, omega, u)
     lmbda = .001
     theta = score_matching_sym(X, lmbda, omega, u)
-    J = _objective_sym(X, theta, lmbda, omega, u, b, C)
+    J = objective(X, theta, lmbda, omega, u, b, C)
     
     thetas_test = np.linspace(theta - 3, theta + 3)
     Js = np.zeros(len(thetas_test))
     
     for i, theta_test in enumerate(thetas_test):
-        Js[i] = _objective_sym(X, np.array([theta_test]), lmbda, omega, u, b, C)
+        Js[i] = objective(X, np.array([theta_test]), lmbda, omega, u, b, C)
     
     
 #     plt.plot(thetas_test, Js)
@@ -364,12 +364,12 @@ def test_score_matching_sym_returns_min_random_search():
     b = compute_b(X, omega, u)
     lmbda = 1.
     theta = score_matching_sym(X, lmbda, omega, u)
-    J = _objective_sym(X, theta, lmbda, omega, u, b, C)
+    J = objective(X, theta, lmbda, omega, u, b, C)
     
     for noise in [0.0001, 0.001, 0.1, 1, 10, 100]:
         for _ in range(10):
             theta_test = np.random.randn(m) * noise + theta
-            J_test = _objective_sym(X, theta_test, lmbda, omega, u, b, C)
+            J_test = objective(X, theta_test, lmbda, omega, u, b, C)
         
             assert_less_equal(J, J_test)
         

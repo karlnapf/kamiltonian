@@ -3,7 +3,7 @@ from sklearn.cross_validation import KFold
 import numpy as np
 
 def sample_basis(D, m, gamma):
-    omega = gamma*np.random.randn(D, m)
+    omega = gamma * np.random.randn(D, m)
     u = np.random.uniform(0, 2 * np.pi, m)
     
     return omega, u
@@ -37,10 +37,10 @@ def feature_map_derivative2_d(X, omega, u, d):
 
 def feature_map_grad_single(x, omega, u):
     D, m = omega.shape
-    grad = np.zeros((m, D))
+    grad = np.zeros((D, m))
     
     for d in range(D):
-        grad[:, d] = feature_map_derivative_d(x, omega, u, d)
+        grad[d, :] = feature_map_derivative_d(x, omega, u, d)
     
     return grad
 
