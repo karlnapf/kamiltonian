@@ -1,17 +1,17 @@
 from abc import abstractmethod
 
 from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
-from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJob import TrajectoryJob
+from kmc.scripts.experiments.trajectories.independent_jobs_classes.random_feats.TrajectoryJob import TrajectoryJob
 from kmc.tools.Log import logger
 import numpy as np
 
 
 class GaussianTrajectoryJob(TrajectoryJob):
     def __init__(self,
-                 N, D, sigma_q, lmbda,
+                 N, D, lmbda, m, sigma_q,
                  sigma_p,
                  num_steps, step_size, max_steps=None):
-        TrajectoryJob.__init__(self, N, D, lmbda, sigma_p, num_steps, step_size, max_steps)
+        TrajectoryJob.__init__(self, N, D, lmbda, m, sigma_p, num_steps, step_size, max_steps)
         
         self.sigma_q = sigma_q
     

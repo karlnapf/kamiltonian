@@ -6,12 +6,10 @@ from kmc.densities.gaussian import sample_gaussian, log_gaussian_pdf
 from kmc.hamiltonian.hamiltonian import compute_log_accept_pr, \
     compute_log_det_trajectory
 from kmc.hamiltonian.leapfrog import leapfrog
-from kmc.score_matching.estimator import log_pdf_estimate_grad
-from kmc.score_matching.gaussian_rkhs import _compute_b_sym, _compute_C_sym, \
-    score_matching_sym
-from kmc.score_matching.gaussian_rkhs_xvalidation import select_sigma_grid
-from kmc.score_matching.kernel.kernels import gaussian_kernel, \
-    gaussian_kernel_grad
+from kmc.score_matching.lite.gaussian_rkhs_xvalidation import select_sigma_grid
+from kmc.score_matching.random_feats.estimator import log_pdf_estimate_grad
+from kmc.score_matching.random_feats.gaussian_rkhs import score_matching_sym, \
+    sample_basis, feature_map_grad_single
 from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResult import TrajectoryJobResult
 from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResultAggregator import TrajectoryJobResultAggregator
 from kmc.tools.Log import logger
@@ -21,12 +19,13 @@ import numpy as np
 
 class TrajectoryJob(IndependentJob):
     def __init__(self,
-                 N, D, lmbda, sigma_p, num_steps, step_size, max_steps=None):
+                 N, D, lmbda, m, sigma_p, num_steps, step_size, max_steps=None):
         IndependentJob.__init__(self, TrajectoryJobResultAggregator())
         
         self.N = N
         self.D = D
         self.lmbda = lmbda
+        self.m = m
         self.sigma_p = sigma_p
         self.num_steps = num_steps
         self.step_size = step_size
@@ -55,16 +54,15 @@ class TrajectoryJob(IndependentJob):
         self.set_up()
         
         logger.info("Learning kernel bandwidth")
-        sigma = select_sigma_grid(self.Z, lmbda=self.lmbda, log2_sigma_max=15)
+        sigma = select_sigma_grid(self.Z, self.m)
         logger.info("Using lmbda=%.2f, sigma: %.2f" % (self.lmbda, sigma))
         
-        logger.info("Computing kernel matrix")
-        K = gaussian_kernel(self.Z, sigma=sigma)
+        D = self.Z.shape[1]
+        gamma = 0.5 * (sigma ** 2)
+        omega, u = sample_basis(D, self.m, gamma)
         
         logger.info("Estimate density in RKHS")
-        b = _compute_b_sym(self.Z, K, sigma)
-        C = _compute_C_sym(self.Z, K, sigma)
-        a = score_matching_sym(self.Z, sigma, self.lmbda, K, b, C)
+        theta = score_matching_sym(self.Z, self.lmbda, omega, u)
         
 #         logger.info("Computing objective function")
 #         J = _objective_sym(Z, sigma, self.lmbda, a, K, b, C)
@@ -72,8 +70,8 @@ class TrajectoryJob(IndependentJob):
 #         logger.info("N=%d, sigma: %.2f, lambda: %.2f, J(a)=%.2f, XJ(a)=%.2f" % \
 #                 (self.N, sigma, self.lmbda, J, J_xval))
         
-        kernel_grad = lambda x, X = None: gaussian_kernel_grad(x, X, sigma)
-        dlogq_est = lambda x: log_pdf_estimate_grad(x, a, self.Z, kernel_grad)
+        dlogq_est = lambda x: log_pdf_estimate_grad(feature_map_grad_single(x, omega, u),
+                                                    theta)
         
         
         logger.info("Simulating trajectory for L=%d steps of size %.2f" % \
