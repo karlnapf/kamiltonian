@@ -3,7 +3,7 @@ from multiprocessing.pool import Pool
 from kmc.score_matching.random_feats.gaussian_rkhs import xvalidate, \
     sample_basis
 from kmc.tools.Log import logger
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
 
@@ -31,9 +31,9 @@ def select_sigma_grid(Z, m, num_folds=5, num_repetitions=3,
         logger.info("fold %d/%d, sigma: %.2f, lambda: %.2f, J=%.3f" % \
             (i + 1, len(sigmas), sigma, lmbda, Js[i]))
     
-    if plot_surface:
-        plt.figure()
-        plt.plot(np.log2(sigmas), Js)
+#     if plot_surface:
+#         plt.figure()
+#         plt.plot(np.log2(sigmas), Js)
     
     return sigmas[Js.argmin()]
 
