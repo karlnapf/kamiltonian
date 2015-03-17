@@ -9,7 +9,7 @@ from kmc.hamiltonian.leapfrog import leapfrog
 from kmc.score_matching.random_feats.estimator import log_pdf_estimate_grad
 from kmc.score_matching.random_feats.gaussian_rkhs import score_matching_sym, \
     sample_basis, feature_map_grad_single
-from kmc.score_matching.random_feats.gaussian_rkhs_xvalidation import select_sigma_grid
+from kmc.score_matching.random_feats.gaussian_rkhs_xvalidation import select_sigma_scipy
 from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResult import TrajectoryJobResult
 from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResultAggregator import TrajectoryJobResultAggregator
 from kmc.tools.Log import logger
@@ -54,7 +54,7 @@ class TrajectoryJob(IndependentJob):
         self.set_up()
         
         logger.info("Learning kernel bandwidth")
-        sigma = select_sigma_grid(self.Z, self.m)
+        sigma = select_sigma_scipy(self.Z, self.m, lmbda=self.lmbda)
         logger.info("Using lmbda=%.2f, sigma: %.2f" % (self.lmbda, sigma))
         
         D = self.Z.shape[1]
