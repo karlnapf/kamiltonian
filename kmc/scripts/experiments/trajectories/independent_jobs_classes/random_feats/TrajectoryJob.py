@@ -99,12 +99,16 @@ class TrajectoryJob(IndependentJob):
         log_acc_est = compute_log_accept_pr(q0, p0, Qs_est, Ps_est, self.logq, self.logp)
         acc_mean = np.exp(log_mean_exp(log_acc))
         acc_est_mean = np.exp(log_mean_exp(log_acc_est))
+        idx09 = int(len(log_acc)*0.9)
+        acc_mean10 = np.exp(log_mean_exp(log_acc[idx09:]))
+        acc_est_mean10 = np.exp(log_mean_exp(log_acc_est[idx09:]))
         
         logger.info("Computing average volumes")
         log_det = compute_log_det_trajectory(Qs, Ps)
         log_det_est = compute_log_det_trajectory(Qs_est, Ps_est)
         
         logger.info("Average acceptance prob: %.2f, %.2f" % (acc_mean, acc_est_mean))
+        logger.info("Average acceptance prob (last 10 percent): %.2f, %.2f" % (acc_mean10, acc_est_mean10))
         logger.info("Log-determinant: %.2f, %.2f" % (log_det, log_det_est))
         
         logger.debug("Leaving")
