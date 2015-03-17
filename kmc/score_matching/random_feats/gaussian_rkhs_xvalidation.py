@@ -37,7 +37,7 @@ def select_sigma_grid(Z, m, num_folds=5, num_repetitions=3,
 
 def select_sigma_scipy(Z, m, num_folds=5, tol=0.2, num_repetitions=3, lmbda=0.0001):
     D = Z.shape[1]
-    def _f(log2_sigma):
+    def objective(log2_sigma):
         sigma = 2 ** log2_sigma
         folds = np.zeros(num_repetitions)
         for i in range(num_repetitions):
@@ -51,7 +51,7 @@ def select_sigma_scipy(Z, m, num_folds=5, tol=0.2, num_repetitions=3, lmbda=0.00
         return result
     
     
-    result = sp.optimize.minimize_scalar(_f, tol=tol)
+    result = sp.optimize.minimize_scalar(objective, tol=tol)
     logger.info("Best sigma: %.2f with value of J=%.3f after %d iterations in %d evaluations" \
                  % (2**result['x'], result['fun'], result['nit'], result['nfev']))
     
