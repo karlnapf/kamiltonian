@@ -1,3 +1,5 @@
+from multiprocessing.pool import Pool
+
 from kmc.score_matching.random_feats.gaussian_rkhs import xvalidate, \
     sample_basis
 from kmc.tools.Log import logger
@@ -46,13 +48,63 @@ def select_sigma_scipy(Z, m, num_folds=5, tol=0.2, num_repetitions=3, lmbda=0.00
             folds[i] = np.mean(xvalidate(Z, lmbda, omega, u, num_folds, num_repetitions=1))
         
         result = np.mean(folds)
-        logger.info("xvalidation, sigma: %.2f, lambda: %.2f, J=%.3f" % \
+        logger.info("xvalidation, sigma: %.2f, lambda: %.6f, J=%.3f" % \
                     (sigma, lmbda, result))
         return result
     
     
     result = sp.optimize.minimize_scalar(objective, tol=tol)
     logger.info("Best sigma: %.2f with value of J=%.3f after %d iterations in %d evaluations" \
-                 % (2**result['x'], result['fun'], result['nit'], result['nfev']))
+                 % (2 ** result['x'], result['fun'], result['nit'], result['nfev']))
     
-    return 2**result['x']
+    return 2 ** result['x']
+
+def multicore_fun(log2_sigma, log2_lmbda, num_repetitions, num_folds, Z, m):
+    D = Z.shape[1]
+    
+    sigma = 2 ** log2_sigma
+    lmbda = 2 ** log2_lmbda
+    
+    folds = np.zeros(num_repetitions)
+    for j in range(num_repetitions):
+        gamma = 0.5 * (sigma ** 2)
+        omega, u = sample_basis(D, m, gamma)
+        folds[j] = np.mean(xvalidate(Z, lmbda, omega, u,
+                                     num_folds, num_repetitions))
+    
+    result = np.mean(folds)
+    logger.info("particle, sigma: %.2f, lambda: %.6f, J=%.4f" % \
+        (sigma, lmbda, result))
+    return result
+
+def multicore_fun_helper(args):
+    return multicore_fun(*args)
+
+def select_sigma_lambda_cma(Z, m, num_threads=6, num_folds=5, num_repetitions=3,
+                            sigma0=0.5, lmbda0=0.0001,
+                            cma_opts={}, disp=False):
+    import cma
+    
+    start = np.log2(np.array([sigma0, lmbda0]))
+    
+    es = cma.CMAEvolutionStrategy(start, 1., cma_opts)
+    while not es.stop():
+        if disp:
+            es.disp()
+        solutions = es.ask()
+        
+        # use multicore here
+        pool = Pool(num_threads)
+        chunksize = 1
+        
+        args = [(log2_sigma, log2_lmbda, num_repetitions, num_folds, Z, m) for (log2_sigma, log2_lmbda) in solutions]
+        values = np.zeros(len(solutions))
+        for i, result in enumerate(pool.imap(multicore_fun_helper, args), chunksize):
+            values.flat[i - 1] = result
+        
+        es.tell(solutions, values)
+    
+    sigma = 2 ** es.best.get()[0][0]
+    lmbda = 2 ** es.best.get()[0][1]
+    
+    return sigma, lmbda

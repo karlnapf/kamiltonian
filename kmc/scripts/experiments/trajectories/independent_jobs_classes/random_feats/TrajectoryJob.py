@@ -9,7 +9,7 @@ from kmc.hamiltonian.leapfrog import leapfrog
 from kmc.score_matching.random_feats.estimator import log_pdf_estimate_grad
 from kmc.score_matching.random_feats.gaussian_rkhs import score_matching_sym, \
     sample_basis, feature_map_grad_single
-from kmc.score_matching.random_feats.gaussian_rkhs_xvalidation import select_sigma_scipy
+from kmc.score_matching.random_feats.gaussian_rkhs_xvalidation import select_sigma_lambda_cma
 from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResult import TrajectoryJobResult
 from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResultAggregator import TrajectoryJobResultAggregator
 from kmc.tools.Log import logger
@@ -19,13 +19,16 @@ import numpy as np
 
 class TrajectoryJob(IndependentJob):
     def __init__(self,
-                 N, D, lmbda, m, sigma_p, num_steps, step_size, max_steps=None):
+                 N, D, m, sigma_p, num_steps,
+                 step_size, max_steps=None,
+                 sigma0=0.5, lmbda0=0.0001):
         IndependentJob.__init__(self, TrajectoryJobResultAggregator())
         
         self.N = N
         self.D = D
-        self.lmbda = lmbda
         self.m = m
+        self.sigma0 = sigma0
+        self.lmbda0 = lmbda0
         self.sigma_p = sigma_p
         self.num_steps = num_steps
         self.step_size = step_size
@@ -53,19 +56,23 @@ class TrajectoryJob(IndependentJob):
         # set up target and momentum densities and gradients
         self.set_up()
         
-        logger.info("Learning kernel bandwidth")
-        sigma = select_sigma_scipy(self.Z, self.m, lmbda=self.lmbda)
-        logger.info("Using lmbda=%.2f, sigma: %.2f" % (self.lmbda, sigma))
+        logger.info("Learning sigma and lmbda")
+        cma_opts = {'tolfun':0.2, 'maxiter':50, 'verb_disp':1}
+        sigma, lmbda = select_sigma_lambda_cma(self.Z, self.m,
+                                               sigma0=self.sigma0, lmbda0=self.lmbda0,
+                                               cma_opts=cma_opts)
+        
+        logger.info("Using sigma: %.2f, lmbda=%.6f" % (sigma, lmbda))
         
         D = self.Z.shape[1]
         gamma = 0.5 * (sigma ** 2)
         omega, u = sample_basis(D, self.m, gamma)
         
         logger.info("Estimate density in RKHS")
-        theta = score_matching_sym(self.Z, self.lmbda, omega, u)
+        theta = score_matching_sym(self.Z, lmbda, omega, u)
         
 #         logger.info("Computing objective function")
-#         J = _objective_sym(Z, sigma, self.lmbda, a, K, b, C)
+#         J = _objective_sym(Z, sigma, lmbda, a, K, b, C)
 #         J_xval = np.mean(xvalidate(Z, 5, sigma, self.lmbda, K))
 #         logger.info("N=%d, sigma: %.2f, lambda: %.2f, J(a)=%.2f, XJ(a)=%.2f" % \
 #                 (self.N, sigma, self.lmbda, J, J_xval))

@@ -8,10 +8,11 @@ import numpy as np
 
 class GaussianTrajectoryJob(TrajectoryJob):
     def __init__(self,
-                 N, D, lmbda, m, sigma_q,
-                 sigma_p,
-                 num_steps, step_size, max_steps=None):
-        TrajectoryJob.__init__(self, N, D, lmbda, m, sigma_p, num_steps, step_size, max_steps)
+                 N, D, m,
+                 sigma_q, sigma_p,
+                 num_steps, step_size, sigma0=0.5, lmbda0=0.0001, max_steps=None):
+        TrajectoryJob.__init__(self, N, D, m, sigma_p,
+                               num_steps, step_size, max_steps, sigma0, lmbda0)
         
         self.sigma_q = sigma_q
     

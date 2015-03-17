@@ -12,16 +12,19 @@ if __name__ == "__main__":
     sigma_p = 1.
     Ds = 2 ** np.arange(11)
     num_repetitions = 100
-    N = 500
+    N = 100
     lmbda = 0.0001
     m = N
     num_steps = 100
     max_steps = 1000
     step_size = .1
     
-    job_generator = lambda D : GaussianTrajectoryJob(N, D, lmbda, m,
-                                                     sigma_q, sigma_p,
-                                                     num_steps, step_size, max_steps)
+    sigma0 = 0.5
+    lmbda0 = 0.0001
+    
+    job_generator = lambda D : GaussianTrajectoryJob(N, D, m, sigma_q, sigma_p,
+                                                     num_steps, step_size,
+                                                     sigma0, lmbda0, max_steps)
     
     process(modulename, job_generator, Ds, num_repetitions, N, lmbda, num_steps,
             step_size, max_steps)
