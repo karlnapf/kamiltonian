@@ -6,10 +6,10 @@ from kmc.densities.gaussian import sample_gaussian, log_gaussian_pdf
 from kmc.hamiltonian.hamiltonian import compute_log_accept_pr, \
     compute_log_det_trajectory
 from kmc.hamiltonian.leapfrog import leapfrog
-from kmc.score_matching.lite.gaussian_rkhs_xvalidation import select_sigma_grid
 from kmc.score_matching.random_feats.estimator import log_pdf_estimate_grad
 from kmc.score_matching.random_feats.gaussian_rkhs import score_matching_sym, \
     sample_basis, feature_map_grad_single
+from kmc.score_matching.random_feats.gaussian_rkhs_xvalidation import select_sigma_grid
 from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResult import TrajectoryJobResult
 from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResultAggregator import TrajectoryJobResultAggregator
 from kmc.tools.Log import logger
