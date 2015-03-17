@@ -57,7 +57,7 @@ class TrajectoryJob(IndependentJob):
         self.set_up()
         
         logger.info("Learning sigma and lmbda")
-        cma_opts = {'tolfun':0.3, 'maxiter':50, 'verb_disp':1}
+        cma_opts = {'tolfun':0.3, 'maxiter':20, 'verb_disp':1}
         sigma, lmbda = select_sigma_lambda_cma(self.Z, self.m,
                                                sigma0=self.sigma0, lmbda0=self.lmbda0,
                                                cma_opts=cma_opts)
