@@ -12,8 +12,8 @@ import numpy as np
 
 
 def compute(fname_base, job_generator, Ds, num_repetitions, N, lmbda, num_steps, step_size,
-            max_steps=None):
-    if not FileSystem.cmd_exists("sbatch"):
+            max_steps=None, compute_local=False):
+    if not FileSystem.cmd_exists("sbatch") or compute_local:
         engine = SerialComputationEngine()
         
     else:
@@ -63,7 +63,7 @@ def compute(fname_base, job_generator, Ds, num_repetitions, N, lmbda, num_steps,
                  vols=log_dets, vols_est=log_dets_est, steps_taken=avg_steps_taken)
 
 def process(fname_base, job_generator, Ds, num_repetitions, N, lmbda, num_steps,
-            step_size, max_steps):
+            step_size, max_steps, compute_local = False):
     fname = fname_base + ".npy"
     # don't recompute if a file exists
     do_compute = False
@@ -76,7 +76,7 @@ def process(fname_base, job_generator, Ds, num_repetitions, N, lmbda, num_steps,
         do_compute = True
     
     if do_compute:
-        compute(fname_base, job_generator, Ds, num_repetitions, N, lmbda, num_steps, step_size, max_steps)
+        compute(fname_base, job_generator, Ds, num_repetitions, N, lmbda, num_steps, step_size, max_steps, compute_local)
     
     try:
         plot_trajectory_result_mean_median(fname)
