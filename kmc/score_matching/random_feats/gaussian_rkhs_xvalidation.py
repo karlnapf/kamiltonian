@@ -87,6 +87,9 @@ def select_sigma_lambda_cma(Z, m, num_threads=6, num_folds=5, num_repetitions=3,
     
     start = np.log2(np.array([sigma0, lmbda0]))
     
+    pool = Pool(num_threads)
+    chunksize = 1
+    
     es = cma.CMAEvolutionStrategy(start, 1., cma_opts)
     while not es.stop():
         if disp:
@@ -94,9 +97,6 @@ def select_sigma_lambda_cma(Z, m, num_threads=6, num_folds=5, num_repetitions=3,
         solutions = es.ask()
         
         # use multicore here
-        pool = Pool(num_threads)
-        chunksize = 1
-        
         args = [(log2_sigma, log2_lmbda, num_repetitions, num_folds, Z, m) for (log2_sigma, log2_lmbda) in solutions]
         values = np.zeros(len(solutions))
         for i, result in enumerate(pool.imap(multicore_fun_helper, args), chunksize):
