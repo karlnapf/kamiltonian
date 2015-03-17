@@ -10,7 +10,7 @@ modulename = __file__.split(os.sep)[-1].split('.')[-2]
 if __name__ == "__main__":
     sigma_q = 1.
     sigma_p = 1.
-    Ds = 2 ** np.arange(11)
+    Ds = 2 ** np.arange(5)
     num_repetitions = 100
     N = 100
     lmbda = 0.0001
