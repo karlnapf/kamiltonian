@@ -1,14 +1,14 @@
-from kmc.score_matching.kernel.kernels import gaussian_kernel
 from kmc.score_matching.random_feats.gaussian_rkhs import xvalidate, \
     sample_basis
 from kmc.tools.Log import logger
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy as sp
 
 
-def select_sigma_grid(Z, m=100, num_folds=5, num_repetitions=3,
+def select_sigma_grid(Z, m, num_folds=5, num_repetitions=3,
                         log2_sigma_min=-3, log2_sigma_max=10, resolution_sigma=25,
-                        lmbda=0.00001, plot_surface=False):
+                        lmbda=0.0001, plot_surface=False):
     
     D = Z.shape[1]
     
@@ -17,10 +17,14 @@ def select_sigma_grid(Z, m=100, num_folds=5, num_repetitions=3,
     Js = np.zeros(len(sigmas))
     for i, sigma in enumerate(sigmas):
         gamma = 0.5 * (sigma ** 2)
-        omega, u = sample_basis(D, m, gamma)
         
-        folds = xvalidate(Z, lmbda, omega, u,
-                          n_folds=num_folds, num_repetitions=num_repetitions)
+        folds = np.zeros(num_repetitions)
+        for j in range(num_repetitions):
+            # re-sample basis every repetition
+            omega, u = sample_basis(D, m, gamma)
+            folds[j] = xvalidate(Z, lmbda, omega, u,
+                               n_folds=num_folds, num_repetitions=1)
+        
         Js[i] = np.mean(folds)
         logger.info("fold %d/%d, sigma: %.2f, lambda: %.2f, J=%.3f" % \
             (i + 1, len(sigmas), sigma, lmbda, Js[i]))
@@ -31,31 +35,24 @@ def select_sigma_grid(Z, m=100, num_folds=5, num_repetitions=3,
     
     return sigmas[Js.argmin()]
 
-def select_sigma_lambda_cma(Z, num_folds=5, num_repetitions=1,
-                            sigma0=1.1, lmbda0=1.1,
-                            cma_opts={}, disp=False):
-    import cma
-    
-    start = np.log2(np.array([sigma0, lmbda0]))
-    
-    es = cma.CMAEvolutionStrategy(start, 1., cma_opts)
-    while not es.stop():
-        if disp:
-            es.disp()
-        solutions = es.ask()
+def select_sigma_scipy(Z, m, num_folds=5, tol=0.2, num_repetitions=3, lmbda=0.0001):
+    D = Z.shape[1]
+    def _f(log2_sigma):
+        sigma = 2 ** log2_sigma
+        folds = np.zeros(num_repetitions)
+        for i in range(num_repetitions):
+            gamma = 0.5 * (sigma ** 2)
+            omega, u = sample_basis(D, m, gamma)
+            folds[i] = np.mean(xvalidate(Z, lmbda, omega, u, num_folds, num_repetitions=1))
         
-        values = np.zeros(len(solutions))
-        for i, (log2_sigma, log2_lmbda) in enumerate(solutions):
-            sigma = 2 ** log2_sigma
-            lmbda = 2 ** log2_lmbda
-            
-            logger.info("particle %d/%d, sigma: %.2f, lambda: %.2f" % \
-                        (i + 1, len(solutions), sigma, lmbda))
-            K = gaussian_kernel(Z, sigma=sigma)
-            folds = xvalidate(Z, num_folds, sigma, lmbda, K)
-            values[i] = np.mean(folds)
-        
-        es.tell(solutions, values)
+        result = np.mean(folds)
+        logger.info("xvalidation, sigma: %.2f, lambda: %.2f, J=%.3f" % \
+                    (sigma, lmbda, result))
+        return result
     
-    return es
-
+    
+    result = sp.optimize.minimize_scalar(_f, tol=tol)
+    logger.info("Best sigma: %.2f with value of J=%.3f after %d iterations in %d evaluations" \
+                 % (2**result['x'], result['fun'], result['nit'], result['nfev']))
+    
+    return 2**result['x']
