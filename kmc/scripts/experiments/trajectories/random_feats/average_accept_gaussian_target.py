@@ -11,7 +11,7 @@ if __name__ == "__main__":
     sigma_q = 1.
     sigma_p = 1.
     Ds = 2 ** np.arange(5)
-    num_repetitions = 100
+    num_repetitions = 10
     N = 100
     lmbda = 0.0001
     m = N
