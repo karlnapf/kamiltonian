@@ -23,7 +23,10 @@ def select_sigma_grid(Z, num_folds=5, num_repetitions=1,
         plt.figure()
         plt.plot(np.log2(sigmas), Js)
     
-    return sigmas[Js.argmin()]
+    best_sigma_idx = Js.argmin()
+    best_sigma = sigmas[best_sigma_idx]
+    logger.info("Best sigma: %.2f with J=%.2f" % (best_sigma, Js[best_sigma_idx]))
+    return best_sigma
 
 def select_sigma_lambda_cma(Z, num_folds=5, num_repetitions=1,
                             sigma0=1.1, lmbda0=1.1,
