@@ -125,7 +125,7 @@ theorems-std
 \end_layout
 
 \begin_layout Title
-Kamiltonian Monte Carlo
+Gradient free Hamiltonian Monte Carlo via kernels
 \end_layout
 
 \begin_layout Abstract
@@ -163,10 +163,13 @@ global
 \emph on
 exact 
 \emph default
-MCMC algorithm that (i) behaves similarly to HMC in terms of autocorrelation
- and acceptance rates, but that (ii) does not require target gradients,
- and that in particular (iii) offers substantial mixing improvements in
- high dimensions.
+MCMC algorithm, 
+\emph on
+Kamiltonian Monte Carlo (KMC)
+\emph default
+, that (i) behaves similarly to HMC in terms of autocorrelation and acceptance
+ rates, but that (ii) does not require target gradients, and that in particular
+ (iii) offers substantial mixing improvements in high dimensions.
  We support our claims with theoretical analysis in the form of finite sample
  convergence rates and experimental studies.
 \end_layout
