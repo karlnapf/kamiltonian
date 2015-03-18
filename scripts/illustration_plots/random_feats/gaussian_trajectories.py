@@ -55,9 +55,9 @@ while True:
     N = 200
     mu = np.zeros(D)
     Z = sample_gaussian(N, mu, Sigma=L, is_cholesky=True)
-    lmbda = 0.001
-    sigma = 1.
-    gamma = 0.5/(sigma**2)
+    lmbda = 0.0001
+    sigma = 0.5
+    gamma = 0.5*(sigma**2)
     m = N
     
     omega, u = sample_basis(D, m, gamma)
@@ -190,7 +190,7 @@ while True:
     plt.figure()
     plt.title("Acceptance prob.")
     plt.plot(np.arange(1, num_steps + 2), np.exp(log_acc))
-    plt.plot([0, len(log_acc)], [acc_mean, acc_mean], "r")
+    plt.plot([0, len(log_acc)], [acc_mean, acc_mean], "r--")
     plt.ylim(ylim)
     plt.xlim([0, num_steps])
     plt.grid(True)
@@ -201,7 +201,7 @@ while True:
     plt.figure()
     plt.title("Acceptance prob.")
     plt.plot(np.arange(1, num_steps + 2), np.exp(log_acc_est))
-    plt.plot([0, len(log_acc_est)], [acc_est_mean, acc_est_mean], "r")
+    plt.plot([0, len(log_acc_est)], [acc_est_mean, acc_est_mean], "r--")
     plt.ylim(ylim)
     plt.xlim([0, num_steps])
     plt.grid(True)
