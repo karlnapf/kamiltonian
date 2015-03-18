@@ -2,7 +2,6 @@ from kmc.hamiltonian.hamiltonian import compute_hamiltonian,\
     compute_log_accept_pr, compute_log_det_trajectory
 from kmc.hamiltonian.leapfrog import leapfrog
 from kmc.tools.Log import logger
-from kmc.tools.numerics import log_mean_exp
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -132,8 +131,8 @@ def plot_kamiltonian_dnyamics(q0, p0, logq, dlogq, logq_est, dlogq_est,
     
     log_acc = compute_log_accept_pr(q0, p0, Qs, Ps, logq, logp)
     log_acc_est = compute_log_accept_pr(q0, p0, Qs_est, Ps_est, logq, logp)
-    acc_mean = np.exp(log_mean_exp(log_acc))
-    acc_est_mean = np.exp(log_mean_exp(log_acc_est))
+    acc_mean = np.mean(np.exp(log_acc))
+    acc_est_mean = np.mean(np.exp(log_acc_est))
     logger.info("HMC acceptance prob: %.2f" % acc_mean)
     logger.info("KMC acceptance prob: %.2f" % acc_est_mean)
 

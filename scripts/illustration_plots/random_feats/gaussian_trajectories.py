@@ -9,7 +9,6 @@ from kmc.score_matching.random_feats.estimator import log_pdf_estimate,\
 from kmc.score_matching.random_feats.gaussian_rkhs import score_matching_sym,\
     sample_basis, feature_map_single, feature_map_grad_single
 from kmc.tools.latex_plot_init import plt
-from kmc.tools.numerics import log_mean_exp
 import numpy as np
 from scripts.tools.plotting import evaluate_density_grid, evaluate_gradient_grid,\
     plot_array, plot_2d_trajectory
@@ -184,8 +183,8 @@ while True:
     ylim = [np.exp(np.min([log_acc.min(), log_acc_est.min()])),
             1.01]
     
-    acc_mean = np.exp(log_mean_exp(log_acc))
-    acc_est_mean = np.exp(log_mean_exp(log_acc_est))
+    acc_mean = np.mean(np.exp(log_acc))
+    acc_est_mean = np.mean(np.exp(log_acc_est))
     
     plt.figure()
     plt.title("Acceptance prob.")

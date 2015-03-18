@@ -11,7 +11,6 @@ from kmc.score_matching.lite.estimator import log_pdf_estimate,\
 from kmc.score_matching.lite.gaussian_rkhs import _compute_b_sym, _compute_C_sym,\
     score_matching_sym
 from kmc.tools.latex_plot_init import plt
-from kmc.tools.numerics import log_mean_exp
 import numpy as np
 from scripts.tools.plotting import evaluate_density_grid, plot_array,\
     plot_2d_trajectory
@@ -157,8 +156,8 @@ if __name__ == "__main__":
     ylim = [np.exp(np.min([log_acc.min(), log_acc_est.min()])),
             1.]
     
-    acc_mean = np.exp(log_mean_exp(log_acc))
-    acc_est_mean = np.exp(log_mean_exp(log_acc_est))
+    acc_mean = np.mean(np.exp(log_acc))
+    acc_est_mean = np.mean(np.exp(log_acc_est))
     
     plt.figure()
     plt.title("Acceptance prob.")

@@ -13,7 +13,6 @@ from kmc.score_matching.lite.gaussian_rkhs import _compute_b_sym, _compute_C_sym
     score_matching_sym
 from kmc.score_matching.lite.gaussian_rkhs_xvalidation import select_sigma_grid
 from kmc.tools.Log import logger
-from kmc.tools.numerics import log_mean_exp
 import numpy as np
 from scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResult import TrajectoryJobResult
 from scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResultAggregator import TrajectoryJobResultAggregator
@@ -92,8 +91,8 @@ class TrajectoryJob(IndependentJob):
         logger.info("Computing average acceptance probabilities")
         log_acc = compute_log_accept_pr(q0, p0, Qs, Ps, self.logq, self.logp)
         log_acc_est = compute_log_accept_pr(q0, p0, Qs_est, Ps_est, self.logq, self.logp)
-        acc_mean = np.exp(log_mean_exp(log_acc))
-        acc_est_mean = np.exp(log_mean_exp(log_acc_est))
+        acc_mean = np.mean(np.exp(log_acc))
+        acc_est_mean = np.mean(np.exp(log_acc_est))
         
         logger.info("Computing average volumes")
         log_det = compute_log_det_trajectory(Qs, Ps)

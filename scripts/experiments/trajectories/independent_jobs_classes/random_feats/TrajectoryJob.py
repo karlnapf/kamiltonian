@@ -10,11 +10,10 @@ from kmc.score_matching.random_feats.estimator import log_pdf_estimate_grad
 from kmc.score_matching.random_feats.gaussian_rkhs import score_matching_sym, \
     sample_basis, feature_map_grad_single
 from kmc.score_matching.random_feats.gaussian_rkhs_xvalidation import select_sigma_lambda_cma
-from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResult import TrajectoryJobResult
-from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResultAggregator import TrajectoryJobResultAggregator
 from kmc.tools.Log import logger
-from kmc.tools.numerics import log_mean_exp
 import numpy as np
+from scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResult import TrajectoryJobResult
+from scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResultAggregator import TrajectoryJobResultAggregator
 
 
 class TrajectoryJob(IndependentJob):
@@ -97,11 +96,11 @@ class TrajectoryJob(IndependentJob):
         logger.info("Computing average acceptance probabilities")
         log_acc = compute_log_accept_pr(q0, p0, Qs, Ps, self.logq, self.logp)
         log_acc_est = compute_log_accept_pr(q0, p0, Qs_est, Ps_est, self.logq, self.logp)
-        acc_mean = np.exp(log_mean_exp(log_acc))
-        acc_est_mean = np.exp(log_mean_exp(log_acc_est))
+        acc_mean = np.mean(np.exp(log_acc))
+        acc_est_mean = np.mean(np.exp(log_acc_est))
         idx09 = int(len(log_acc)*0.9)
-        acc_mean10 = np.exp(log_mean_exp(log_acc[idx09:]))
-        acc_est_mean10 = np.exp(log_mean_exp(log_acc_est[idx09:]))
+        acc_mean10 = np.mean(np.exp(log_acc[idx09:]))
+        acc_est_mean10 = np.mean(np.exp(log_acc_est[idx09:]))
         
         logger.info("Computing average volumes")
         log_det = compute_log_det_trajectory(Qs, Ps)
