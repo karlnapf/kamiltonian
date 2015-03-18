@@ -15,7 +15,7 @@ while True:
     # true target log density
     Sigma = np.diag(np.linspace(0.01, 1, D))
     Sigma[:2, :2] = np.array([[1, .95], [.95, 1]])
-#     Sigma = np.eye(D)
+    Sigma = np.eye(D)
     L = np.linalg.cholesky(Sigma)
     dlogq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=True)
     logq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=False)
@@ -24,9 +24,9 @@ while True:
     N = 200
     mu = np.zeros(D)
     Z = sample_gaussian(N, mu, Sigma=L, is_cholesky=True)
-    lmbda = 1.
-    sigma = 1.
-    gamma = 0.5/(sigma**2)
+    lmbda = 0.0001
+    sigma = 0.5
+    gamma = 0.5*(sigma**2)
     m = 200
     
     omega = gamma * np.random.randn(D, m)
