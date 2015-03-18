@@ -2,10 +2,10 @@ from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
 from kmc.score_matching.random_feats.estimator import log_pdf_estimate, \
     log_pdf_estimate_grad
 from kmc.score_matching.random_feats.gaussian_rkhs import feature_map, \
-    score_matching_sym, feature_map_derivatives, feature_map_grad_single
-from kmc.scripts.tools.plotting import plot_kamiltonian_dnyamics
+    score_matching_sym, feature_map_grad_single
 import matplotlib.pyplot as plt
 import numpy as np
+from scripts.tools.plotting import plot_kamiltonian_dnyamics
 
 
 # if __name__ == "__main__":

@@ -14,7 +14,7 @@ if __name__ == "__main__":
     
     a = score_matching_sym(Z, sigma, lmbda)
     R = incomplete_cholesky_gaussian(Z, sigma, eta=0.1)["R"]
-    print "Low rank dimension: %d/%d" % (R.shape[0], N)
+    print("Low rank dimension: %d/%d" % (R.shape[0], N))
     a_chol = score_matching_sym_low_rank(Z, sigma, lmbda, L=R.T)
     
 

@@ -1,6 +1,6 @@
-from kmc.score_matching.gaussian_rkhs import xvalidate
-from kmc.score_matching.gaussian_rkhs_xvalidation import select_sigma_lambda_cma
 from kmc.score_matching.kernel.kernels import gaussian_kernel
+from kmc.score_matching.lite.gaussian_rkhs import xvalidate
+from kmc.score_matching.lite.gaussian_rkhs_xvalidation import select_sigma_lambda_cma
 import numpy as np
 
 
@@ -19,4 +19,4 @@ if __name__ == "__main__":
     sigma = 2 ** log2_sigma
     lmbda = 2 ** log2_lmbda
     K = gaussian_kernel(Z, sigma=sigma)
-    print log2_sigma, log2_lmbda, np.mean(xvalidate(Z, 5, sigma, lmbda, K))
+    print(log2_sigma, log2_lmbda, np.mean(xvalidate(Z, 5, sigma, lmbda, K)))

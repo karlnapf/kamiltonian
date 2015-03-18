@@ -8,11 +8,11 @@ from kmc.score_matching.random_feats.estimator import log_pdf_estimate,\
     log_pdf_estimate_grad
 from kmc.score_matching.random_feats.gaussian_rkhs import score_matching_sym,\
     sample_basis, feature_map_single, feature_map_grad_single
-from kmc.scripts.tools.plotting import evaluate_density_grid, plot_array, \
-    plot_2d_trajectory, evaluate_gradient_grid
 from kmc.tools.latex_plot_init import plt
 from kmc.tools.numerics import log_mean_exp
 import numpy as np
+from scripts.tools.plotting import evaluate_density_grid, evaluate_gradient_grid,\
+    plot_array, plot_2d_trajectory
 
 
 fname_base = __file__.split(os.sep)[-1].split(".")[-2]

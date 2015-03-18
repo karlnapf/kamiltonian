@@ -4,10 +4,10 @@ from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
 from kmc.score_matching.random_feats.gaussian_rkhs import xvalidate, compute_b,\
     compute_C, score_matching_sym, feature_map_single, feature_map_grad_single,\
     objective
-from kmc.scripts.tools.plotting import evaluate_density_grid, \
-    evaluate_density_grad_grid, plot_array
 import matplotlib.pyplot as plt
 import numpy as np
+from scripts.tools.plotting import evaluate_density_grid,\
+    evaluate_density_grad_grid, plot_array
 
 
 plot_pdf = True

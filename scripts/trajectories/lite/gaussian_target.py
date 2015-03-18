@@ -6,9 +6,9 @@ from kmc.score_matching.lite.estimator import log_pdf_estimate,\
 from kmc.score_matching.lite.gaussian_rkhs import _compute_b_sym, _compute_C_sym,\
     score_matching_sym, _objective_sym, xvalidate
 from kmc.score_matching.lite.gaussian_rkhs_xvalidation import select_sigma_grid
-from kmc.scripts.tools.plotting import plot_kamiltonian_dnyamics
 import matplotlib.pyplot as plt
 import numpy as np
+from scripts.tools.plotting import plot_kamiltonian_dnyamics
 
 
 # if __name__ == "__main__":
@@ -36,8 +36,8 @@ while True:
     a = score_matching_sym(Z, sigma, lmbda, K, b, C)
     J = _objective_sym(Z, sigma, lmbda, a, K, b, C)
     J_xval = np.mean(xvalidate(Z, 5, sigma, lmbda, K))
-    print "N=%d, sigma: %.2f, lambda: %.2f, J(a)=%.2f, XJ(a)=%.2f" % \
-            (N, sigma, lmbda, J, J_xval)
+    print("N=%d, sigma: %.2f, lambda: %.2f, J(a)=%.2f, XJ(a)=%.2f" % \
+            (N, sigma, lmbda, J, J_xval))
     
     kernel = lambda X, Y = None: gaussian_kernel(X, Y, sigma=sigma)
     kernel_grad = lambda x, X = None: gaussian_kernel_grad(x, X, sigma)

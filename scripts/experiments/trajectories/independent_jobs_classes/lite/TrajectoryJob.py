@@ -6,17 +6,17 @@ from kmc.densities.gaussian import sample_gaussian, log_gaussian_pdf
 from kmc.hamiltonian.hamiltonian import compute_log_accept_pr, \
     compute_log_det_trajectory
 from kmc.hamiltonian.leapfrog import leapfrog
-from kmc.score_matching.estimator import log_pdf_estimate_grad
-from kmc.score_matching.gaussian_rkhs import _compute_b_sym, _compute_C_sym, \
-    score_matching_sym
-from kmc.score_matching.gaussian_rkhs_xvalidation import select_sigma_grid
-from kmc.score_matching.kernel.kernels import gaussian_kernel, \
+from kmc.score_matching.kernel.kernels import gaussian_kernel,\
     gaussian_kernel_grad
-from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResult import TrajectoryJobResult
-from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResultAggregator import TrajectoryJobResultAggregator
+from kmc.score_matching.lite.estimator import log_pdf_estimate_grad
+from kmc.score_matching.lite.gaussian_rkhs import _compute_b_sym, _compute_C_sym,\
+    score_matching_sym
+from kmc.score_matching.lite.gaussian_rkhs_xvalidation import select_sigma_grid
 from kmc.tools.Log import logger
 from kmc.tools.numerics import log_mean_exp
 import numpy as np
+from scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResult import TrajectoryJobResult
+from scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResultAggregator import TrajectoryJobResultAggregator
 
 
 class TrajectoryJob(IndependentJob):

@@ -1,8 +1,8 @@
 from abc import abstractmethod
 
 from kmc.densities.banana import log_banana_pdf, sample_banana
-from kmc.scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJob import TrajectoryJob
 from kmc.tools.Log import logger
+from scripts.experiments.trajectories.independent_jobs_classes.lite.TrajectoryJob import TrajectoryJob
 
 
 class BananaTrajectoryJob(TrajectoryJob):

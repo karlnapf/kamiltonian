@@ -1,8 +1,8 @@
 import os
 
-from kmc.scripts.experiments.trajectories.independent_jobs_classes.random_feats.GaussianTrajectoryJob import GaussianTrajectoryJob
-from kmc.scripts.experiments.trajectories.tools import process
 import numpy as np
+from scripts.experiments.trajectories.independent_jobs_classes.random_feats.GaussianTrajectoryJob import GaussianTrajectoryJob
+from scripts.experiments.trajectories.tools import process
 
 
 modulename = __file__.split(os.sep)[-1].split('.')[-2]

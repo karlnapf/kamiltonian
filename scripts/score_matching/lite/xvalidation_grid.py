@@ -2,8 +2,8 @@ from itertools import product
 from multiprocessing.pool import Pool
 
 from kmc.densities.gaussian import sample_gaussian
-from kmc.score_matching.gaussian_rkhs import xvalidate
 from kmc.score_matching.kernel.kernels import gaussian_kernel
+from kmc.score_matching.lite.gaussian_rkhs import xvalidate
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -18,7 +18,7 @@ def fun(sigma_lmbda, num_repetitions=1):
     folds = [xvalidate(Z, num_folds, sigma, lmbda, K) for _ in range(num_repetitions)]
     J = np.mean(folds)
     J_std = np.std(folds)
-    print "fun: log2_sigma=%.2f, log_lmbda=%.2f, J(a)=%.2f" % (log2_sigma, log2_lmbda, J)
+    print("fun: log2_sigma=%.2f, log_lmbda=%.2f, J(a)=%.2f" % (log2_sigma, log2_lmbda, J))
     return J, J_std
 
 if __name__ == "__main__":

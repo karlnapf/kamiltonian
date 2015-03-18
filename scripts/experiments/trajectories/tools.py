@@ -6,9 +6,9 @@ from independent_jobs.engines.SerialComputationEngine import SerialComputationEn
 from independent_jobs.engines.SlurmComputationEngine import SlurmComputationEngine
 from independent_jobs.tools.FileSystem import FileSystem
 
-from big_mcmc.tools.Log import logger
-from kmc.scripts.experiments.trajectories.plots import plot_trajectory_result_mean_median
+from kmc.tools.Log import logger
 import numpy as np
+from scripts.experiments.trajectories.plots import plot_trajectory_result_mean_median
 
 
 def compute(fname_base, job_generator, Ds, num_repetitions, N, lmbda, num_steps, step_size,

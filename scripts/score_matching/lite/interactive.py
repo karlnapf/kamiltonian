@@ -8,10 +8,10 @@ from kmc.score_matching.lite.estimator import log_pdf_estimate,\
 from kmc.score_matching.lite.gaussian_rkhs import xvalidate, _compute_b_sym,\
     _compute_C_sym, score_matching_sym, _objective_sym
 from kmc.score_matching.lite.gaussian_rkhs_xvalidation import select_sigma_lambda_cma
-from kmc.scripts.tools.plotting import evaluate_density_grid,\
-    evaluate_density_grad_grid, plot_array
 import matplotlib.pyplot as plt
 import numpy as np
+from scripts.tools.plotting import evaluate_density_grid,\
+    evaluate_density_grad_grid, plot_array
 
 
 plot_pdf=True
@@ -41,7 +41,7 @@ def plot_lmbda_surface(val):
     plt.show()
 
 def optimise_sigma_surface(val):
-    print "sigma"
+    print("sigma")
     log2_lmbda = s_lmbda.val
     lmbda = 2**log2_lmbda
     
@@ -79,7 +79,7 @@ def update_plot(val=None):
     J = _objective_sym(Z, sigma, lmbda, a, K, b, C)
     J_xval = np.mean(xvalidate(Z, 5, sigma, lmbda, K, num_repetitions=3))
     
-    print a[:5]
+    print(a[:5])
     
     kernel = lambda X, Y = None: gaussian_kernel(X, Y, sigma=sigma)
     kernel_grad = lambda x, X = None: gaussian_kernel_grad(x, X, sigma)

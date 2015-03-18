@@ -1,8 +1,8 @@
 
 from kmc.densities.gaussian import sample_gaussian
-from kmc.score_matching.gaussian_rkhs import score_matching_sym, _compute_b_sym,\
-    _compute_C_sym, _objective_sym
 from kmc.score_matching.kernel.kernels import gaussian_kernel
+from kmc.score_matching.lite.gaussian_rkhs import score_matching_sym,\
+    _compute_b_sym, _compute_C_sym, _objective_sym
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -56,9 +56,9 @@ if __name__ == "__main__":
     plt.plot(np.sum(K, 1))
     plt.title("K 1")
     
-    print "Objective:", J
-    print "a^T b", a.dot(b)
-    print "a^T C a", a.dot(C.dot(a))
+    print("Objective:", J)
+    print("a^T b", a.dot(b))
+    print("a^T C a", a.dot(C.dot(a)))
     
 
     plt.show()

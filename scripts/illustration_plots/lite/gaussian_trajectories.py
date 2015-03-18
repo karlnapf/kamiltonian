@@ -10,11 +10,11 @@ from kmc.score_matching.lite.estimator import log_pdf_estimate,\
     log_pdf_estimate_grad
 from kmc.score_matching.lite.gaussian_rkhs import _compute_b_sym, _compute_C_sym,\
     score_matching_sym
-from kmc.scripts.tools.plotting import evaluate_density_grid, plot_array, \
-    plot_2d_trajectory
 from kmc.tools.latex_plot_init import plt
 from kmc.tools.numerics import log_mean_exp
 import numpy as np
+from scripts.tools.plotting import evaluate_density_grid, plot_array,\
+    plot_2d_trajectory
 
 
 fname_base = __file__.split(os.sep)[-1].split(".")[-2]

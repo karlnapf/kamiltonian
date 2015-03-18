@@ -1,15 +1,17 @@
 from kmc.densities.banana import log_banana_pdf, sample_banana
 from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
-from kmc.hamiltonian.hamiltonian import compute_log_accept_pr
-from kmc.score_matching.estimator import log_pdf_estimate, log_pdf_estimate_grad
-from kmc.score_matching.gaussian_rkhs import _compute_b_sym, _compute_C_sym, \
-    score_matching_sym, _objective_sym, xvalidate
-from kmc.score_matching.gaussian_rkhs_xvalidation import select_sigma_grid
-from kmc.score_matching.kernel.kernels import gaussian_kernel, \
+from kmc.score_matching.kernel.kernels import gaussian_kernel,\
     gaussian_kernel_grad
-from kmc.scripts.tools.plotting import plot_kamiltonian_dnyamics
+from kmc.score_matching.lite.gaussian_rkhs import _compute_b_sym, _compute_C_sym,\
+    _objective_sym
+from kmc.score_matching.random_feats.estimator import log_pdf_estimate,\
+    log_pdf_estimate_grad
+from kmc.score_matching.random_feats.gaussian_rkhs import score_matching_sym,\
+    xvalidate
+from kmc.score_matching.random_feats.gaussian_rkhs_xvalidation import select_sigma_grid
 import matplotlib.pyplot as plt
 import numpy as np
+from scripts.tools.plotting import plot_kamiltonian_dnyamics
 
 
 # if __name__ == "__main__":
@@ -33,8 +35,8 @@ while True:
     a = score_matching_sym(Z, sigma, lmbda, K, b, C)
     J = _objective_sym(Z, sigma, lmbda, a, K, b, C)
     J_xval = np.mean(xvalidate(Z, 5, sigma, lmbda, K))
-    print "N=%d, sigma: %.2f, lambda: %.2f, J(a)=%.2f, XJ(a)=%.2f" % \
-            (N, sigma, lmbda, J, J_xval)
+    print("N=%d, sigma: %.2f, lambda: %.2f, J(a)=%.2f, XJ(a)=%.2f" % \
+            (N, sigma, lmbda, J, J_xval))
     
     kernel = lambda X, Y = None: gaussian_kernel(X, Y, sigma=sigma)
     kernel_grad = lambda x, X = None: gaussian_kernel_grad(x, X, sigma)
