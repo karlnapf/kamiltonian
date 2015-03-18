@@ -1,9 +1,9 @@
 from abc import abstractmethod
 
 from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
-from kmc.scripts.experiments.trajectories.independent_jobs_classes.random_feats.TrajectoryJob import TrajectoryJob
 from kmc.tools.Log import logger
 import numpy as np
+from scripts.experiments.trajectories.independent_jobs_classes.random_feats.TrajectoryJob import TrajectoryJob
 
 
 class GaussianTrajectoryJob(TrajectoryJob):
