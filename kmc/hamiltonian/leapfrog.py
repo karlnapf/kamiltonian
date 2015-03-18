@@ -1,10 +1,6 @@
 import numpy as np
 
-def leapfrog(q, dlogq, p, dlogp, step_size=0.3, num_steps=1, max_steps=None):
-    # check whether to use random number of steps
-    if max_steps is not None:
-        num_steps = np.random.randint(num_steps, max_steps+1)
-    
+def leapfrog(q, dlogq, p, dlogp, step_size=0.3, num_steps=1):
     # for storing trajectory
     Ps = np.zeros((num_steps + 1, len(p)))
     Qs = np.zeros(Ps.shape)

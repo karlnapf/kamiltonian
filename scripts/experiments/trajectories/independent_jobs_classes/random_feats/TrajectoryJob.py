@@ -79,6 +79,11 @@ class TrajectoryJob(IndependentJob):
         dlogq_est = lambda x: log_pdf_estimate_grad(feature_map_grad_single(x, omega, u),
                                                     theta)
         
+        # random number of steps?
+        if self.max_steps is not None:
+            steps = np.random.randint(self.num_steps, self.max_steps + 1)
+        else:
+            steps = self.num_steps
         
         logger.info("Simulating trajectory for L=%d steps of size %.2f" % \
                      (self.num_steps, self.step_size))
@@ -86,7 +91,7 @@ class TrajectoryJob(IndependentJob):
         p0 = self.p_sample()
         q0 = self.q_sample()
         
-        Qs, Ps = leapfrog(q0, self.dlogq, p0, self.dlogp, self.step_size, self.num_steps, self.max_steps)
+        Qs, Ps = leapfrog(q0, self.dlogq, p0, self.dlogp, self.step_size, steps)
         
         # run second integrator for same amount of steps
         steps_taken = len(Qs)
@@ -98,7 +103,7 @@ class TrajectoryJob(IndependentJob):
         log_acc_est = compute_log_accept_pr(q0, p0, Qs_est, Ps_est, self.logq, self.logp)
         acc_mean = np.mean(np.exp(log_acc))
         acc_est_mean = np.mean(np.exp(log_acc_est))
-        idx09 = int(len(log_acc)*0.9)
+        idx09 = int(len(log_acc) * 0.9)
         acc_mean10 = np.mean(np.exp(log_acc[idx09:]))
         acc_est_mean10 = np.mean(np.exp(log_acc_est[idx09:]))
         
