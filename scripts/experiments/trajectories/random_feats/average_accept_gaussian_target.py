@@ -27,4 +27,4 @@ if __name__ == "__main__":
                                                      sigma0, lmbda0, max_steps)
     
     process(modulename, job_generator, Ds, num_repetitions, N, lmbda, num_steps,
-            step_size, max_steps)
+            step_size, max_steps, compute_local=False)
