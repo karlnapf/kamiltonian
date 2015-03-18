@@ -1,6 +1,8 @@
 from sklearn.cross_validation import KFold
 
+from kmc.tools.Log import logger
 import numpy as np
+
 
 def sample_basis(D, m, gamma):
     omega = gamma * np.random.randn(D, m)
@@ -122,22 +124,35 @@ def compute_C(X, omega, u):
     d = X.shape[1]
     N = X.shape[0]
     m = Phi2.shape[2]
-    C = np.zeros((m, m))
     
-    for i in range(N):
-        for ell in range(d):
-            phi2 = Phi2[ell, i]
-            C += np.outer(phi2, phi2)
+#     ## bottleneck! use np.einsum
+#     C = np.zeros((m, m))
+#     t = time.time()
+#     for i in range(N):
+#         for ell in range(d):
+#             phi2 = Phi2[ell, i]
+#             C += np.outer(phi2, phi2)
+#     print("loop", time.time()-t)
+     
+    # roughly 5x faster than the above loop
+#     t = time.time()
+    Phi2_reshaped = Phi2.reshape(N*d, m)
+    C2=np.einsum('ij,ik->jk', Phi2_reshaped, Phi2_reshaped)
+#     print("einsum", time.time()-t)
     
-    return C / N
+#     assert(np.linalg.norm(C-C2)<1e-10)
+    return C2 / N
 
 def score_matching_sym(X, lmbda, omega, u, b=None, C=None):
+    logger.debug("Computing b")
     if b is None:
         b = compute_b(X, omega, u)
-        
+    
+    logger.debug("Computing C")
     if C is None:
         C = compute_C(X, omega, u)
-        
+    
+    logger.debug("Linear solve")
     theta = np.linalg.solve(C + lmbda * np.eye(len(C)), b)
     return theta
     
