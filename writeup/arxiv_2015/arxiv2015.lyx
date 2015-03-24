@@ -222,6 +222,11 @@ Random features
 \end_layout
 
 \begin_layout Itemize
+Rewrite vanishing adaptation.
+ Use decaying schedule rather than vanishing adaptation.
+\end_layout
+
+\begin_layout Itemize
 Write section on optimising 
 \begin_inset Formula $\lambda,\sigma$
 \end_inset
@@ -350,6 +355,12 @@ Need something on burnin time.
 
 \series bold
 Open questions:
+\end_layout
+
+\begin_layout Itemize
+Which strategy? Random feature approx to density and then score matching
+ or doubly stochastic approx to the infinite exp.
+ family objective?
 \end_layout
 
 \begin_layout Itemize
