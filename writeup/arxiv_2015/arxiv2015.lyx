@@ -145,25 +145,32 @@ cannot
 \emph default
  be applied -- one is left with random walk methods, which tend to suffer
  from bad mixing behaviour.
- We extend recent ideas of adaptively learning target covariance structure
- in a Reproducing Kernel Hilbert Space (RKHS), based on the history of the
- Markov chain.
+ We extend the idea by 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+ of adaptively learning target covariance structure in a Reproducing Kernel
+ Hilbert Space (RKHS), based on the history of the Markov chain.
  But rather than 
 \emph on
 locally 
 \emph default
-smoothing the chain history, we directly model its 
+smoothing the chain history, we directly model gradients of the 
 \emph on
 global
 \emph default
- log-density as an RKHS function.
- To that end, we employ recent ideas of fitting an unnormalised infinite
- exponential family models, and reduce excessive computational costs via
- efficient approximations using random basis functions.
- This provides a robust kernel-induced Hamiltonian flow which can be used
- to simulate trajectories on a level set that converges to the true level
- set in the Markov chain's asymptotic limit.
- In summary, we construct an 
+ log-density.
+ To that end, we employ two recently developed concepts from kernel methods:
+ (i) fitting unnormalised infinite exponential family models via score matching,
+ and (ii) reducing excessive computational costs via efficient doubly stochastic
+ approximations using mini-batches and random basis functions.
+ This novel combination provides a robust kernel-induced Hamiltonian flow
+ which can be used to simulate trajectories on a level set that converges
+ to the true level set in the Markov chain's asymptotic limit.
+ We construct an 
 \emph on
 exact 
 \emph default
