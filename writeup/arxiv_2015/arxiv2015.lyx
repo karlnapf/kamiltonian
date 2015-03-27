@@ -1193,10 +1193,18 @@ reference "eq:infinite_exp_family"
  Hellinger and total-variation distances were established.
  Furthermore, experimental results suggest good performance in high dimensions,
  as for example opposed to kernel density estimation.
+ 
 \end_layout
 
 \begin_layout Standard
-We now provide a brief review of score matching.
+We will develop an approximate version of 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+, after providing a brief review of score matching.
 \end_layout
 
 \begin_layout Subsection
@@ -1442,7 +1450,7 @@ key "SriFukKumGreHyv14"
 \end_inset
 
  requires to invert an 
-\begin_inset Formula $(n\times d)^{2}$
+\begin_inset Formula $(nd\times nd)$
 \end_inset
 
  matrix, where 
@@ -1454,7 +1462,7 @@ key "SriFukKumGreHyv14"
 \end_inset
 
 -dimensional data, resulting in computational costs of 
-\begin_inset Formula ${\cal O}(n^{6}d^{6})$
+\begin_inset Formula ${\cal O}(n^{3}d^{3})$
 \end_inset
 
 .
@@ -1501,7 +1509,7 @@ reference "eq:score_matching_objective_sample_version"
 
 .
  However, this requires 
-\begin_inset Formula ${\cal O}(n^{6}d^{6})$
+\begin_inset Formula ${\cal O}(n^{3}d^{3})$
 \end_inset
 
  computation and 
@@ -1542,8 +1550,11 @@ reference "eq:infinite_exp_family"
 \emph on
 primal
 \emph default
- form, whose computational costs remain constant as 
-\begin_inset Formula $n\to\infty$
+ form.
+ As we will see, updating the estimator when a new data point arrives can
+ be done in an online fashion at a computational cost that is independent
+ of 
+\begin_inset Formula $n$
 \end_inset
 
 .
