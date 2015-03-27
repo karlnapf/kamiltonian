@@ -233,6 +233,18 @@ Discard doubly stochastic framework
 \end_layout
 
 \begin_layout Itemize
+Add the 
+\begin_inset Quotes eld
+\end_inset
+
+downweighting
+\begin_inset Quotes erd
+\end_inset
+
+ of past data to make the estimator forget the past
+\end_layout
+
+\begin_layout Itemize
 Rewrite vanishing adaptation.
  Use decaying schedule rather than vanishing adaptation.
 \end_layout
