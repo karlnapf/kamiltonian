@@ -125,27 +125,22 @@ theorems-std
 \end_layout
 
 \begin_layout Title
-Gradient free Hamiltonian Monte Carlo via
-\begin_inset Newline newline
-\end_inset
-
-doubly stochastic infinite exponential families
+Gradient free Hamiltonian Monte Carlo via kernels
 \end_layout
 
 \begin_layout Abstract
 We propose an adaptive, gradient free MCMC algorithm based on Hamiltonian
  Monte Carlo (HMC), which allows simulation from an intractable target probabili
 ty density.
- Our sampler fills a gap: when the target density is intractable and its
- gradients are not available, while pseudo-marginal MCMC framework allows
- exact approximation, i.e., sampling from an asymptotically correct target,
+ Our sampler fills a gap: when gradients of the target density are unavailable,
  classic HMC methodology 
 \emph on
 cannot
 \emph default
- be applied -- one is left with random walk methods, which tend to suffer
- from bad mixing behaviour.
- We extend the idea by 
+ be applied.
+ One is left with random walk methods, which tend to suffer from bad mixing
+ behaviour -- a popular example case is the Pseudo-Marginal MCMC framework.
+ We extend recent ideas by 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sejdinovic_kernel_2014"
@@ -163,10 +158,9 @@ smoothing the chain history, we directly model gradients of the
 global
 \emph default
  log-density.
- To that end, we employ two recently developed concepts from kernel methods:
- (i) fitting unnormalised infinite exponential family models via score matching,
- and (ii) reducing excessive computational costs via efficient doubly stochastic
- approximations using mini-batches and random basis functions.
+ To that end, we fit an unnormalised infinite exponential family models
+ via score matching, where we reduce excessive computational costs by an
+ efficient approximation using random kitchen sinks.
  This novel combination provides a robust kernel-induced Hamiltonian flow
  which can be used to simulate trajectories on a level set that converges
  to the true level set in the Markov chain's asymptotic limit.
@@ -230,6 +224,12 @@ Write section that empirically analyses approximate trajectories on Gaussians
 
 \strikeout on
 Random features
+\end_layout
+
+\begin_layout Itemize
+
+\strikeout on
+Discard doubly stochastic framework
 \end_layout
 
 \begin_layout Itemize
@@ -1196,44 +1196,7 @@ reference "eq:infinite_exp_family"
 \end_layout
 
 \begin_layout Standard
-The proposed empirical estimator to 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
- in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SriFukKumGreHyv14"
-
-\end_inset
-
- requires to invert an 
-\begin_inset Formula $(n\times d)^{2}$
-\end_inset
-
- matrix, where 
-\begin_inset Formula $n$
-\end_inset
-
- is the number of 
-\begin_inset Formula $d$
-\end_inset
-
--dimensional data, resulting in computational costs of 
-\begin_inset Formula ${\cal O}(n^{6}d^{6})$
-\end_inset
-
-.
- As we are eventually interested in constructing an adaptive MCMC sampler
- that uses 
-\emph on
-all
-\emph default
- of the history of the Markov chain to guide proposals, a cost scaling as
- a sixth order polynomial is infeasible.
+We now provide a brief review of score matching.
 \end_layout
 
 \begin_layout Subsection
@@ -1447,246 +1410,8 @@ Replacing the integral
 
 \end_layout
 
-\begin_layout Subsection
-Doubly stochastic infinite exponential family estimators
-\end_layout
-
 \begin_layout Standard
-It was shown in 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Theorem 3"
-key "SriFukKumGreHyv14"
-
-\end_inset
-
- that the unnormalised infinite exponential family model in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
- can be fitted via score matching.
- This is done via first writing the score matching objective as
-\begin_inset Formula 
-\begin{align*}
-J(f) & =\frac{1}{2}\langle f,Cf\rangle_{{\cal H}}+\langle f,b\rangle_{{\cal H}}
-\end{align*}
-
-\end_inset
-
-where 
-\begin_inset Formula $C:{\cal H\times{\cal H}\rightarrow{\cal H}}$
-\end_inset
-
- and 
-\begin_inset Formula $b\in{\cal H}$
-\end_inset
-
- are defined as
-\begin_inset Formula 
-\begin{align*}
-Cf & =\int p_{0}(x)\sum_{\ell=1}^{d}\frac{\partial k(\cdot,x)}{\partial x_{\ell}}\frac{\partial f(x)}{\partial x_{\ell}}dx\\
-\xi & =\int p_{0}(x)\sum_{\ell=1}^{d}\left(\frac{\partial k(\cdot,x)}{\partial x_{\ell}}\frac{\partial\log q_{0}(x)}{\partial x_{\ell}}+\frac{\partial^{2}k(\cdot,x)}{\partial x_{\ell}^{2}}\right)dx,
-\end{align*}
-
-\end_inset
-
-and then minimising 
-\begin_inset Formula 
-\begin{equation}
-\argmin_{f\in{\cal H}}J(f)+\frac{\lambda}{2}\Vert f\Vert^{2}.\label{eq:infinite_exp_score_match_objective}
-\end{equation}
-
-\end_inset
-
-The unique minimiser can be obtained by solving an 
-\begin_inset Formula $nd$
-\end_inset
-
--dimensional linear system.
- This is clearly infeasible as we would like to estimate trajectories of
- Markov chains of increasing length.
- We now apply the doubly stochastic gradient for kernel methods framework
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "dai2014scalable"
-
-\end_inset
-
-, which is based on unbiasedly estimating the functional gradients of 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:infinite_exp_score_match_objective"
-
-\end_inset
-
- via both mini-batches of data and the random kitchen sinks kernel expansion
- developed by 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Rahimi2007"
-
-\end_inset
-
-.
- Intuitively, 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "dai2014scalable"
-
-\end_inset
-
- rewrite the objective function as an expected value of some loss function
- that involves the kernel, and then approximate the expectation over the
- data with a single data point and the kernel function as an expectation
- over random Fourier features.
- This eventually allows to minimise the objective using stochastic gradient
- descent, and comes with theoretical guarantees for convergence and approximatio
-n error.
-\end_layout
-
-\begin_layout Standard
-Here, due the the form of 
-\begin_inset Formula $J(f)$
-\end_inset
-
-, we will replace kernel gradients by random feature approximations.
- Due to linearity of expectation, inner product and gradients, the functional
- gradient of 
-\begin_inset Formula $J(f)$
-\end_inset
-
- at 
-\begin_inset Formula $f$
-\end_inset
-
- is given as (we assume 
-\begin_inset Formula $q_{0}(x)=1$
-\end_inset
-
-)
-\begin_inset Formula 
-\begin{align*}
-\nabla_{f}\left[J(f)\right] & =\nabla_{f}\left[\frac{1}{2}\langle f,Cf\rangle_{{\cal H}}+\langle f,b\rangle_{{\cal H}}\right]\\
- & =Cf+b\\
- & =\mathbb{E}_{x}\left[\sum_{\ell=1}^{d}\left(\frac{\partial k(\cdot,x)}{\partial x_{\ell}}\frac{\partial f(x)}{\partial x_{\ell}}+\frac{\partial^{2}k(\cdot,x)}{\partial x_{\ell}^{2}}\right)\right]\\
- & =\mathbb{E}_{x,\omega}\left[\phi_{\omega}(\cdot)\sum_{\ell=1}^{d}\left(\dot{\phi}_{\omega}^{\ell}(x)\frac{\partial f(x)}{\partial x_{\ell}}+\ddot{\phi}_{\omega}^{\ell}(x)\right)\right],
-\end{align*}
-
-\end_inset
-
-where we defined 
-\begin_inset Formula $\dot{\phi}_{\omega}^{\ell}(x):=\frac{\partial}{\partial x_{\ell}}\phi(x)$
-\end_inset
-
- and 
-\begin_inset Formula $\ddot{\phi}_{\omega}^{\ell}(x):=\frac{\partial^{2}}{\partial x_{\ell}^{2}}\phi_{\omega}(x)$
-\end_inset
-
-.
- An unbiased estimator can be obtained for a single data 
-\begin_inset Formula $x_{t}\sim p_{0}(x)$
-\end_inset
-
- and a single frequency 
-\begin_inset Formula $\omega_{t}\sim\Gamma(\omega)$
-\end_inset
-
-, i.e.
-\begin_inset Formula 
-\begin{align*}
-\zeta_{t}(\cdot): & =\phi_{\omega_{t}}(\cdot)\sum_{\ell=1}^{d}\left(\dot{\phi}_{\omega_{t}}^{\ell}(x_{t})\frac{\partial f(x_{t})}{\partial[x_{t}]_{\ell}}+\ddot{\phi}_{\omega_{t}}^{\ell}\right),
-\end{align*}
-
-\end_inset
-
-an expression which is similar to 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Eq. 4"
-key "dai2014scalable"
-
-\end_inset
-
-.
- We can now apply additive stochastic gradient updates, i.e.
- starting from 
-\begin_inset Formula $f_{1}(\cdot)=0\in{\cal H}$
-\end_inset
-
-, we define for 
-\begin_inset Formula $t>1$
-\end_inset
-
-
-\begin_inset Formula 
-\[
-f_{t+1}(\cdot):=f_{t}(\cdot)-\gamma_{t}(\zeta_{t}(\cdot)+\lambda f_{t}(\cdot)),
-\]
-
-\end_inset
-
-where we added the regulariser term 
-\begin_inset Formula $\nabla_{f}\frac{\lambda}{2}\Vert f\Vert^{2}=\lambda f$
-\end_inset
-
-.
- Evaluation of 
-\begin_inset Formula $f_{t+1}(\cdot)$
-\end_inset
-
- at any point 
-\begin_inset Formula $x$
-\end_inset
-
- works as
-\begin_inset Formula 
-\[
-f_{t+1}(x)=\sum_{i=1}^{t}\alpha_{i}\phi_{\omega_{i}}(x),
-\]
-
-\end_inset
-
-where 
-\begin_inset Formula $\alpha_{i}:=-\gamma_{i}\sum_{\ell=1}^{d}\left(\dot{\phi}_{\omega_{i}}^{\ell}(x_{i})\frac{\partial f(x_{i})}{\partial[x_{i}]_{\ell}}+\ddot{\phi}_{\omega_{i}}^{\ell}\right)$
-\end_inset
-
-.
- Evaluation of the gradient 
-\begin_inset Formula $\frac{\partial f(x_{i})}{\partial[x_{i}]_{\ell}}$
-\end_inset
-
- also works recursively via the reproducing property and the unbiased kernel
- approximation
-\begin_inset Formula 
-\[
-\frac{\partial f(x_{i})}{\partial[x_{i}]_{\ell}}=\frac{\partial\langle\phi_{\omega_{i}}(\cdot)\phi_{\omega_{t}}(x_{i}),f\rangle}{\partial[x_{i}]_{\ell}}=\dot{\phi}_{\omega_{i}}^{\ell}(x_{i})\langle\phi_{\omega_{i}}(\cdot),f\rangle=\dot{\phi}_{\omega_{i}}^{\ell}(x_{i})f_{i}(x_{i})
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Finite dimensional approximate infinite exponential family estimators
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:finite_approx_infinite_exp_family"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We next apply the score matching estimator in 
+We next seek to apply the score matching estimator in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_objective_sample_version"
@@ -1702,19 +1427,61 @@ reference "eq:infinite_exp_family"
 \end_inset
 
 .
- But rather than following the 
-\begin_inset Formula ${\cal O}(n^{6}d^{6})$
+ The proposed empirical estimator to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
 \end_inset
 
- approach from 
+ in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
 
 \end_inset
 
-, we use an approximate feature space version with a finite set of random
- set of basis functions.
+ requires to invert an 
+\begin_inset Formula $(n\times d)^{2}$
+\end_inset
+
+ matrix, where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of 
+\begin_inset Formula $d$
+\end_inset
+
+-dimensional data, resulting in computational costs of 
+\begin_inset Formula ${\cal O}(n^{6}d^{6})$
+\end_inset
+
+.
+ As we are eventually interested in constructing an adaptive MCMC sampler
+ that uses 
+\emph on
+all
+\emph default
+ of the history of the Markov chain to guide proposals, a cost scaling as
+ a sixth order polynomial is infeasible.
+ Therefore, we now develop an approximation that both reduces excessive
+ computational costs, and allows us to update the estimator in every iteration
+ of the MCMC algorithm in an online fashion.
+\end_layout
+
+\begin_layout Subsection
+Finite dimensional approximate infinite exponential family estimators
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:finite_approx_infinite_exp_family"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
