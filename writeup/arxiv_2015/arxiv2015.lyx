@@ -24,11 +24,16 @@ Dino Sejdinovic \\
 Department of Statistics \\
 University of Oxford \\
 \texttt{dino.sejdinovic@gmail.com} \\
+\And
+Zoltán Szabó\\
+Gatsby Unit \\
+University College London \\
+\texttt{zoltan.szabo@gatsby.ucl.ac.uk } \\
 \AND
 Arthur Gretton \\
 Gatsby Unit\\
 University College London \\
-\texttt{athur.gretton@gmail.com} 
+\texttt{arthur.gretton@gmail.com} 
 }
 
 % The \author macro works with any number of authors. There are two commands
