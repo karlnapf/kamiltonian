@@ -11,7 +11,7 @@ if __name__ == "__main__":
     sigma_q = 1.
     sigma_p = 1.
     Ds = 2 ** np.arange(8)
-    Ns = 2 ** np.arange(5, 12)
+    Ns = np.array([50, 100, 200, 500, 1000, 2000])
     num_repetitions = 10
     lmbda = 0.0001
     num_steps = 100
