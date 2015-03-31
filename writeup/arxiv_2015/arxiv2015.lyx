@@ -164,11 +164,11 @@ global
 \emph default
  log-density.
  To that end, we fit an unnormalised infinite exponential family models
- via score matching, where we reduce excessive computational costs by an
- efficient approximation using random kitchen sinks.
- This novel combination provides a robust kernel-induced Hamiltonian flow
- which can be used to simulate trajectories on a level set that converges
- to the true level set in the Markov chain's asymptotic limit.
+ via score matching, where we reduce excessive computational costs by a
+ novel efficient approximation using random kitchen sinks.
+ This combination provides a robust kernel-induced Hamiltonian flow which
+ can be used to simulate trajectories on a level set that converges to the
+ true level set in the Markov chain's asymptotic limit.
  We construct an 
 \emph on
 exact 
@@ -250,6 +250,8 @@ downweighting
 \end_layout
 
 \begin_layout Itemize
+
+\strikeout on
 Rewrite vanishing adaptation.
  Use decaying schedule rather than vanishing adaptation.
 \end_layout
@@ -2045,11 +2047,7 @@ k(x,y)={\cal \exp}\left(-\gamma\Vert x-y\Vert_{2}^{2}\right)\quad\text{and}\quad
 \end_layout
 
 \begin_layout Subsubsection
-Rank-
-\begin_inset Formula $d$
-\end_inset
-
- updates for constant cost updates
+Constant cost updates and non-stationarity
 \end_layout
 
 \begin_layout Standard
@@ -2072,6 +2070,8 @@ reference "eq:b_and_C_random_feats"
 \end_inset
 
  in an online fashion.
+ This can be combined with a downweighting of past observations in order
+ to adapt to non-stationary data.
  Each new point of the Markov chain history only adds a term of the form
  
 \begin_inset Formula $-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}$
@@ -2121,7 +2121,7 @@ reference "eq:score_match_objective_random_feats"
 
 \end_inset
 
- from feature vectors derivatives 
+from feature vectors derivatives 
 \begin_inset Formula $\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}$
 \end_inset
 
@@ -2137,12 +2137,18 @@ reference "eq:score_match_objective_random_feats"
  We can then write the inverse of the new sum as
 \begin_inset Formula 
 \begin{align*}
-\tilde{C}_{n+1}^{-1}: & =\left(\tilde{C}_{n}+\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{n+1}}^{\ell}\left(\dot{\phi}_{x_{n+1}}^{\ell}\right)^{T}\right)\right)^{-1}.
+\tilde{C}_{n+1}^{-1}: & =\left(\alpha_{n}\tilde{C}_{n}+\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{n+1}}^{\ell}\left(\dot{\phi}_{x_{n+1}}^{\ell}\right)^{T}\right)\right)^{-1},
 \end{align*}
 
 \end_inset
 
-This is an inversion of the rank-
+where 
+\begin_inset Formula $\alpha_{n}\in(0,1)$
+\end_inset
+
+ is a parameter that determines how much past data should be weighted according
+ to present data.
+ This is an inversion of the rank-
 \begin_inset Formula $d$
 \end_inset
 
@@ -2303,6 +2309,70 @@ all
 \end_inset
 
 .
+ The adaptation parameters 
+\begin_inset Formula $\alpha_{n}$
+\end_inset
+
+ furthermore ensure that when combined with a MCMC, samples drawn from a
+ not yet converged Markov chain, will not hurt the proposal in the asymptotic
+ limit.
+\end_layout
+
+\begin_layout Subsection
+Theoretical guarantees
+\end_layout
+
+\begin_layout Standard
+We now state theoretical results that both guarantee consistency and quantify
+ convergence of the above estimator as the number of random features 
+\begin_inset Formula $m$
+\end_inset
+
+ grows to infinity.
+ The argument will be to
+\end_layout
+
+\begin_layout Enumerate
+Establish uniform convergence bounds for gradients of random features, similar
+ to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rahimi2007"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Establish the approximation error of the RKHS function evaluation 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ as compared to 
+\begin_inset Formula $\theta^{T}\phi_{x}$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:infinite_exp_family_random_feats"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Combine the above results with convergence of the infinite exponential family
+ model to the true density, as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -2790,8 +2860,8 @@ Input
 \begin_inset Formula $\exp(-K(p))$
 \end_inset
 
-, adaptation weights 
-\begin_inset Formula $a_{t}$
+, adaptation schedules 
+\begin_inset Formula $a_{t},\alpha_{t}$
 \end_inset
 
 , random basis & offset 
@@ -2817,6 +2887,11 @@ At iteration
 
 \shape italic
 Online-update density estimate.
+ With probability 
+\begin_inset Formula $a_{t}$
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -2824,7 +2899,7 @@ Online-update density estimate.
 Update sums 
 \begin_inset Formula 
 \begin{equation}
-\tilde{b}_{t}\leftarrow\tilde{b}_{t-1}-a_{t}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t}}^{\ell}\quad\text{and}\quad\tilde{C}_{t}\leftarrow\tilde{C}_{t-1}+\frac{a_{t}}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t}}^{\ell}(\dot{\phi}_{x_{t}}^{\ell})^{T}\label{eq:algo_updating_b_C}
+\tilde{b}_{t}\leftarrow\alpha_{t}\tilde{b}_{t-1}-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t}}^{\ell}\quad\text{and}\quad\tilde{C}_{t}\leftarrow\alpha_{t}\tilde{C}_{t-1}+\frac{1}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t}}^{\ell}(\dot{\phi}_{x_{t}}^{\ell})^{T}\label{eq:algo_updating_b_C}
 \end{equation}
 
 \end_inset
@@ -2990,14 +3065,14 @@ every
 \emph default
 iteration of the Markov chain.
  To guarantee convergence to the correct stationary distribution, we introduce
- vanishing adaptation weights 
-\begin_inset Formula $\left\{ a_{t}\right\} _{i=0}^{\infty}$
+ a schedule of vanishing adaptation probabilities 
+\begin_inset Formula $\left\{ \gamma_{t}\right\} _{i=0}^{\infty}$
 \end_inset
 
  such that 
 \begin_inset Formula 
 \[
-\lim_{t\to\infty}a_{t}=0\quad\text{and}\quad\sum_{t=0}^{\infty}a_{t}=\infty,
+\lim_{t\to\infty}\gamma_{t}=0\quad\text{and}\quad\sum_{t=0}^{\infty}\gamma_{t}=\infty,
 \]
 
 \end_inset
@@ -3009,8 +3084,9 @@ reference "eq:algo_updating_b_C"
 
 \end_inset
 
- accordingly.
- 
+ according to that schedule.
+ Intuitively, adaptation becomes less likely as the MCMC chain is progressing.
+ Formally, 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "Theorem 1"
@@ -3021,8 +3097,6 @@ key "RobertsRosenthal2007"
  guarantees that the resulting Markov kernel is ergodic and converges to
  the correct target.
  
-\emph on
-TODO: Really? Carefull here!
 \end_layout
 
 \begin_layout Subsection
