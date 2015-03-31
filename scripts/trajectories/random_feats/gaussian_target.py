@@ -3,10 +3,12 @@ from kmc.score_matching.random_feats.estimator import log_pdf_estimate, \
     log_pdf_estimate_grad
 from kmc.score_matching.random_feats.gaussian_rkhs import feature_map, \
     score_matching_sym, feature_map_grad_single
+from kmc.tools.Log import logger
 import matplotlib.pyplot as plt
 import numpy as np
 from scripts.tools.plotting import plot_kamiltonian_dnyamics
 
+logger.setLevel(10)
 
 # if __name__ == "__main__":
 while True:
@@ -21,16 +23,17 @@ while True:
     logq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=False)
 
     # estimate density in rkhs
-    N = 200
+    N = 800
     mu = np.zeros(D)
     Z = sample_gaussian(N, mu, Sigma=L, is_cholesky=True)
     lmbda = 0.0001
     sigma = 0.5
     gamma = 0.5*(sigma**2)
-    m = 200
+    m = N
     
     omega = gamma * np.random.randn(D, m)
     u = np.random.uniform(0, 2 * np.pi, m)
+    logger.info("Estimating density")
     theta = score_matching_sym(Z, lmbda, omega, u)
     
     logq_est = lambda x: log_pdf_estimate(feature_map(x, omega, u), theta)
@@ -57,6 +60,7 @@ while True:
     Xs_p = np.linspace(-3, 3)
     Ys_p = np.linspace(-3, 3)
 
+    logger.info("Evaluating dynamics")
     plot_grad_target = False
     plot_kamiltonian_dnyamics(q0, p0,
                               logq, dlogq, logq_est, dlogq_est, logp, dlogp, Z,
