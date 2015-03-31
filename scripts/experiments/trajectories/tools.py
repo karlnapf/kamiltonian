@@ -47,10 +47,11 @@ def compute(fname_base, job_generator, Ds, Ns, num_repetitions, lmbda, num_steps
     avg_steps_taken = np.zeros((num_repetitions, len(Ds), len(Ns)))
     
     agg_counter = 0
-    for j in range(len(aggregators)):
-        for k, N in enumerate(Ns):
-            for i in range(len(aggregators[j])):
+    for i, D in enumerate(Ds):
+        for k,N in enumerate(Ns):
+            for j in range(num_repetitions):
                 agg = aggregators[agg_counter]
+                agg_counter += 1
                 agg.finalize()
                 result = agg.get_final_result()
                 agg.clean_up()
