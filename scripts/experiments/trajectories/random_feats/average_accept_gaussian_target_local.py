@@ -12,7 +12,7 @@ if __name__ == "__main__":
     sigma_p = 1.
     Ds = 2 ** np.arange(8)
     Ns = np.array([50, 100, 200, 500, 1000, 2000])
-    num_repetitions = 10
+    num_repetitions = 3
     lmbda = 0.0001
     num_steps = 100
     max_steps = 1000
