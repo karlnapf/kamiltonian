@@ -62,13 +62,13 @@ def select_sigma_scipy(Z, m, num_folds=5, tol=0.2, num_repetitions=3, lmbda=0.00
 def multicore_fun(log2_sigma, log2_lmbda, num_repetitions, num_folds, Z, m):
     D = Z.shape[1]
     
-    sigma = 2 ** log2_sigma
     lmbda = 2 ** log2_lmbda
+    sigma = 2 ** log2_sigma
+    gamma = 0.5 * (sigma ** 2)
     
     folds = np.zeros(num_repetitions)
     for j in range(num_repetitions):
-        logger.debug("fold %d/%d" % (j+1, num_repetitions))
-        gamma = 0.5 * (sigma ** 2)
+        logger.debug("repetition %d/%d" % (j+1, num_repetitions))
         omega, u = sample_basis(D, m, gamma)
         folds[j] = np.mean(xvalidate(Z, lmbda, omega, u,
                                      num_folds, num_repetitions))
