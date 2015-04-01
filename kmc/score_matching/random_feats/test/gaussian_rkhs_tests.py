@@ -10,6 +10,7 @@ from kmc.score_matching.random_feats.gaussian_rkhs import feature_map_single, \
     feature_map_grad_single, score_matching_sym, \
     _objective_sym_completely_manual, _objective_sym_half_manual, objective
 import numpy as np
+from kmc.score_matching.random_feats.outer_sum_cython import outer_sum_cython
 
 
 def test_feature_map_equals_scikit_learn():
@@ -373,3 +374,15 @@ def test_score_matching_sym_returns_min_random_search():
         
             assert_less_equal(J, J_test)
         
+def test_outer_sum_cython():
+    N = 100
+    D = 3
+    X = np.random.randn(N, D)
+    
+    C_manual = np.zeros((D, D))
+    for x in X:
+        C_manual += np.outer(x, x)
+    
+    C = outer_sum_cython(X)
+    
+    assert_allclose(C, C_manual)

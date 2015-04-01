@@ -1,5 +1,4 @@
 from sklearn.cross_validation import KFold
-
 from kmc.tools.Log import logger
 import numpy as np
 
@@ -120,6 +119,7 @@ def compute_b(X, omega, u):
 
 def compute_C(X, omega, u):
     assert len(X.shape) == 2
+    logger.debug("Computing derivatives")
     Phi2 = feature_map_derivatives(X, omega, u)
     d = X.shape[1]
     N = X.shape[0]
@@ -133,15 +133,26 @@ def compute_C(X, omega, u):
 #             phi2 = Phi2[ell, i]
 #             C += np.outer(phi2, phi2)
 #     print("loop", time.time()-t)
-     
-    # roughly 5x faster than the above loop
+#      
+#     #roughly 5x faster than the above loop
 #     t = time.time()
-    Phi2_reshaped = Phi2.reshape(N*d, m)
-    C2=np.einsum('ij,ik->jk', Phi2_reshaped, Phi2_reshaped)
+#     Phi2_reshaped = Phi2.reshape(N*d, m)
+#     C2=np.einsum('ij,ik->jk', Phi2_reshaped, Phi2_reshaped)
 #     print("einsum", time.time()-t)
+#
+#     #cython implementation, is slowest
+#     t = time.time()
+#     Phi2_reshaped = Phi2.reshape(N*d, m)
+#     C3 = outer_sum_cython(Phi2_reshaped)
+#     print("cython", time.time()-t)
     
-#     assert(np.linalg.norm(C-C2)<1e-10)
-    return C2 / N
+#     t = time.time()
+    logger.debug("Computing derivative covariance")
+    Phi2_reshaped = Phi2.reshape(N*d, m)
+    C4 = np.tensordot(Phi2_reshaped, Phi2_reshaped, [0,0])
+#     print("tensordot", time.time()-t)
+
+    return C4 / N
 
 def score_matching_sym(X, lmbda, omega, u, b=None, C=None):
     logger.debug("Computing b")
