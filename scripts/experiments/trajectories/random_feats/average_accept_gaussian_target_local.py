@@ -16,7 +16,7 @@ if __name__ == "__main__":
     Ns = np.flipud(np.array([50, 100, 200, 500, 1000, 2000]))
     print(Ns)
     print(Ds)
-    num_repetitions = 3
+    num_repetitions = 10
     num_steps = 100
     max_steps = 1000
     step_size = .1
