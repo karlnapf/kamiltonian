@@ -11,7 +11,7 @@ import numpy as np
 from scripts.experiments.trajectories.plots import plot_trajectory_result_mean_median
 
 
-def compute(fname_base, job_generator, Ds, Ns, num_repetitions, lmbda, num_steps, step_size,
+def compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_size,
             max_steps=None, compute_local=False):
     if not FileSystem.cmd_exists("sbatch") or compute_local:
         engine = SerialComputationEngine()
@@ -20,7 +20,7 @@ def compute(fname_base, job_generator, Ds, Ns, num_repetitions, lmbda, num_steps
         johns_slurm_hack = "#SBATCH --partition=intel-ivy,wrkstn,compute"
         folder = os.sep + os.sep.join(["nfs", "data3", "ucabhst", fname_base])
         batch_parameters = BatchClusterParameters(foldername=folder, max_walltime=24 * 60 * 60,
-                                                  resubmit_on_timeout=False, memory=2,
+                                                  resubmit_on_timeout=False, memory=10,
                                                   parameter_prefix=johns_slurm_hack,
                                                   nodes=6)
         engine = SlurmComputationEngine(batch_parameters, check_interval=1,
@@ -67,7 +67,7 @@ def compute(fname_base, job_generator, Ds, Ns, num_repetitions, lmbda, num_steps
         np.savez(f, Ds=Ds, avg_accept=avg_accept, avg_accept_est=avg_accept_est,
                  vols=log_dets, vols_est=log_dets_est, steps_taken=avg_steps_taken)
 
-def process(fname_base, job_generator, Ds, Ns, num_repetitions, lmbda, num_steps,
+def process(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps,
             step_size, max_steps, compute_local=False):
     fname = fname_base + ".npy"
     # don't recompute if a file exists
@@ -81,7 +81,7 @@ def process(fname_base, job_generator, Ds, Ns, num_repetitions, lmbda, num_steps
         do_compute = True
     
     if do_compute:
-        compute(fname_base, job_generator, Ds, Ns, num_repetitions, lmbda, num_steps, step_size, max_steps, compute_local)
+        compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_size, max_steps, compute_local)
     
     try:
         plot_trajectory_result_mean_median(fname)

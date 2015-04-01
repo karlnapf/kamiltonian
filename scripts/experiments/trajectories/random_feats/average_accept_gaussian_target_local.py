@@ -10,10 +10,11 @@ modulename = __file__.split(os.sep)[-1].split('.')[-2]
 if __name__ == "__main__":
     sigma_q = 1.
     sigma_p = 1.
-    Ds = 2 ** np.arange(8)
-    Ns = np.array([50, 100, 200, 500, 1000, 2000])
+    Ds = np.flipud(2 ** np.arange(8))
+    Ns = np.flipud(np.array([50, 100, 200, 500, 1000, 2000]))
+    print(Ns)
+    print(Ds)
     num_repetitions = 3
-    lmbda = 0.0001
     num_steps = 100
     max_steps = 1000
     step_size = .1
@@ -25,5 +26,5 @@ if __name__ == "__main__":
                                                      num_steps, step_size,
                                                      sigma0, lmbda0, max_steps)
     
-    process(modulename, job_generator, Ds, Ns, num_repetitions, lmbda, num_steps,
+    process(modulename, job_generator, Ds, Ns, num_repetitions, num_steps,
             step_size, max_steps, compute_local=True)
