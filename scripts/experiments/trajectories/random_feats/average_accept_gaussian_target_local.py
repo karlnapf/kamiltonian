@@ -1,5 +1,6 @@
 import os
 
+from kmc.tools.Log import logger
 import numpy as np
 from scripts.experiments.trajectories.independent_jobs_classes.random_feats.GaussianTrajectoryJob import GaussianTrajectoryJob
 from scripts.experiments.trajectories.tools import process
@@ -8,6 +9,7 @@ from scripts.experiments.trajectories.tools import process
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
 
 if __name__ == "__main__":
+    logger.set_loglevel(10)
     sigma_q = 1.
     sigma_p = 1.
     Ds = np.flipud(2 ** np.arange(8))
