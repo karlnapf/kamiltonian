@@ -184,6 +184,7 @@ def xvalidate(Z, lmbda, omega, u, n_folds=5, num_repetitions=1):
     for j in range(num_repetitions):
         kf = KFold(len(Z), n_folds=n_folds, shuffle=True)
         for i, (train, test) in enumerate(kf):
+            logger.debug("xvalidation fold %d/%d" % (i+1, len(kf)))
             # train
             theta = score_matching_sym(Z[train], lmbda, omega, u)
             
