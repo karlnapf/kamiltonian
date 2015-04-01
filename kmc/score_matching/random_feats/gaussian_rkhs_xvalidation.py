@@ -74,7 +74,7 @@ def multicore_fun(log2_sigma, log2_lmbda, num_repetitions, num_folds, Z, m):
                                      num_folds, num_repetitions))
     
     result = np.mean(folds)
-    logger.info("particle, sigma: %.2f, lambda: %.6f, J=%.4f" % \
+    logger.info("cma particle, sigma: %.2f, lambda: %.6f, J=%.4f" % \
         (sigma, lmbda, result))
     return result
 
