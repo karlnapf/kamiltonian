@@ -67,6 +67,7 @@ def multicore_fun(log2_sigma, log2_lmbda, num_repetitions, num_folds, Z, m):
     
     folds = np.zeros(num_repetitions)
     for j in range(num_repetitions):
+        logger.debug("fold %d/%d" % (j+1, num_repetitions))
         gamma = 0.5 * (sigma ** 2)
         omega, u = sample_basis(D, m, gamma)
         folds[j] = np.mean(xvalidate(Z, lmbda, omega, u,
