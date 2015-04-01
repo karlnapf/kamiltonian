@@ -48,7 +48,7 @@ class TrajectoryJob(IndependentJob):
     
     def determine_sigma_lmbda(self):
         parameter_dir = project_path + os.sep + "xvalidation_parameters"
-        fname = parameter_dir + os.sep + self.get_parameter_fname_suffix() + ".pkl"
+        fname = parameter_dir + os.sep + self.get_parameter_fname_suffix() + ".npy"
         if not os.path.exists(fname):
             logger.info("Learning sigma and lmbda")
             cma_opts = {'tolfun':0.5, 'maxiter':10, 'verb_disp':1}
