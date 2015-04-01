@@ -29,3 +29,9 @@ class GaussianTrajectoryJob(TrajectoryJob):
         
         logger.info("N=%d, D=%d" % (self.N, self.D))
         self.Z = sample_gaussian(self.N, mu=np.zeros(self.D), Sigma=L, is_cholesky=True)
+
+    @abstractmethod
+    def get_parameter_fname_suffix(self):
+        suffix = "%s_sigma=%.4f" % (self.__class__.__name__, self.sigma_q)
+        
+        return suffix + "_" + TrajectoryJob.get_parameter_fname_suffix(self) 

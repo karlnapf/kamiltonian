@@ -1,4 +1,5 @@
 from abc import abstractmethod
+import os
 
 from independent_jobs.jobs.IndependentJob import IndependentJob
 
@@ -15,6 +16,10 @@ import numpy as np
 from scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResult import TrajectoryJobResult
 from scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResultAggregator import TrajectoryJobResultAggregator
 
+
+splitted = __file__.split(os.sep)
+idx = splitted.index('kamiltonian')
+project_path = os.sep.join(splitted[:(idx+1)])
 
 class TrajectoryJob(IndependentJob):
     def __init__(self,
@@ -37,6 +42,34 @@ class TrajectoryJob(IndependentJob):
     def set_up(self):
         raise NotImplementedError()
     
+    @abstractmethod
+    def get_parameter_fname_suffix(self):
+        return "N=%d_m=%d_D=%d" % (self.N, self.m, self.D)
+    
+    def determine_sigma_lmbda(self):
+        parameter_dir = project_path + os.sep + "xvalidation_parameters"
+        fname = parameter_dir + os.sep + self.get_parameter_fname_suffix() + ".pkl"
+        if not os.path.exists(fname):
+            logger.info("Learning sigma and lmbda")
+            cma_opts = {'tolfun':0.5, 'maxiter':10, 'verb_disp':1}
+            sigma, lmbda = select_sigma_lambda_cma(self.Z, self.m,
+                                                   sigma0=self.sigma0, lmbda0=self.lmbda0,
+                                                   cma_opts=cma_opts)
+            
+            if not os.path.exists(parameter_dir):
+                os.makedirs(parameter_dir)
+            
+            with open(fname, 'w') as f:
+                np.savez_compressed(f, sigma=sigma, lmbda=lmbda)
+        else:
+            logger.info("Loading sigma and lmbda from %s" % fname)
+            with open(fname, 'r') as f:
+                pars = np.load(f)
+                sigma = pars['sigma']
+                lmbda = pars['lmbda']
+                
+        return sigma, lmbda
+            
     def compute_trajectory(self, random_start_state=None):
         logger.debug("Entering")
         
@@ -55,11 +88,8 @@ class TrajectoryJob(IndependentJob):
         # set up target and momentum densities and gradients
         self.set_up()
         
-        logger.info("Learning sigma and lmbda")
-        cma_opts = {'tolfun':0.5, 'maxiter':10, 'verb_disp':1}
-        sigma, lmbda = select_sigma_lambda_cma(self.Z, self.m,
-                                               sigma0=self.sigma0, lmbda0=self.lmbda0,
-                                               cma_opts=cma_opts)
+        # load or learn parameters
+        sigma, lmbda = self.determine_sigma_lmbda()
         
         logger.info("Using sigma: %.2f, lmbda=%.6f" % (sigma, lmbda))
         
