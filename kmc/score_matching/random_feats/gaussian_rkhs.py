@@ -67,8 +67,10 @@ def feature_map_derivatives2_loop(X, omega, u):
     D = X.shape[1]
     
     projections = np.zeros((D, N, m))
+    Phi2 = feature_map(X, omega, u)
     for d in range(D):
-        projections[d, :, :] = feature_map_derivative2_d(X, omega, u, d)
+        projections[d, :, :] = -Phi2
+        projections[d, :, :] *= omega[d, :] ** 2
         
     return projections
 
