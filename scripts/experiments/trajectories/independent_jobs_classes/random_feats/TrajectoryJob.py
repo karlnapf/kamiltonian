@@ -115,7 +115,7 @@ class TrajectoryJob(IndependentJob):
         else:
             steps = self.num_steps
         
-        logger.info("Simulating trajectory for L=%d steps of size %.2f" % \
+        logger.info("Simulating trajectory for at least L=%d steps of size %.2f" % \
                      (self.num_steps, self.step_size))
         # starting state
         p0 = self.p_sample()
