@@ -3,6 +3,8 @@ import os
 from kmc.tools.Log import logger
 import numpy as np
 from scripts.experiments.trajectories.independent_jobs_classes.random_feats.GaussianTrajectoryJob import GaussianTrajectoryJob
+from scripts.experiments.trajectories.plots import plot_trajectory_result_mean_median_fixed_N,\
+    plot_trajectory_result_mean_median_fixed_D
 from scripts.experiments.trajectories.tools import process
 
 
@@ -29,3 +31,8 @@ if __name__ == "__main__":
     
     process(modulename, job_generator, Ds, Ns, num_repetitions, num_steps,
             step_size, max_steps, compute_local=False)
+
+    fname = modulename + ".npy"
+    plot_trajectory_result_mean_median_fixed_N(fname, N=Ns[0])
+    plot_trajectory_result_mean_median_fixed_D(fname, D=Ds[0])
+    
