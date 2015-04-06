@@ -8,7 +8,7 @@ from independent_jobs.tools.FileSystem import FileSystem
 
 from kmc.tools.Log import logger
 import numpy as np
-from scripts.experiments.trajectories.plots import plot_trajectory_result_mean_median
+from scripts.experiments.trajectories.plots import plot_trajectory_result_mean_median_fixed_N
 
 
 def compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_size,
@@ -19,8 +19,8 @@ def compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_
     else:
         johns_slurm_hack = "#SBATCH --partition=intel-ivy,wrkstn,compute"
         folder = os.sep + os.sep.join(["nfs", "data3", "ucabhst", fname_base])
-        batch_parameters = BatchClusterParameters(foldername=folder, max_walltime=24 * 60 * 60,
-                                                  resubmit_on_timeout=False, memory=10,
+        batch_parameters = BatchClusterParameters(foldername=folder, max_walltime=1 * 60 * 60,
+                                                  resubmit_on_timeout=False, memory=2,
                                                   parameter_prefix=johns_slurm_hack,
                                                   nodes=6)
         engine = SlurmComputationEngine(batch_parameters, check_interval=1,
@@ -64,7 +64,7 @@ def compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_
             
             
     with open(fname_base + ".npy", 'w+') as f:
-        np.savez(f, Ds=Ds, avg_accept=avg_accept, avg_accept_est=avg_accept_est,
+        np.savez(f, Ds=Ds, Ns=Ns, avg_accept=avg_accept, avg_accept_est=avg_accept_est,
                  vols=log_dets, vols_est=log_dets_est, steps_taken=avg_steps_taken)
 
 def process(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps,
@@ -82,11 +82,3 @@ def process(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps,
     
     if do_compute:
         compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_size, max_steps, compute_local)
-    
-    try:
-        plot_trajectory_result_mean_median(fname)
-#         plot_trajectory_result_boxplot(fname)
-#         plot_trajectory_result_boxplot_mix(fname)
-    except Exception:
-        pass
-    
