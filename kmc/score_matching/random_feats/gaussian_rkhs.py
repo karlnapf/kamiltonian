@@ -26,6 +26,7 @@ def feature_map_derivative_d(X, omega, u, d):
     
     projection = np.dot(X, omega) + u
     np.sin(projection, projection)
+        
     projection *= omega[d, :]
     projection *= np.sqrt(2. / m)
     return -projection
@@ -51,9 +52,13 @@ def feature_map_derivatives_loop(X, omega, u):
     D = X.shape[1]
     
     projections = np.zeros((D, N, m))
+    projection = np.dot(X, omega) + u
+    np.sin(projection, projection)
     for d in range(D):
-        projections[d, :, :] = feature_map_derivative_d(X, omega, u, d)
-        
+        projections[d, :, :] = projection
+        projections[d, :, :] *= omega[d, :]
+    
+    projections *= -np.sqrt(2. / m)
     return projections
 
 def feature_map_derivatives2_loop(X, omega, u):
