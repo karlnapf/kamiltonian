@@ -59,7 +59,7 @@ class TrajectoryJob(IndependentJob):
             if not os.path.exists(parameter_dir):
                 os.makedirs(parameter_dir)
             
-            with open(fname, 'w') as f:
+            with open(fname, 'w+') as f:
                 np.savez_compressed(f, sigma=sigma, lmbda=lmbda)
         else:
             logger.info("Loading sigma and lmbda from %s" % fname)
