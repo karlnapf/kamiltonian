@@ -1,4 +1,5 @@
 from sklearn.cross_validation import KFold
+
 from kmc.tools.Log import logger
 import numpy as np
 
@@ -119,10 +120,22 @@ def _objective_sym_half_manual(X, theta, lmbda, omega, u):
     J_manual += 0.5 * lmbda * np.dot(theta, theta)
     return J_manual
 
-def compute_b(X, omega, u):
+def compute_b_storage(X, omega, u):
     assert len(X.shape) == 2
     Phi1 = feature_map_derivatives2(X, omega, u)
     return -np.mean(np.sum(Phi1, 0), 0)
+
+def compute_b(X, omega, u):
+    assert len(X.shape) == 2
+    m = 1 if np.isscalar(u) else len(u)
+    D = X.shape[1]
+    
+    projections_sum = np.zeros(m)
+    Phi2 = feature_map(X, omega, u)
+    for d in range(D):
+        projections_sum += np.mean(-Phi2 * (omega[d, :] ** 2), 0)
+        
+    return -projections_sum
 
 def compute_C(X, omega, u):
     assert len(X.shape) == 2
@@ -155,8 +168,8 @@ def compute_C(X, omega, u):
     
 #     t = time.time()
     logger.debug("Computing derivative covariance")
-    Phi2_reshaped = Phi2.reshape(N*d, m)
-    C4 = np.tensordot(Phi2_reshaped, Phi2_reshaped, [0,0])
+    Phi2_reshaped = Phi2.reshape(N * d, m)
+    C4 = np.tensordot(Phi2_reshaped, Phi2_reshaped, [0, 0])
 #     print("tensordot", time.time()-t)
 
     return C4 / N
@@ -191,7 +204,7 @@ def xvalidate(Z, lmbda, omega, u, n_folds=5, num_repetitions=1):
     for j in range(num_repetitions):
         kf = KFold(len(Z), n_folds=n_folds, shuffle=True)
         for i, (train, test) in enumerate(kf):
-            logger.debug("xvalidation fold %d/%d" % (i+1, len(kf)))
+            logger.debug("xvalidation fold %d/%d" % (i + 1, len(kf)))
             # train
             theta = score_matching_sym(Z[train], lmbda, omega, u)
             
