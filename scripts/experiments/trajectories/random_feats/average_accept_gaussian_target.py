@@ -14,7 +14,7 @@ if __name__ == "__main__":
     Ns = np.sort([50, 100, 200, 500, 1000, 2000, 3000])[::-1]
     print(Ns)
     print(Ds)
-    num_repetitions = 10
+    num_repetitions = 50
     num_steps = 100
     max_steps = 1000
     step_size = .1
