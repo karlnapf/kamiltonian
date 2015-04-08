@@ -43,12 +43,15 @@ class TrajectoryJob(IndependentJob):
         raise NotImplementedError()
     
     @abstractmethod
-    def get_parameter_fname_suffix(self):
-        return "N=%d_m=%d_D=%d" % (self.N, self.m, self.D)
+    def get_parameter_fname_suffix(self, N, m, D):
+        return "N=%d_m=%d_D=%d" % (N, m, D)
     
     def determine_sigma_lmbda(self):
+        # for N>2000, use m=2000
+        m = np.min([self.N, 2000])
+        
         parameter_dir = project_path + os.sep + "xvalidation_parameters"
-        fname = parameter_dir + os.sep + self.get_parameter_fname_suffix() + ".npy"
+        fname = parameter_dir + os.sep + self.get_parameter_fname_suffix(self.N, m, self.D) + ".npy"
         if not os.path.exists(fname):
             logger.info("Learning sigma and lmbda")
             cma_opts = {'tolfun':0.5, 'maxiter':10, 'verb_disp':1}
