@@ -33,7 +33,7 @@ def compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_
             for j in range(num_repetitions):
                 logger.info("%s trajectory, D=%d/%d, N=%d/%d repetition %d/%d" % \
                             (str(job_generator), D, np.max(Ds), N, np.max(Ns), j + 1, num_repetitions))
-                m = N
+                m = np.min([2000, N])
                 job = job_generator(D, N, m)
                 aggregators += [engine.submit_job(job)]
                 time.sleep(0.1)
