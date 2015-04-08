@@ -45,8 +45,8 @@ class TrajectoryJob(IndependentJob):
     @abstractmethod
     def get_parameter_fname_suffix(self):
         # for N>2000, use m=2000
-        m = np.min([self.N, 2000])
-        return "N=%d_m=%d_D=%d" % (self.N, m, self.D)
+        N = m = np.min([self.N, 2000])
+        return "N=%d_m=%d_D=%d" % (N, m, self.D)
     
     def determine_sigma_lmbda(self):
         parameter_dir = project_path + os.sep + "xvalidation_parameters"
