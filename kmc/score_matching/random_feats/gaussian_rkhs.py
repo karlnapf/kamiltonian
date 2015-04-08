@@ -187,7 +187,7 @@ def compute_C(X, omega, u):
     for d in range(D):
         projections[d, :, :] = projection
         projections[d, :, :] *= omega[d, :]
-    
+        
     projections *= -np.sqrt(2. / m)
     
 #     t = time.time()

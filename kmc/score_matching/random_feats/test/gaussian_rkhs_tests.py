@@ -285,14 +285,14 @@ def test_objective_sym_equals_completely_manual_manually():
         # discard regularisation for these internal checks
         J_n = objective(X[n].reshape(1, m), theta, 0, omega, u)
         J_n_2 = 0.5 * np.dot(theta, np.dot(C, theta)) - np.dot(theta, b)
-        assert_allclose(J_n_2, J_n)
-        assert_allclose(J_n_manual, J_n)
+        assert_allclose(J_n_2, J_n, rtol=1e-4)
+        assert_allclose(J_n_manual, J_n, rtol=1e-4)
         
     J_manual /= N
     J_manual += 0.5 * lmbda * np.dot(theta, theta)
     J = objective(X, theta, lmbda, omega, u)
 
-    assert_close(J, J_manual)
+    assert_close(J, J_manual, decimal=5)
 
 def test_objective_sym_equals_completely_manual():
     N = 100
@@ -307,7 +307,7 @@ def test_objective_sym_equals_completely_manual():
     J = objective(X, theta, lmbda, omega, u)
     J_manual = _objective_sym_completely_manual(X, theta, lmbda, omega, u)
      
-    assert_close(J_manual, J)
+    assert_close(J_manual, J, decimal=5)
 
 def test_objective_sym_equals_half_manual():
     N = 100
