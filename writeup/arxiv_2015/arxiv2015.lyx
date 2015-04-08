@@ -181,7 +181,8 @@ Kamiltonian Monte Carlo (KMC)
  rates, but that (ii) does not require target gradients, and that in particular
  (iii) offers substantial mixing improvements in high dimensions.
  We support our claims with theoretical analysis in the form of finite sample
- convergence rates and experimental studies.
+ convergence rates and experimental studies around pseudo-marginal MCMC
+ and ABC methods.
 \end_layout
 
 \begin_layout Paragraph
@@ -611,6 +612,24 @@ key "Andrieu2009a"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+Also cite methods that do similar things, such as 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rasmussen2003"
+
+\end_inset
+
+,
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ChenFoxGuestrin2014"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -3066,13 +3085,13 @@ every
 iteration of the Markov chain.
  To guarantee convergence to the correct stationary distribution, we introduce
  a schedule of vanishing adaptation probabilities 
-\begin_inset Formula $\left\{ \gamma_{t}\right\} _{i=0}^{\infty}$
+\begin_inset Formula $\left\{ a_{t}\right\} _{i=0}^{\infty}$
 \end_inset
 
  such that 
 \begin_inset Formula 
 \[
-\lim_{t\to\infty}\gamma_{t}=0\quad\text{and}\quad\sum_{t=0}^{\infty}\gamma_{t}=\infty,
+\lim_{t\to\infty}a_{t}=0\quad\text{and}\quad\sum_{t=0}^{\infty}a_{t}=\infty,
 \]
 
 \end_inset
@@ -3421,6 +3440,34 @@ Higher dimensional, also compare to plain HMC, (and random walk)
 
 \begin_layout Itemize
 Mushroom as a cool dataset?
+\end_layout
+
+\begin_layout Subsection
+ABC-MCMC example
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Sisson2010"
+
+\end_inset
+
+,
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Meeds2014"
+
+\end_inset
+
+,
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Meeds2015"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
