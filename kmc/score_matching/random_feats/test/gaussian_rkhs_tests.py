@@ -6,10 +6,10 @@ from sklearn.kernel_approximation import RBFSampler
 from kmc.score_matching.random_feats.gaussian_rkhs import feature_map_single, \
     feature_map, feature_map_derivative_d, feature_map_derivative2_d, \
     feature_map_derivatives_loop, feature_map_derivatives2_loop, \
-    feature_map_derivatives2, feature_map_derivatives, compute_b, compute_C, \
+    feature_map_derivatives2, feature_map_derivatives, compute_b, compute_C_memory, \
     feature_map_grad_single, score_matching_sym, \
     _objective_sym_completely_manual, _objective_sym_half_manual, objective, \
-    compute_b_storage
+    compute_b_memory, compute_C
 from kmc.score_matching.random_feats.outer_sum_cython import outer_sum_cython
 import numpy as np
 
@@ -162,7 +162,7 @@ def test_compute_b_storage_1d1n():
     omega = np.array([[2.]])
     d = 0
     b_manual = -feature_map_derivative2_d(X, omega, u, d).flatten()
-    b = compute_b_storage(X, omega, u)
+    b = compute_b_memory(X, omega, u)
     assert_allclose(b_manual, b)
 
 def test_compute_b_storage_1d2n():
@@ -171,7 +171,7 @@ def test_compute_b_storage_1d2n():
     omega = np.array([[2.]])
     d = 0
     b_manual = -np.mean(feature_map_derivative2_d(X, omega, u, d))
-    b = compute_b_storage(X, omega, u)
+    b = compute_b_memory(X, omega, u)
     assert_allclose(b_manual, b)
 
 def test_compute_C_1d1n():
@@ -181,7 +181,7 @@ def test_compute_C_1d1n():
     d = 0
     phi = feature_map_derivative_d(X, omega, u, d).flatten()
     C_manual = np.outer(phi, phi)
-    C = compute_C(X, omega, u)
+    C = compute_C_memory(X, omega, u)
     assert_allclose(C_manual, C)
 
 def test_compute_C_1d2n():
@@ -190,7 +190,7 @@ def test_compute_C_1d2n():
     omega = np.array([[2.]])
     d = 0
     C_manual = np.mean(feature_map_derivative_d(X, omega, u, d) ** 2)
-    C = compute_C(X, omega, u)
+    C = compute_C_memory(X, omega, u)
     assert_allclose(C_manual, C)
 
 def test_score_matching_sym():
@@ -201,8 +201,8 @@ def test_score_matching_sym():
     u = np.random.uniform(0, 2 * np.pi, m)
     X = np.random.randn(N, D)
     
-    C = compute_C(X, omega, u)
-    b = compute_b_storage(X, omega, u)
+    C = compute_C_memory(X, omega, u)
+    b = compute_b_memory(X, omega, u)
     lmbda = 1.
     theta = score_matching_sym(X, lmbda, omega, u)
     theta_manual = np.linalg.solve(C + np.eye(m) * lmbda, b)
@@ -217,8 +217,8 @@ def test_objective_sym_given_b_C():
     X = np.random.randn(N, D)
     lmbda = 1.
     
-    C = compute_C(X, omega, u)
-    b = compute_b_storage(X, omega, u)
+    C = compute_C_memory(X, omega, u)
+    b = compute_b_memory(X, omega, u)
     theta = np.random.randn(m)
     
     J = objective(X, theta, lmbda, omega, u, b, C)
@@ -235,8 +235,8 @@ def test_objective_sym_given_b_C_equals_given_nothing():
     X = np.random.randn(N, D)
     lmbda = 1.
     
-    C = compute_C(X, omega, u)
-    b = compute_b_storage(X, omega, u)
+    C = compute_C_memory(X, omega, u)
+    b = compute_b_memory(X, omega, u)
     theta = np.random.randn(m)
     
     J = objective(X, theta, lmbda, omega, u, b, C)
@@ -277,8 +277,8 @@ def test_objective_sym_equals_completely_manual_manually():
             J_manual += 0.5 * np.dot(theta, np.dot(C_term, theta))
             J_n_manual += 0.5 * np.dot(theta, np.dot(C_term, theta))
         
-        b = compute_b_storage(X[n].reshape(1, m), omega, u)
-        C = compute_C(X[n].reshape(1, m), omega, u)
+        b = compute_b_memory(X[n].reshape(1, m), omega, u)
+        C = compute_C_memory(X[n].reshape(1, m), omega, u)
         assert_allclose(b_manual, b)
         assert_allclose(C_manual, C)
         
@@ -333,8 +333,8 @@ def test_score_matching_sym_returns_min_1d_grid():
     u = np.random.uniform(0, 2 * np.pi, m)
     X = np.random.randn(N, D)
     
-    C = compute_C(X, omega, u)
-    b = compute_b_storage(X, omega, u)
+    C = compute_C_memory(X, omega, u)
+    b = compute_b_memory(X, omega, u)
     lmbda = .001
     theta = score_matching_sym(X, lmbda, omega, u)
     J = objective(X, theta, lmbda, omega, u, b, C)
@@ -362,8 +362,8 @@ def test_score_matching_sym_returns_min_random_search():
     u = np.random.uniform(0, 2 * np.pi, m)
     X = np.random.randn(N, D)
     
-    C = compute_C(X, omega, u)
-    b = compute_b_storage(X, omega, u)
+    C = compute_C_memory(X, omega, u)
+    b = compute_b_memory(X, omega, u)
     lmbda = 1.
     theta = score_matching_sym(X, lmbda, omega, u)
     J = objective(X, theta, lmbda, omega, u, b, C)
@@ -388,7 +388,7 @@ def test_outer_sum_cython():
     
     assert_allclose(C, C_manual)
     
-def test_compute_b_equals_compute_b_storage():
+def test_compute_b_equals_compute_b_memory():
     N = 100
     D = 3
     m = 10
@@ -397,6 +397,17 @@ def test_compute_b_equals_compute_b_storage():
     X = np.random.randn(N, D)
     
     b = compute_b(X, omega, u)
-    b_storage = compute_b_storage(X, omega, u)
+    b_storage = compute_b_memory(X, omega, u)
     assert_allclose(b, b_storage)
 
+def test_compute_C_equals_compute_C_memory():
+    N = 100
+    D = 3
+    m = 10
+    omega = np.random.randn(D, m)
+    u = np.random.uniform(0, 2 * np.pi, m)
+    X = np.random.randn(N, D)
+    
+    C = compute_C(X, omega, u)
+    C_storage = compute_C_memory(X, omega, u)
+    assert_allclose(C, C_storage, rtol=1e-4)

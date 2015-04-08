@@ -120,7 +120,7 @@ def _objective_sym_half_manual(X, theta, lmbda, omega, u):
     J_manual += 0.5 * lmbda * np.dot(theta, theta)
     return J_manual
 
-def compute_b_storage(X, omega, u):
+def compute_b_memory(X, omega, u):
     assert len(X.shape) == 2
     Phi1 = feature_map_derivatives2(X, omega, u)
     return -np.mean(np.sum(Phi1, 0), 0)
@@ -137,7 +137,7 @@ def compute_b(X, omega, u):
         
     return -projections_sum
 
-def compute_C(X, omega, u):
+def compute_C_memory(X, omega, u):
     assert len(X.shape) == 2
     logger.debug("Computing derivatives")
     Phi2 = feature_map_derivatives(X, omega, u)
@@ -174,6 +174,30 @@ def compute_C(X, omega, u):
 
     return C4 / N
 
+def compute_C(X, omega, u):
+    assert len(X.shape) == 2
+    logger.debug("Computing derivatives")
+    m = 1 if np.isscalar(u) else len(u)
+    N = X.shape[0]
+    D = X.shape[1]
+    
+    projections = np.zeros((D, N, m), dtype=np.float32)
+    projection = np.dot(X, omega) + u
+    np.sin(projection, projection)
+    for d in range(D):
+        projections[d, :, :] = projection
+        projections[d, :, :] *= omega[d, :]
+    
+    projections *= -np.sqrt(2. / m)
+    
+#     t = time.time()
+    logger.debug("Computing derivative covariance")
+    Phi2_reshaped = projections.reshape(N * D, m)
+    C4 = np.tensordot(Phi2_reshaped, Phi2_reshaped, [0, 0])
+#     print("tensordot", time.time()-t)
+
+    return C4 / N
+
 def score_matching_sym(X, lmbda, omega, u, b=None, C=None):
     logger.debug("Computing b")
     if b is None:
@@ -181,7 +205,7 @@ def score_matching_sym(X, lmbda, omega, u, b=None, C=None):
     
     logger.debug("Computing C")
     if C is None:
-        C = compute_C(X, omega, u)
+        C = compute_C_memory(X, omega, u)
     
     logger.debug("Linear solve")
     theta = np.linalg.solve(C + lmbda * np.eye(len(C)), b)
@@ -192,7 +216,7 @@ def objective(X, theta, lmbda, omega, u, b=None, C=None):
         b = compute_b(X, omega, u)
         
     if C is None:
-        C = compute_C(X, omega, u)
+        C = compute_C_memory(X, omega, u)
     
     I = np.eye(len(theta))
     return 0.5 * np.dot(theta, np.dot(C + lmbda * I, theta)) - np.dot(theta, b)
