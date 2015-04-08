@@ -179,7 +179,7 @@ Kamiltonian Monte Carlo (KMC)
 \emph default
 , that (i) behaves similarly to HMC in terms of autocorrelation and acceptance
  rates, but that (ii) does not require target gradients, and that in particular
- (iii) offers substantial mixing improvements in high dimensions.
+ (iii) offers substantial mixing improvements in medium dimensions.
  We support our claims with theoretical analysis in the form of finite sample
  convergence rates and experimental studies around pseudo-marginal MCMC
  and ABC methods.
@@ -3271,7 +3271,7 @@ Experiments
 \end_layout
 
 \begin_layout Subsection
-Trajectories in high dimensions
+Stability of trajectories in high dimensions
 \end_layout
 
 \begin_layout Standard
@@ -3283,16 +3283,21 @@ reference "par:illustrative_example"
 
 \end_inset
 
-.
- We use the following two synthetic examples with increasing dimension:
- a standard Gaussian and the Banana described in 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "Haario1999"
-
-\end_inset
-
-, both with standard Gaussian momentum.
+, and its relationship to dimension and number of data.
+ This quantifies how much the level sets of the true and the kernel induced
+ Hamiltonian differ -- deviations will damage acceptance probability and
+ therefore the efficiency of the sampler.
+ To purely focus on the effect of dimensionality, and to avoid any artifacts
+ induced by complicated models or MCMC adaptation schemes, we use a synthetic
+ standard Gaussian target (with oracle samples) and standard Gaussian momentum.
+ Note that we do not run MCMC yet, but only average acceptance probabilities
+ along multiple trajectories.
+ While we for now use 'oracle' samples, i.e.
+ we fit the approximate infinite exponential family estimator on samples
+ from the true density, those will not be available in the MCMC algorithm.
+ As tail exploration is harder to quantify, we postpone analysis to actual
+ sampling experiments.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -3303,53 +3308,46 @@ reference "fig:kmc_trajectories_mean_acceptance"
 
 \end_inset
 
- shows the average acceptance probability along a trajectory as a function
- of dimension of 
-\begin_inset Formula $p$
-\end_inset
-
- and 
-\begin_inset Formula $q$
-\end_inset
-
- in the same spirit as 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Figure 3"
-key "Betancourt2015"
-
-\end_inset
-
-.
- Error bars are obtained over 
+ shows the average acceptance probability along 
 \begin_inset Formula $100$
 \end_inset
 
- trials in each of which we fit the infinite exponential family estimator
- on 
-\begin_inset Formula $n=500$
+ trials with each different data as a function of dimension and data used
+ for the approximate infinite exponential family estimator.
+ In each trial, we fit the infinite exponential family estimator on 
+\begin_inset Formula $n\in\{50,\dots,10000\}$
 \end_inset
 
- randomly sampled data and then run a random number of leapfrog steps in
- 
+ oracle samples in dimension 
+\begin_inset Formula $d\in\{2^{0},2^{1},\dots,2^{7}\}$
+\end_inset
+
+ and then run a random number of leapfrog steps in 
 \begin_inset Formula $[100,1000]$
 \end_inset
 
- on both true and kernel induced flow.
- The plot shows that while the spread of the acceptance rate gets worse
- in high dimensions, most of the time, it is close to the true Hamiltonian
- ground truth.
- Note that in order to ensure that the kernel induced Hamiltonian flow cannot
- 
-\begin_inset Quotes eld
+ with a step-size of 
+\begin_inset Formula $\epsilon=0.1$
 \end_inset
 
-cheat
-\begin_inset Quotes erd
+ on the kernel induced flow.
+ Note that we set the number of random Fourier basis functions as 
+\begin_inset Formula $m=\min(n,2000)$
 \end_inset
 
- via oscillating in small areas of the space, we monitored the volume of
- the levels sets and ensured they are roughly equal.
+.
+ Plain HMC trajectories achieve more than 95% acceptance over all dimensions.
+ This plot clearly shows in which regime the kernel induced Hamiltonian
+ flow works and where it is not accurate enough for MCMC.
+ In particular, the number of data needed to maintain a high acceptance
+ probability grows exponentially with dimension.
+ This means that the kernel induced Hamiltonian flow is in particular useful
+ in low to medium dimensions, where computational costs do not explode.
+ However, in dimensions up to 
+\begin_inset Formula $d\approx100$
+\end_inset
+
+, we are able to obtain acceptance probabilities comparable to plain HMC.
 \end_layout
 
 \begin_layout Standard
@@ -3361,7 +3359,29 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figures/average_accept_gaussian_target.eps
+	filename figures/average_accept_gaussian_target_kmc.eps
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/average_accept_gaussian_target_data_needs_kmc.eps
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/average_accept_gaussian_target_N=2000.eps
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/average_accept_gaussian_target_D=16.eps
 
 \end_inset
 
@@ -3379,21 +3399,65 @@ name "fig:kmc_trajectories_mean_acceptance"
 \end_inset
 
 Behaviour of kernel induced Hamiltonian flow in high dimensions.
- We show quantiles of the distribution of the average acceptance probability
- along a simulated trajectory (true Hamiltonian flow has negligible variance).
- While worst-case acceptance probability of the kernel induced flow suffers
- in high dimensions, the median acceptance probability is remarkably high
- and close to the true Hamiltonian ground truth.
+ For varying number of oracle samples 
+\begin_inset Formula $n$
+\end_inset
+
+ in dimension 
+\begin_inset Formula $d$
+\end_inset
+
+, we shoud the average acceptance probability averaged over 100 trials.
  
 \series bold
-Left:
+Top left:
 \series default
- Gaussian.
+ As a function of
+\series bold
+ 
+\begin_inset Formula $n$
+\end_inset
+
+
+\series default
+ and 
+\begin_inset Formula $d$
+\end_inset
+
+.
  
 \series bold
-Right:
+Top right: 
 \series default
- Banana.
+Data needed to reach a certain acceptance probability in a certain dimension
+\series bold
+ Bottom: 
+\series default
+Acceptance probability with error bars as a function in
+\series bold
+ 
+\series default
+number of oracle samples 
+\series bold
+
+\begin_inset Formula $n$
+\end_inset
+
+ 
+\series default
+(
+\series bold
+left
+\series default
+) and dimension 
+\begin_inset Formula $d$
+\end_inset
+
+ (
+\series bold
+right
+\series default
+), and plain HMC trajectory acceptance probability.
 \end_layout
 
 \end_inset
