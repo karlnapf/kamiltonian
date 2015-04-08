@@ -205,7 +205,7 @@ def score_matching_sym(X, lmbda, omega, u, b=None, C=None):
     
     logger.debug("Computing C")
     if C is None:
-        C = compute_C_memory(X, omega, u)
+        C = compute_C(X, omega, u)
     
     logger.debug("Linear solve")
     theta = np.linalg.solve(C + lmbda * np.eye(len(C)), b)
@@ -216,7 +216,7 @@ def objective(X, theta, lmbda, omega, u, b=None, C=None):
         b = compute_b(X, omega, u)
         
     if C is None:
-        C = compute_C_memory(X, omega, u)
+        C = compute_C(X, omega, u)
     
     I = np.eye(len(theta))
     return 0.5 * np.dot(theta, np.dot(C + lmbda * I, theta)) - np.dot(theta, b)
