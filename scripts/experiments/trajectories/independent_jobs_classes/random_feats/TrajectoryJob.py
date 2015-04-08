@@ -125,8 +125,8 @@ class TrajectoryJob(IndependentJob):
         
         # run second integrator for same amount of steps
         steps_taken = len(Qs)
-        logger.info("%d steps taken" % steps_taken)
         Qs_est, Ps_est = leapfrog(q0, dlogq_est, p0, self.dlogp, self.step_size, steps_taken)
+        logger.info("%d steps taken" % steps_taken)
         
         logger.info("Computing average acceptance probabilities")
         log_acc = compute_log_accept_pr(q0, p0, Qs, Ps, self.logq, self.logp)
