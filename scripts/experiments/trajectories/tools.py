@@ -8,7 +8,6 @@ from independent_jobs.tools.FileSystem import FileSystem
 
 from kmc.tools.Log import logger
 import numpy as np
-from scripts.experiments.trajectories.plots import plot_trajectory_result_mean_median_fixed_N
 
 
 def compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_size,
@@ -20,7 +19,7 @@ def compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_
         johns_slurm_hack = "#SBATCH --partition=intel-ivy,wrkstn,compute"
         folder = os.sep + os.sep.join(["nfs", "data3", "ucabhst", fname_base])
         batch_parameters = BatchClusterParameters(foldername=folder, max_walltime=1 * 60 * 60,
-                                                  resubmit_on_timeout=False, memory=2,
+                                                  resubmit_on_timeout=False, memory=10,
                                                   parameter_prefix=johns_slurm_hack,
                                                   nodes=6)
         engine = SlurmComputationEngine(batch_parameters, check_interval=1,
