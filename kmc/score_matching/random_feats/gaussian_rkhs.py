@@ -133,6 +133,7 @@ def compute_b(X, omega, u):
     projections_sum = np.zeros(m)
     Phi2 = feature_map(X, omega, u)
     for d in range(D):
+        logger.debug("Dimension %d/%d" % (d, D))
         projections_sum += np.mean(-Phi2 * (omega[d, :] ** 2), 0)
         
     return -projections_sum
@@ -186,6 +187,7 @@ def compute_C(X, omega, u):
     projection *= -np.sqrt(2. / m)
     temp = np.zeros((N, m))
     for d in range(D):
+        logger.debug("Dimension %d/%d" % (d, D))
         temp = -projection * omega[d, :]
         C += np.tensordot(temp, temp, [0, 0])
 
