@@ -18,11 +18,11 @@ if __name__ == "__main__":
     sigma_q = 1.
     sigma_p = 1.
     Ds = np.sort(2 ** np.arange(8))[::-1]
-    Ns = np.sort([50, 100, 200, 500, 1000, 2000, 3000, 5000, 8000, 10000])[::-1]
+    Ns = np.sort([50, 100, 200, 500, 1000, 2000, 3000, 5000, 8000, 10000, 20000, 50000, 100000])[::-1]
     
     print(Ns)
     print(Ds)
-    num_repetitions = 50
+    num_repetitions = 1
     num_steps = 100
     max_steps = 1000
     step_size = .1
