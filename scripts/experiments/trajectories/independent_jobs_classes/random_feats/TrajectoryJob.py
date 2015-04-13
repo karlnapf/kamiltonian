@@ -57,6 +57,9 @@ class TrajectoryJob(IndependentJob):
         return "N=%d_m=%d_D=%d" % (N, m, self.D)
     
     def determine_sigma_lmbda(self):
+        return 0.5, 0.00008
+    
+    def _determine_sigma_lmbda(self):
         parameter_dir = project_path + os.sep + "xvalidation_parameters"
         fname = parameter_dir + os.sep + self.get_parameter_fname_suffix() + ".npy"
         if not os.path.exists(fname):
