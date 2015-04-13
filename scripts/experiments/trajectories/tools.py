@@ -18,10 +18,9 @@ def compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_
     else:
         johns_slurm_hack = "#SBATCH --partition=intel-ivy,wrkstn,compute"
         folder = os.sep + os.sep.join(["nfs", "data3", "ucabhst", fname_base])
-        batch_parameters = BatchClusterParameters(foldername=folder, max_walltime=1 * 60 * 60,
-                                                  resubmit_on_timeout=False, memory=4,
-                                                  parameter_prefix=johns_slurm_hack,
-                                                  nodes=6)
+        batch_parameters = BatchClusterParameters(foldername=folder,
+                                                  resubmit_on_timeout=False,
+                                                  parameter_prefix=johns_slurm_hack)
         engine = SlurmComputationEngine(batch_parameters, check_interval=1,
                                 do_clean_up=True)
     
