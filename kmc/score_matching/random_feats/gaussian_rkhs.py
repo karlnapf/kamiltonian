@@ -176,27 +176,20 @@ def compute_C_memory(X, omega, u):
 
 def compute_C(X, omega, u):
     assert len(X.shape) == 2
-    logger.debug("Computing derivatives")
     m = 1 if np.isscalar(u) else len(u)
     N = X.shape[0]
     D = X.shape[1]
     
-    projections = np.zeros((D, N, m), dtype=np.float32)
+    C = np.zeros((m, m))
     projection = np.dot(X, omega) + u
     np.sin(projection, projection)
+    projection *= -np.sqrt(2. / m)
+    temp = np.zeros((N, m))
     for d in range(D):
-        projections[d, :, :] = projection
-        projections[d, :, :] *= omega[d, :]
-        
-    projections *= -np.sqrt(2. / m)
-    
-#     t = time.time()
-    logger.debug("Computing derivative covariance")
-    Phi2_reshaped = projections.reshape(N * D, m)
-    C4 = np.tensordot(Phi2_reshaped, Phi2_reshaped, [0, 0])
-#     print("tensordot", time.time()-t)
+        temp = -projection * omega[d, :]
+        C += np.tensordot(temp, temp, [0, 0])
 
-    return C4 / N
+    return C / N
 
 def score_matching_sym(X, lmbda, omega, u, b=None, C=None):
     logger.debug("Computing b")
