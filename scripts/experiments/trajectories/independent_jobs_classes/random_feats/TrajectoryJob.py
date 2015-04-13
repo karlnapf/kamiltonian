@@ -107,7 +107,7 @@ class TrajectoryJob(IndependentJob):
         gamma = 0.5 * (sigma ** 2)
         omega, u = sample_basis(D, self.m, gamma)
         
-        logger.info("Estimate density in RKHS")
+        logger.info("Estimate density in RKHS, N=%d, m=%d" % (self.N, self.m))
         theta = score_matching_sym(self.Z, lmbda, omega, u)
         
 #         logger.info("Computing objective function")

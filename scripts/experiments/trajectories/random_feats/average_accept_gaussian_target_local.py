@@ -18,7 +18,7 @@ if __name__ == "__main__":
     sigma_q = 1.
     sigma_p = 1.
     Ds = np.sort(2 ** np.arange(8))[::-1]
-    Ns = np.sort([50, 100, 200, 500, 1000, 2000, 3000, 5000, 8000, 10000, 20000, 50000, 100000])[::-1]
+    Ns = np.sort([50, 100, 200, 500, 1000, 2000, 5000, 10000])[::-1]
     
     print(Ns)
     print(Ds)
@@ -38,7 +38,7 @@ if __name__ == "__main__":
             step_size, max_steps, compute_local=True)
 
 
-    fname = modulename + ".npy"
+    fname = modulename + ".pkl"
     fname = fname.replace("_local", "")
     plot_trajectory_result_heatmap(fname)
       
