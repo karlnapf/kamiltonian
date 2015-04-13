@@ -24,6 +24,7 @@ def compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_
         engine = SlurmComputationEngine(batch_parameters, check_interval=1,
                                         do_clean_up=True)
         engine.max_jobs_in_queue = 1000
+        engine.store_fire_and_forget = True
     
     # fixed order of aggregators
     aggregators = []
