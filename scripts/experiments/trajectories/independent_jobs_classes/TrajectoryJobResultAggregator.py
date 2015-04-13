@@ -1,7 +1,10 @@
 
 
-from independent_jobs.aggregators.JobResultAggregator import JobResultAggregator
+from abc import abstractmethod
+import os
 
+from independent_jobs.aggregators.JobResultAggregator import JobResultAggregator
+import numpy as np
 
 class TrajectoryJobResultAggregator(JobResultAggregator):
     def __init__(self):
@@ -18,4 +21,22 @@ class TrajectoryJobResultAggregator(JobResultAggregator):
     
     def clean_up(self):
         pass
+    
+    @abstractmethod
+    def store_fire_and_forget_result(self, folder, job_name):
+        D = self.result.D
+        N = self.result.N
+        
+        fname = folder + os.sep + "N=%d_D=%d_%s" % (N, D,
+                                                    job_name +  ".csv")
+        line = np.array([
+                            self.D,
+                            self.N,
+                            self.acc_mean,
+                            self.acc_est_mean,
+                            self.vol,
+                            self.vol_est,
+                            self.steps_taken
+                         ])
+        np.savetxt(fname, line)
 
