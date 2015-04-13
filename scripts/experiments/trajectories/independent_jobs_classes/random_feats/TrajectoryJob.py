@@ -30,11 +30,14 @@ class TrajectoryJob(IndependentJob):
         
         # job ressources
         if N < 2000:
-            self.walltime = 1
+            self.walltime = 1 * 60 * 60
             self.memory = 2
+        elif N <= 10000:
+            self.walltime = 24 * 60 * 60
+            self.memory = 3
         else:
-            self.walltime = 24
-            self.memory = 4
+            self.walltime = 72 * 60 * 60
+            self.memory = 8
         
         self.N = N
         self.D = D
