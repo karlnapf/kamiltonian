@@ -172,7 +172,7 @@ class TrajectoryJob(IndependentJob):
             self.compute_trajectory(random_start_state)
         
         logger.info("Submitting results to aggregator")
-        result = TrajectoryJobResult(acc_mean, acc_est_mean, log_det,
+        result = TrajectoryJobResult(self.D, self.N, acc_mean, acc_est_mean, log_det,
                                      log_det_est, steps_taken, random_start_state)
         self.aggregator.submit_result(result)
         
