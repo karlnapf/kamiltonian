@@ -29,7 +29,7 @@ class TrajectoryJob(IndependentJob):
         IndependentJob.__init__(self, TrajectoryJobResultAggregator())
         
         # job ressources
-        if self.N < 2000:
+        if N < 2000:
             self.walltime = 1
             self.memory = 2
         else:
