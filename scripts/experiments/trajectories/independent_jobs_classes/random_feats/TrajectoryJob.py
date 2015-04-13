@@ -28,6 +28,14 @@ class TrajectoryJob(IndependentJob):
                  sigma0=0.5, lmbda0=0.0001):
         IndependentJob.__init__(self, TrajectoryJobResultAggregator())
         
+        # job ressources
+        if self.N < 2000:
+            self.walltime = 1
+            self.memory = 2
+        else:
+            self.walltime = 24
+            self.memory = 4
+        
         self.N = N
         self.D = D
         self.m = m
