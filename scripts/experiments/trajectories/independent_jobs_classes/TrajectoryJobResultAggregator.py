@@ -30,13 +30,13 @@ class TrajectoryJobResultAggregator(JobResultAggregator):
         fname = folder + os.sep + "N=%d_D=%d_%s" % (N, D,
                                                     job_name +  ".csv")
         line = np.array([
-                            self.D,
-                            self.N,
-                            self.acc_mean,
-                            self.acc_est_mean,
-                            self.vol,
-                            self.vol_est,
-                            self.steps_taken
+                            self.result.D,
+                            self.result.N,
+                            self.result.acc_mean,
+                            self.result.acc_est_mean,
+                            self.result.vol,
+                            self.result.vol_est,
+                            self.result.steps_taken
                          ])
         np.savetxt(fname, line)
 
