@@ -62,17 +62,29 @@ def compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_
                 log_dets_est[j, i, k] = result.vol_est
                 avg_steps_taken[j, i, k] = result.steps_taken
             
-    with open(fname_base + ".npy", 'w+') as f:
-        np.savez(f, Ds=Ds, Ns=Ns, avg_accept=avg_accept, avg_accept_est=avg_accept_est,
-                 vols=log_dets, vols_est=log_dets_est, steps_taken=avg_steps_taken)
+    with open(fname_base + ".csv", 'a+') as f:
+        for i in range(len(Ds)):
+            for k in range(len(Ns)):
+                for j in range(num_repetitions):
+                    line = np.array([
+                                     Ds[i],
+                                     Ns[k],
+                                     avg_accept[j, i, k],
+                                     avg_accept_est[j, i, k],
+                                     log_dets[j, i, k],
+                                     log_dets_est[j, i, k],
+                                     avg_steps_taken[j, i, k],
+                                     ])
+                    
+                    f.write(" ".join(map(str, line)) + os.linesep)
 
 def process(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps,
             step_size, max_steps, compute_local=False):
-    fname = fname_base + ".npy"
+    fname = fname_base + ".csv"
     # don't recompute if a file exists
     do_compute = False
     if os.path.exists(fname):
-        replace = int(raw_input("Replace " + fname + "? "))
+        replace = int(raw_input("Append to " + fname + "? "))
     
         if replace:
             do_compute = True
