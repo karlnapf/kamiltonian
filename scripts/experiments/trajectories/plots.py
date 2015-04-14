@@ -130,6 +130,16 @@ def plot_trajectory_result_heatmap(fname):
     fname_base = fname.split(".")[-2]
     plt.savefig(fname_base + "_kmc.eps", axis_inches='tight')
 
+def plot_repetitions_heatmap(fname):
+    results = result_dict_from_file(fname)
+    # acc_mean, acc_est_mean, vol, vol_est, steps_taken
+    fun = lambda x: x.shape[0]
+    Ds, Ns, repetitions = gen_sparse_2d_array_from_dict(results, fun, default_value=0)
+    plt.figure()
+    plot_acceptance_heatmap(Ns, Ds, repetitions)
+    plt.xscale('log')
+    plt.title("Repetitions")
+
 def plot_trajectory_result_necessary_data(fname, accs_at_least=[0.5]):
     results = result_dict_from_file(fname)
     fun = lambda x: np.mean(x[:, 1])
