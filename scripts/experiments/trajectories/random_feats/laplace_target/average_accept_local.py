@@ -9,7 +9,7 @@ from scripts.experiments.trajectories.independent_jobs_classes.random_feats.Lapl
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
 
 if __name__ == "__main__":
-    logger.setLevel(20)
+    logger.setLevel(10)
     scale_q = 1.
     sigma_p = 1.
     Ds = np.sort(2 ** np.arange(8))[::-1]
