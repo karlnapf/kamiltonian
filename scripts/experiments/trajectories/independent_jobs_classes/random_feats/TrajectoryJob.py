@@ -25,7 +25,8 @@ class TrajectoryJob(IndependentJob):
     def __init__(self,
                  N, D, m, sigma_p, num_steps,
                  step_size, max_steps=None,
-                 sigma0=0.5, lmbda0=0.0001):
+                 sigma0=0.5, lmbda0=0.0001,
+                 learn_parameters=False):
         IndependentJob.__init__(self, TrajectoryJobResultAggregator())
         
         # job ressources
@@ -48,6 +49,8 @@ class TrajectoryJob(IndependentJob):
         self.num_steps = num_steps
         self.step_size = step_size
         self.max_steps = max_steps
+        
+        self.learn_parameters = learn_parameters
     
     @abstractmethod
     def set_up(self):
@@ -105,7 +108,10 @@ class TrajectoryJob(IndependentJob):
         self.set_up()
         
         # load or learn parameters
-        sigma, lmbda = self.determine_sigma_lmbda()
+        if self.learn_parameters:
+            sigma, lmbda = self._determine_sigma_lmbda()
+        else:
+            sigma, lmbda = self.determine_sigma_lmbda()
         
         logger.info("Using sigma: %.2f, lmbda=%.6f" % (sigma, lmbda))
         
