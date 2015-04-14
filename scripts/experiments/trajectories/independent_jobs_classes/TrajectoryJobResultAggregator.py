@@ -28,7 +28,7 @@ class TrajectoryJobResultAggregator(JobResultAggregator):
         N = self.result.N
         
         fname = folder + os.sep + "N=%d_D=%d_%s" % (N, D,
-                                                    job_name +  ".csv")
+                                                    job_name + ".csv")
         line = np.array([
                             self.result.D,
                             self.result.N,
@@ -42,3 +42,34 @@ class TrajectoryJobResultAggregator(JobResultAggregator):
         with open(fname, 'w+') as f:
             f.write(" ".join(map(str, line)))
 
+def result_dict_from_file(fname):
+    """
+    Assumes a file with lots of lines as the one created by
+    store_fire_and_forget_result and produces a dictionary with (D,N) as key
+    and a Rx5 array with experimental results for each of the R repetitions
+    """
+    results = np.loadtxt(fname)
+    
+    result_dict = {}
+    for i in range(len(results)):
+        D = np.int(results[i, 0])
+        N = np.int(results[i, 1])
+        result_dict[(D, N)] = []
+
+    for i in range(len(results)):
+        D = np.int(results[i, 0])
+        N = np.int(results[i, 1])
+        acc_mean = results[i, 2]
+        acc_est_mean = results[i, 3]
+        vol = results[i, 4]
+        vol_est = results[i, 5]
+        steps_taken = results[i, 6]
+        
+        result_dict[(D, N)].append([acc_mean, acc_est_mean, vol, vol_est, steps_taken])
+    
+    for i in range(len(results)):
+        D = np.int(results[i, 0])
+        N = np.int(results[i, 1])
+        result_dict[(D, N)] = np.asarray(result_dict[(D, N)])
+    
+    return result_dict
