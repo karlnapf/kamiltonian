@@ -1,34 +1,41 @@
+import matplotlib
+
 from kmc.tools.Log import logger
 from kmc.tools.latex_plot_init import plt
 import numpy as np
+from scripts.experiments.trajectories.independent_jobs_classes.TrajectoryJobResultAggregator import result_dict_from_file
 
 
-def plot_trajectory_result_mean_median_fixed_N(fname, N):
-    with open(fname, 'r') as f:
-        # created as: avg_accept = np.zeros((num_repetitions, len(Ds), len(Ns)))
-        results = np.load(f)
-        Ns = results['Ns']
-        if not N in Ns:
-            raise ValueError("Provided N (%d) is not in experiment" % N)
-        
-        N_idx = np.where(Ns == N)[0][0]
-        Ds = results["Ds"]
-        avg_accept = results["avg_accept"][:, :, N_idx]
-        avg_accept_est = results["avg_accept_est"][:, :, N_idx]
-        vols = results["vols"][:, :, N_idx]
-        vols_est = results["vols_est"][:, :, N_idx]
+def plot_trajectory_result_mean_fixed_N(fname, N):
+    results = result_dict_from_file(fname)
+    # acc_mean, acc_est_mean, vol, vol_est, steps_taken
+    fun = lambda x: np.mean(x[:, 1])
+    Ds, Ns, avg_accept_est_mean = gen_sparse_2d_array_from_dict(results, fun)
+    fun = lambda x: np.mean(x[:, 0])
+    _, _, avg_accept_mean = gen_sparse_2d_array_from_dict(results, fun)
+    
+    fun = lambda x: np.percentile(x[:, 1], 25)
+    _, _, avg_accept_est_lower_25 = gen_sparse_2d_array_from_dict(results, fun)
+    fun = lambda x: np.percentile(x[:, 1], 75)
+    _, _, avg_accept_est_upper_25 = gen_sparse_2d_array_from_dict(results, fun)
+    
+    fun = lambda x: np.percentile(x[:, 1], 5)
+    _, _, avg_accept_est_lower_5 = gen_sparse_2d_array_from_dict(results, fun)
+    fun = lambda x: np.percentile(x[:, 1], 95)
+    _, _, avg_accept_est_upper_95 = gen_sparse_2d_array_from_dict(results, fun)
+    
+    N_ind = np.where(Ns == N)[0][0]
     
     plt.figure()
-    plt.plot(Ds, np.median(avg_accept, 0), 'r')
-    plt.plot(Ds, np.median(avg_accept_est, 0), 'b')
-    plt.plot(Ds, np.percentile(avg_accept_est, 25, 0), 'b-.')
-    plt.plot(Ds, np.percentile(avg_accept_est, 5, 0), color="grey")
-    plt.plot(Ds, np.percentile(avg_accept_est, 95, 0), color="grey")
-    plt.fill_between(Ds, np.percentile(avg_accept_est, 5, 0),
-                     np.percentile(avg_accept_est, 95, 0),
+    plt.plot(Ds, avg_accept_mean[:, N_ind], 'r')
+    plt.plot(Ds, avg_accept_est_mean[:, N_ind], 'b')
+    plt.plot(Ds, avg_accept_est_lower_25[:, N_ind], 'b-.')
+    plt.plot(Ds, avg_accept_est_lower_5[:, N_ind], color="grey")
+    plt.plot(Ds, avg_accept_est_upper_95[:, N_ind], color="grey")
+    plt.fill_between(Ds, avg_accept_est_lower_5[:, N_ind],
+                     avg_accept_est_upper_95[:, N_ind],
                      color="grey", alpha=.5)
-    plt.plot(Ds, np.percentile(avg_accept_est, 75, 0), 'b-.')
-    plt.plot(Ds, np.median(avg_accept, 0), 'r')
+    plt.plot(Ds, avg_accept_est_upper_25[:, N_ind], 'b-.')
     
     plt.xscale("log")
     plt.grid(True)
@@ -41,33 +48,37 @@ def plot_trajectory_result_mean_median_fixed_N(fname, N):
     plt.legend(["HMC", "KMC median", "KMC 25\%-75\%", "KMC 5\%-95\%"], loc="lower left")
     fname_base = fname.split(".")[-2]
     plt.savefig(fname_base + "_N=%d.eps" % N, axis_inches='tight')
+
+def plot_trajectory_result_mean_fixed_D(fname, D):
+    results = result_dict_from_file(fname)
+    # acc_mean, acc_est_mean, vol, vol_est, steps_taken
+    fun = lambda x: np.mean(x[:, 1])
+    Ds, Ns, avg_accept_est_mean = gen_sparse_2d_array_from_dict(results, fun)
+    fun = lambda x: np.mean(x[:, 0])
+    _, _, avg_accept_mean = gen_sparse_2d_array_from_dict(results, fun)
     
-def plot_trajectory_result_mean_median_fixed_D(fname, D):
-    with open(fname, 'r') as f:
-        # created as: avg_accept = np.zeros((num_repetitions, len(Ds), len(Ns)))
-        results = np.load(f)
-        Ns = results['Ns']
-        Ds = results["Ds"]
-        if not D in Ds:
-            raise ValueError("Provided D (%d) is not in experiment" % D)
-        
-        D_idx = np.where(Ds == D)[0][0]
-        avg_accept = results["avg_accept"][:, D_idx, :]
-        avg_accept_est = results["avg_accept_est"][:, D_idx, :]
-        vols = results["vols"][:, D_idx, :]
-        vols_est = results["vols_est"][:, D_idx, :]
+    fun = lambda x: np.percentile(x[:, 1], 25)
+    _, _, avg_accept_est_lower_25 = gen_sparse_2d_array_from_dict(results, fun)
+    fun = lambda x: np.percentile(x[:, 1], 75)
+    _, _, avg_accept_est_upper_25 = gen_sparse_2d_array_from_dict(results, fun)
+    
+    fun = lambda x: np.percentile(x[:, 1], 5)
+    _, _, avg_accept_est_lower_5 = gen_sparse_2d_array_from_dict(results, fun)
+    fun = lambda x: np.percentile(x[:, 1], 95)
+    _, _, avg_accept_est_upper_95 = gen_sparse_2d_array_from_dict(results, fun)
+    
+    D_ind = np.where(Ds == D)[0][0]
     
     plt.figure()
-    plt.plot(Ns, np.median(avg_accept, 0), 'r')
-    plt.plot(Ns, np.median(avg_accept_est, 0), 'b')
-    plt.plot(Ns, np.percentile(avg_accept_est, 25, 0), 'b-.')
-    plt.plot(Ns, np.percentile(avg_accept_est, 5, 0), color="grey")
-    plt.plot(Ns, np.percentile(avg_accept_est, 95, 0), color="grey")
-    plt.fill_between(Ns, np.percentile(avg_accept_est, 5, 0),
-                     np.percentile(avg_accept_est, 95, 0),
+    plt.plot(Ns, avg_accept_mean[D_ind, :], 'r')
+    plt.plot(Ns, avg_accept_est_mean[D_ind, :], 'b')
+    plt.plot(Ns, avg_accept_est_lower_25[D_ind, :], 'b-.')
+    plt.plot(Ns, avg_accept_est_lower_5[D_ind, :], color="grey")
+    plt.plot(Ns, avg_accept_est_upper_95[D_ind, :], color="grey")
+    plt.fill_between(Ns, avg_accept_est_lower_5[D_ind, :],
+                     avg_accept_est_upper_95[D_ind, :],
                      color="grey", alpha=.5)
-    plt.plot(Ns, np.percentile(avg_accept_est, 75, 0), 'b-.')
-    plt.plot(Ns, np.median(avg_accept, 0), 'r')
+    plt.plot(Ns, avg_accept_est_upper_25[D_ind, :], 'b-.')
     
     plt.xscale("log")
     plt.grid(True)
@@ -80,9 +91,13 @@ def plot_trajectory_result_mean_median_fixed_D(fname, D):
 #     plt.legend(["HMC", "KMC median", "KMC 25\%-75\%", "KMC 5\%-95\%"], loc="lower left")
     fname_base = fname.split(".")[-2]
     plt.savefig(fname_base + "_D=%d.eps" % D, axis_inches='tight')
-
+    
 def plot_acceptance_heatmap(Ns, Ds, acc):
-    plt.pcolor(Ns, Ds, acc)
+    masked_array = np.ma.array (acc, mask=np.isnan(acc))
+    cmap = matplotlib.cm.jet
+    cmap.set_bad('w', 1.)
+    
+    plt.pcolor(Ns, Ds, masked_array, cmap=cmap)
     plt.yscale("log")
     plt.xlim([np.min(Ns), np.max(Ns)])
     plt.ylim([np.min(Ds), np.max(Ds)])
@@ -90,14 +105,25 @@ def plot_acceptance_heatmap(Ns, Ds, acc):
     plt.ylabel(r"$d$")
     plt.colorbar()
 
-def plot_trajectory_result_heatmap(fname):
-    with open(fname, 'r') as f:
-        # created as: avg_accept = np.zeros((num_repetitions, len(Ds), len(Ns)))
-        results = np.load(f)
-        Ns = results['Ns']
-        Ds = results["Ds"]
-        avg_accept_est = np.mean(results["avg_accept_est"], 0)
+def gen_sparse_2d_array_from_dict(dictionary, fun, default_value=np.nan):
+    assert len(dictionary.keys()[0]) is 2
     
+    Ds = np.sort(np.unique(np.array([D for (D, _) in dictionary.keys()])))
+    Ns = np.sort(np.unique(np.array([N for (_, N) in dictionary.keys()])))
+    
+    a = np.zeros((len(Ds), len(Ns))) + default_value
+    for (D, N), v in dictionary.items():
+        D_ind = np.where(Ds == D)[0][0]
+        N_ind = np.where(Ns == N)[0][0]
+        a[D_ind, N_ind] = fun(v)
+    
+    return Ds, Ns, a
+
+def plot_trajectory_result_heatmap(fname):
+    results = result_dict_from_file(fname)
+    # acc_mean, acc_est_mean, vol, vol_est, steps_taken
+    fun = lambda x: np.mean(x[:, 1])
+    Ds, Ns, avg_accept_est = gen_sparse_2d_array_from_dict(results, fun)
     plt.figure()
     plot_acceptance_heatmap(Ns, Ds, avg_accept_est)
     plt.xscale('log')
@@ -105,20 +131,16 @@ def plot_trajectory_result_heatmap(fname):
     plt.savefig(fname_base + "_kmc.eps", axis_inches='tight')
 
 def plot_trajectory_result_necessary_data(fname, accs_at_least=[0.5]):
-    with open(fname, 'r') as f:
-        # created as: avg_accept = np.zeros((num_repetitions, len(Ds), len(Ns)))
-        results = np.load(f)
-        Ns = results['Ns']
-        Ds = results["Ds"]
-        avg_accept_est = np.mean(results["avg_accept_est"], 0)
-    
+    results = result_dict_from_file(fname)
+    fun = lambda x: np.mean(x[:, 1])
+    Ds, Ns, avg_accept_est = gen_sparse_2d_array_from_dict(results, fun)
     
     plt.figure()
     for acc_at_least in accs_at_least:
         N_at_least = np.zeros(len(Ds))
         for i, D in enumerate(Ds):
-            w = np.where(avg_accept_est[i,:]>acc_at_least)[0]
-            if len(w)>0:
+            w = np.where(avg_accept_est[i, :] > acc_at_least)[0]
+            if len(w) > 0:
                 N_at_least[i] = np.min(Ns[w])
                 logger.info("%.2f acc. for D=%d at N=%d" % (acc_at_least, D, N_at_least[i]))
             else:
@@ -126,7 +148,7 @@ def plot_trajectory_result_necessary_data(fname, accs_at_least=[0.5]):
             
         plt.plot(Ds, N_at_least)
     plt.yscale('log')
-    plt.xscale('log')
+#     plt.xscale('log')
     
     plt.legend(["%.2f acc." % acc_at_least for acc_at_least in accs_at_least], loc="lower right")
     plt.grid(True)
