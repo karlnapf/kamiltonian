@@ -38,5 +38,7 @@ class TrajectoryJobResultAggregator(JobResultAggregator):
                             self.result.vol_est,
                             self.result.steps_taken
                          ])
-        np.savetxt(fname, line)
+        
+        with open(fname, 'w+') as f:
+            f.write(" ".join(map(str, line)))
 
