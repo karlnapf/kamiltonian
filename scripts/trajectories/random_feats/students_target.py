@@ -1,4 +1,5 @@
 from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
+from kmc.densities.student import log_student_pdf
 from kmc.score_matching.random_feats.estimator import log_pdf_estimate, \
     log_pdf_estimate_grad
 from kmc.score_matching.random_feats.gaussian_rkhs import feature_map, \
@@ -7,7 +8,7 @@ from kmc.tools.Log import logger
 import matplotlib.pyplot as plt
 import numpy as np
 from scripts.tools.plotting import plot_kamiltonian_dnyamics
-from kmc.densities.laplace import log_laplace_pdf
+
 
 logger.setLevel(10)
 
@@ -16,17 +17,17 @@ while True:
     D = 2
     
     # true target log density
-    scale_q = 1.
-    dlogq = lambda x: log_laplace_pdf(x, scale_q, True)
-    logq = lambda x: log_laplace_pdf(x, scale_q, False)
+    nu = 1.  # degrees of freedom
+    dlogq = lambda x: log_student_pdf(x, nu, True)
+    logq = lambda x: log_student_pdf(x, nu, False)
 
     # estimate density in rkhs
     N = 800
     mu = np.zeros(D)
-    Z = np.random.laplace(loc=0., scale=scale_q, size=(N,D))
+    Z = np.random.standard_t(df=nu, size=(N, D))
     lmbda = 0.0001
     sigma = 0.5
-    gamma = 0.5*(sigma**2)
+    gamma = 0.5 * (sigma ** 2)
     m = N
     
     omega = gamma * np.random.randn(D, m)

@@ -1,5 +1,6 @@
 from abc import abstractmethod
 
+from kmc.densities.laplace import log_laplace_pdf
 from kmc.tools.Log import logger
 import numpy as np
 from scripts.experiments.trajectories.independent_jobs_classes.random_feats.TrajectoryJob import TrajectoryJob
@@ -19,8 +20,8 @@ class LaplaceTrajectoryJob(TrajectoryJob):
     @abstractmethod
     def set_up(self):
         # target density, rough centred laplace distribution, isotropic
-        self.dlogq = lambda x: np.array([(-1. if x[d] >= 0 else 1.) for d in range(len(x))]) / self.scale_q 
-        self.logq = lambda x: -len(x)*np.log(2*self.scale_q)-np.sum(np.abs(x))/self.scale_q
+        self.dlogq = lambda x: log_laplace_pdf(x, self.scale_q, True)
+        self.logq = lambda x: log_laplace_pdf(x, self.scale_q, False)
     
         # starting state
         self.q_sample = lambda: np.random.laplace(loc=0., scale=self.scale_q, size=self.D)
