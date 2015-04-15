@@ -20,11 +20,12 @@ if __name__ == "__main__":
     step_size = .1
     
     sigma0 = 0.5
-    lmbda0 = 0.0001
+    lmbda0 = 0.00008
     
     job_generator = lambda D, N, m : GaussianTrajectoryJob(N, D, m, sigma_q, sigma_p,
                                                      num_steps, step_size,
-                                                     sigma0, lmbda0, max_steps)
+                                                     sigma0, lmbda0, max_steps,
+                                                     learn_parameters=False)
     
     process(modulename, job_generator, Ds, Ns, num_repetitions, num_steps,
             step_size, max_steps, compute_local=False)

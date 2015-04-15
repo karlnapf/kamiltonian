@@ -10,9 +10,11 @@ class GaussianTrajectoryJob(TrajectoryJob):
     def __init__(self,
                  N, D, m,
                  sigma_q, sigma_p,
-                 num_steps, step_size, sigma0=0.5, lmbda0=0.0001, max_steps=None):
+                 num_steps, step_size, sigma0=0.5, lmbda0=0.0001, max_steps=None,
+                 learn_parameters=False):
         TrajectoryJob.__init__(self, N, D, m, sigma_p,
-                               num_steps, step_size, max_steps, sigma0, lmbda0)
+                               num_steps, step_size, max_steps, sigma0, lmbda0,
+                               learn_parameters=learn_parameters)
         
         self.sigma_q = sigma_q
     
