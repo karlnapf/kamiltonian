@@ -10,10 +10,10 @@ class LaplaceTrajectoryJob(TrajectoryJob):
     def __init__(self,
                  N, D, m,
                  scale_q, sigma_p,
-                 num_steps, step_size, scale0=0.5, lmbda0=0.0001, max_steps=None, learn_parameters=False):
+                 num_steps, step_size, sigma0=0.5, lmbda0=0.0001, max_steps=None, learn_parameters=False):
         # note: using sigma0 for storing scale parameter
         TrajectoryJob.__init__(self, N, D, m, sigma_p,
-                               num_steps, step_size, max_steps, scale0, lmbda0, learn_parameters)
+                               num_steps, step_size, max_steps, sigma0, lmbda0, learn_parameters)
         
         self.scale_q = scale_q
     

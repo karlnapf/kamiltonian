@@ -22,14 +22,14 @@ if __name__ == "__main__":
     max_steps = 1000
     step_size = .1
     
-    scale0 = 0.5
+    sigma0 = 0.5
     lmbda0 = 0.00008
     
     job_generator = lambda D, N, m : LaplaceTrajectoryJob(N, D, m, scale_q,
                                                           sigma_p, num_steps,
-                                                          step_size, scale0,
+                                                          step_size, sigma0,
                                                           lmbda0, max_steps,
-                                                          learn_parameters=True)
+                                                          learn_parameters=False)
     
     process(modulename, job_generator, Ds, Ns, num_repetitions, num_steps,
             step_size, max_steps, compute_local=True)
