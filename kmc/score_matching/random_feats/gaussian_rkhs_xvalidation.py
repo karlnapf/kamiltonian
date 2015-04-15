@@ -71,7 +71,7 @@ def multicore_fun(log2_sigma, log2_lmbda, num_repetitions, num_folds, Z, m):
         logger.debug("xvalidation repetition %d/%d" % (j+1, num_repetitions))
         omega, u = sample_basis(D, m, gamma)
         folds[j] = np.mean(xvalidate(Z, lmbda, omega, u,
-                                     num_folds, num_repetitions))
+                                     num_folds, num_repetitions=1))
     
     result = np.mean(folds)
     logger.info("cma particle, sigma: %.2f, lambda: %.6f, J=%.4f" % \
