@@ -1,6 +1,7 @@
 from matplotlib.widgets import Slider, Button, RadioButtons
 
 from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
+from kmc.densities.student import log_student_pdf
 from kmc.score_matching.random_feats.gaussian_rkhs import xvalidate, compute_b,\
     compute_C, score_matching_sym, feature_map_single, feature_map_grad_single,\
     objective
@@ -170,6 +171,10 @@ if __name__ == "__main__":
     L = np.linalg.cholesky(Sigma)
     dlogq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=True)
     logq = lambda x: log_gaussian_pdf(x, Sigma=L, is_cholesky=True, compute_grad=False)
+    
+    dlogq = lambda x: log_student_pdf(x, nu=1., compute_grad=True)
+    logq = lambda x: log_student_pdf(x, nu=1., compute_grad=False)
+    
 
     # sample density
     mu = np.zeros(D)
