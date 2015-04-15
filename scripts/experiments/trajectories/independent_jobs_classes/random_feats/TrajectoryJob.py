@@ -67,7 +67,7 @@ class TrajectoryJob(IndependentJob):
         fname = parameter_dir + os.sep + self.get_parameter_fname_suffix() + ".npy"
         if not os.path.exists(fname):
             logger.info("Learning sigma and lmbda")
-            cma_opts = {'tolfun':0.5, 'maxiter':10, 'verb_disp':1}
+            cma_opts = {'tolfun':0.3, 'maxiter':10, 'verb_disp':1}
             sigma, lmbda = select_sigma_lambda_cma(self.Z, self.m,
                                                    sigma0=self.sigma0, lmbda0=self.lmbda0,
                                                    cma_opts=cma_opts)

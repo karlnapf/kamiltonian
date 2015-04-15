@@ -81,7 +81,7 @@ def multicore_fun(log2_sigma, log2_lmbda, num_repetitions, num_folds, Z, m):
 def multicore_fun_helper(args):
     return multicore_fun(*args)
 
-def select_sigma_lambda_cma(Z, m, num_threads=6, num_folds=5, num_repetitions=5,
+def select_sigma_lambda_cma(Z, m, num_threads=6, num_folds=5, num_repetitions=1,
                             sigma0=0.4, lmbda0=0.0001,
                             cma_opts={}, disp=False):
     import cma
