@@ -84,8 +84,7 @@ def plot_trajectory_result_mean_fixed_D(fname, D):
     plt.grid(True)
     plt.xlim([Ns.min(), Ns.max()])
     plt.xlabel(r"$n$")
-    ylim = plt.ylim()
-    plt.ylim([ylim[0], 1.01])
+    plt.ylim([0, 1.01])
     plt.title(r"d=%d" % D)
     
 #     plt.legend(["HMC", "KMC median", "KMC 25\%-75\%", "KMC 5\%-95\%"], loc="lower left")
@@ -112,10 +111,9 @@ def gen_sparse_2d_array_from_dict(dictionary, fun, default_value=np.nan):
     Ns = np.sort(np.unique(np.array([N for (_, N) in dictionary.keys()])))
     
     a = np.zeros((len(Ds), len(Ns))) + default_value
+    
     for (D, N), v in dictionary.items():
-        D_ind = np.where(Ds == D)[0][0]
-        N_ind = np.where(Ns == N)[0][0]
-        a[D_ind, N_ind] = fun(v)
+        a[Ds==D, Ns==N] = fun(v)
     
     return Ds, Ns, a
 
