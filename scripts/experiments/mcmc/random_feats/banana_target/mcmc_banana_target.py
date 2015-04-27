@@ -19,7 +19,7 @@ from scripts.experiments.mcmc.independent_job_classes.KMCRandomFeatsJob import K
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
 start_base = [0, -3.]
 
-def hmc_generator(D):
+def hmc_generator(D, target):
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
     start = np.array(start_base + [0. ] * (D - 2))
     
@@ -27,7 +27,7 @@ def hmc_generator(D):
                          num_steps_min, num_steps_max, step_size_min, step_size_max,
                          momentum_seed, statistics={"emp_quantiles": target.emp_quantiles})
 
-def kmc_generator(N, D):
+def kmc_generator(N, D, target):
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
     start = np.array(start_base + [0. ] * (D - 2))
     
@@ -97,10 +97,10 @@ if __name__ == "__main__":
             
             
     for D in Ds:
-        aggs[D] += [engine.submit_job(hmc_generator(D))]
+        aggs[D] += [engine.submit_job(hmc_generator(D, target))]
         for N in Ns:
             for _ in range(num_repetitions):
-                aggs[(N, D)] += [engine.submit_job(kmc_generator(N, D))]
+                aggs[(N, D)] += [engine.submit_job(kmc_generator(N, D, target))]
     
     if isinstance(engine, SerialComputationEngine):
         directory = expanduser("~") + os.sep + modulename
