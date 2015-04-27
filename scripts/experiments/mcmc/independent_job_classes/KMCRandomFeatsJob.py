@@ -105,7 +105,7 @@ class KMCRandomFeatsJob(HMCJob):
     def determine_sigma_lmbda(self):
         parameter_dir = project_path + os.sep + "xvalidation_parameters"
         fname = parameter_dir + os.sep + self.get_parameter_fname_suffix() + ".npy"
-        if not os.path.exists(fname) or True:
+        if not os.path.exists(fname):
             logger.info("Learning sigma and lmbda")
             cma_opts = {'tolfun':0.3, 'maxiter':10, 'verb_disp':1}
             sigma, lmbda = select_sigma_lambda_cma(self.Z, len(self.Z),
