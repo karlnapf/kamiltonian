@@ -13,9 +13,11 @@ from kmc.densities.banana import Banana, sample_banana
 import kmc.densities.banana
 from kmc.densities.gaussian import IsotropicZeroMeanGaussian
 from kmc.tools.Log import logger
+from kmc.tools.convergence_stats import ess_coda
 import numpy as np
 from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob
 from scripts.experiments.mcmc.independent_job_classes.KMCRandomFeatsJob import KMCRandomFeatsJob
+from scripts.experiments.mcmc.independent_job_classes.debug import plot_diagnosis
 
 
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
@@ -27,7 +29,8 @@ def hmc_generator(D, target, num_warmup, thin_step):
     
     return HMCJob(target, momentum, num_iterations, start,
                          num_steps_min, num_steps_max, step_size_min, step_size_max,
-                         momentum_seed, statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles},
+                         momentum_seed, statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles,
+                                                    "ESS": ess_coda},
                          num_warmup=num_warmup, thin_step=thin_step)
 
 def kmc_generator(N, D, target, num_warmup, thin_step):
@@ -48,7 +51,8 @@ def kmc_generator(N, D, target, num_warmup, thin_step):
                             start, num_steps_min, num_steps_max,
                             step_size_min, step_size_max, momentum_seed, learn_parameters=learn_parameters,
                             force_relearn_parameters=force_relearn_parameters,
-                            statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles},
+                            statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles,
+                                        "ESS": ess_coda},
                             num_warmup=num_warmup, thin_step=thin_step)
     job.plot = False
     return job
@@ -56,7 +60,7 @@ def kmc_generator(N, D, target, num_warmup, thin_step):
 if __name__ == "__main__":
     logger.setLevel(20)
     Ds = np.sort(2 ** np.arange(1, 2))[::-1]
-    Ns = np.sort([10, 50, 100, 250, 500, 750, 1000, 1500, 2000])[::-1]
+    Ns = np.sort([10, 50, 100, 200, 500, 700, 1000, 1500, 2000])[::-1]
     
     print(Ns)
     print(Ds)
@@ -70,7 +74,7 @@ if __name__ == "__main__":
     target = Banana(bananicity, V)
     
     # plain MCMC parameters
-    num_warmup = 500
+    num_warmup = 100
     thin_step = 1
     num_iterations = 1000 + num_warmup
     
@@ -106,7 +110,7 @@ if __name__ == "__main__":
             
             
     for i in range(num_repetitions):
-        momentum_seed +=i
+        momentum_seed += i
         for D in Ds:
             job = hmc_generator(D, target, num_warmup, thin_step)
             logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
@@ -133,3 +137,13 @@ if __name__ == "__main__":
                 for agg in aggs[(N, D)]:
                     job_name = unicode(uuid.uuid4())
                     agg.store_fire_and_forget_result(directory, job_name)
+
+        # plot some diagnosis
+        
+        for D in Ds:
+            for agg in aggs[D]:
+                plot_diagnosis(agg, D)
+                
+            for N in Ns:
+                for agg in aggs[(N, D)]:
+                    plot_diagnosis(agg, D)

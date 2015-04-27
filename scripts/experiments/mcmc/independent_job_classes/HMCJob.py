@@ -27,7 +27,7 @@ class HMCJob(MCMCJob):
     
     @abstractmethod
     def set_up(self):
-        # store random state of momentum
+        # momentum is fixed so sample all of them here
         np.random.seed(self.momentum_seed)
         self.hmc_rnd_state = np.random.get_state()
 
@@ -52,8 +52,8 @@ class HMCJob(MCMCJob):
         q, p = leapfrog_no_storing(current, self.target.grad, p0, self.momentum.grad, step_size, num_steps)
         
         # compute acceptance probability, extracting log_pdf of q
-        p0_log_pdf = self.momentum.log_pdf(p)
-        p_log_pdf = self.momentum.log_pdf(p0)
+        p0_log_pdf = self.momentum.log_pdf(p0)
+        p_log_pdf = self.momentum.log_pdf(p)
         
         # use a function call to be able to overload it for KMC
         acc_prob, log_pdf_q = self.accept_prob_log_pdf(current, q, p0_log_pdf, p_log_pdf, current_log_pdf)
