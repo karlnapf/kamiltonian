@@ -68,7 +68,6 @@ class KMCRandomFeatsJob(HMCJob):
         # plot density estimate
         if self.plot:
             import matplotlib.pyplot as plt
-            import numpy as np
             from scripts.tools.plotting import evaluate_density_grid, evaluate_gradient_grid, plot_array
             
             Xs = np.linspace(-15, 15)
