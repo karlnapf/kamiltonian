@@ -1,4 +1,6 @@
+from os import makedirs
 import os
+from os.path import expanduser
 import uuid
 
 from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
@@ -102,8 +104,14 @@ if __name__ == "__main__":
                     aggs[(N, D)] += [engine.submit_job(job)]
     
     if isinstance(engine, SerialComputationEngine):
+        directory = expanduser("~") + os.sep + modulename
+        try:
+            makedirs(directory)
+        except OSError:
+            pass
         for N in Ns:
             for D in Ds:
                 for agg in aggs[(N, D)]:
                     job_name = unicode(uuid.uuid4())
-                    agg.store_fire_and_forget_result("/home/heiko/temp",  job_name)
+                    
+                    agg.store_fire_and_forget_result(directory,  job_name)
