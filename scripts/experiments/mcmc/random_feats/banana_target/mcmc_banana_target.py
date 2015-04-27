@@ -110,6 +110,8 @@ if __name__ == "__main__":
                 logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
                 aggs[(N, D)] += [engine.submit_job(job)]
     
+    engine.wait_for_all()
+    
     if isinstance(engine, SerialComputationEngine):
         directory = expanduser("~") + os.sep + modulename
         try:
