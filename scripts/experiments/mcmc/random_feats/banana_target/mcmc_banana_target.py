@@ -1,6 +1,7 @@
 from os import makedirs
 import os
 from os.path import expanduser
+import time
 import uuid
 
 from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
@@ -79,7 +80,7 @@ if __name__ == "__main__":
     step_size_min = 0.05
     step_size_max = 0.3
     sigma_p = 1.
-    momentum_seed = 1
+    momentum_seed = np.random.randint(time.time())
 
     compute_local = False
     
@@ -105,6 +106,7 @@ if __name__ == "__main__":
             
             
     for i in range(num_repetitions):
+        momentum_seed +=i
         for D in Ds:
             job = hmc_generator(D, target, num_warmup, thin_step)
             logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
