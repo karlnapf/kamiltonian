@@ -99,7 +99,6 @@ class TrajectoryJob(IndependentJob):
         self.logp = lambda x: log_gaussian_pdf(x, Sigma=L_p, compute_grad=False, is_cholesky=True)
         self.dlogp = lambda x: log_gaussian_pdf(x, Sigma=L_p, compute_grad=True, is_cholesky=True)
         self.p_sample = lambda: sample_gaussian(N=1, mu=np.zeros(self.D), Sigma=L_p, is_cholesky=True)[0]
-        self.p_sample = lambda: sample_gaussian(N=1, mu=np.zeros(self.D), Sigma=L_p, is_cholesky=True)[0]
         
         # set up target and momentum densities and gradients
         self.set_up()
