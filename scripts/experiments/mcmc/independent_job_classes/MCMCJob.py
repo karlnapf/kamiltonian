@@ -11,7 +11,7 @@ import numpy as np
 
 class MCMCJob(IndependentJob):
     def __init__(self,
-                 num_iterations, D, start, statistics = {}):
+                 num_iterations, D, start, statistics = {}, num_warmup=500, thin_step=1):
         
         IndependentJob.__init__(self, MCMCJobResultAggregator())
         
@@ -19,6 +19,8 @@ class MCMCJob(IndependentJob):
         self.D = D
         self.start = start
         self.statistics = statistics
+        self.num_warmup = num_warmup
+        self.thin_step = thin_step
         
         assert len(start.shape) == 1
         assert len(start) == D
@@ -74,8 +76,10 @@ class MCMCJob(IndependentJob):
         logger.info("Computing %d posterior statistics" % len(self.statistics))
         self.posterior_statistics = {}
         for (k,v) in self.statistics.items():
-            logger.info("Computing posterior statistic %s" % k)
-            self.posterior_statistics[k] = v(self.samples)
+            logger.info("Computing posterior statistic %s using num_warmup=%d, thin=%d" \
+                        % (k, self.num_warmup, self.thin_step))
+            inds = np.arange(self.num_warmup, len(self.samples), step=self.thin_step)
+            self.posterior_statistics[k] = v(self.samples[inds])
         
         logger.info("Submitting results to aggregator")
         self.submit_to_aggregator()

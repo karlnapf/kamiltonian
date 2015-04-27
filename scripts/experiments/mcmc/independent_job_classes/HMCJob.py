@@ -12,8 +12,9 @@ class HMCJob(MCMCJob):
                  num_iterations, start,
                  num_steps_min=10, num_steps_max=100, step_size_min=0.05,
                  step_size_max=0.3, momentum_seed=0,
-                 statistics = {}):
-        MCMCJob.__init__(self, num_iterations, momentum.D, start, statistics)
+                 statistics = {}, num_warmup=500, thin_step=1):
+        MCMCJob.__init__(self, num_iterations, momentum.D, start, statistics,
+                         num_warmup, thin_step)
         self.aggregator = HMCJobResultAggregator()
         
         self.target = target

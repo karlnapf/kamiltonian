@@ -20,15 +20,16 @@ from scripts.experiments.mcmc.independent_job_classes.KMCRandomFeatsJob import K
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
 start_base = [0, -3.]
 
-def hmc_generator(D, target):
+def hmc_generator(D, target, num_warmup, thin_step):
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
     start = np.array(start_base + [0. ] * (D - 2))
     
     return HMCJob(target, momentum, num_iterations, start,
                          num_steps_min, num_steps_max, step_size_min, step_size_max,
-                         momentum_seed, statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles})
+                         momentum_seed, statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles},
+                         num_warmup=num_warmup, thin_step=thin_step)
 
-def kmc_generator(N, D, target):
+def kmc_generator(N, D, target, num_warmup, thin_step):
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
     start = np.array(start_base + [0. ] * (D - 2))
     
@@ -41,15 +42,16 @@ def kmc_generator(N, D, target):
     job = KMCRandomFeatsJob(Z, sigma, lmbda,
                             target, momentum, num_iterations,
                             start, num_steps_min, num_steps_max,
-                            step_size_min, step_size_max, momentum_seed, learn_parameters=False,
-                            statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles})
+                            step_size_min, step_size_max, momentum_seed, learn_parameters=True,
+                            statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles},
+                            num_warmup=num_warmup, thin_step=thin_step)
     job.plot = False
     return job
 
 if __name__ == "__main__":
     logger.setLevel(20)
     Ds = np.sort(2 ** np.arange(1, 2))[::-1]
-    Ns = np.sort([100])  # , 500, 1000, 2000, 5000, 10000])[::-1]
+    Ns = np.sort([100, 500, 1000])[::-1]
     
     print(Ns)
     print(Ds)
@@ -63,8 +65,9 @@ if __name__ == "__main__":
     target = Banana(bananicity, V)
     
     # plain MCMC parameters
-    num_warmup = 10
-    num_iterations = 100 + num_warmup
+    num_warmup = 500
+    thin_step = 1
+    num_iterations = 1000 + num_warmup
     
     # hmc parameters
     num_steps_min = 10
@@ -97,11 +100,15 @@ if __name__ == "__main__":
             aggs[(N, D)] = []
             
             
-    for D in Ds:
-        aggs[D] += [engine.submit_job(hmc_generator(D, target))]
-        for N in Ns:
-            for _ in range(num_repetitions):
-                aggs[(N, D)] += [engine.submit_job(kmc_generator(N, D, target))]
+    for i in range(num_repetitions):
+        for D in Ds:
+            job = hmc_generator(D, target, num_warmup, thin_step)
+            logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
+            aggs[D] += [engine.submit_job(job)]
+            for N in Ns:
+                job = kmc_generator(N, D, target, num_warmup, thin_step)
+                logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
+                aggs[(N, D)] += [engine.submit_job(job)]
     
     if isinstance(engine, SerialComputationEngine):
         directory = expanduser("~") + os.sep + modulename

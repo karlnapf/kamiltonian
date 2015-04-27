@@ -1,4 +1,5 @@
 from abc import abstractmethod
+import os
 
 from kmc.score_matching.random_feats.estimator import RandomFeatsEstimator
 from kmc.score_matching.random_feats.gaussian_rkhs import sample_basis, \
@@ -7,7 +8,13 @@ from kmc.score_matching.random_feats.gaussian_rkhs_xvalidation import select_sig
 from kmc.tools.Log import logger
 from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob,\
     HMCJobResultAggregator
+    
+import numpy as np
 
+
+splitted = __file__.split(os.sep)
+idx = splitted.index('kamiltonian')
+project_path = os.sep.join(splitted[:(idx+1)])
 
 class KMCRandomFeatsJob(HMCJob):
     def __init__(self, Z, sigma, lmbda,
@@ -16,12 +23,12 @@ class KMCRandomFeatsJob(HMCJob):
                  num_steps_min=10, num_steps_max=100, step_size_min=0.05,
                  step_size_max=0.3, momentum_seed=0,
                  learn_parameters=False,
-                 statistics = {}):
+                 statistics = {}, num_warmup=500, thin_step=1):
         
         HMCJob.__init__(self, target, momentum,
                         num_iterations, start,
                         num_steps_min, num_steps_max, step_size_min,
-                        step_size_max, momentum_seed, statistics)
+                        step_size_max, momentum_seed, statistics, num_warmup, thin_step)
         
         self.aggregator = KMCJobResultAggregator()
         
@@ -37,12 +44,9 @@ class KMCRandomFeatsJob(HMCJob):
 
         if self.learn_parameters:
             logger.info("Learning parameters")
-            cma_opts = {'tolfun':0.3, 'maxiter':10, 'verb_disp':1}
-            self.sigma, self.lmbda = select_sigma_lambda_cma(self.Z, len(self.Z),
-                                                   sigma0=self.sigma, lmbda0=self.lmbda,
-                                                   cma_opts=cma_opts)
+            self.sigma, self.lmbda = self.determine_sigma_lmbda()
         
-        logger.info("Using sigma=%.2f, lmbda=.%6f" % (self.sigma, self.lmbda))
+        logger.info("Using sigma=%.2f, lmbda=%.6f" % (self.sigma, self.lmbda))
         
         
         gamma = 0.5 * (self.sigma ** 2)
@@ -65,7 +69,6 @@ class KMCRandomFeatsJob(HMCJob):
             import numpy as np
             from scripts.tools.plotting import evaluate_density_grid, evaluate_gradient_grid, plot_array
             
-            plt.figure(figsize=(4, 8))
             Xs = np.linspace(-15, 15)
             Ys = np.linspace(-7, 3)
             Xs_grad = np.linspace(-40, 40, 40)
@@ -98,6 +101,30 @@ class KMCRandomFeatsJob(HMCJob):
     @abstractmethod
     def get_parameter_fname_suffix(self):
         return ("KMC_N=%d_" % len(self.Z)) + HMCJob.get_parameter_fname_suffix(self) 
+    
+    def determine_sigma_lmbda(self):
+        parameter_dir = project_path + os.sep + "xvalidation_parameters"
+        fname = parameter_dir + os.sep + self.get_parameter_fname_suffix() + ".npy"
+        if not os.path.exists(fname) or True:
+            logger.info("Learning sigma and lmbda")
+            cma_opts = {'tolfun':0.3, 'maxiter':10, 'verb_disp':1}
+            sigma, lmbda = select_sigma_lambda_cma(self.Z, len(self.Z),
+                                                   sigma0=self.sigma, lmbda0=self.lmbda,
+                                                   cma_opts=cma_opts)
+            
+            if not os.path.exists(parameter_dir):
+                os.makedirs(parameter_dir)
+            
+            with open(fname, 'w+') as f:
+                np.savez_compressed(f, sigma=sigma, lmbda=lmbda)
+        else:
+            logger.info("Loading sigma and lmbda from %s" % fname)
+            with open(fname, 'r') as f:
+                pars = np.load(f)
+                sigma = pars['sigma']
+                lmbda = pars['lmbda']
+                
+        return sigma, lmbda
 
 
 class KMCJobResultAggregator(HMCJobResultAggregator):
