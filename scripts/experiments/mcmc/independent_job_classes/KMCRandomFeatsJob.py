@@ -102,7 +102,7 @@ class KMCRandomFeatsJob(HMCJob):
     
     @abstractmethod
     def get_parameter_fname_suffix(self):
-        return ("KMC_N=%d_" % len(self.Z)) + HMCJob.get_parameter_fname_suffix(self)[3:] 
+        return ("KMC_N=%d_" % len(self.Z)) + HMCJob.get_parameter_fname_suffix(self)[4:] 
     
     def determine_sigma_lmbda(self):
         parameter_dir = project_path + os.sep + "xvalidation_parameters"
