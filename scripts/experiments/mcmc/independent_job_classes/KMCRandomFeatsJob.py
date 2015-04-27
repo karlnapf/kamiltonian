@@ -115,9 +115,10 @@ class KMCRandomFeatsJob(HMCJob):
         if not os.path.exists(fname) or self.force_relearn_parameters:
             logger.info("Learning sigma and lmbda")
             cma_opts = {'tolfun':0.3, 'maxiter':10, 'verb_disp':1}
+            num_threads = 1 if self.force_relearn_parameters else 6
             sigma, lmbda = select_sigma_lambda_cma(self.Z, len(self.Z),
                                                    sigma0=self.sigma, lmbda0=self.lmbda,
-                                                   cma_opts=cma_opts)
+                                                   cma_opts=cma_opts, num_threads=num_threads)
             
             if not os.path.exists(parameter_dir):
                 os.makedirs(parameter_dir)
