@@ -36,6 +36,8 @@ class KMCRandomFeatsJob(HMCJob):
         self.sigma = sigma
         self.lmbda = lmbda
         self.learn_parameters = learn_parameters
+        
+        self.upper_bound_N = 2000
 
     @abstractmethod
     def set_up(self):
@@ -105,6 +107,11 @@ class KMCRandomFeatsJob(HMCJob):
     def determine_sigma_lmbda(self):
         parameter_dir = project_path + os.sep + "xvalidation_parameters"
         fname = parameter_dir + os.sep + self.get_parameter_fname_suffix() + ".npy"
+        
+        # upper bound for doing x-validation
+        if len(self.Z) > self.upper_bound_N:
+            fname.replace("N=%d" % self.D, "N=%d" % self.upper_bound_N)
+        
         if not os.path.exists(fname):
             logger.info("Learning sigma and lmbda")
             cma_opts = {'tolfun':0.3, 'maxiter':10, 'verb_disp':1}

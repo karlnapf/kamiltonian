@@ -51,7 +51,7 @@ def kmc_generator(N, D, target, num_warmup, thin_step):
 if __name__ == "__main__":
     logger.setLevel(20)
     Ds = np.sort(2 ** np.arange(1, 2))[::-1]
-    Ns = np.sort([100, 500, 1000])[::-1]
+    Ns = np.sort([100, 500, 1000, 2000, 3000])[::-1]
     
     print(Ns)
     print(Ds)
