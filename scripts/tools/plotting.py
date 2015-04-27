@@ -68,8 +68,8 @@ def evaluate_density_grad_grid(Xs, Ys, grad):
     
     return G
 
-def plot_2d_trajectory(X):
-    plt.plot(X[:, 0], X[:, 1], 'r-')
+def plot_2d_trajectory(X, marker="r-"):
+    plt.plot(X[:, 0], X[:, 1], marker)
     plt.plot(X[0, 0], X[0, 1], 'r*', markersize=5)
     plt.plot(X[-1, 0], X[-1, 1], 'b*', markersize=5)
 

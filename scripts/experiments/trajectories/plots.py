@@ -36,6 +36,8 @@ def plot_trajectory_result_mean_fixed_N(fname, N):
                      avg_accept_est_upper_95[:, N_ind],
                      color="grey", alpha=.5)
     plt.plot(Ds, avg_accept_est_upper_25[:, N_ind], 'b-.')
+    plt.plot(Ds, avg_accept_mean[:, N_ind], 'r')
+
     
     plt.xscale("log")
     plt.grid(True)
@@ -79,6 +81,8 @@ def plot_trajectory_result_mean_fixed_D(fname, D):
                      avg_accept_est_upper_95[D_ind, :],
                      color="grey", alpha=.5)
     plt.plot(Ns, avg_accept_est_upper_25[D_ind, :], 'b-.')
+    plt.plot(Ns, avg_accept_mean[D_ind, :], 'r')
+
     
     plt.xscale("log")
     plt.grid(True)
