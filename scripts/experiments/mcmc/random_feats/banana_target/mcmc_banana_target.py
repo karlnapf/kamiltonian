@@ -35,10 +35,10 @@ def kmc_generator(N, D, target, num_warmup, thin_step):
     
     # estimator parameters
     sigma = 0.46
-    lmbda = 0.0000001
+    lmbda = 0.000001
 
-    learn_parameters = True if N < 200 else False
-    force_relearn_parameters = True if N < 200 else False
+    learn_parameters = True if N < 500 else False
+    force_relearn_parameters = True if N < 500 else False
 
     # oracle samples
     Z = sample_banana(N, D, bananicity, V)
@@ -55,12 +55,12 @@ def kmc_generator(N, D, target, num_warmup, thin_step):
 if __name__ == "__main__":
     logger.setLevel(20)
     Ds = np.sort(2 ** np.arange(1, 2))[::-1]
-    Ns = np.sort([100, 500, 1000])[::-1]
+    Ns = np.sort([10, 50, 100, 250, 500, 750, 1000, 1500, 2000])[::-1]
     
     print(Ns)
     print(Ds)
     assert np.min(Ds) >= 2
-    num_repetitions = 1
+    num_repetitions = 10
     
     
     # target
