@@ -1,4 +1,19 @@
+from rpy2 import robjects
+
 import numpy as np
+
+
+def ess_coda(data):
+        """
+        Computes the effective samples size of a 1d-array using R-coda via
+        an external R call. The python package rpy2 and the R-library
+        "library(coda)" have to be installed. Inspired by Charles Blundell's
+        neat little python script :)
+        """
+        robjects.r('library(coda)')
+        r_ess = robjects.r['effectiveSize']
+        data = robjects.r.matrix(robjects.FloatVector(data), nrow=len(data))
+        return r_ess(data)[0]
 
 def autocorr(x):
     """
