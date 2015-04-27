@@ -101,8 +101,9 @@ if __name__ == "__main__":
                     job = job_generator(N, D)
                     aggs[(N, D)] += [engine.submit_job(job)]
     
-    for N in Ns:
-        for D in Ds:
-            for agg in aggs[(N, D)]:
-                job_name = unicode(uuid.uuid4())
-                agg.store_fire_and_forget_result("/home/heiko/temp",  job_name)
+    if isinstance(engine, SerialComputationEngine):
+        for N in Ns:
+            for D in Ds:
+                for agg in aggs[(N, D)]:
+                    job_name = unicode(uuid.uuid4())
+                    agg.store_fire_and_forget_result("/home/heiko/temp",  job_name)
