@@ -8,9 +8,6 @@ from independent_jobs.results.JobResult import JobResult
 
 from kmc.tools.Log import logger
 import numpy as np
-from scripts.experiments.mcmc.independent_job_classes.MCMCJobResult import MCMCJobResult
-from scripts.experiments.mcmc.independent_job_classes.MCMCJobResultAggregator import MCMCJobResultAggregator
-
 
 class MCMCJob(IndependentJob):
     def __init__(self,
