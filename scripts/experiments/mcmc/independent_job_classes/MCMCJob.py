@@ -137,6 +137,6 @@ class MCMCJobResultAggregator(JobResultAggregator):
         D = self.result.mcmc_job.D
         for _, v in self.result.mcmc_job.posterior_statistics.items():
             # assumes posterior statistics are vectors
-            s += [" ".join([str(D)] + [str(v[i]) for i in range(len(v))] + np.mean(self.result.mcmc_job.accepted))]
+            s += [" ".join([str(D)] + [str(v[i]) for i in range(len(v))] + [str(np.mean(self.result.mcmc_job.accepted))])]
         
         return s
