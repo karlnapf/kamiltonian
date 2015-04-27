@@ -23,6 +23,9 @@ class MCMCJob(IndependentJob):
         assert len(start.shape) == 1
         assert len(start) == D
         
+        # short queue
+        self.walltime = 1 * 60 * 60
+        
 
     @abstractmethod
     def compute(self):
