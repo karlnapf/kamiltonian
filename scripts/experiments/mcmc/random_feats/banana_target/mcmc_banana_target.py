@@ -9,6 +9,7 @@ from independent_jobs.engines.SlurmComputationEngine import SlurmComputationEngi
 from independent_jobs.tools.FileSystem import FileSystem
 
 from kmc.densities.banana import Banana, sample_banana
+import kmc.densities.banana
 from kmc.densities.gaussian import IsotropicZeroMeanGaussian
 from kmc.tools.Log import logger
 import numpy as np
@@ -25,7 +26,7 @@ def hmc_generator(D, target):
     
     return HMCJob(target, momentum, num_iterations, start,
                          num_steps_min, num_steps_max, step_size_min, step_size_max,
-                         momentum_seed, statistics={"emp_quantiles": target.emp_quantiles})
+                         momentum_seed, statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles})
 
 def kmc_generator(N, D, target):
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
@@ -41,7 +42,7 @@ def kmc_generator(N, D, target):
                             target, momentum, num_iterations,
                             start, num_steps_min, num_steps_max,
                             step_size_min, step_size_max, momentum_seed, learn_parameters=False,
-                            statistics={"emp_quantiles": target.emp_quantiles})
+                            statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles})
     job.plot = False
     return job
 
