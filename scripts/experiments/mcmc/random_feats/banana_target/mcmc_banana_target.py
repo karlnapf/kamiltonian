@@ -73,7 +73,7 @@ if __name__ == "__main__":
     sigma_p = 1.
     momentum_seed = 1
 
-    compute_local = True
+    compute_local = False
     
     if not FileSystem.cmd_exists("sbatch") or compute_local:
         engine = SerialComputationEngine()
