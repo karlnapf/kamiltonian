@@ -19,7 +19,7 @@ from scripts.experiments.mcmc.independent_job_classes.KMCRandomFeatsJob import K
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
 start_base = [0, -3.]
 
-def hmc_generator(N, D):
+def hmc_generator(D):
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
     start = np.array(start_base + [0. ] * (D - 2))
     
@@ -73,9 +73,6 @@ if __name__ == "__main__":
     sigma_p = 1.
     momentum_seed = 1
 
-    job_generator = kmc_generator
-#     job_generator = hmc_generator
-    
     compute_local = True
     
     if not FileSystem.cmd_exists("sbatch") or compute_local:
@@ -95,13 +92,15 @@ if __name__ == "__main__":
     aggs = {}
     for N in Ns:
         for D in Ds:
+            aggs[D] = []
             aggs[(N, D)] = []
             
+            
     for D in Ds:
+        aggs[D] += [engine.submit_job(hmc_generator(D))]
         for N in Ns:
             for _ in range(num_repetitions):
-                    job = job_generator(N, D)
-                    aggs[(N, D)] += [engine.submit_job(job)]
+                aggs[(N, D)] += [engine.submit_job(kmc_generator(N, D))]
     
     if isinstance(engine, SerialComputationEngine):
         directory = expanduser("~") + os.sep + modulename
@@ -109,9 +108,12 @@ if __name__ == "__main__":
             makedirs(directory)
         except OSError:
             pass
-        for N in Ns:
-            for D in Ds:
+        for D in Ds:
+            for agg in aggs[D]:
+                job_name = unicode(uuid.uuid4())
+                agg.store_fire_and_forget_result(directory, job_name)
+                
+            for N in Ns:
                 for agg in aggs[(N, D)]:
                     job_name = unicode(uuid.uuid4())
-                    
-                    agg.store_fire_and_forget_result(directory,  job_name)
+                    agg.store_fire_and_forget_result(directory, job_name)
