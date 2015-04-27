@@ -34,15 +34,19 @@ def kmc_generator(N, D, target, num_warmup, thin_step):
     start = np.array(start_base + [0. ] * (D - 2))
     
     # estimator parameters
-    sigma = 0.91
-    lmbda = 0.000310
+    sigma = 0.46
+    lmbda = 0.0000001
+
+    learn_parameters = True if N < 200 else False
+    force_relearn_parameters = True if N < 200 else False
 
     # oracle samples
     Z = sample_banana(N, D, bananicity, V)
     job = KMCRandomFeatsJob(Z, sigma, lmbda,
                             target, momentum, num_iterations,
                             start, num_steps_min, num_steps_max,
-                            step_size_min, step_size_max, momentum_seed, learn_parameters=True,
+                            step_size_min, step_size_max, momentum_seed, learn_parameters=learn_parameters,
+                            force_relearn_parameters=force_relearn_parameters,
                             statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles},
                             num_warmup=num_warmup, thin_step=thin_step)
     job.plot = False
@@ -51,12 +55,12 @@ def kmc_generator(N, D, target, num_warmup, thin_step):
 if __name__ == "__main__":
     logger.setLevel(20)
     Ds = np.sort(2 ** np.arange(1, 2))[::-1]
-    Ns = np.sort([100, 500, 1000, 2000, 3000])[::-1]
+    Ns = np.sort([100, 500, 1000])[::-1]
     
     print(Ns)
     print(Ds)
     assert np.min(Ds) >= 2
-    num_repetitions = 2
+    num_repetitions = 1
     
     
     # target

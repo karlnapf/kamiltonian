@@ -22,7 +22,7 @@ class KMCRandomFeatsJob(HMCJob):
                  num_iterations, start,
                  num_steps_min=10, num_steps_max=100, step_size_min=0.05,
                  step_size_max=0.3, momentum_seed=0,
-                 learn_parameters=False,
+                 learn_parameters=False, force_relearn_parameters=False,
                  statistics = {}, num_warmup=500, thin_step=1):
         
         HMCJob.__init__(self, target, momentum,
@@ -36,6 +36,7 @@ class KMCRandomFeatsJob(HMCJob):
         self.sigma = sigma
         self.lmbda = lmbda
         self.learn_parameters = learn_parameters
+        self.force_relearn_parameters = force_relearn_parameters
         
         self.upper_bound_N = 2000
 
@@ -44,8 +45,7 @@ class KMCRandomFeatsJob(HMCJob):
         # match number of basis functions and data
         m = len(self.Z)
 
-        if self.learn_parameters:
-            logger.info("Learning parameters")
+        if self.learn_parameters or self.force_relearn_parameters:
             self.sigma, self.lmbda = self.determine_sigma_lmbda()
         
         logger.info("Using sigma=%.2f, lmbda=%.6f" % (self.sigma, self.lmbda))
@@ -112,7 +112,7 @@ class KMCRandomFeatsJob(HMCJob):
         if len(self.Z) > self.upper_bound_N:
             fname.replace("N=%d" % self.D, "N=%d" % self.upper_bound_N)
         
-        if not os.path.exists(fname):
+        if not os.path.exists(fname) or self.force_relearn_parameters:
             logger.info("Learning sigma and lmbda")
             cma_opts = {'tolfun':0.3, 'maxiter':10, 'verb_disp':1}
             sigma, lmbda = select_sigma_lambda_cma(self.Z, len(self.Z),
