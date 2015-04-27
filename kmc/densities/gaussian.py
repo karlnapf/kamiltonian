@@ -1,5 +1,8 @@
-import numpy as np
 from scipy.linalg import solve_triangular
+from scipy.stats._continuous_distns import chi2
+
+import numpy as np
+
 
 def log_gaussian_pdf(x, mu=None, Sigma=None, is_cholesky=False, compute_grad=False):
     if mu is None:
@@ -43,4 +46,39 @@ def sample_gaussian(N, mu=np.zeros(2), Sigma=np.eye(2), is_cholesky=False):
         L = Sigma
     
     return L.dot(np.random.randn(D, N)).T + mu
+
+def emp_quantiles(X, mu=np.zeros(2), Sigma=np.eye(2),
+                  quantiles=np.arange(0.1, 1, 0.1)):
+    D = X.shape[1]
     
+    # need inverse chi2 cdf with self.dimension degrees of freedom
+    chi2_instance = chi2(D)
+    cutoffs = chi2_instance.isf(1 - quantiles)
+    # whitening
+    D, U = np.linalg.eig(Sigma)
+    D = D ** (-0.5)
+    W = (np.diag(D).dot(U.T).dot((X - mu).T)).T
+    norms_squared = np.array([np.linalg.norm(w) ** 2 for w in W])
+    results = np.zeros([len(quantiles)])
+    for jj in range(0, len(quantiles)):
+        results[jj] = np.mean(norms_squared < cutoffs[jj])
+    return results
+
+class IsotropicZeroMeanGaussian(object):
+    def __init__(self, sigma=1., D=1):
+        self.sigma = sigma
+        self.D = D
+    
+    def log_pdf(self, x):
+        D = len(x)
+        const_part = -0.5 * D * np.log(2 * np.pi)
+        quadratic_part = -np.dot(x, x) / (2 * (self.sigma ** 2))
+        log_determinant_part = -D * np.log(self.sigma)
+        return const_part + log_determinant_part + quadratic_part
+    
+    def grad(self, x):
+        return -x / (self.sigma ** 2)
+    
+    def sample(self):
+        return np.random.randn(self.D) * self.sigma
+        

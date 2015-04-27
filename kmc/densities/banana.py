@@ -1,8 +1,8 @@
-from kameleon_mcmc.distribution.Banana import Banana
-from kameleon_mcmc.tools.Visualise import Visualise
+from kameleon_mcmc.distribution.Gaussian import Gaussian
 from theano import function
 import theano
 
+import kameleon_mcmc.distribution.Banana as B
 import numpy as np
 import theano.tensor as T
 
@@ -34,17 +34,35 @@ def log_banana_pdf(x, bananicity=0.03, V=100, compute_grad=False):
         return banana_log_pdf_grad_theano(x, bananicity, V)
 
 def sample_banana(N, D, bananicity=0.03, V=100):
-    return  Banana(D, bananicity, V).sample(N).samples
+    return  B.Banana(D, bananicity, V).sample(N).samples
 
-if __name__ == "__main__":
-    Xs = np.linspace(-20, 20)
-    Ys = np.linspace(-10, 10)
-    D = np.zeros((len(Xs), len(Ys)))
-    # compute log-density
-    for i in range(len(Xs)):
-        for j in range(len(Ys)):
-            x = np.array([Xs[i], Ys[j]])
-            D[j, i] = np.linalg.norm(log_banana_pdf(x, compute_grad=True))
-    Visualise.plot_array(Xs, Ys, D)
-    import matplotlib.pyplot as plt
-    plt.show()
+def emp_quantiles(X, bananicity=0.03, V=100, quantiles=np.arange(0.1, 1, 0.1)):
+    assert(len(X.shape) == 2)
+    D = X.shape[1]
+    
+    substract=bananicity * ((X[:, 0] ** 2) - V)
+    divide=np.sqrt(V)
+    X[:, 1] -= substract
+    X[:, 0] /= divide
+    phi = Gaussian(np.zeros(D), np.eye(D))
+    quantiles=phi.emp_quantiles(X, quantiles)
+    
+    # undo changes to X
+    X[:, 0] *= divide
+    X[:, 1] += substract
+    
+    return quantiles
+
+class Banana(object):
+    def __init__(self, bananicity=0.03, V=100):
+        self.bananicity = bananicity
+        self.V = V
+    
+    def log_pdf(self, x):
+        return log_banana_pdf(x, self.bananicity, self.V, compute_grad=False)
+    
+    def grad(self, x):
+        return log_banana_pdf(x, self.bananicity, self.V, compute_grad=True)
+    
+    def emp_quantiles(self, X, quantiles=np.arange(0.1, 1, 0.1)):
+        return emp_quantiles(X, self.bananicity, self.V, quantiles)
