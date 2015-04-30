@@ -31,8 +31,12 @@ class MCMCJob(IndependentJob):
 
     @abstractmethod
     def compute(self):
+        # remember set up time
+        start_time = time()
         self.set_up()
+        self.time_taken_set_up = time() - start_time
         
+        # sampling time
         start_time = time()
         
         self.samples = np.zeros((self.num_iterations, self.D)) + np.nan
