@@ -141,6 +141,10 @@ class MCMCJobResultAggregator(JobResultAggregator):
         D = self.result.mcmc_job.D
         for _, v in self.result.mcmc_job.posterior_statistics.items():
             # assumes posterior statistics are vectors
-            s += [" ".join([str(D)] + [str(v[i]) for i in range(len(v))] + [str(np.mean(self.result.mcmc_job.accepted))])]
+            s += [" ".join([str(D)] + [str(v[i]) for i in range(len(v))] +
+                           [str(np.mean(self.result.mcmc_job.accepted))] +
+                           [str(self.result.mcmc_job.time_taken_sampling)] +
+                           [str(self.result.mcmc_job.time_taken_set_up)]
+                           )]
         
         return s
