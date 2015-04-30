@@ -28,7 +28,7 @@ def hmc_generator(D, target, num_warmup, thin_step, momentum_seed):
     start = np.array(start_base + [0. ] * (D - 2))
     
     return HMCJob(target, momentum, num_iterations, start,
-                         num_steps_min, num_steps_max, step_size_min, step_size_max,
+                         num_steps_min, num_steps_max, step_size_min, step_size_max, momentum_seed,
                             statistics={"avg_quantile_error": kmc.densities.banana.avg_quantile_error,
                                         "avg_ess": avg_ess},
                          num_warmup=num_warmup, thin_step=thin_step)
