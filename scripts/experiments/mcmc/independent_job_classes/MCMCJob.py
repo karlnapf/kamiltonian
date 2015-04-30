@@ -176,12 +176,12 @@ class MCMCJobResultAggregator(JobResultAggregator):
     @abstractmethod
     def fire_and_forget_result_strings(self):
         D = self.result.mcmc_job.D
-        s = [" ".join(
-                       [str(D)] + 
-                       [str(self.result.mcmc_job.time_taken_set_up)] +
-                       [str(self.result.mcmc_job.time_taken_sampling)] +
-                       [str(np.mean(self.result.mcmc_job.accepted))]
-           )]
+        s = []
+        s += [str(D)]
+        s += [str(self.result.mcmc_job.time_taken_set_up)]
+        s += [str(self.result.mcmc_job.time_taken_sampling)]
+        s += [str(np.mean(self.result.mcmc_job.accepted))]
+
         for _, v in self.result.mcmc_job.posterior_statistics.items():
             # assumes posterior statistics are vectors
             s += [str(v)]
