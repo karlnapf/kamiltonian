@@ -48,7 +48,7 @@ class MCMCJob(IndependentJob):
         
         current = self.start
         current_log_pdf = None
-        logger.info("Starting MCMC")
+        logger.info("Starting MCMC in D=%d dimensions" % self.D)
         for i in range(self.num_iterations):
             # print chain progress
             log_str = "MCMC iteration %d/%d" % (i + 1, self.num_iterations)

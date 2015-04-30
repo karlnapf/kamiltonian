@@ -55,7 +55,7 @@ class KMCRandomFeatsJob(HMCJob):
         logger.info("Sampling random basis")
         omega, u = sample_basis(self.D, m, gamma)
         
-        logger.info("Estimating density in RKHS")
+        logger.info("Estimating density in RKHS, N=m=%d, D=%d" % (len(self.Z), self.D))
         theta = score_matching_sym(self.Z, self.lmbda, omega, u)
         
         # replace target by kernel estimator to simulate trajectories on
