@@ -182,7 +182,7 @@ class MCMCJobResultAggregator(JobResultAggregator):
                            [str(self.result.mcmc_job.time_taken_set_up)] +
                            [str(self.result.mcmc_job.time_taken_sampling)] +
                            [str(np.mean(self.result.mcmc_job.accepted))] +
-                           [str(v[i]) for i in range(len(v))]
+                           [str(v[i]) for i in (1. if np.isscalar(v) else range(len(v)))]
                            )]
         
         return s
