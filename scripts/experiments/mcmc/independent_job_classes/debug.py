@@ -50,7 +50,7 @@ def plot_diagnosis(agg, D):
     avg_q_error = np.mean(np.abs(quantiles_emp - quantiles))
     print("Average quantile errors: %.2f" % avg_q_error)
     
-    
+    print("Average acceptance probability: %.2f" % np.mean(accepted))
     print("Average ESS: %.2f" % np.mean(ESS))
     print("Average ESS/s: %.2f" % (np.mean(ESS) / time))
     print("ESS for all dimensions:")
