@@ -75,7 +75,7 @@ class MCMCJob(IndependentJob):
             self.samples[i] = current
             self.log_pdf[i] = current_log_pdf
         
-        self.time_taken = time() - start_time
+        self.time_taken_sampling = time() - start_time
         
         logger.info("Computing %d posterior statistics" % len(self.statistics))
         self.posterior_statistics = {}
