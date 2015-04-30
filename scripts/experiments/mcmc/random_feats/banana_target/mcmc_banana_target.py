@@ -60,9 +60,9 @@ def kmc_generator(N, D, target, num_warmup, thin_step):
 if __name__ == "__main__":
     logger.setLevel(10)
     Ds = np.sort([2, 8])[::-1]
-    Ns = np.sort([10, 50, 100, 200, 500, 1000, 1500, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000])[::-1]
-#     Ds = [8]
-#     Ns = [1000]
+    Ns = np.sort([10, 50, 100, 200, 500, 1000, 1500, 2000])[::-1]
+#     Ds = [2]
+#     Ns = [100]
     
     
     print(Ns)
@@ -82,6 +82,8 @@ if __name__ == "__main__":
     num_warmup = 500
     thin_step = 1
     num_iterations = 2000 + num_warmup
+#     num_iterations = 200
+#     num_warmup = 0
     
     # hmc parameters
     num_steps_min = 10
@@ -115,7 +117,8 @@ if __name__ == "__main__":
             
             
     for i in range(num_repetitions):
-        momentum_seed += i
+        # same momentum for every D and N of every repetition
+        momentum_seed += 1
         for D in Ds:
             job = hmc_generator(D, target, num_warmup, thin_step)
             logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
