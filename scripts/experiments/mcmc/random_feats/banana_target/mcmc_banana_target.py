@@ -58,14 +58,19 @@ def kmc_generator(N, D, target, num_warmup, thin_step):
     return job
 
 if __name__ == "__main__":
-    logger.setLevel(20)
-    Ds = np.sort(2 ** np.arange(1, 2))[::-1]
-    Ns = np.sort([10, 50, 100, 200, 500, 700, 1000, 1500, 2000])[::-1]
+    logger.setLevel(10)
+    Ds = np.sort([2, 8])[::-1]
+    Ns = np.sort([10, 50, 100, 200, 500, 1000, 1500, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000])[::-1]
+#     Ds = [8]
+#     Ns = [1000]
+    
     
     print(Ns)
     print(Ds)
     assert np.min(Ds) >= 2
     num_repetitions = 10
+#     num_repetitions = 1
+    
     
     
     # target
@@ -74,9 +79,9 @@ if __name__ == "__main__":
     target = Banana(bananicity, V)
     
     # plain MCMC parameters
-    num_warmup = 100
+    num_warmup = 500
     thin_step = 1
-    num_iterations = 1000 + num_warmup
+    num_iterations = 2000 + num_warmup
     
     # hmc parameters
     num_steps_min = 10
