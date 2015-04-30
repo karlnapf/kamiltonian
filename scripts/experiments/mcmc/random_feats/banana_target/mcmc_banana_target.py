@@ -23,7 +23,7 @@ from scripts.experiments.mcmc.independent_job_classes.debug import plot_diagnosi
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
 start_base = [0, -3.]
 
-def hmc_generator(D, target, num_warmup, thin_step):
+def hmc_generator(D, target, num_warmup, thin_step, momentum_seed):
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
     start = np.array(start_base + [0. ] * (D - 2))
     
@@ -33,7 +33,7 @@ def hmc_generator(D, target, num_warmup, thin_step):
                                         "avg_ess": avg_ess},
                          num_warmup=num_warmup, thin_step=thin_step)
 
-def kmc_generator(N, D, target, num_warmup, thin_step):
+def kmc_generator(N, D, target, num_warmup, thin_step, momentum_seed):
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
     start = np.array(start_base + [0. ] * (D - 2))
     
@@ -120,11 +120,11 @@ if __name__ == "__main__":
         # same momentum for every D and N of every repetition
         momentum_seed += 1
         for D in Ds:
-            job = hmc_generator(D, target, num_warmup, thin_step)
+            job = hmc_generator(D, target, num_warmup, thin_step, momentum_seed)
             logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
             aggs[D] += [engine.submit_job(job)]
             for N in Ns:
-                job = kmc_generator(N, D, target, num_warmup, thin_step)
+                job = kmc_generator(N, D, target, num_warmup, thin_step, momentum_seed)
                 logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
                 aggs[(N, D)] += [engine.submit_job(job)]
     
