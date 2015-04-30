@@ -58,7 +58,7 @@ def kmc_generator(N, D, target, num_warmup, thin_step):
     return job
 
 if __name__ == "__main__":
-    logger.setLevel(10)
+    logger.setLevel(20)
     Ds = np.sort([2, 8])[::-1]
     Ns = np.sort([10, 50, 100, 200, 500, 1000, 1500, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000])[::-1]
 #     Ds = [8]
