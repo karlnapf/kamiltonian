@@ -159,7 +159,7 @@ class KMCRandomFeatsJob(HMCJob):
             avg_quantile_error = results[i, 5]
             avg_ESS = results[i, 6]
             
-            to_add = np.zeros(results.shape[1]-2)
+            to_add = np.zeros(5)
             to_add[0] = time_taken_set_up
             to_add[1] = time_taken_sampling
             to_add[2] = accepted
@@ -167,6 +167,9 @@ class KMCRandomFeatsJob(HMCJob):
             to_add[4] = avg_ESS
             
             result_dict[(N, D)] += [to_add]
+        
+        for k,v in result_dict.items():
+            result_dict[k] = np.array(v)
         
         return result_dict
 

@@ -125,8 +125,8 @@ class MCMCJob(IndependentJob):
             time_taken_set_up = np.int(results[i, 1])
             time_taken_sampling = np.int(results[i, 2])
             accepted = np.float(results[i, 3])
-            avg_quantile_error = results[i, 4:]
-            avg_ess = results[i, 5:]
+            avg_quantile_error = results[i, 4]
+            avg_ess = results[i, 5]
             
             to_add = np.zeros(results.shape[1]-1)
             to_add[0] = time_taken_set_up
@@ -137,7 +137,8 @@ class MCMCJob(IndependentJob):
             
             result_dict[D] += [to_add]
         
-        return result_dict
+        for k,v in result_dict.items():
+            result_dict[k] = np.array(v)
         
         return result_dict
 
@@ -174,15 +175,15 @@ class MCMCJobResultAggregator(JobResultAggregator):
 
     @abstractmethod
     def fire_and_forget_result_strings(self):
-        s = []
         D = self.result.mcmc_job.D
+        s = [" ".join(
+                       [str(D)] + 
+                       [str(self.result.mcmc_job.time_taken_set_up)] +
+                       [str(self.result.mcmc_job.time_taken_sampling)] +
+                       [str(np.mean(self.result.mcmc_job.accepted))]
+           )]
         for _, v in self.result.mcmc_job.posterior_statistics.items():
             # assumes posterior statistics are vectors
-            s += [" ".join([str(D)] + 
-                           [str(self.result.mcmc_job.time_taken_set_up)] +
-                           [str(self.result.mcmc_job.time_taken_sampling)] +
-                           [str(np.mean(self.result.mcmc_job.accepted))] +
-                           [str(v) if np.isscalar(v) else (str(v[i]) for i in range(len(v)))]
-                           )]
+            s += [str(v)]
         
         return s
