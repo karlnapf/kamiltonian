@@ -5,7 +5,7 @@ import numpy as np
 
 def ess_coda(X):
         """
-        Computes the effective samples size of a 1d-array using R-coda via
+        Computes the effective samples size for each column of a 2d-array using R-coda via
         an external R call. The python package rpy2 and the R-library
         "library(coda)" have to be installed. Inspired by Charles Blundell's
         neat little python script :)
