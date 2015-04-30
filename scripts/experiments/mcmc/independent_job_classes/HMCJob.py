@@ -28,6 +28,7 @@ class HMCJob(MCMCJob):
     @abstractmethod
     def set_up(self):
         # momentum is fixed so sample all of them here
+        logger.info("Using momentum seed: %d" % self.momentum_seed)
         np.random.seed(self.momentum_seed)
         self.hmc_rnd_state = np.random.get_state()
 
