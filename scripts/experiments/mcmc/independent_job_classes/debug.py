@@ -12,7 +12,7 @@ def plot_diagnosis(agg, D):
     accepted = agg.result.mcmc_job.accepted
     quantiles_emp = agg.result.mcmc_job.posterior_statistics["emp_quantiles"]
     ESS = agg.result.mcmc_job.posterior_statistics["ESS"]
-    time = agg.result.mcmc_job.time_taken
+    time = agg.result.mcmc_job.time_taken_sampling
     time_set_up = agg.result.mcmc_job.time_taken_set_up
     
     # compute autocorrelation of the dimension with heavier tails
@@ -55,7 +55,7 @@ def plot_diagnosis(agg, D):
     print("Average acceptance probability: %.2f" % np.mean(accepted))
     print("Average ESS: %.2f" % np.mean(ESS))
     print("Average ESS/s: %.2f" % (np.mean(ESS) / time))
-    print("Average ESS/s including set up: %.2f" % (np.mean(ESS) / time_set_up))
+    print("Average ESS/s including set up: %.2f" % (np.mean(ESS) / (time+time_set_up)))
     
     print("ESS for all dimensions:")
     ESS_table = PrettyTable(["%d" % d for d in range(D)])
