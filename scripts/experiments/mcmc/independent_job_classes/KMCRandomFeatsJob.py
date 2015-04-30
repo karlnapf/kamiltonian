@@ -156,15 +156,17 @@ class KMCRandomFeatsJob(HMCJob):
             time_taken_set_up = np.int(results[i, 2])
             time_taken_sampling = np.int(results[i, 3])
             accepted = np.float(results[i, 4])
-            posterior_stats = results[i, 5:]
+            avg_quantile_error = results[i, 5]
+            avg_ESS = results[i, 6]
             
             to_add = np.zeros(results.shape[1]-2)
             to_add[0] = time_taken_set_up
             to_add[1] = time_taken_sampling
             to_add[2] = accepted
-            to_add[3:] = posterior_stats
+            to_add[3] = avg_quantile_error
+            to_add[4] = avg_ESS
             
-            result_dict[(N, D)] = to_add
+            result_dict[(N, D)] += [to_add]
         
         return result_dict
 

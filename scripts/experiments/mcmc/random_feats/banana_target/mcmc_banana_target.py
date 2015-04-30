@@ -13,7 +13,7 @@ from kmc.densities.banana import Banana, sample_banana
 import kmc.densities.banana
 from kmc.densities.gaussian import IsotropicZeroMeanGaussian
 from kmc.tools.Log import logger
-from kmc.tools.convergence_stats import ess_coda
+from kmc.tools.convergence_stats import avg_ess
 import numpy as np
 from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob
 from scripts.experiments.mcmc.independent_job_classes.KMCRandomFeatsJob import KMCRandomFeatsJob
@@ -29,8 +29,8 @@ def hmc_generator(D, target, num_warmup, thin_step):
     
     return HMCJob(target, momentum, num_iterations, start,
                          num_steps_min, num_steps_max, step_size_min, step_size_max,
-                         momentum_seed, statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles,
-                                                    "ESS": ess_coda},
+                            statistics={"avg_quantile_error": kmc.densities.banana.avg_quantile_error,
+                                        "avg_ess": avg_ess},
                          num_warmup=num_warmup, thin_step=thin_step)
 
 def kmc_generator(N, D, target, num_warmup, thin_step):
@@ -51,14 +51,14 @@ def kmc_generator(N, D, target, num_warmup, thin_step):
                             start, num_steps_min, num_steps_max,
                             step_size_min, step_size_max, momentum_seed, learn_parameters=learn_parameters,
                             force_relearn_parameters=force_relearn_parameters,
-                            statistics={"emp_quantiles": kmc.densities.banana.emp_quantiles,
-                                        "ESS": ess_coda},
+                            statistics={"avg_quantile_error": kmc.densities.banana.avg_quantile_error,
+                                        "avg_ess": avg_ess},
                             num_warmup=num_warmup, thin_step=thin_step)
     job.plot = False
     return job
 
 if __name__ == "__main__":
-    logger.setLevel(20)
+    logger.setLevel(10)
     Ds = np.sort([2, 8])[::-1]
     Ns = np.sort([10, 50, 100, 200, 500, 1000, 1500, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000])[::-1]
 #     Ds = [8]

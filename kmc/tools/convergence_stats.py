@@ -2,6 +2,8 @@ from rpy2 import robjects
 
 import numpy as np
 
+def avg_ess(X):
+    return np.mean(ess_coda(X))
 
 def ess_coda(X):
         """

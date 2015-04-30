@@ -125,11 +125,19 @@ class MCMCJob(IndependentJob):
             time_taken_set_up = np.int(results[i, 1])
             time_taken_sampling = np.int(results[i, 2])
             accepted = np.float(results[i, 3])
-            posterior_stats = results[i, 4:]
+            avg_quantile_error = results[i, 4:]
+            avg_ess = results[i, 5:]
             
-            results = np.ravel([time_taken_set_up, time_taken_sampling, accepted, posterior_stats])
+            to_add = np.zeros(results.shape[1]-1)
+            to_add[0] = time_taken_set_up
+            to_add[1] = time_taken_sampling
+            to_add[2] = accepted
+            to_add[3] = avg_quantile_error
+            to_add[4] = avg_ess
             
-            result_dict[D] = results
+            result_dict[D] += [to_add]
+        
+        return result_dict
         
         return result_dict
 

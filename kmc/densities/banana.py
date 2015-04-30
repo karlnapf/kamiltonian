@@ -53,6 +53,10 @@ def emp_quantiles(X, bananicity=0.03, V=100, quantiles=np.arange(0.1, 1, 0.1)):
     
     return quantiles
 
+def avg_quantile_error(X, bananicity=0.03, V=100, quantiles=np.arange(0.1, 1, 0.1)):
+    q = emp_quantiles(X, bananicity, V, quantiles)
+    return np.mean(np.abs(q-quantiles))
+
 class Banana(object):
     def __init__(self, bananicity=0.03, V=100):
         self.bananicity = bananicity
