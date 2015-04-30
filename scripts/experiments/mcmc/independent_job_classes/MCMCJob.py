@@ -105,6 +105,35 @@ class MCMCJob(IndependentJob):
     def get_parameter_fname_suffix(self):
         return ("D=%d" % self.D)
 
+    @staticmethod
+    def result_dict_from_file(fname):
+        """
+        Assumes a file with lots of lines as the one created by
+        store_fire_and_forget_result and produces a dictionary with D as key
+        arrays with experimental results for each of the R repetitions. This contains
+        a few standard values as acceptance probability and the used posterior statistics
+        """
+        results = np.loadtxt(fname)
+        
+        result_dict = {}
+        for i in range(len(results)):
+            D = np.int(results[i, 0])
+            result_dict[D] = []
+    
+        for i in range(len(results)):
+            D = np.int(results[i, 0])
+            time_taken_set_up = np.int(results[i, 1])
+            time_taken_sampling = np.int(results[i, 2])
+            accepted = np.float(results[i, 3])
+            posterior_stats = results[i, 4:]
+            
+            results = np.ravel([time_taken_set_up, time_taken_sampling, accepted, posterior_stats])
+            
+            result_dict[D] = results
+        
+        return result_dict
+
+
 class MCMCJobResult(JobResult):
     def __init__(self, mcmc_job):
         JobResult.__init__(self)
@@ -141,10 +170,11 @@ class MCMCJobResultAggregator(JobResultAggregator):
         D = self.result.mcmc_job.D
         for _, v in self.result.mcmc_job.posterior_statistics.items():
             # assumes posterior statistics are vectors
-            s += [" ".join([str(D)] + [str(v[i]) for i in range(len(v))] +
-                           [str(np.mean(self.result.mcmc_job.accepted))] +
+            s += [" ".join([str(D)] + 
+                           [str(self.result.mcmc_job.time_taken_set_up)] +
                            [str(self.result.mcmc_job.time_taken_sampling)] +
-                           [str(self.result.mcmc_job.time_taken_set_up)]
+                           [str(np.mean(self.result.mcmc_job.accepted))] +
+                           [str(v[i]) for i in range(len(v))]
                            )]
         
         return s

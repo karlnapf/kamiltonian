@@ -6,7 +6,7 @@ from kmc.score_matching.random_feats.gaussian_rkhs import sample_basis, \
     score_matching_sym
 from kmc.score_matching.random_feats.gaussian_rkhs_xvalidation import select_sigma_lambda_cma
 from kmc.tools.Log import logger
-from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob,\
+from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob, \
     HMCJobResultAggregator
     
 import numpy as np
@@ -14,7 +14,7 @@ import numpy as np
 
 splitted = __file__.split(os.sep)
 idx = splitted.index('kamiltonian')
-project_path = os.sep.join(splitted[:(idx+1)])
+project_path = os.sep.join(splitted[:(idx + 1)])
 
 class KMCRandomFeatsJob(HMCJob):
     def __init__(self, Z, sigma, lmbda,
@@ -23,7 +23,7 @@ class KMCRandomFeatsJob(HMCJob):
                  num_steps_min=10, num_steps_max=100, step_size_min=0.05,
                  step_size_max=0.3, momentum_seed=0,
                  learn_parameters=False, force_relearn_parameters=False,
-                 statistics = {}, num_warmup=500, thin_step=1):
+                 statistics={}, num_warmup=500, thin_step=1):
         
         HMCJob.__init__(self, target, momentum,
                         num_iterations, start,
@@ -132,6 +132,42 @@ class KMCRandomFeatsJob(HMCJob):
                 lmbda = pars['lmbda']
                 
         return sigma, lmbda
+    
+    @staticmethod
+    def result_dict_from_file(fname):
+        """
+        Assumes a file with lots of lines as the one created by
+        store_fire_and_forget_result and produces a dictionary with (N,D) as key
+        arrays with experimental results for each of the R repetitions. This contains
+        a few standard values as acceptance probability and the used posterior statistics
+        """
+        results = np.loadtxt(fname)
+        
+        result_dict = {}
+        for i in range(len(results)):
+            N = np.int(results[i, 0])
+            D = np.int(results[i, 1])
+            
+            result_dict[(N, D)] = []
+    
+        for i in range(len(results)):
+            N = np.int(results[i, 0])
+            D = np.int(results[i, 1])
+            time_taken_set_up = np.int(results[i, 2])
+            time_taken_sampling = np.int(results[i, 3])
+            accepted = np.float(results[i, 4])
+            posterior_stats = results[i, 5:]
+            
+            to_add = np.zeros(results.shape[1]-2)
+            to_add[0] = time_taken_set_up
+            to_add[1] = time_taken_sampling
+            to_add[2] = accepted
+            to_add[3:] = posterior_stats
+            
+            result_dict[(N, D)] = to_add
+        
+        return result_dict
+
 
 
 class KMCJobResultAggregator(HMCJobResultAggregator):
