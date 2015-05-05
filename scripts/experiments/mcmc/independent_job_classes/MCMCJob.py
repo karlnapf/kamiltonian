@@ -98,7 +98,7 @@ class MCMCJob(IndependentJob):
         pass
     
     @abstractmethod
-    def propose(self, current):
+    def propose(self, current, current_log_pdf):
         raise NotImplementedError()
 
     @abstractmethod

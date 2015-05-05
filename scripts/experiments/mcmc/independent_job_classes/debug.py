@@ -1,6 +1,3 @@
-
-from prettytable import PrettyTable
-
 from kmc.tools.convergence_stats import autocorr
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,6 +9,8 @@ def plot_diagnosis(agg, D):
     accepted = agg.result.mcmc_job.accepted
     avg_quantile_errors = agg.result.mcmc_job.posterior_statistics["avg_quantile_error"]
     avg_ess = agg.result.mcmc_job.posterior_statistics["avg_ess"]
+    norm_of_mean = agg.result.mcmc_job.posterior_statistics["norm_of_mean"]
+    
     time = agg.result.mcmc_job.time_taken_sampling
     time_set_up = agg.result.mcmc_job.time_taken_set_up
     
@@ -45,5 +44,6 @@ def plot_diagnosis(agg, D):
     print("Average ESS: %.2f" % avg_ess)
     print("Average ESS/s: %.2f" % (avg_ess / time))
     print("Average ESS/s including set up: %.2f" % (avg_ess / (time+time_set_up)))
+    print("Average norm of mean: %.2f" % norm_of_mean)
     
     plt.show()
