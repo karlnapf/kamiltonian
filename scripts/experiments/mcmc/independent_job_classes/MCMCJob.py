@@ -184,7 +184,7 @@ class MCMCJobResultAggregator(JobResultAggregator):
         s += [str(self.result.mcmc_job.time_taken_sampling)]
         s += [str(np.mean(self.result.mcmc_job.accepted))]
 
-        for v in self.result.mcmc_job.posterior_statistics.values():
+        for _,v in self.result.mcmc_job.posterior_statistics.items():
             # assumes posterior statistics are scalars
             s += [str(v)]
         
