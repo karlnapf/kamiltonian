@@ -2,6 +2,7 @@ from collections import OrderedDict
 from os import makedirs
 import os
 from os.path import expanduser
+from scipy.spatial.distance import squareform, pdist
 import time
 import uuid
 
@@ -95,42 +96,21 @@ def kmc_generator(N, D, target, num_warmup, thin_step, momentum_seed):
 def kameleon_generator(N, D, target, num_warmup, thin_step):
     start = np.array(start_base + [0. ] * (D - 2))
     
-    # estimator parameters
-    sigma = 0.46
-    nu2 = 4.
-    gamma2 = 0.1
-    
     # determined by pilot runs
-    if N==2000 and D==2:
-        nu2 = 0.15
-    elif N==1500 and D==2:
-        nu2 = 0.5
-    elif N==1000 and D==2:
-        nu2 = 0.5
-    elif N==500 and D==2:
-        nu2 = 1.5
-    elif N==200 and D==2:
-        nu2 = 6.
-    elif N==100 and D==2:
-        nu2 = 6.
-        gamma2= 1.
-    elif N==50 and D==2:
-        nu2 = 9.
-        gamma2= 2.
     if N==2000 and D==8:
-        nu2 = 1.
-        gamma2 = 1.
+        nu2 = .5
+        gamma2 = .1
     elif N==1500 and D==8:
-        nu2 = 1.
-        gamma2 = 1.
+        nu2 = .7
+        gamma2 = .1
     elif N==1000 and D==8:
-        nu2 = 1.
-        gamma2 = 1.
+        nu2 = .8
+        gamma2 = .1
     elif N==500 and D==8:
-        nu2 = 1.
-        gamma2 = 1.
+        nu2 = .8
+        gamma2 = .5
     elif N==200 and D==8:
-        nu2 = 2.
+        nu2 = 1.
         gamma2 = 1.
     elif N==100 and D==8:
         nu2 = 2.
@@ -140,6 +120,12 @@ def kameleon_generator(N, D, target, num_warmup, thin_step):
         gamma2 = 1.
     # oracle samples
     Z = sample_banana(N, D, bananicity, V)
+    
+    # median heuristic:
+    dists=squareform(pdist(Z, 'sqeuclidean'))
+    median_dist=np.median(dists[dists>0])
+    sigma=0.5*median_dist
+    
     job = KameleonJob(Z, sigma, nu2, gamma2, target, num_iterations, start,
                       statistics=statistics,
                             num_warmup=num_warmup, thin_step=thin_step)
@@ -147,10 +133,9 @@ def kameleon_generator(N, D, target, num_warmup, thin_step):
 
 if __name__ == "__main__":
     logger.setLevel(10)
-    Ds = np.sort([2, 8])[::-1]
+    Ds = np.sort([8])[::-1]
     Ns = np.sort([50, 100, 200, 500, 1000, 1500, 2000])[::-1]
-#     Ds = np.sort([8])[::-1]
-#     Ns = np.sort([50])[::-1]
+#     Ns = np.sort([2000])[::-1]
     
     print(Ns)
     print(Ds)
@@ -167,7 +152,7 @@ if __name__ == "__main__":
     num_warmup = 500
     thin_step = 1
     num_iterations = 2000 + num_warmup
-#     num_iterations = 1000
+#     num_iterations = 300
 #     num_warmup = 0
     
     # hmc parameters
