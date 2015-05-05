@@ -21,24 +21,26 @@ if __name__ == "__main__":
     resuts_rw = MCMCJob.result_dict_from_file(fname_rw)
     resuts_kameleon = KMCRandomFeatsJob.result_dict_from_file(fname_kameleon)
 
-    for D in [2, 8, 16, 24, 32]:
+    for D in [2, 8, 16]:
         normalise_by_time = False
-        stat_idx = 4
+        xmax = 2000
         titles = {
             0: 'Time set up',
             1: 'Time sampling',
             2: 'Acceptance',
             3: 'Quantile error',
-                  4: 'ESS',
-                  5: r'$\Vert \mathbb E [X]\Vert$',
+                  4: r'$\Vert \mathbb E [X]\Vert$',
+                  5: 'ESS',
                   
                   }
-        title = '%s, D=%d' % (titles[stat_idx], D)
         
-        plot_banana_result_mean_N_D(resuts_kmc, D, stat_idx=stat_idx, normalise_by_time=normalise_by_time, title=title, xlabel='', color='b', xlim=[0, 2000])
-        plot_banana_result_mean_D(resuts_hmc, D, stat_idx=stat_idx, normalise_by_time=normalise_by_time, plot_error=False, title=title, xlabel='', color='r')
-        plot_banana_result_mean_N_D(resuts_kameleon, D, stat_idx=stat_idx, normalise_by_time=normalise_by_time, title=title, xlabel='', color='g', xlim=[0, 2000])
-        plot_banana_result_mean_D(resuts_rw, D, stat_idx=stat_idx, normalise_by_time=normalise_by_time, plot_error=False, title=title, xlabel='', color='m')
         
-#         plt.legend(["KMC", "HMC", "MH", "KMH"])
-        plt.show()
+        for stat_idx in range(len(titles)):
+            title = '%s, D=%d' % (titles[stat_idx], D)
+            plot_banana_result_mean_N_D(resuts_kmc, D, stat_idx=stat_idx, normalise_by_time=normalise_by_time, title=title, xlabel='', color='b', xlim=[0, xmax])
+            plot_banana_result_mean_D(resuts_hmc, D, stat_idx=stat_idx, normalise_by_time=normalise_by_time, plot_error=False, title=title, xlabel='', color='r')
+            plot_banana_result_mean_N_D(resuts_kameleon, D, stat_idx=stat_idx, normalise_by_time=normalise_by_time, title=title, xlabel='', color='g', xlim=[0, xmax])
+            plot_banana_result_mean_D(resuts_rw, D, stat_idx=stat_idx, normalise_by_time=normalise_by_time, plot_error=False, title=title, xlabel='', color='m')
+            
+    #         plt.legend(["KMC", "HMC", "MH", "KMH"])
+            plt.show()

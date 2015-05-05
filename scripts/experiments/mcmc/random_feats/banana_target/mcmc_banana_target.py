@@ -85,10 +85,44 @@ def kameleon_generator(N, D, target, num_warmup, thin_step):
     nu2 = 4.
     gamma2 = 0.1
     
-    if N<100:
+    # determined by pilot runs
+    if N==2000 and D==2:
+        nu2 = 0.15
+    elif N==1500 and D==2:
+        nu2 = 0.5
+    elif N==1000 and D==2:
+        nu2 = 0.5
+    elif N==500 and D==2:
+        nu2 = 1.5
+    elif N==200 and D==2:
+        nu2 = 6.
+    elif N==100 and D==2:
+        nu2 = 6.
         gamma2= 1.
-    
-
+    elif N==50 and D==2:
+        nu2 = 9.
+        gamma2= 2.
+    if N==2000 and D==8:
+        nu2 = 1.
+        gamma2 = 1.
+    elif N==1500 and D==8:
+        nu2 = 1.
+        gamma2 = 1.
+    elif N==1000 and D==8:
+        nu2 = 1.
+        gamma2 = 1.
+    elif N==500 and D==8:
+        nu2 = 1.
+        gamma2 = 1.
+    elif N==200 and D==8:
+        nu2 = 2.
+        gamma2 = 1.
+    elif N==100 and D==8:
+        nu2 = 2.
+        gamma2 = 1.
+    elif N==50 and D==8:
+        nu2 = 2.
+        gamma2 = 1.
     # oracle samples
     Z = sample_banana(N, D, bananicity, V)
     job = KameleonJob(Z, sigma, nu2, gamma2, target, num_iterations, start,
@@ -98,16 +132,16 @@ def kameleon_generator(N, D, target, num_warmup, thin_step):
 
 if __name__ == "__main__":
     logger.setLevel(10)
-    Ds = np.sort([2, 8, 16])[::-1]
-    Ns = np.sort([10, 50, 100, 200, 500, 1000, 1500, 2000])[::-1]
-#     Ds = np.sort([2])[::-1]
-#     Ns = np.sort([100, 200, 300, 400, 500])[::-1]
+    Ds = np.sort([2, 8])[::-1]
+    Ns = np.sort([50, 100, 200, 500, 1000, 1500, 2000])[::-1]
+#     Ds = np.sort([8])[::-1]
+#     Ns = np.sort([50])[::-1]
     
     print(Ns)
     print(Ds)
     assert np.min(Ds) >= 2
     num_repetitions = 10
-#     num_repetitions = 3
+#     num_repetitions = 1
     
     # target
     bananicity = 0.03
@@ -118,7 +152,7 @@ if __name__ == "__main__":
     num_warmup = 500
     thin_step = 1
     num_iterations = 2000 + num_warmup
-#     num_iterations = 200
+#     num_iterations = 300
 #     num_warmup = 0
     
     # hmc parameters
@@ -159,16 +193,16 @@ if __name__ == "__main__":
         # same momentum for every D and N of every repetition
         momentum_seed += 1
         for D in Ds:
-            job = hmc_generator(D, target, num_warmup, thin_step, momentum_seed)
-            logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
-            aggs_hmc_kmc[D] += [engine.submit_job(job)]
-            job = rw_generator_isotropic(D, target, num_warmup, thin_step)
-            logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
-            aggs_rw_kameleon[D] += [engine.submit_job(job)]
+#             job = hmc_generator(D, target, num_warmup, thin_step, momentum_seed)
+#             logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
+#             aggs_hmc_kmc[D] += [engine.submit_job(job)]
+#             job = rw_generator_isotropic(D, target, num_warmup, thin_step)
+#             logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
+#             aggs_rw_kameleon[D] += [engine.submit_job(job)]
             for N in Ns:
-                job = kmc_generator(N, D, target, num_warmup, thin_step, momentum_seed)
-                logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
-                aggs_hmc_kmc[(N, D)] += [engine.submit_job(job)]
+#                 job = kmc_generator(N, D, target, num_warmup, thin_step, momentum_seed)
+#                 logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
+#                 aggs_hmc_kmc[(N, D)] += [engine.submit_job(job)]
                 job = kameleon_generator(N, D, target, num_warmup, thin_step)
                 logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
                 aggs_rw_kameleon[(N, D)] += [engine.submit_job(job)]
