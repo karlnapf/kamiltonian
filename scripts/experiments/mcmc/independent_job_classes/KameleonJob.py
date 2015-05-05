@@ -1,20 +1,13 @@
 from abc import abstractmethod
 import os
 
-from kmc.score_matching.kernel.kernels import gaussian_kernel,\
-    gaussian_kernel_grad
-from kmc.score_matching.random_feats.estimator import RandomFeatsEstimator
-from kmc.score_matching.random_feats.gaussian_rkhs import sample_basis, \
-    score_matching_sym
-from kmc.score_matching.random_feats.gaussian_rkhs_xvalidation import select_sigma_lambda_cma
+from kmc.densities.gaussian import sample_gaussian
+from kmc.score_matching.kernel.kernels import gaussian_kernel_grad
 from kmc.tools.Log import logger
 import numpy as np
-from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob, \
-    HMCJobResultAggregator
 from scripts.experiments.mcmc.independent_job_classes.KMCRandomFeatsJob import KMCJobResultAggregator
 from scripts.experiments.mcmc.independent_job_classes.MCMCJob import MCMCJob,\
     MCMCJobResultAggregator
-from kmc.densities.gaussian import sample_gaussian
 
 
 splitted = __file__.split(os.sep)
