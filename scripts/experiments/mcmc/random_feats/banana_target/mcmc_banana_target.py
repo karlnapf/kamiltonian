@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from os import makedirs
 import os
 from os.path import expanduser
@@ -25,9 +26,10 @@ from scripts.experiments.mcmc.independent_job_classes.debug import plot_diagnosi
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
 start_base = [0, -3.]
 
-statistics = {"avg_quantile_error": kmc.densities.banana.avg_quantile_error,
-                                    "avg_ess": avg_ess,
-                                    "norm_of_mean": norm_of_emp_mean}
+statistics = OrderedDict()
+statistics['avg_quantile_error']=kmc.densities.banana.avg_quantile_error
+statistics['avg_ess']=avg_ess
+statistics['norm_of_mean']=norm_of_emp_mean
 
 def hmc_generator(D, target, num_warmup, thin_step, momentum_seed):
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
@@ -98,13 +100,14 @@ if __name__ == "__main__":
     logger.setLevel(10)
     Ds = np.sort([2, 8, 16])[::-1]
     Ns = np.sort([10, 50, 100, 200, 500, 1000, 1500, 2000])[::-1]
-    
+#     Ds = np.sort([2])[::-1]
+#     Ns = np.sort([100, 200, 300, 400, 500])[::-1]
     
     print(Ns)
     print(Ds)
     assert np.min(Ds) >= 2
     num_repetitions = 10
-#     num_repetitions = 5
+#     num_repetitions = 3
     
     # target
     bananicity = 0.03
@@ -115,7 +118,7 @@ if __name__ == "__main__":
     num_warmup = 500
     thin_step = 1
     num_iterations = 2000 + num_warmup
-#     num_iterations = 2000
+#     num_iterations = 200
 #     num_warmup = 0
     
     # hmc parameters

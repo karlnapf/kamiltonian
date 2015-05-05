@@ -90,49 +90,6 @@ class KameleonJob(MCMCJob):
     def get_parameter_fname_suffix(self):
         return ("Kameleon_N=%d_" % len(self.Z)) + MCMCJob.get_parameter_fname_suffix(self)[4:] 
     
-    @staticmethod
-    def result_dict_from_file(fname):
-        """
-        Assumes a file with lots of lines as the one created by
-        store_fire_and_forget_result and produces a dictionary with (N,D) as key
-        arrays with experimental results for each of the R repetitions. This contains
-        a few standard values as acceptance probability and the used posterior statistics
-        """
-        results = np.loadtxt(fname)
-        
-        result_dict = {}
-        for i in range(len(results)):
-            N = np.int(results[i, 0])
-            D = np.int(results[i, 1])
-            
-            result_dict[(N, D)] = []
-    
-        for i in range(len(results)):
-            N = np.int(results[i, 0])
-            D = np.int(results[i, 1])
-            time_taken_set_up = np.int(results[i, 2])
-            time_taken_sampling = np.int(results[i, 3])
-            accepted = np.float(results[i, 4])
-            avg_quantile_error = results[i, 5]
-            avg_ESS = results[i, 6]
-            norm_of_mean = results[i, 7]
-            
-            
-            to_add = np.zeros(6)
-            to_add[0] = time_taken_set_up
-            to_add[1] = time_taken_sampling
-            to_add[2] = accepted
-            to_add[3] = avg_quantile_error
-            to_add[4] = avg_ESS
-            to_add[5] = norm_of_mean
-            
-            result_dict[(N, D)] += [to_add]
-        
-        for k,v in result_dict.items():
-            result_dict[k] = np.array(v)
-        
-        return result_dict
-
 class KameleonJobResultAggregator(MCMCJobResultAggregator):
     def __init__(self):
         MCMCJobResultAggregator.__init__(self)
