@@ -58,7 +58,7 @@ def plot_banana_result_mean_N_D(results, D, stat_idx, normalise_by_time=False,
     _, _, upper = gen_sparse_2d_array_from_dict(results, fun)
     
     D_ind = Ds == D
-    time_total = time_taken_sampling[:,D_ind] + time_taken_set_up[:,D_ind]
+    time_total = time_taken_sampling[:,D_ind]# + time_taken_set_up[:,D_ind]
     time_total = time_total.ravel()
     
     print_table(time_total, "Time total")
@@ -105,6 +105,11 @@ def plot_banana_result_mean_D(results, D, stat_idx, normalise_by_time=False,
     
     fun = lambda x: np.mean(x[:,stat_idx])
     _, avg = gen_sparse_1d_array_from_dict(results, fun)
+    
+    fun = lambda x: np.percentile(x[:, stat_idx], 25)
+    _, lower = gen_sparse_1d_array_from_dict(results, fun)
+    fun = lambda x: np.percentile(x[:, stat_idx], 75)
+    _, upper = gen_sparse_1d_array_from_dict(results, fun)
         
     D_ind = Ds == D
     time_total = time_taken_sampling[D_ind] + time_taken_set_up[D_ind]
@@ -116,7 +121,11 @@ def plot_banana_result_mean_D(results, D, stat_idx, normalise_by_time=False,
     avg = avg[D_ind].ravel()/normaliser
     
     xlim=plt.xlim()
-    plt.plot(xlim, [avg,avg], kwargs['color'])
+    plt.plot(xlim, [avg,avg], color=kwargs['color'])
+    plt.plot(xlim, [lower,lower], '--', color=kwargs['color'])
+    plt.plot(xlim, [upper,upper], '--', color=kwargs['color'])
+    
+    
     plt.grid(True)
     
     try:
