@@ -58,15 +58,15 @@ class MCMCJob(IndependentJob):
                 logger.debug(log_str)
             
             # generate proposal and acceptance probability
-            logger.debug("Generating proposal")
+            logger.debug("Performing MCMC step")
             self.proposals[i], self.acc_prob[i], log_pdf_proposal = self.propose(current, current_log_pdf)
             
             # accept-reject
-            logger.debug("Updating chain")
             r = np.random.rand()
             self.accepted[i] = r < self.acc_prob[i]
             
             # update state
+            logger.debug("Updating chain")
             if self.accepted[i]:
                 current = self.proposals[i]
                 current_log_pdf = log_pdf_proposal

@@ -4,17 +4,17 @@ import os
 import matplotlib.pyplot as plt
 from scripts.experiments.mcmc.independent_job_classes.KMCRandomFeatsJob import KMCRandomFeatsJob
 from scripts.experiments.mcmc.independent_job_classes.MCMCJob import MCMCJob
-from scripts.experiments.mcmc.plots import plot_banana_result_mean_N_D,\
+from scripts.experiments.mcmc.random_feats.banana_target.plots import plot_banana_result_mean_N_D,\
     plot_banana_result_mean_D
 
 
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
 
 if __name__ == "__main__":
-    fname_hmc = "random_feats/banana_target/results_hmc.csv"
-    fname_kmc = "random_feats/banana_target/results_kmc.csv"
-    fname_rw = "random_feats/banana_target/results_rw.csv"
-    fname_kameleon = "random_feats/banana_target/results_kameleon.csv"
+    fname_hmc = "results_hmc.csv"
+    fname_kmc = "results_kmc.csv"
+    fname_rw = "results_rw.csv"
+    fname_kameleon = "results_kameleon.csv"
     
     resuts_hmc = MCMCJob.result_dict_from_file(fname_hmc)
     resuts_kmc = KMCRandomFeatsJob.result_dict_from_file(fname_kmc)

@@ -1,7 +1,5 @@
-import matplotlib
 from prettytable import PrettyTable
 
-from kmc.tools.Log import logger
 from kmc.tools.latex_plot_init import plt
 import numpy as np
 
