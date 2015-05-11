@@ -35,7 +35,7 @@ class HMCJob(MCMCJob):
         MCMCJob.set_up(self)
     
     @abstractmethod
-    def propose(self, current, current_log_pdf):
+    def propose(self, current, current_log_pdf, samples, accepted):
         # random variables from a fixed random stream without modifying the current one
         rnd_state = np.random.get_state()
         np.random.set_state(self.hmc_rnd_state)

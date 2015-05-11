@@ -87,7 +87,7 @@ class KMCRandomFeatsJob(HMCJob):
         
     
     @abstractmethod
-    def accept_prob_log_pdf(self, current, q, p0_log_pdf, p_log_pdf, current_log_pdf=None):
+    def accept_prob_log_pdf(self, current, q, p0_log_pdf, p_log_pdf, current_log_pdf=None, samples=None):
         # same as super-class, but with original target
         kernel_target = self.target
         self.target = self.orig_target

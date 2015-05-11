@@ -17,7 +17,7 @@ class RWJob(MCMCJob):
         self.sigma_proposal = sigma_proposal
     
     @abstractmethod
-    def propose(self, current, current_log_pdf):
+    def propose(self, current, current_log_pdf, samples, accepted):
         # sample from Gaussian at current point with given covariance
         proposal = np.random.randn(self.D)*self.sigma_proposal + current
         

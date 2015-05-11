@@ -20,7 +20,7 @@ class KameleonJob(MCMCJob):
                  num_iterations, start,
                  statistics={}, num_warmup=500, thin_step=1):
         
-        MCMCJob.__init__(self, num_iterations, Z.shape[1], start, statistics, num_warmup, thin_step)
+        MCMCJob.__init__(self, num_iterations, len(start), start, statistics, num_warmup, thin_step)
         
         self.aggregator = KMCJobResultAggregator()
         
@@ -64,7 +64,7 @@ class KameleonJob(MCMCJob):
         return L_R
     
     @abstractmethod
-    def propose(self, current, current_log_pdf=None):
+    def propose(self, current, current_log_pdf, samples, accepted):
         # compute Kameleon proposal
         L = self.compute_proposal_covariance(current)
         

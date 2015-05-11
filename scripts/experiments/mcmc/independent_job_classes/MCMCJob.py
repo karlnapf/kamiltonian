@@ -59,7 +59,9 @@ class MCMCJob(IndependentJob):
             
             # generate proposal and acceptance probability
             logger.debug("Performing MCMC step")
-            self.proposals[i], self.acc_prob[i], log_pdf_proposal = self.propose(current, current_log_pdf)
+            self.proposals[i], self.acc_prob[i], log_pdf_proposal = self.propose(current,
+                                                                                 current_log_pdf, self.samples[:i],
+                                                                                 self.accepted[:i])
             
             # accept-reject
             r = np.random.rand()
@@ -98,7 +100,7 @@ class MCMCJob(IndependentJob):
         pass
     
     @abstractmethod
-    def propose(self, current, current_log_pdf):
+    def propose(self, current, current_log_pdf, samples):
         raise NotImplementedError()
 
     @abstractmethod
