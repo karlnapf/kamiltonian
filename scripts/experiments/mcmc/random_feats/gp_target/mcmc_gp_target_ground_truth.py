@@ -12,6 +12,7 @@ from kmc.tools.Log import logger
 from kmc.tools.convergence_stats import avg_ess
 import numpy as np
 from scripts.experiments.mcmc.independent_job_classes.RWJobGPGlass import RWJobGPGlass
+from scripts.experiments.mcmc.independent_job_classes.debug import plot_diagnosis_single_instance
 
 
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
@@ -22,7 +23,7 @@ def rw_generator_isotropic(num_warmup, thin_step):
     # tuned towards roughly 23% acceptance
     sigma_proposal = 0.54
     
-    start = np.zeros(9)
+    start = np.random.randn(9) * 10
     
     return RWJobGPGlass(num_iterations,
                         start, sigma_proposal,
@@ -30,12 +31,12 @@ def rw_generator_isotropic(num_warmup, thin_step):
 
 if __name__ == "__main__":
     logger.setLevel(10)
-    num_repetitions = 30
+    num_repetitions = 50
     
-    # plain MCMC parameters
+    # plain MCMC parameters, plan is to use every 100th sample
     thin_step = 1
-    num_iterations = 600000
-    num_warmup = 100000
+    num_iterations = 10000
+    num_warmup = 1000
     
     compute_local = False
     
@@ -63,6 +64,9 @@ if __name__ == "__main__":
     engine.wait_for_all()
     
     for i, agg in enumerate(aggs_rw):
+        if isinstance(engine, SerialComputationEngine):
+            plot_diagnosis_single_instance(agg, D1=1, D2=6)
+            
         agg.finalize()
         mcmc_job = agg.get_final_result().mcmc_job
         agg.clean_up()
