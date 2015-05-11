@@ -208,7 +208,7 @@ class MCMCJobResultAggregatorStoreHome(MCMCJobResultAggregator):
         home = expanduser("~")
         uni = unicode(uuid.uuid4())
         fname = "%s_ground_truth_iterations=%d_%s.pkl" % \
-            (self.__class__.__name__, self.result.mcmc_job.num_iterations, uni)
+            (self.result.mcmc_job.__class__.__name__, self.result.mcmc_job.num_iterations, uni)
         full_fname = home + os.sep + fname
         
         with open(full_fname) as f:
