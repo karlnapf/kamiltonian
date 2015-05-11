@@ -80,7 +80,7 @@ if __name__ == "__main__":
         logger.info("Average ESS: %.2f" % avg_ess)
         
         # save result under unique filename
-        fname = "%s_ground_truth_iterations=%d_%s" % (modulename, num_iterations, unicode(uuid.uuid4()))
+        fname = "%s_ground_truth_iterations=%d_%s.pkl" % (modulename, num_iterations, unicode(uuid.uuid4()))
         with open(fname, 'w+') as f:
             logger.info("Storing result under %s" % fname)
             pickle.dump(mcmc_job, f)
