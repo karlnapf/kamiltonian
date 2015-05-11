@@ -33,9 +33,9 @@ if __name__ == "__main__":
     logger.setLevel(10)
     num_repetitions = 50
     
-    # plain MCMC parameters, plan is to use every 100th sample
+    # plain MCMC parameters, plan is to use every 200th sample
     thin_step = 1
-    num_iterations = 10000
+    num_iterations = 20000
     num_warmup = 1000
     
     compute_local = False
