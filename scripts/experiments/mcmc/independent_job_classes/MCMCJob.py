@@ -1,6 +1,9 @@
 from abc import abstractmethod
 import os
+from os.path import expanduser
+import pickle
 from time import time
+import uuid
 
 from independent_jobs.aggregators.JobResultAggregator import JobResultAggregator
 from independent_jobs.jobs.IndependentJob import IndependentJob
@@ -8,6 +11,7 @@ from independent_jobs.results.JobResult import JobResult
 
 from kmc.tools.Log import logger
 import numpy as np
+
 
 class MCMCJob(IndependentJob):
     def __init__(self,
@@ -197,3 +201,16 @@ class MCMCJobResultAggregator(JobResultAggregator):
             s += [str(v)]
         
         return s
+
+class MCMCJobResultAggregatorStoreHome(MCMCJobResultAggregator):
+    @abstractmethod
+    def store_fire_and_forget_result(self, folder, job_name):
+        home = expanduser("~")
+        uni = unicode(uuid.uuid4())
+        fname = "%s_ground_truth_iterations=%d_%s.pkl" % \
+            (self.__class__.__name__, self.result.mcmc_job.num_iterations, uni)
+        full_fname = home + os.sep + fname
+        
+        with open(full_fname) as f:
+            logger.info("Storing result under %s" % full_fname)
+            pickle.dump(self, f)
