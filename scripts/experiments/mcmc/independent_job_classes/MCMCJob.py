@@ -225,6 +225,6 @@ class MCMCJobResultAggregatorStoreHome(MCMCJobResultAggregator):
         except Exception:
             pass
         
-        with open(full_fname) as f:
+        with open(full_fname, 'w+') as f:
             logger.info("Storing result under %s" % full_fname)
             pickle.dump(self, f)
