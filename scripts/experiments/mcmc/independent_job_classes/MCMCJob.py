@@ -220,8 +220,9 @@ class MCMCJobResultAggregatorStoreHome(MCMCJobResultAggregator):
         full_fname = self.path_to_store + os.sep + fname
         
         try:
-            os.makedirs(folder)
-        except IOError:
+            logger.info("Creating directory %s" % self.path_to_store)
+            os.makedirs(self.path_to_store)
+        except Exception:
             pass
         
         with open(full_fname) as f:
