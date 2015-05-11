@@ -68,8 +68,8 @@ if __name__ == "__main__":
     for i, agg in enumerate(aggs):
         if isinstance(engine, SerialComputationEngine):
             plot_diagnosis_single_instance(agg, D1=1, D2=6)
+            agg.store_fire_and_forget_result()
             
-        agg.store_fire_and_forget_result()
         agg.finalize()
         mcmc_job = agg.get_final_result().mcmc_job
         agg.clean_up()
