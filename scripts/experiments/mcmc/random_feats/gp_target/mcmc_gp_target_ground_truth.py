@@ -31,7 +31,7 @@ def rw_generator_isotropic(num_warmup, thin_step):
     job.walltime = 24 * 60 * 60
     
     # store results in home dir straight away
-    job.aggregator = MCMCJobResultAggregatorStoreHome()
+    job.aggregator = MCMCJobResultAggregatorStoreHome(modulename)
     
     return job
 
