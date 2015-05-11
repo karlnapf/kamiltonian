@@ -15,7 +15,7 @@ import numpy as np
 
 class MCMCJob(IndependentJob):
     def __init__(self,
-                 num_iterations, D, start, statistics = {}, num_warmup=500, thin_step=1):
+                 num_iterations, D, start, statistics={}, num_warmup=500, thin_step=1):
         
         IndependentJob.__init__(self, MCMCJobResultAggregator())
         
@@ -59,7 +59,7 @@ class MCMCJob(IndependentJob):
         for i in range(self.num_iterations):
             # print chain progress
             log_str = "MCMC iteration %d/%d" % (i + 1, self.num_iterations)
-            if ((i+1) % (self.num_iterations / 10)) == 0:
+            if ((i + 1) % (self.num_iterations / 10)) == 0:
                 logger.info(log_str)
             else:
                 logger.debug(log_str)
@@ -75,7 +75,7 @@ class MCMCJob(IndependentJob):
             self.accepted[i] = r < self.acc_prob[i]
             
             # update running mean according to knuth's stable formula
-            self.avg_accept += (self.accepted[i]-self.avg_accept)/(i+1)
+            self.avg_accept += (self.accepted[i] - self.avg_accept) / (i + 1)
             
             # update state
             logger.debug("Updating chain")
@@ -91,7 +91,7 @@ class MCMCJob(IndependentJob):
         
         logger.info("Computing %d posterior statistics" % len(self.statistics))
         self.posterior_statistics = {}
-        for (k,v) in self.statistics.items():
+        for (k, v) in self.statistics.items():
             logger.info("Computing posterior statistic %s using num_warmup=%d, thin=%d" \
                         % (k, self.num_warmup, self.thin_step))
             inds = np.arange(self.num_warmup, len(self.samples), step=self.thin_step)
@@ -151,7 +151,7 @@ class MCMCJob(IndependentJob):
             
             result_dict[D] += [to_add]
         
-        for k,v in result_dict.items():
+        for k, v in result_dict.items():
             result_dict[k] = np.array(v)
         
         return result_dict
@@ -196,20 +196,28 @@ class MCMCJobResultAggregator(JobResultAggregator):
         s += [str(self.result.mcmc_job.time_taken_sampling)]
         s += [str(np.mean(self.result.mcmc_job.accepted))]
 
-        for _,v in self.result.mcmc_job.posterior_statistics.items():
+        for _, v in self.result.mcmc_job.posterior_statistics.items():
             # assumes posterior statistics are scalars
             s += [str(v)]
         
         return s
 
 class MCMCJobResultAggregatorStoreHome(MCMCJobResultAggregator):
+    def __init__(self, path_to_store):
+        
+        if len(path_to_store) > 1:
+            if path_to_store[-1] != os.sep:
+                path_to_store += os.sep
+        
+        self.path_to_store = path_to_store
+        MCMCJobResultAggregator.__init__(self)
+    
     @abstractmethod
     def store_fire_and_forget_result(self, folder, job_name):
-        home = expanduser("~")
         uni = unicode(uuid.uuid4())
         fname = "%s_ground_truth_iterations=%d_%s.pkl" % \
             (self.result.mcmc_job.__class__.__name__, self.result.mcmc_job.num_iterations, uni)
-        full_fname = home + os.sep + fname
+        full_fname = self.path_to_store + os.sep + fname
         
         with open(full_fname) as f:
             logger.info("Storing result under %s" % full_fname)

@@ -9,6 +9,7 @@ from independent_jobs.tools.FileSystem import FileSystem
 from kmc.tools.Log import logger
 from kmc.tools.convergence_stats import avg_ess
 import numpy as np
+from scripts.experiments.mcmc.independent_job_classes.MCMCJob import MCMCJobResultAggregatorStoreHome
 from scripts.experiments.mcmc.independent_job_classes.RWJobGPGlass import RWJobGPGlass
 from scripts.experiments.mcmc.independent_job_classes.debug import plot_diagnosis_single_instance
 
@@ -28,6 +29,9 @@ def rw_generator_isotropic(num_warmup, thin_step):
                         statistics, num_warmup, thin_step)
     
     job.walltime = 24 * 60 * 60
+    
+    # store results in home dir straight away
+    job.aggregator = MCMCJobResultAggregatorStoreHome()
     
     return job
 
