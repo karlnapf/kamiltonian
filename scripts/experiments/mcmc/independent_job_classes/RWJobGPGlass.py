@@ -1,4 +1,8 @@
 from abc import abstractmethod
+import os
+from os.path import expanduser
+import pickle
+import uuid
 
 from kameleon_mcmc.gp.GPData import GPData
 
@@ -7,6 +11,7 @@ from kmc.densities.gp_classification_posterior_ard import prior_log_pdf,\
 from kmc.tools.Log import logger
 import numpy as np
 import scipy as sp
+from scripts.experiments.mcmc.independent_job_classes.MCMCJob import MCMCJobResultAggregator
 from scripts.experiments.mcmc.independent_job_classes.RWJob import RWJob
 
 
@@ -17,6 +22,9 @@ class RWJobGPGlass(RWJob):
         # target not constructed yet
         RWJob.__init__(self, None, num_iterations, start, sigma_proposal,
                statistics, num_warmup, thin_step)
+        
+        # store results in home dir straight away
+        self.aggregator = MCMCJobResultAggregatorStoreHome()
         
     @abstractmethod
     def set_up(self):
@@ -35,3 +43,17 @@ class RWJobGPGlass(RWJob):
         n_importance = 100
         ridge = 1e-3 
         self.target = PseudoMarginalHyperparameters(X, y, n_importance, prior, ridge, num_shogun_threads=1)
+
+
+class MCMCJobResultAggregatorStoreHome(MCMCJobResultAggregator):
+    @abstractmethod
+    def store_fire_and_forget_result(self, folder, job_name):
+        home = expanduser("~")
+        uni = unicode(uuid.uuid4())
+        fname = "%s_ground_truth_iterations=%d_%s.pkl" % (self.__class__.__name__, self.num_iterations, uni)
+        full_fname = home + os.sep + fname
+        
+        with open(full_fname) as f:
+            logger.info("Storing result under %s" % full_fname)
+            pickle.dump(self, f)
+    

@@ -1,7 +1,5 @@
 from collections import OrderedDict
 import os
-import pickle
-import uuid
 
 from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
 from independent_jobs.engines.SerialComputationEngine import SerialComputationEngine
@@ -39,8 +37,8 @@ if __name__ == "__main__":
     
     # plain MCMC parameters, plan is to use every 200th sample
     thin_step = 1
-    num_iterations = 20000
-    num_warmup = 1000
+    num_iterations = 20
+    num_warmup = 10
     
     compute_local = False
     
@@ -71,6 +69,7 @@ if __name__ == "__main__":
         if isinstance(engine, SerialComputationEngine):
             plot_diagnosis_single_instance(agg, D1=1, D2=6)
             
+        agg.store_fire_and_forget_result()
         agg.finalize()
         mcmc_job = agg.get_final_result().mcmc_job
         agg.clean_up()
@@ -86,10 +85,3 @@ if __name__ == "__main__":
         logger.info("Average acceptance probability: %.2f" % np.mean(accepted))
         logger.info("Average ESS: %.2f" % avg_ess)
         logger.info("Total time: %.2f" % (time + time_set_up))
-        
-        
-        # save result under unique filename
-        fname = "%s_ground_truth_iterations=%d_%s.pkl" % (modulename, num_iterations, unicode(uuid.uuid4()))
-        with open(fname, 'w+') as f:
-            logger.info("Storing result under %s" % fname)
-            pickle.dump(mcmc_job, f)
