@@ -1,5 +1,6 @@
 from collections import OrderedDict
 import os
+from os.path import expanduser
 
 from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
 from independent_jobs.engines.SerialComputationEngine import SerialComputationEngine
@@ -31,7 +32,8 @@ def rw_generator_isotropic(num_warmup, thin_step):
     job.walltime = 24 * 60 * 60
     
     # store results in home dir straight away
-    job.aggregator = MCMCJobResultAggregatorStoreHome(modulename)
+    home = expanduser("~") + os.sep
+    job.aggregator = MCMCJobResultAggregatorStoreHome(home + modulename)
     
     return job
 

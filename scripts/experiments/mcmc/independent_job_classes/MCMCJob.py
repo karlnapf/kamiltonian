@@ -217,7 +217,7 @@ class MCMCJobResultAggregatorStoreHome(MCMCJobResultAggregator):
         uni = unicode(uuid.uuid4())
         fname = "%s_ground_truth_iterations=%d_%s.pkl" % \
             (self.result.mcmc_job.__class__.__name__, self.result.mcmc_job.num_iterations, uni)
-        full_fname = self.path_to_store + os.sep + fname
+        full_fname = self.path_to_store + fname
         
         try:
             logger.info("Creating directory %s" % self.path_to_store)
