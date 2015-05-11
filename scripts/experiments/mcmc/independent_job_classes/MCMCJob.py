@@ -219,6 +219,11 @@ class MCMCJobResultAggregatorStoreHome(MCMCJobResultAggregator):
             (self.result.mcmc_job.__class__.__name__, self.result.mcmc_job.num_iterations, uni)
         full_fname = self.path_to_store + os.sep + fname
         
+        try:
+            os.makedirs(folder)
+        except IOError:
+            pass
+        
         with open(full_fname) as f:
             logger.info("Storing result under %s" % full_fname)
             pickle.dump(self, f)
