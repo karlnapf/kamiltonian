@@ -25,9 +25,13 @@ def rw_generator_isotropic(num_warmup, thin_step):
     
     start = np.random.randn(9) * 10
     
-    return RWJobGPGlass(num_iterations,
+    job = RWJobGPGlass(num_iterations,
                         start, sigma_proposal,
                         statistics, num_warmup, thin_step)
+    
+    job.walltime = 24 * 60 * 60
+    
+    return job
 
 if __name__ == "__main__":
     logger.setLevel(10)
@@ -54,16 +58,16 @@ if __name__ == "__main__":
         engine.max_jobs_in_queue = 1000
         engine.store_fire_and_forget = True
     
-    aggs_rw = []
+    aggs = []
     
     for i in range(num_repetitions):
         job = rw_generator_isotropic(num_warmup, thin_step)
         logger.info("Repetition %d/%d, %s" % (i + 1, num_repetitions, job.get_parameter_fname_suffix()))
-        aggs_rw += [engine.submit_job(job)]
+        aggs += [engine.submit_job(job)]
         
     engine.wait_for_all()
     
-    for i, agg in enumerate(aggs_rw):
+    for i, agg in enumerate(aggs):
         if isinstance(engine, SerialComputationEngine):
             plot_diagnosis_single_instance(agg, D1=1, D2=6)
             
