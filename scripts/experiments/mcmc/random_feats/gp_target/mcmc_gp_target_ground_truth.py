@@ -81,6 +81,8 @@ if __name__ == "__main__":
         logger.info("Repetition %d" % i)
         logger.info("Average acceptance probability: %.2f" % np.mean(accepted))
         logger.info("Average ESS: %.2f" % avg_ess)
+        logger.info("Total time: %.2f" % (time + time_set_up))
+        
         
         # save result under unique filename
         fname = "%s_ground_truth_iterations=%d_%s.pkl" % (modulename, num_iterations, unicode(uuid.uuid4()))
