@@ -28,6 +28,9 @@ class MCMCJob(IndependentJob):
         # short queue
         self.walltime = 1 * 60 * 60
         
+        # running average acceptance prob
+        self.avg_accept = 0.
+        
 
     @abstractmethod
     def compute(self):
@@ -61,11 +64,14 @@ class MCMCJob(IndependentJob):
             logger.debug("Performing MCMC step")
             self.proposals[i], self.acc_prob[i], log_pdf_proposal = self.propose(current,
                                                                                  current_log_pdf, self.samples[:i],
-                                                                                 self.accepted[:i])
+                                                                                 self.avg_accept)
             
             # accept-reject
             r = np.random.rand()
             self.accepted[i] = r < self.acc_prob[i]
+            
+            # update running mean according to knuth's stable formula
+            self.avg_accept += (self.accepted[i]-self.avg_accept)/(i+1)
             
             # update state
             logger.debug("Updating chain")
