@@ -58,7 +58,8 @@ class MCMCJob(IndependentJob):
         logger.info("Starting MCMC in D=%d dimensions" % self.D)
         for i in range(self.num_iterations):
             # print chain progress
-            log_str = "MCMC iteration %d/%d" % (i + 1, self.num_iterations)
+            log_str = "MCMC iteration %d/%d, current log_pdf: %.6f" % (i + 1, self.num_iterations,
+                                                                       np.nan if current_log_pdf is None else current_log_pdf)
             if ((i + 1) % (self.num_iterations / 10)) == 0:
                 logger.info(log_str)
             else:
@@ -227,4 +228,4 @@ class MCMCJobResultAggregatorStoreHome(MCMCJobResultAggregator):
         
         with open(full_fname, 'w+') as f:
             logger.info("Storing result under %s" % full_fname)
-            pickle.dump(self, f)
+            pickle.dump(self.result.mcmc_job, f)
