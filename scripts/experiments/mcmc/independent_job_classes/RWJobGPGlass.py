@@ -7,6 +7,7 @@ from kmc.densities.gp_classification_posterior_ard import prior_log_pdf, \
 from kmc.tools.Log import logger
 import numpy as np
 import scipy as sp
+from scripts.experiments.mcmc.independent_job_classes.MCMCJob import MCMCJob
 from scripts.experiments.mcmc.independent_job_classes.RWJob import RWJob
 
 
@@ -35,4 +36,6 @@ class RWJobGPGlass(RWJob):
         n_importance = 100
         ridge = 1e-3 
         self.target = PseudoMarginalHyperparameters(X, y, n_importance, prior, ridge, num_shogun_threads=1)
-
+    
+    def get_parameter_fname_suffix(self):
+        return "RWGPGlass_" + MCMCJob.get_parameter_fname_suffix(self)
