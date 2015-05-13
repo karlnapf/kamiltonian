@@ -35,7 +35,11 @@ class RWJob(MCMCJob):
     
     @abstractmethod
     def submit_to_aggregator(self):
-        result = MCMCJobResult(self)
+        job_name = self.get_parameter_fname_suffix()
+        result = MCMCJobResult(job_name,
+                               self.D, self.samples, self.proposals, self.accepted, self.acc_prob, self.log_pdf,
+                               self.time_taken_set_up, self.time_taken_sampling,
+                               self.num_iterations, self.num_warmup, self.thin_step, self.posterior_statistics)
         self.aggregator.submit_result(result)
         
 class RWJobResultAggregator(MCMCJobResultAggregator):

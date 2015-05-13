@@ -12,6 +12,7 @@ import numpy as np
 from scripts.experiments.mcmc.independent_job_classes.MCMCJob import MCMCJobResultAggregatorStoreHome
 from scripts.experiments.mcmc.independent_job_classes.RWJobGPGlass import RWJobGPGlass
 from scripts.experiments.mcmc.independent_job_classes.debug import plot_diagnosis_single_instance
+from uuid import uuid4
 
 
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
@@ -73,18 +74,20 @@ if __name__ == "__main__":
     for i, agg in enumerate(aggs):
         if isinstance(engine, SerialComputationEngine):
             plot_diagnosis_single_instance(agg, D1=1, D2=6)
-            agg.store_fire_and_forget_result()
+            folder=""
+            job_name = ""
+            agg.store_fire_and_forget_result(folder, job_name)
             
         agg.finalize()
-        mcmc_job = agg.get_final_result().mcmc_job
+        result = agg.get_final_result()
         agg.clean_up()
         
         # print some summary stats
-        accepted = mcmc_job.accepted
-        avg_ess = mcmc_job.posterior_statistics["avg_ess"]
+        accepted = result.accepted
+        avg_ess = result.posterior_statistics["avg_ess"]
         
-        time = mcmc_job.time_taken_sampling
-        time_set_up = mcmc_job.time_taken_set_up
+        time = result.time_taken_sampling
+        time_set_up = result.time_taken_set_up
     
         logger.info("Repetition %d" % i)
         logger.info("Average acceptance probability: %.2f" % np.mean(accepted))

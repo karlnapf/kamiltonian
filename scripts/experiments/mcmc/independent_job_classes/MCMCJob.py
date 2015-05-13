@@ -157,12 +157,25 @@ class MCMCJob(IndependentJob):
         
         return result_dict
 
-
 class MCMCJobResult(JobResult):
-    def __init__(self, mcmc_job):
+    def __init__(self, job_name,
+                 D, samples, proposals, accepted, acc_prob, log_pdf,
+                 time_taken_set_up, time_taken_sampling,
+                 num_iterations, num_warmup, thin_step, posterior_statistics):
         JobResult.__init__(self)
-        self.mcmc_job = mcmc_job
-
+        self.job_name = job_name
+        self.D = D
+        self.samples = samples
+        self.proposals = proposals
+        self.accepted = accepted
+        self.acc_prob = acc_prob
+        self.log_pdf = log_pdf
+        self.time_taken_set_up = time_taken_set_up
+        self.time_taken_sampling = time_taken_sampling
+        self.num_iterations = num_iterations
+        self.num_warmup = num_warmup
+        self.thin_step = thin_step
+        self.posterior_statistics = posterior_statistics
 
 class MCMCJobResultAggregator(JobResultAggregator):
     def __init__(self):
@@ -181,7 +194,7 @@ class MCMCJobResultAggregator(JobResultAggregator):
         pass
     
     def store_fire_and_forget_result(self, folder, job_name):
-        fname = folder + os.sep + self.result.mcmc_job.get_parameter_fname_suffix() + "_" + job_name + ".csv"
+        fname = folder + os.sep + self.result.job_name + "_" + job_name + ".csv"
         logger.info("Storing fire and forget result in %s" % fname)
         
         with open(fname, 'w+') as f:
@@ -190,14 +203,14 @@ class MCMCJobResultAggregator(JobResultAggregator):
 
     @abstractmethod
     def fire_and_forget_result_strings(self):
-        D = self.result.mcmc_job.D
+        D = self.result.D
         s = []
         s += [str(D)]
-        s += [str(self.result.mcmc_job.time_taken_set_up)]
-        s += [str(self.result.mcmc_job.time_taken_sampling)]
-        s += [str(np.mean(self.result.mcmc_job.accepted))]
+        s += [str(self.result.time_taken_set_up)]
+        s += [str(self.result.time_taken_sampling)]
+        s += [str(np.mean(self.result.accepted))]
 
-        for _, v in self.result.mcmc_job.posterior_statistics.items():
+        for _, v in self.result.posterior_statistics.items():
             # assumes posterior statistics are scalars
             s += [str(v)]
         
@@ -217,15 +230,14 @@ class MCMCJobResultAggregatorStoreHome(MCMCJobResultAggregator):
     def store_fire_and_forget_result(self, folder, job_name):
         uni = unicode(uuid.uuid4())
         fname = "%s_ground_truth_iterations=%d_%s.pkl" % \
-            (self.result.mcmc_job.__class__.__name__, self.result.mcmc_job.num_iterations, uni)
+            (self.result.job_name, self.result.num_iterations, uni)
         full_fname = self.path_to_store + fname
         
         try:
-            logger.info("Creating directory %s" % self.path_to_store)
             os.makedirs(self.path_to_store)
         except Exception:
             pass
         
         with open(full_fname, 'w+') as f:
             logger.info("Storing result under %s" % full_fname)
-            pickle.dump(self.result.mcmc_job, f)
+            pickle.dump(self.result, f)
