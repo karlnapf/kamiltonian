@@ -1,6 +1,5 @@
 from collections import OrderedDict
 import os
-from os.path import expanduser
 
 from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
 from independent_jobs.engines.SerialComputationEngine import SerialComputationEngine
