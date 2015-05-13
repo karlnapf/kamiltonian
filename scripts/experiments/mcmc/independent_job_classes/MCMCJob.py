@@ -58,8 +58,9 @@ class MCMCJob(IndependentJob):
         logger.info("Starting MCMC in D=%d dimensions" % self.D)
         for i in range(self.num_iterations):
             # print chain progress
-            log_str = "MCMC iteration %d/%d, current log_pdf: %.6f" % (i + 1, self.num_iterations,
-                                                                       np.nan if current_log_pdf is None else current_log_pdf)
+            log_str = "MCMC iteration %d/%d, current log_pdf: %.6f, avg acceptance=%.3f" % (i + 1, self.num_iterations,
+                                                                       np.nan if current_log_pdf is None else current_log_pdf,
+                                                                       self.avg_accept)
             if ((i + 1) % (self.num_iterations / 10)) == 0:
                 logger.info(log_str)
             else:
