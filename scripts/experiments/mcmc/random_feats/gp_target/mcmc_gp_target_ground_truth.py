@@ -1,5 +1,6 @@
 from collections import OrderedDict
 import os
+from uuid import uuid4
 
 from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
 from independent_jobs.engines.SerialComputationEngine import SerialComputationEngine
@@ -7,17 +8,17 @@ from independent_jobs.engines.SlurmComputationEngine import SlurmComputationEngi
 from independent_jobs.tools.FileSystem import FileSystem
 
 from kmc.tools.Log import logger
-from kmc.tools.convergence_stats import avg_ess
+from kmc.tools.convergence_stats import avg_ess, min_ess
 import numpy as np
 from scripts.experiments.mcmc.independent_job_classes.MCMCJob import MCMCJobResultAggregatorStoreHome
 from scripts.experiments.mcmc.independent_job_classes.RWJobGPGlass import RWJobGPGlass
-from scripts.experiments.mcmc.independent_job_classes.debug import plot_diagnosis_single_instance
-from uuid import uuid4
+from scripts.experiments.mcmc.independent_job_classes.debug import plot_mcmc_result
 
 
 modulename = __file__.split(os.sep)[-1].split('.')[-2]
 statistics = OrderedDict()
 statistics['avg_ess'] = avg_ess
+statistics['min_ess'] = min_ess
 
 def rw_generator_isotropic(num_warmup, thin_step):
     # tuned towards roughly 23% acceptance
@@ -72,15 +73,14 @@ if __name__ == "__main__":
     engine.wait_for_all()
     
     for i, agg in enumerate(aggs):
-        if isinstance(engine, SerialComputationEngine):
-            plot_diagnosis_single_instance(agg, D1=1, D2=6)
-            folder=""
-            job_name = ""
-            agg.store_fire_and_forget_result(folder, job_name)
-            
         agg.finalize()
         result = agg.get_final_result()
         agg.clean_up()
+
+        if isinstance(engine, SerialComputationEngine):
+            plot_mcmc_result(result, D1=1, D2=6)
+            agg.store_fire_and_forget_result(folder="", job_name="")
+            
         
         # print some summary stats
         accepted = result.accepted

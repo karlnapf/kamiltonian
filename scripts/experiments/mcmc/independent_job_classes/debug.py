@@ -48,15 +48,15 @@ def plot_diagnosis(agg, D):
     
     plt.show()
 
-def plot_diagnosis_single_instance(agg, D1, D2):
+def plot_mcmc_result(result, D1, D2):
     plt.ioff()
     
-    samples = agg.result.samples
-    accepted = agg.result.accepted
-    avg_ess = agg.result.posterior_statistics["avg_ess"]
+    samples = result.samples
+    accepted = result.accepted
+    avg_ess = result.posterior_statistics["avg_ess"]
     
-    time = agg.result.time_taken_sampling
-    time_set_up = agg.result.time_taken_set_up
+    time = result.time_taken_sampling
+    time_set_up = result.time_taken_set_up
     
     # compute autocorrelation of the first dimension
     acorrs = autocorr(samples[:, D1])

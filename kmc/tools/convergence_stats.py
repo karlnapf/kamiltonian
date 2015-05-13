@@ -5,6 +5,9 @@ import numpy as np
 def avg_ess(X):
     return np.mean(ess_coda(X))
 
+def min_ess(X):
+    return np.min(ess_coda(X))
+
 def ess_coda(X):
         """
         Computes the effective samples size for each column of a 2d-array using R-coda via
