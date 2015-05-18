@@ -13,17 +13,17 @@ class HMCJob(MCMCJob):
                  num_steps_min=10, num_steps_max=100, step_size_min=0.05,
                  step_size_max=0.3, momentum_seed=0,
                  statistics = {}, num_warmup=500, thin_step=1):
-        MCMCJob.__init__(self, num_iterations, momentum.D, start, statistics,
+        MCMCJob.__init__(self, target, num_iterations, momentum.D, start, statistics,
                          num_warmup, thin_step)
         self.aggregator = HMCJobResultAggregator()
         
-        self.target = target
         self.momentum = momentum
         self.num_steps_min = num_steps_min
         self.num_steps_max = num_steps_max
         self.step_size_min = step_size_min
         self.step_size_max = step_size_max
         self.momentum_seed = momentum_seed
+
     
     @abstractmethod
     def set_up(self):
@@ -42,6 +42,7 @@ class HMCJob(MCMCJob):
         
         # sample momentum and leapfrog parameters
         p0 = self.momentum.sample()
+        p0_log_pdf = self.momentum.log_pdf(p0)
         num_steps = np.random.randint(self.num_steps_min, self.num_steps_max + 1)
         step_size = np.random.rand() * (self.step_size_max - self.step_size_min) + self.step_size_min
         
@@ -53,7 +54,6 @@ class HMCJob(MCMCJob):
         q, p = leapfrog_no_storing(current, self.target.grad, p0, self.momentum.grad, step_size, num_steps)
         
         # compute acceptance probability, extracting log_pdf of q
-        p0_log_pdf = self.momentum.log_pdf(p0)
         p_log_pdf = self.momentum.log_pdf(p)
         
         # use a function call to be able to overload it for KMC
@@ -70,7 +70,16 @@ class HMCJob(MCMCJob):
         log_pdf_q = self.target.log_pdf(q)
         H0 = -current_log_pdf - p0_log_pdf
         H = -log_pdf_q - p_log_pdf
-        acc_prob = np.exp(np.minimum(0., -H + H0))
+        difference = -H + H0
+        acc_prob = np.exp(np.minimum(0., difference))
+        
+        logger.debug("log_pdf current=%.2f" % current_log_pdf)
+        logger.debug("log_pdf q=%.2f" % log_pdf_q)
+        logger.debug("difference_q=%.2f" % (log_pdf_q-current_log_pdf))
+        logger.debug("difference_p=%.2f" % (p_log_pdf-p0_log_pdf))
+        logger.debug("H0=%.2f" % H0)
+        logger.debug("H=%.2f" % H)
+        logger.debug("H0-H=%.2f" % difference)
         
         return acc_prob, log_pdf_q
     
@@ -78,11 +87,6 @@ class HMCJob(MCMCJob):
     def get_parameter_fname_suffix(self):
         return "HMC_" + MCMCJob.get_parameter_fname_suffix(self)
     
-    @abstractmethod
-    def submit_to_aggregator(self):
-        result = MCMCJobResult(self)
-        self.aggregator.submit_result(result)
-        
 class HMCJobResultAggregator(MCMCJobResultAggregator):
     def __init__(self):
         MCMCJobResultAggregator.__init__(self)

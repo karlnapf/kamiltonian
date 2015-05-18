@@ -1,6 +1,5 @@
 from abc import abstractmethod
 import os
-from os.path import expanduser
 import pickle
 from time import time
 import uuid
@@ -14,11 +13,12 @@ import numpy as np
 
 
 class MCMCJob(IndependentJob):
-    def __init__(self,
+    def __init__(self, target,
                  num_iterations, D, start, statistics={}, num_warmup=500, thin_step=1):
         
         IndependentJob.__init__(self, MCMCJobResultAggregator())
         
+        self.target = target
         self.num_iterations = num_iterations
         self.D = D
         self.start = start
@@ -38,6 +38,9 @@ class MCMCJob(IndependentJob):
 
     @abstractmethod
     def compute(self):
+        # set up target if possible
+        self.target.set_up()
+        
         # remember set up time
         start_time = time()
         self.set_up()
@@ -68,6 +71,7 @@ class MCMCJob(IndependentJob):
             
             # generate proposal and acceptance probability
             logger.debug("Performing MCMC step")
+            
             self.proposals[i], self.acc_prob[i], log_pdf_proposal = self.propose(current,
                                                                                  current_log_pdf, self.samples[:i],
                                                                                  self.avg_accept)
@@ -75,6 +79,11 @@ class MCMCJob(IndependentJob):
             # accept-reject
             r = np.random.rand()
             self.accepted[i] = r < self.acc_prob[i]
+            
+            logger.debug("Proposed %s" % str(self.proposals[i]))
+            logger.debug("Acceptance prob %.4f" % self.acc_prob[i])
+            logger.debug("Accepted: %d" % self.accepted[i])
+            
             
             # update running mean according to knuth's stable formula
             self.avg_accept += (self.accepted[i] - self.avg_accept) / (i + 1)
@@ -104,7 +113,11 @@ class MCMCJob(IndependentJob):
     
     @abstractmethod
     def submit_to_aggregator(self):
-        result = MCMCJobResult(self)
+        job_name = self.get_parameter_fname_suffix()
+        result = MCMCJobResult(job_name,
+                               self.D, self.samples, self.proposals, self.accepted, self.acc_prob, self.log_pdf,
+                               self.time_taken_set_up, self.time_taken_sampling,
+                               self.num_iterations, self.num_warmup, self.thin_step, self.posterior_statistics)
         self.aggregator.submit_result(result)
     
     @abstractmethod

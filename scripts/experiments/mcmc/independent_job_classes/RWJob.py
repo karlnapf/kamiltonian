@@ -2,18 +2,17 @@ from abc import abstractmethod
 
 import numpy as np
 from scripts.experiments.mcmc.independent_job_classes.MCMCJob import MCMCJob,\
-    MCMCJobResultAggregator, MCMCJobResult
+    MCMCJobResultAggregator
 
 
 class RWJob(MCMCJob):
     def __init__(self, target, num_iterations, start,
                  sigma_proposal,
                  statistics = {}, num_warmup=500, thin_step=1):
-        MCMCJob.__init__(self, num_iterations, len(start), start, statistics,
+        MCMCJob.__init__(self, target, num_iterations, len(start), start, statistics,
                          num_warmup, thin_step)
         self.aggregator = RWJobResultAggregator()
         
-        self.target = target
         self.sigma_proposal = sigma_proposal
     
     @abstractmethod
@@ -33,15 +32,6 @@ class RWJob(MCMCJob):
     def get_parameter_fname_suffix(self):
         return "RW_" + MCMCJob.get_parameter_fname_suffix(self)
     
-    @abstractmethod
-    def submit_to_aggregator(self):
-        job_name = self.get_parameter_fname_suffix()
-        result = MCMCJobResult(job_name,
-                               self.D, self.samples, self.proposals, self.accepted, self.acc_prob, self.log_pdf,
-                               self.time_taken_set_up, self.time_taken_sampling,
-                               self.num_iterations, self.num_warmup, self.thin_step, self.posterior_statistics)
-        self.aggregator.submit_result(result)
-        
 class RWJobResultAggregator(MCMCJobResultAggregator):
     def __init__(self):
         MCMCJobResultAggregator.__init__(self)

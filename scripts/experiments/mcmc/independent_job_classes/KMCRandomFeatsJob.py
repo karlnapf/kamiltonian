@@ -1,23 +1,28 @@
 from abc import abstractmethod
 import os
 
+from kmc.hamiltonian.hamiltonian import compute_log_accept_pr
+from kmc.hamiltonian.leapfrog import leapfrog, leapfrog_no_storing
 from kmc.score_matching.random_feats.estimator import RandomFeatsEstimator
 from kmc.score_matching.random_feats.gaussian_rkhs import sample_basis, \
     score_matching_sym
 from kmc.score_matching.random_feats.gaussian_rkhs_xvalidation import select_sigma_lambda_cma
 from kmc.tools.Log import logger
-from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob, \
-    HMCJobResultAggregator
-    
 import numpy as np
+from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob,\
+    HMCJobResultAggregator
+from scripts.tools.plotting import evaluate_gradient_grid, plot_array,\
+    evaluate_density_grid
 
 
 splitted = __file__.split(os.sep)
 idx = splitted.index('kamiltonian')
 project_path = os.sep.join(splitted[:(idx + 1)])
 
+temp = 0
+
 class KMCRandomFeatsJob(HMCJob):
-    def __init__(self, Z, sigma, lmbda,
+    def __init__(self, Z, m, sigma, lmbda,
                  target, momentum,
                  num_iterations, start,
                  num_steps_min=10, num_steps_max=100, step_size_min=0.05,
@@ -33,18 +38,17 @@ class KMCRandomFeatsJob(HMCJob):
         self.aggregator = KMCJobResultAggregator()
         
         self.Z = Z
+        self.m = m
         self.sigma = sigma
         self.lmbda = lmbda
         self.learn_parameters = learn_parameters
         self.force_relearn_parameters = force_relearn_parameters
         
         self.upper_bound_N = 2000
+        self.plot = False
 
     @abstractmethod
     def set_up(self):
-        # match number of basis functions and data
-        m = len(self.Z)
-
         if self.learn_parameters or self.force_relearn_parameters:
             self.sigma, self.lmbda = self.determine_sigma_lmbda()
         
@@ -53,9 +57,9 @@ class KMCRandomFeatsJob(HMCJob):
         
         gamma = 0.5 * (self.sigma ** 2)
         logger.info("Sampling random basis")
-        omega, u = sample_basis(self.D, m, gamma)
+        omega, u = sample_basis(self.D, self.m, gamma)
         
-        logger.info("Estimating density in RKHS, N=m=%d, D=%d" % (len(self.Z), self.D))
+        logger.info("Estimating density in RKHS, N=%d, m=%d, D=%d" % (len(self.Z), self.m, self.D))
         theta = score_matching_sym(self.Z, self.lmbda, omega, u)
         
         # replace target by kernel estimator to simulate trajectories on
@@ -88,6 +92,10 @@ class KMCRandomFeatsJob(HMCJob):
     
     @abstractmethod
     def accept_prob_log_pdf(self, current, q, p0_log_pdf, p_log_pdf, current_log_pdf=None, samples=None):
+        # potentially re-use log_pdf of last accepted state
+        if current_log_pdf is None:
+            current_log_pdf = -np.inf
+        
         # same as super-class, but with original target
         kernel_target = self.target
         self.target = self.orig_target
@@ -176,7 +184,6 @@ class KMCRandomFeatsJob(HMCJob):
         return result_dict
 
 
-
 class KMCJobResultAggregator(HMCJobResultAggregator):
     def __init__(self):
         HMCJobResultAggregator.__init__(self)
@@ -185,4 +192,4 @@ class KMCJobResultAggregator(HMCJobResultAggregator):
     def fire_and_forget_result_strings(self):
         strings = HMCJobResultAggregator.fire_and_forget_result_strings(self)
         
-        return [str(len(self.result.mcmc_job.Z))] + strings
+        return [str(self.result.D)] + strings

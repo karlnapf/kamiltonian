@@ -1,17 +1,17 @@
 from collections import OrderedDict
 import os
-from uuid import uuid4
 
 from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
 from independent_jobs.engines.SerialComputationEngine import SerialComputationEngine
 from independent_jobs.engines.SlurmComputationEngine import SlurmComputationEngine
 from independent_jobs.tools.FileSystem import FileSystem
 
+from kmc.densities.gp_classification_posterior_ard import GlassPosterior
 from kmc.tools.Log import logger
 from kmc.tools.convergence_stats import avg_ess, min_ess
 import numpy as np
 from scripts.experiments.mcmc.independent_job_classes.MCMCJob import MCMCJobResultAggregatorStoreHome
-from scripts.experiments.mcmc.independent_job_classes.RWJobGPGlass import RWJobGPGlass
+from scripts.experiments.mcmc.independent_job_classes.RWJob import RWJob
 from scripts.experiments.mcmc.independent_job_classes.debug import plot_mcmc_result
 
 
@@ -26,7 +26,8 @@ def rw_generator_isotropic(num_warmup, thin_step):
     
     start = np.random.randn(9) * 10
     
-    job = RWJobGPGlass(num_iterations,
+    target = GlassPosterior()
+    job = RWJob(target, num_iterations,
                         start, sigma_proposal,
                         statistics, num_warmup, thin_step)
     
@@ -40,7 +41,7 @@ def rw_generator_isotropic(num_warmup, thin_step):
 
 if __name__ == "__main__":
     logger.setLevel(10)
-    num_repetitions = 1000
+    num_repetitions = 100
     
     # plain MCMC parameters, plan is to use every 200th sample
     thin_step = 1

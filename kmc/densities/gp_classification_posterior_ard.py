@@ -1,8 +1,11 @@
-import modshogun as sg
+from kameleon_mcmc.gp.GPData import GPData
 
-import numpy as np
-from kmc.tools.Log import logger
 from kmc.densities.gaussian import log_gaussian_pdf
+from kmc.tools.Log import logger
+import modshogun as sg
+import numpy as np
+import scipy as sp
+
 
 class PseudoMarginalHyperparameters(object):
     """
@@ -22,9 +25,11 @@ class PseudoMarginalHyperparameters(object):
         self.X=X
         self.y=y
         
+        self.num_shogun_threads = num_shogun_threads
+    
         # tell shogun to use 1 thread only
-        logger.debug("Using Shogun with %d threads" % num_shogun_threads)
-        sg.ZeroMean().parallel.set_num_threads(num_shogun_threads)
+        logger.debug("Using Shogun with %d threads" % self.num_shogun_threads)
+        sg.ZeroMean().parallel.set_num_threads(self.num_shogun_threads)
     
         # shogun representation of data
         self.sg_labels=sg.BinaryLabels(self.y)
@@ -62,18 +67,25 @@ def prior_log_pdf(x):
     D= len(x)
     return log_gaussian_pdf(x, mu=0.*np.ones(D), Sigma=np.eye(D)*5)
 
-if __name__=="__main__":
-    np.random.seed(0)
-    N = 10
-    D = 2
-    X = np.random.randn(N, D)
-    y = (X[:,0]>0).astype(np.float64)
-    n_importance = 100
-    prior = prior_log_pdf
-    ridge = 1e-3
-    pm = PseudoMarginalHyperparameters(X, y, n_importance, prior, ridge)
+class GlassPosterior(object):
+    def __init__(self, n_importance=100, ridge=1e-3, prior=prior_log_pdf):
+        self.n_importance = n_importance
+        self.ridge = ridge
+        self.prior = prior
     
-    theta = np.random.randn(D)
-    theta = np.zeros(D)
+    def set_up(self):
+        # load data using kameleon-mcmc code
+        logger.info("Loading data")
+        X, y = GPData.get_glass_data()
     
-    print pm.log_pdf(theta)
+        # normalise and whiten dataset, as done in kameleon-mcmc code
+        logger.info("Whitening data")
+        X -= np.mean(X, 0)
+        L = np.linalg.cholesky(np.cov(X.T))
+        X = sp.linalg.solve_triangular(L, X.T, lower=True).T
+        
+        # build target, as in kameleon-mcmc code
+        self.gp_posterior = PseudoMarginalHyperparameters(X, y, self.n_importance, self.prior, self.ridge, num_shogun_threads=1)
+    
+    def log_pdf(self, theta):
+        return self.gp_posterior.log_pdf(theta)

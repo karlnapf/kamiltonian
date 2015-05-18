@@ -73,3 +73,6 @@ class Banana(object):
     
     def emp_quantiles(self, X, quantiles=np.arange(0.1, 1, 0.1)):
         return emp_quantiles(X, self.bananicity, self.V, quantiles)
+    
+    def set_up(self):
+        pass
