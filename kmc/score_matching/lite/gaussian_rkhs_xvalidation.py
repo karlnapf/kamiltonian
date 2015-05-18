@@ -13,11 +13,11 @@ def select_sigma_grid(Z, num_folds=5, num_repetitions=1,
 
     Js = np.zeros(len(sigmas))
     for i, sigma in enumerate(sigmas):
-        logger.info("fold %d/%d, sigma: %.2f, lambda: %.2f" % \
-            (i + 1, len(sigmas), sigma, lmbda))
         K = gaussian_kernel(Z, sigma=sigma)
         folds = xvalidate(Z, num_folds, sigma, lmbda, K)
         Js[i] = np.mean(folds)
+        logger.info("sigma trial %d/%d, sigma: %.2f, lambda: %.2f, J=%.2f" % \
+            (i + 1, len(sigmas), sigma, lmbda, Js[i]))
     
     if plot_surface:
         plt.figure()
