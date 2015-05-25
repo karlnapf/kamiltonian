@@ -22,10 +22,9 @@ statistics['min_ess'] = min_ess
 
 def rw_generator_isotropic(num_warmup, thin_step):
     # tuned towards roughly 23% acceptance
-#     sigma_proposal = 0.3 # correct pm sampler
-    sigma_proposal = .7 # marginal sampler
+    sigma_proposal = .4 # marginal sampler
     
-    start = np.zeros(2)
+    start = np.zeros(10)
     
     target = ABCSkewNormalPosterior()
     job = RWJob(target, num_iterations,

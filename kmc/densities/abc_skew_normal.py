@@ -49,7 +49,7 @@ def skew_normal_simulator(theta):
     return sample_skew_normal(N, theta, Sigma, alphas)
 
 class ABCSkewNormalPosterior(ABCPosterior):
-    def __init__(self, D=2, n_lik_samples=10, epsilon=4., prior=wide_zero_mean_normal_prior):
+    def __init__(self, D=10, n_lik_samples=10, epsilon=14., prior=wide_zero_mean_normal_prior):
         
         ABCPosterior.__init__(self, skew_normal_simulator, n_lik_samples, epsilon, prior)
         self.D = D
