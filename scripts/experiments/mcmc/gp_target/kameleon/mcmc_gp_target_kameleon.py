@@ -43,6 +43,7 @@ def kameleon_generator(num_warmup, thin_step):
     # this is tuned via median heuristic
     Z = np.load("../ground_truth/benchmark_samples.arr")[:1000]
     sigma = GaussianKernel.get_sigma_median_heuristic(Z)
+    sigma = 23. # kameleon-mcmc code
     logger.info("Using sigma=%.6f" % sigma)
        
     gamma2 = 0.2
