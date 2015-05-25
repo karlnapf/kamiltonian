@@ -70,6 +70,10 @@ class MCMCJob(IndependentJob):
                 logger.info(log_str)
             else:
                 logger.debug(log_str)
+                
+            # marginal sampler: do not re-use recompute log-pdf
+            if self.recompute_log_pdf:
+                current_log_pdf = None
             
             # generate proposal and acceptance probability
             logger.debug("Performing MCMC step")
@@ -95,10 +99,6 @@ class MCMCJob(IndependentJob):
             if self.accepted[i]:
                 current = self.proposals[i]
                 current_log_pdf = log_pdf_proposal
-                
-                # marginal sampler: do not re-use recompute log-pdf
-                if self.recompute_log_pdf:
-                    current_log_pdf = None
 
             # store sample
             self.samples[i] = current
