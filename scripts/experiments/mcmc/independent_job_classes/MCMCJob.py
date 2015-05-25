@@ -35,6 +35,8 @@ class MCMCJob(IndependentJob):
         # running average acceptance prob
         self.avg_accept = 0.
         
+        self.recompute_log_pdf = False
+        
 
     @abstractmethod
     def compute(self):
@@ -61,9 +63,10 @@ class MCMCJob(IndependentJob):
         logger.info("Starting MCMC in D=%d dimensions" % self.D)
         for i in range(self.num_iterations):
             # print chain progress
-            log_str = "MCMC iteration %d/%d, current log_pdf: %.6f, avg acceptance=%.3f" % (i + 1, self.num_iterations,
-                                                                       np.nan if current_log_pdf is None else current_log_pdf,
-                                                                       self.avg_accept)
+            if i > 1:
+                log_str = "MCMC iteration %d/%d, current log_pdf: %.6f, avg acceptance=%.3f" % (i + 1, self.num_iterations,
+                                                                           np.nan if self.log_pdf[i - 1] is None else self.log_pdf[i - 1],
+                                                                           self.avg_accept)
             if ((i + 1) % (self.num_iterations / 10)) == 0:
                 logger.info(log_str)
             else:
@@ -93,6 +96,10 @@ class MCMCJob(IndependentJob):
             if self.accepted[i]:
                 current = self.proposals[i]
                 current_log_pdf = log_pdf_proposal
+                
+                # marginal sampler: do not re-use recompute log-pdf
+                if self.recompute_log_pdf:
+                    current_log_pdf = None
 
             # store sample
             self.samples[i] = current
