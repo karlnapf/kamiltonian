@@ -41,7 +41,7 @@ def kameleon_generator(num_warmup, thin_step):
     start = np.random.randn(9) * 0
     
     # this is tuned via median heuristic
-    Z = np.load("../benchmark_samples.arr")[:1000]
+    Z = np.load("../ground_truth/benchmark_samples.arr")[:1000]
     sigma = GaussianKernel.get_sigma_median_heuristic(Z)
     logger.info("Using sigma=%.6f" % sigma)
        

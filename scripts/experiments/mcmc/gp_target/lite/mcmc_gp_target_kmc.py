@@ -57,7 +57,7 @@ def kmc_generator(num_warmup, thin_step):
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
     
     target = GlassPosterior()
-    Z = np.load("../benchmark_samples.arr")[:1000]
+    Z = np.load("../ground_truth/benchmark_samples.arr")[:1000]
     learn_parameters = False
     force_relearn_parameters = False
     
