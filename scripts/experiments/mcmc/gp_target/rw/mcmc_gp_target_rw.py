@@ -41,7 +41,7 @@ def rw_generator_isotropic(num_warmup, thin_step):
 
 if __name__ == "__main__":
     logger.setLevel(10)
-    num_repetitions = 100
+    num_repetitions = 10
     
     # plain MCMC parameters, plan is to use every 200th sample
     thin_step = 1
