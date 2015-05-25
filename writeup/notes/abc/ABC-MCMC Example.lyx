@@ -1,0 +1,671 @@
+#LyX file created by tex2lyx 2.1
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\date{\today}
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 0
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 0
+\use_package mhchem 0
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip 0.3cm
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+maketitle
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Likelihood-free Models
+\end_layout
+
+\begin_layout Standard
+Approximate Bayesian Computation is a method for inference in the scenario where conditional on some parameter of interest 
+\begin_inset Formula $\theta$
+\end_inset
+
+we can easily simulate data 
+\begin_inset Formula $x\sim f(\cdot|\theta)$
+\end_inset
+
+, but for which writing the likelihood function 
+\begin_inset Formula $f$
+\end_inset
+
+ is difficult/impossible. We generally have some data 
+\begin_inset Formula $y$
+\end_inset
+
+ which assume to be from the model, and we have a prior 
+\begin_inset Formula $\pi_{0}(\theta)$
+\end_inset
+
+. A simple ABC algorithm is to sample 
+\begin_inset Formula $\theta_{i}\sim\pi_{0}(\cdot)$
+\end_inset
+
+ (or any other suitable distribution), simulate some data 
+\begin_inset Formula $x_i \sim f(\cdot|\theta_{i})$
+\end_inset
+
+, and `accept' 
+\begin_inset Formula $x_i$
+\end_inset
+
+as a sample from the approximate posterior 
+\begin_inset Formula $\pi_{\epsilon}(\theta|y)$
+\end_inset
+
+ if 
+\begin_inset Formula $d(y,x)\leq\epsilon$
+\end_inset
+
+. This procedure can be formalised by defining the approximate likelihood as 
+\begin_inset Formula \begin{equation} \label{eqn:lik}
+f_{\epsilon}(y|\theta)\propto\int g_{\epsilon}(y|x,\theta)f(x|\theta)dx,
+\end{equation}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $g_{\epsilon}(y|x,\theta)$
+\end_inset
+
+ is some appropriate kernel that gives more importance to points for which 
+\begin_inset Formula $d(y,x)$
+\end_inset
+
+ is smaller. In the simple case above 
+\begin_inset Formula $g_{\epsilon}(y|x,\theta) = \mathbbm{1}_{\{d(y,x) \leq \epsilon\}}$
+\end_inset
+
+. The ABC posterior is then found using 
+\begin_inset Formula $\pi_{\epsilon}(\theta|y)\propto f_{\epsilon}(y|\theta)\pi_{0}(\theta)$
+\end_inset
+
+. Often 
+\begin_inset Formula $g_{\epsilon}$
+\end_inset
+
+is based on some low-dimensional summary statistics, so `closeness' is defined through 
+\begin_inset Formula $d(S(y),S(x))$
+\end_inset
+
+, which can have both advantages and disadvantages.
+\end_layout
+
+\begin_layout Section*
+Likelihood-free MCMC
+\end_layout
+
+\begin_layout Standard
+There are many different way to do ABC, and clearly not all involve Markov chain Monte Carlo. But if the posterior doesn't look much like the prior, and 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is more than three or four dimensional, that it is usually a sensible option. Since the likelihood is intractable typically algorithms are considered for which an approximation to either the likelihood, the ABC posterior or in fact something else are used either in constructing proposals, defining Metropolis-Hastings acceptance rates, or both. I focus here on samplers which target 
+\begin_inset Formula $\pi_{\epsilon}(\theta|y)$
+\end_inset
+
+ directly.
+\end_layout
+
+\begin_layout Subsection*
+Pseudo-marginal Metropolis-Hastings
+\end_layout
+
+\begin_layout Standard
+Here proposals 
+\begin_inset Formula $\theta'\sim Q(\theta,\cdot)$
+\end_inset
+
+ are accepted according to the ratio 
+\begin_inset Formula \begin{equation} \label{eqn:ratio}
+\tilde{\alpha}(\theta,\theta')=\frac{\tilde{\pi}_{\epsilon}(\theta'|y)q(\theta|\theta')}{\tilde{\pi}_{\epsilon}(\theta|y)q(\theta'|\theta)},
+\end{equation}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\tilde{\pi}_{\epsilon}(\theta|y)=\pi_{0}(\theta)\tilde{g}_{\epsilon}(y|\theta),$
+\end_inset
+
+ and 
+\begin_inset Formula \[
+\tilde{g}_{\epsilon}(y|\theta)=\frac{1}{n}\sum_{i}g_{\epsilon}(y|x_{i},\theta), ~~ x_i \sim f(\cdot|\theta_i)
+\]
+\end_inset
+
+is a simple Monte Carlo estimator for the intractable likelihood (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eqn:lik"
+
+\end_inset
+
+). Since it is easy to simulate from 
+\begin_inset Formula $f$
+\end_inset
+
+ then this is typically easy to compute. As with other general pseudo-marginal schemes, it is crucial that if 
+\begin_inset Formula $\theta'$
+\end_inset
+
+ is accepted, the same estimate for 
+\begin_inset Formula $\tilde{\pi}(\theta'|y)$
+\end_inset
+
+ is used on the denominator of the Hastings ratio in future iterations until the next proposal is accepted for the scheme to produce a Markov chain with limiting distribution 
+\begin_inset Formula $\pi_{\epsilon}(\cdot)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection*
+Monte Carlo within Metropolis
+\end_layout
+
+\begin_layout Standard
+A typical problem that with pseudo-marginal schemes is `sticking'. If an estimate 
+\begin_inset Formula $\tilde{\pi}(\theta'|y)$
+\end_inset
+
+ for a proposal 
+\begin_inset Formula $\theta'$
+\end_inset
+
+ is surprisingly large, the proposal is likely to be accepted. Keeping the same estimate on the denominator of the Hastings ratio when comparing to future proposals will mean that the acceptance ratio will be `artificially' small for these, meaning the chain can get stuck at this point. To overcome this, a different option is to recompute the likelihood estimates in both the numerator and the denominator of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eqn:ratio"
+
+\end_inset
+
+) at each iteration. Although this strategy can result in faster mixing, it means that the Markov chain no longer has 
+\begin_inset Formula $\pi_\epsilon(\cdot)$
+\end_inset
+
+ as its limiting distribution. However, recent work 
+\begin_inset CommandInset citation
+LatexCommand cite
+after ""
+key "roberts"
+
+\end_inset
+
+ suggests that this isn't such a problem. If the original sampler is geometrically ergodic, typically the MCWM sampler will target a distribution which is `close' to 
+\begin_inset Formula $\pi_\epsilon(\cdot)$
+\end_inset
+
+, so the slight bias trade off for improved mixing seems reasonable, especially as the ABC posterior 
+\begin_inset Formula $\pi_\epsilon(\cdot)$
+\end_inset
+
+ is biased to begin with.
+\end_layout
+
+\begin_layout Subsection*
+Synthetic Likelihood Metropolis-Hastings
+\end_layout
+
+\begin_layout Standard
+The idea here is to draw 
+\begin_inset Formula $n$
+\end_inset
+
+ samples 
+\begin_inset Formula $x_i \sim f(\cdot|\theta_i)$
+\end_inset
+
+, and fit a Gaussian approximation to 
+\begin_inset Formula $f$
+\end_inset
+
+, producing estimates 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\Sigma}$
+\end_inset
+
+ for the mean and covariance using 
+\begin_inset Formula $\{x_i\}_{i = 1}^n$
+\end_inset
+
+. If the error functon 
+\begin_inset Formula $g_\epsilon$
+\end_inset
+
+ is also chosen to be a Gaussian (with mean 
+\begin_inset Formula $y$
+\end_inset
+
+ and variance 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+), then the marginal likelihood 
+\begin_inset Formula $f_\epsilon(y|\theta)$
+\end_inset
+
+ can be approximated as 
+\begin_inset Formula \[
+y|\theta \sim \mathcal{N} \left( \hat{\mu},\hat{\Sigma} + \epsilon^2 I \right)
+\]
+\end_inset
+
+So essentially the likelihood is being approximated by a Gaussian 
+\begin_inset Formula $f_G$
+\end_inset
+
+, producing a synthetic posterior 
+\begin_inset Formula $\pi_s(\cdot)$
+\end_inset
+
+ which is then used in the accept-reject step. Clearly some approximation error is introduced by the Gaussian likelihood approximation step, but as shown in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after ""
+key "wood"
+
+\end_inset
+
+, it can be a reasonable choice for some models.
+\end_layout
+
+\begin_layout Subsection*
+Hamiltonian ABC
+\end_layout
+
+\begin_layout Standard
+Introduced in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after ""
+key "welling"
+
+\end_inset
+
+, here the synthetic likelihood formulation is used to construct a proposal, with the accept-reject step removed altogether. Hamiltonian dynamics use the gradient 
+\begin_inset Formula $\nabla\log\pi(\theta)$
+\end_inset
+
+ to suggest candidate values for the next state of a Markov chain which are far from the current point, thus increasing the chances that the chain mixes quickly. Here the gradient of the log-likelihood is unavailable, so is approximated with that of a Gaussian (since the map 
+\begin_inset Formula $\theta \to (\mu, \Sigma)$
+\end_inset
+
+ is not always clear this is done numerically, with some tricks applied to ensure the gradient is estimated efficiently), giving 
+\begin_inset Formula \[
+\nabla\log\pi(\theta) \approx \sum_{i=1}^n \nabla\log  f_G(y_i|\hat{\mu}, \hat{\Sigma}) + \nabla\log\pi_0(\theta).
+\]
+\end_inset
+
+Since there is no accept-reject step, the synthetic posterior is also the target of this scheme (although there is also further bias introduced by discretisation error), but the introduction of gradient-based dynamics should improve mixing and hence efficiency of inferences compared to random-walk type schemes.
+\end_layout
+
+\begin_layout Subsection*
+Other Methods
+\end_layout
+
+\begin_layout Standard
+Other ABC-MCMC methods exists, for example based on using empirical density approximations to the likelihood, or sampling on the augmented 
+\begin_inset Formula $(x,\theta)$
+\end_inset
+
+ space. See 
+\begin_inset CommandInset citation
+LatexCommand cite
+after ""
+key "sisson"
+
+\end_inset
+
+ for more details here.
+\end_layout
+
+\begin_layout Section*
+Two simple examples
+\end_layout
+
+\begin_layout Standard
+An almost trivial toy model should highlight the bias introduced by the Hamiltonian ABC sampler. A very simple example which should prove the point is posterior inference for the mean parameter in a log-Normal model. Specfically, the true model is 
+\begin_inset Formula \begin{align*}
+\mu &\sim \mathcal{N}(\mu_0, \tau_0), \\
+y|\mu, \tau &\sim \log\mathcal{N}(\mu, \tau), \\
+\end{align*}
+\end_inset
+
+where the precision 
+\begin_inset Formula $\tau$
+\end_inset
+
+ and hyperparameters 
+\begin_inset Formula $\mu_0, \tau_0$
+\end_inset
+
+ are known. The model is in fact conjugate, giving a Gaussian posterior 
+\begin_inset Formula \[
+\mu | y \sim \mathcal{N} \left( \frac{\tau_0\mu_0 + \tau \sum_i \log x_i}{\tau_0 + n\tau}, \tau_0 + n\tau \right)
+\]
+\end_inset
+
+If we introduce a Gaussian approximation to the likelihood, then the mean and precision of this approximation 
+\begin_inset Formula $f_G$
+\end_inset
+
+ should be (empirical estimates for) 
+\begin_inset Formula \[
+\mu_G = e^{\mu + 1/2\tau}, ~~ \tau_G = 1/\text{Var}[Y_i] = \frac{e^{-2\mu - 1/\tau}}{e^{1/\tau} - 1},
+\]
+\end_inset
+
+which will change dependent on the current value for 
+\begin_inset Formula $\mu$
+\end_inset
+
+ in the chain. The resulting synthetic posterior is no longer tractable, but since it's one dimensional we can approximate it numerically and compare to the truth. Putting some numbers in, if 
+\begin_inset Formula $\mu_0 = 0$
+\end_inset
+
+, 
+\begin_inset Formula $\tau_0 = 1/100$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon = 0.1$
+\end_inset
+
+ and 
+\begin_inset Formula $\tau = 1$
+\end_inset
+
+ then the true and approximate posteriors for 100 data points generated using the truth 
+\begin_inset Formula $\mu = 2$
+\end_inset
+
+ are shown below. 
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+
+\begin_layout Standard
+\align center
+
+\begin_inset Graphics 
+	filename LN_plot.pdf
+	width 14cm
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The Kamiltonian sampler will, of course, target the true posterior.
+\end_layout
+
+\begin_layout Standard
+This is essentially a proof of concept that a likelihood with some positive skew being approximated by a Gaussian should bias the posterior upwards. A slightly more complex and multi-dimensional simulation example would be to take the likelihood as a multivariate skew-Normal distribution (e.g. 
+\begin_inset CommandInset citation
+LatexCommand cite
+after ""
+key "kollo"
+
+\end_inset
+
+) 
+\begin_inset Formula \[
+f(y|\mu) = 2f_{N(\mu, \Sigma)}(y)\Phi( \langle\alpha, y \rangle),
+\]
+\end_inset
+
+where 
+\begin_inset Formula $f_{N(\mu, \Sigma)}$
+\end_inset
+
+ is a multivariate Gaussian density with chosen mean and covariance, 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is a skewness vector (choose each 
+\begin_inset Formula $\alpha_i > 0$
+\end_inset
+
+ for positive skew), and 
+\begin_inset Formula $\Phi$
+\end_inset
+
+ is the standard 
+\begin_inset Formula $\mathcal{N}(0,1)$
+\end_inset
+
+ CDF. Generating some data with a reasonable size of 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ (there are R packages to simulate from this distribution) should mean that Gaussian likelihood approximations bias posterior inference for 
+\begin_inset Formula $\mu$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section*
+Theory
+\end_layout
+
+\begin_layout Standard
+There is some work related to ABC-MCMC and approximate sampler that I am getting familiar with at the moment but I need more time to make something concrete out of this, so for now the introduction and example is what I have.
+\end_layout
+
+\begin_layout Bibliography
+
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label ""
+key "wood"
+
+\end_inset
+
+ Wood, Simon N. 
+\begin_inset Quotes eld
+\end_inset
+
+Statistical inference for noisy nonlinear ecological dynamic systems." 
+\emph on
+Nature 466
+\emph default
+, no. 7310 (2010): 1102-1104.
+\end_layout
+
+\begin_layout Bibliography
+
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label ""
+key "sisson"
+
+\end_inset
+
+ Sisson, Scott A., and Yanan Fan. 
+\begin_inset Quotes eld
+\end_inset
+
+Likelihood-Free MCMC." 
+\emph on
+Handbook of MCMC Chapter 12
+\emph default
+ (2011): 313-333.
+\end_layout
+
+\begin_layout Bibliography
+
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label ""
+key "turner"
+
+\end_inset
+
+ Turner, Brandon M. and Sederberg, Per B. 
+\begin_inset Quotes eld
+\end_inset
+
+A generalized, likelihood-free method for posterior estimation." 
+\emph on
+Psychonomic Bulletin & Review
+\emph default
+, 21(2):227â250, 2014.
+\end_layout
+
+\begin_layout Bibliography
+
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label ""
+key "roberts"
+
+\end_inset
+
+ Medina-Aguayo, Felipe J., Anthony Lee, and Gareth O. Roberts. 
+\begin_inset Quotes eld
+\end_inset
+
+Stability of Noisy Metropolis-Hastings." 
+\emph on
+arXiv preprint arXiv:1503.07066
+\emph default
+ (2015).
+\end_layout
+
+\begin_layout Bibliography
+
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label ""
+key "welling"
+
+\end_inset
+
+ Meeds, Edward, Robert Leenders, and Max Welling. 
+\begin_inset Quotes eld
+\end_inset
+
+Hamiltonian ABC." 
+\emph on
+arXiv preprint arXiv:1503.01916
+\emph default
+ (2015).
+\end_layout
+
+\begin_layout Bibliography
+
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label ""
+key "kollo"
+
+\end_inset
+
+ Kollo, TÃµnu, and J. Liivi. 
+\begin_inset Quotes eld
+\end_inset
+
+Skewed multivariate distributions." In 
+\emph on
+Weekly Seminar in Statistics
+\emph default
+. 2007.
+\end_layout
+
+\end_body
+\end_document

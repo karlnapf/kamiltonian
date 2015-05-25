@@ -15,7 +15,7 @@ from kmc.densities.banana import Banana, sample_banana, norm_of_emp_mean
 import kmc.densities.banana
 from kmc.densities.gaussian import IsotropicZeroMeanGaussian
 from kmc.tools.Log import logger
-from kmc.tools.convergence_stats import avg_ess
+from kmc.tools.convergence_stats import avg_ess, min_ess
 import numpy as np
 from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob
 from scripts.experiments.mcmc.independent_job_classes.KMCRandomFeatsJob import KMCRandomFeatsJob
@@ -30,7 +30,14 @@ start_base = [0, -3.]
 statistics = OrderedDict()
 statistics['avg_quantile_error']=kmc.densities.banana.avg_quantile_error
 statistics['avg_ess']=avg_ess
+statistics['min_ess']=min_ess
 statistics['norm_of_mean']=norm_of_emp_mean
+
+def get_start(D):
+    start = np.array(start_base + [0. ] * (D - 2))
+    start = np.random.randn(D)*10
+    start = np.ones(D) * 10
+    return start
 
 def hmc_generator(D, target, num_warmup, thin_step, momentum_seed):
     # determined by pilot runs
@@ -41,16 +48,13 @@ def hmc_generator(D, target, num_warmup, thin_step, momentum_seed):
         step_size_min = 0.6
         step_size_max = 1.3
     
+    start = get_start(D)
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
-    start = np.array(start_base + [0. ] * (D - 2))
-    
     return HMCJob(target, momentum, num_iterations, start,
                   num_steps_min, num_steps_max, step_size_min, step_size_max, momentum_seed,
                   statistics=statistics, num_warmup=num_warmup, thin_step=thin_step)
 
 def rw_generator_isotropic(D, target, num_warmup, thin_step):
-    start = np.array(start_base + [0. ] * (D - 2))
-    
     # tuned towards roughly 23% acceptance
     sigmas_proposal = {
               2: 4.4,
@@ -58,7 +62,7 @@ def rw_generator_isotropic(D, target, num_warmup, thin_step):
               16: 0.35,
               32: 0.05
               }
-    
+    start = get_start(D)
     return RWJob(target, num_iterations, start, sigmas_proposal[D],
                  statistics=statistics,
                  num_warmup=num_warmup, thin_step=thin_step)
@@ -72,8 +76,8 @@ def kmc_generator(N, D, target, num_warmup, thin_step, momentum_seed):
         step_size_min = 0.6
         step_size_max = 1.3
     
+    start = get_start(D)
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
-    start = np.array(start_base + [0. ] * (D - 2))
     
     # estimator parameters
     sigma = 0.46
@@ -84,7 +88,7 @@ def kmc_generator(N, D, target, num_warmup, thin_step, momentum_seed):
 
     # oracle samples
     Z = sample_banana(N, D, bananicity, V)
-    job = KMCRandomFeatsJob(Z, sigma, lmbda,
+    job = KMCRandomFeatsJob(Z, N, sigma, lmbda,
                             target, momentum, num_iterations,
                             start, num_steps_min, num_steps_max,
                             step_size_min, step_size_max, momentum_seed, learn_parameters=learn_parameters,
@@ -94,8 +98,6 @@ def kmc_generator(N, D, target, num_warmup, thin_step, momentum_seed):
     return job
 
 def kameleon_generator(N, D, target, num_warmup, thin_step):
-    start = np.array(start_base + [0. ] * (D - 2))
-    
     # determined by pilot runs
     if N==2000 and D==8:
         nu2 = .5
@@ -126,6 +128,7 @@ def kameleon_generator(N, D, target, num_warmup, thin_step):
     median_dist=np.median(dists[dists>0])
     sigma=0.5*median_dist
     
+    start = get_start(D)
     job = KameleonJob(Z, sigma, nu2, gamma2, target, num_iterations, start,
                       statistics=statistics,
                             num_warmup=num_warmup, thin_step=thin_step)
@@ -135,13 +138,13 @@ if __name__ == "__main__":
     logger.setLevel(10)
     Ds = np.sort([8])[::-1]
     Ns = np.sort([50, 100, 200, 500, 1000, 1500, 2000])[::-1]
-#     Ns = np.sort([2000])[::-1]
+    Ns = np.sort([2000])[::-1]
     
     print(Ns)
     print(Ds)
     assert np.min(Ds) >= 2
     num_repetitions = 10
-#     num_repetitions = 1
+    num_repetitions = 1
     
     # target
     bananicity = 0.03
@@ -152,8 +155,8 @@ if __name__ == "__main__":
     num_warmup = 500
     thin_step = 1
     num_iterations = 2000 + num_warmup
-#     num_iterations = 300
-#     num_warmup = 0
+    num_iterations = 100
+    num_warmup = 0
     
     # hmc parameters
     num_steps_min = 10
@@ -236,14 +239,18 @@ if __name__ == "__main__":
         
         for D in Ds:
             for agg in aggs_hmc_kmc[D]:
+                print(agg.__class__.__name__)
                 plot_diagnosis(agg, D)
             
             for agg in aggs_rw_kameleon[D]:
+                print(agg.__class__.__name__)
                 plot_diagnosis(agg, D)
             
             for N in Ns:
                 for agg in aggs_hmc_kmc[(N, D)]:
+                    print(agg.__class__.__name__)
                     plot_diagnosis(agg, D)
                     
                 for agg in aggs_rw_kameleon[(N, D)]:
+                    print(agg.__class__.__name__)
                     plot_diagnosis(agg, D)

@@ -2,9 +2,10 @@ from glob import glob
 import pickle
 
 from kmc.tools.Log import logger
+import matplotlib.pyplot as plt
 import numpy as np
 from scripts.experiments.mcmc.independent_job_classes.debug import plot_mcmc_result
-import matplotlib.pyplot as plt
+
 
 if __name__ == "__main__":
     logger.setLevel(10)
@@ -31,27 +32,29 @@ if __name__ == "__main__":
             logger.info("Average ESS: %.2f" % avg_ess)
             logger.info("Minimum ESS: %.2f" % min_ess)
             logger.info("Total time: %.2f" % (time + time_set_up))
-            logger.info("Average ESS/s: %.2f" % (avg_ess/(time + time_set_up)))
-            logger.info("Minimum ESS/s: %.2f" % (min_ess/(time + time_set_up)))
-#             plot_mcmc_result(result, D1=1, D2=6)
+            logger.info("Average ESS/s: %.2f" % (avg_ess / (time + time_set_up)))
+            logger.info("Minimum ESS/s: %.2f" % (min_ess / (time + time_set_up)))
+            
+            if False:
+                plot_mcmc_result(result, D1=1, D2=6)
         
         inds = np.arange(warmup, result.num_iterations, step=thin)
         for i in inds:
             samples += [result.samples[i]]
     
     samples = np.array(samples)
-    print samples.shape
-#     with open("benchmark_samples.arr", 'w+') as f:
-#         np.save(f, samples)
+    if False:
+        with open("benchmark_samples.arr", 'w+') as f:
+            np.save(f, samples)
     
     D_pairs = []
     
     for D1 in range(9):
         for D2 in range(D1):
-            D_pairs+= [(D1, D2)]
+            D_pairs += [(D1, D2)]
     
-    for D1,D2 in D_pairs:
-        print D1,D2
+    for D1, D2 in D_pairs:
+        print(D1, D2)
         plt.figure(figsize=(8, 12))
         plt.subplot(521)
         plt.plot(samples[:, D1])
@@ -62,7 +65,7 @@ if __name__ == "__main__":
         plt.subplot(524)
         plt.hist(samples[:, D2])
         plt.subplot(525)
-        plt.plot(samples[:,D1], samples[:,D2])
+        plt.plot(samples[:, D1], samples[:, D2])
         plt.subplot(526)
-        plt.plot(samples[:,D1], samples[:,D2], '.')
+        plt.plot(samples[:, D1], samples[:, D2], '.')
         plt.show()
