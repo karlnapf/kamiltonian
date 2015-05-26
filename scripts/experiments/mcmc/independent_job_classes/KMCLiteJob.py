@@ -80,7 +80,7 @@ class KMCLiteJob(HMCJob):
         # use a function call to be able to overload it for KMC
         acc_prob, log_pdf_q = self.accept_prob_log_pdf(current, q, p0_log_pdf, p_log_pdf, current_log_pdf, samples)
          
-        if True and len(samples)>20 and acc_prob>0.5 and False:
+        if True and (len(samples) % 100) ==0 and False:
             logger.debug("Plotting")
             import matplotlib.pyplot as plt
              
@@ -130,29 +130,30 @@ class KMCLiteJob(HMCJob):
             plt.plot(Ps[-1,D1], Ps[-1,D2], 'r*', markersize=15)
             plt.title('momentum')
              
-#             acc_probs = np.exp(compute_log_accept_pr(current, p0, Qs, Ps, self.orig_target.log_pdf, self.momentum.log_pdf))
+            acc_probs = np.exp(compute_log_accept_pr(current, p0, Qs, Ps, self.orig_target.log_pdf, self.momentum.log_pdf))
             H_ratios = np.exp(compute_log_accept_pr(current, p0, Qs, Ps, self.target.log_pdf, self.momentum.log_pdf))
-#             target_ratio = [np.min([1,np.exp(self.orig_target.log_pdf(x)-current_log_pdf)]) for x in Qs]
-#             momentum_ratio = [np.min([1,np.exp(self.momentum.log_pdf(x)-p0_log_pdf)]) for x in Ps]
-#             target_log_pdf = np.exp(np.array([self.orig_target.log_pdf(x) for x in Qs]))
+            target_ratio = [np.min([1,np.exp(self.orig_target.log_pdf(x)-current_log_pdf)]) for x in Qs]
+            momentum_ratio = [np.min([1,np.exp(self.momentum.log_pdf(x)-p0_log_pdf)]) for x in Ps]
+            target_log_pdf = np.exp(np.array([self.orig_target.log_pdf(x) for x in Qs]))
 # #              
             plt.figure(figsize=(12,4))
-#             plt.subplot(151)
-#             plt.plot(acc_probs)
-#             plt.title("acc_probs")
-#             plt.subplot(152)
-#             plt.plot(target_ratio)
-#             plt.title("target_ratio")
-#             plt.subplot(153)
-#             plt.plot(momentum_ratio)
-#             plt.title("momentum_ratio")
+            plt.subplot(151)
+            plt.plot(acc_probs)
+            plt.plot([0, len(acc_probs)], [acc_probs.mean(), acc_probs.mean()])
+            plt.title("acc_probs")
+            plt.subplot(152)
+            plt.plot(target_ratio)
+            plt.title("target_ratio")
+            plt.subplot(153)
+            plt.plot(momentum_ratio)
+            plt.title("momentum_ratio")
             plt.subplot(154)
             plt.plot(H_ratios)
             plt.title("H_ratios")
-#             plt.subplot(155)
-#             plt.plot(target_log_pdf)
-#             plt.title("target_log_pdf")
-#             
+            plt.subplot(155)
+            plt.plot(target_log_pdf)
+            plt.title("target_log_pdf")
+             
              
              
             plt.show()
