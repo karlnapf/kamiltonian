@@ -23,6 +23,7 @@ statistics['min_ess'] = min_ess
 def rw_generator_isotropic(num_warmup, thin_step):
     # tuned towards roughly 23% acceptance
     sigma_proposal = 0.54
+    sigma_proposal = 2.38 / np.sqrt(9)
     
     start = np.random.randn(9) * 0
     
