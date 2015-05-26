@@ -15,7 +15,7 @@ class ABCPosterior(object):
         logger.debug("Simulating datasets")
         for i in range(self.n_lik_samples):
             # summary statistic: mean
-            pseudo_data = np.mean(self.simulator(theta), 0)
+            pseudo_data = self.simulator(theta)
             
             diff = np.linalg.norm(pseudo_data-self.data)
 #             logger.debug("Diff=%.6f" % diff)

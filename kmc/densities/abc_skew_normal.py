@@ -52,7 +52,9 @@ def skew_normal_simulator(theta):
     N = 10
     
 #     logger.debug("Simulating with D=%d, N=%d" % (D, N))
-    return sample_skew_normal(N, theta, Sigma, alphas)
+
+    # summary statistic: mean
+    return np.mean(sample_skew_normal(N, theta, Sigma, alphas), 0)
 
 class ABCSkewNormalPosterior(ABCPosterior):
     def __init__(self, D=10, n_lik_samples=10, epsilon=.55, prior=WideZeroMeanNormalPrior(10)):
@@ -68,8 +70,7 @@ class ABCSkewNormalPosterior(ABCPosterior):
         old = np.random.get_state()
         np.random.seed(0)
         
-        # summary statistic: mean
-        self.data = np.mean(skew_normal_simulator(theta_true), 0)
+        self.data = skew_normal_simulator(theta_true)
         np.random.set_state(old)
     
 
