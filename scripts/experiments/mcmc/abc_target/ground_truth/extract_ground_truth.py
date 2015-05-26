@@ -10,7 +10,7 @@ from scripts.experiments.mcmc.independent_job_classes.debug import plot_mcmc_res
 if __name__ == "__main__":
     logger.setLevel(10)
     
-    thin = 200
+    thin = 390
     warmup = 1000
     
     samples = []
