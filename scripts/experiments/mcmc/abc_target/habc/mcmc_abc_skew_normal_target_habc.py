@@ -28,7 +28,7 @@ def habc_generator(num_warmup, thin_step):
     
     step_size_min = 0.01
     step_size_max = .1
-    num_steps_min = 10
+    num_steps_min = 50
     num_steps_max = 50
     sigma_p = 1.
     
