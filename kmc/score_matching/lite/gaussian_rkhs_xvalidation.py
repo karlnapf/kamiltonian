@@ -46,11 +46,11 @@ def select_sigma_lambda_cma(Z, num_folds=5, num_repetitions=1,
             sigma = 2 ** log2_sigma
             lmbda = 2 ** log2_lmbda
             
-            logger.info("particle %d/%d, sigma: %.2f, lambda: %.2f" % \
-                        (i + 1, len(solutions), sigma, lmbda))
             K = gaussian_kernel(Z, sigma=sigma)
             folds = xvalidate(Z, num_folds, sigma, lmbda, K)
             values[i] = np.mean(folds)
+            logger.info("particle %d/%d, sigma: %.2f, lambda: %.2f, J=%.4f" % \
+                        (i + 1, len(solutions), sigma, lmbda, values[i]))
         
         es.tell(solutions, values)
     
