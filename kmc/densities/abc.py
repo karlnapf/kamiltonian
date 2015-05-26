@@ -1,3 +1,4 @@
+from kmc.densities.gaussian import log_gaussian_pdf
 from kmc.tools.Log import logger
 import numpy as np
 
@@ -10,21 +11,16 @@ class ABCPosterior(object):
         self.prior = prior
     
     def log_pdf(self, theta):
-        # sample likelihood and evaluate epsilon kernel for each sampled dataset
-        liks = np.zeros(self.n_lik_samples)
+        # sample likelihood and evaluate Gaussian epsilon kernel for each sampled dataset
+        log_liks = np.zeros(self.n_lik_samples)
         logger.debug("Simulating datasets")
         for i in range(self.n_lik_samples):
             pseudo_data = self.simulator(theta)
+            diff = np.linalg.norm(pseudo_data-self.data)
+#             logger.debug("Diff=%.6f" % diff)
+            log_liks[i] = -0.5 * (diff**2) / self.epsilon**2
             
-            diff = np.linalg.norm(self.data-pseudo_data)
-            within = diff <= self.epsilon
-#             logger.debug("Euclidean distance to own data: %.2f", diff)
-            liks[i] = 1. if within else 0.
-            
-#             if liks[i]:
-#                 logger.debug("Within epsilon of %.2f", self.epsilon)
-        
-        m = np.mean(liks)
+        m = np.mean(np.exp(log_liks))
         logger.debug("Likelihood: %.2f", m)
         
         result = np.log(m) + self.prior(theta)
