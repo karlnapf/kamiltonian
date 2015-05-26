@@ -1,4 +1,3 @@
-from kmc.densities.gaussian import log_gaussian_pdf
 from kmc.tools.Log import logger
 import numpy as np
 
@@ -15,7 +14,9 @@ class ABCPosterior(object):
         log_liks = np.zeros(self.n_lik_samples)
         logger.debug("Simulating datasets")
         for i in range(self.n_lik_samples):
-            pseudo_data = self.simulator(theta)
+            # summary statistic: mean
+            pseudo_data = np.mean(self.simulator(theta), 0)
+            
             diff = np.linalg.norm(pseudo_data-self.data)
 #             logger.debug("Diff=%.6f" % diff)
             log_liks[i] = -0.5 * (diff**2) / self.epsilon**2
@@ -23,7 +24,7 @@ class ABCPosterior(object):
         m = np.mean(np.exp(log_liks))
         logger.debug("Likelihood: %.2f", m)
         
-        result = np.log(m) + self.prior(theta)
+        result = np.log(m) + self.prior.log_pdf(theta)
         
         if np.isnan(result):
             result = -np.inf

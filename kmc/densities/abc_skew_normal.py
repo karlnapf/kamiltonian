@@ -34,11 +34,16 @@ def sample_skew_normal(N, mu=np.zeros(2), Sigma=np.eye(2), alphas = np.ones(2)):
     result = r_rmsn(N, r_xi, r_Omega, r_alpha)
     return ri2numpy(result)
 
-def wide_zero_mean_normal_prior(x):
-    D = len(x)
-    mu = np.zeros(D)
-    Sigma = np.eye(D) * 5
-    return log_gaussian_pdf(x, mu, Sigma, is_cholesky=True)
+class WideZeroMeanNormalPrior(object):
+    def __init__(self, D):
+        self.mu = np.zeros(D)
+        self.L = np.eye(D) * 5
+    
+    def log_pdf(self, x):
+        return log_gaussian_pdf(x, self.mu, self.L, is_cholesky=True)
+    
+    def grad(self, x):
+        return log_gaussian_pdf(x, self.mu, self.L, is_cholesky=True, compute_grad=True)
 
 def skew_normal_simulator(theta):
     D = len(theta)
@@ -50,7 +55,7 @@ def skew_normal_simulator(theta):
     return sample_skew_normal(N, theta, Sigma, alphas)
 
 class ABCSkewNormalPosterior(ABCPosterior):
-    def __init__(self, D=10, n_lik_samples=10, epsilon=.55, prior=wide_zero_mean_normal_prior):
+    def __init__(self, D=10, n_lik_samples=10, epsilon=.55, prior=WideZeroMeanNormalPrior(10)):
         
         ABCPosterior.__init__(self, skew_normal_simulator, n_lik_samples, epsilon, prior)
         self.D = D
@@ -58,11 +63,13 @@ class ABCSkewNormalPosterior(ABCPosterior):
     def set_up(self):
         logger.info("Generating dataset")
         # true vale of theta
-        theta = np.zeros(self.D)
+        theta_true = np.zeros(self.D)
         
         old = np.random.get_state()
         np.random.seed(0)
-        self.data = skew_normal_simulator(theta)
+        
+        # summary statistic: mean
+        self.data = np.mean(skew_normal_simulator(theta_true), 0)
         np.random.set_state(old)
     
 
