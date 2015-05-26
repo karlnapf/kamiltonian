@@ -26,4 +26,10 @@ class ABCPosterior(object):
         
         m = np.mean(liks)
         logger.debug("Likelihood: %.2f", m)
-        return np.log(m) + self.prior(theta)
+        
+        result = np.log(m) + self.prior(theta)
+        
+        if np.isnan(result):
+            result = -np.inf
+        
+        return result
