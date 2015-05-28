@@ -1730,7 +1730,7 @@ reference "sub:finite_approx_infinite_exp_family"
  sense of 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "ChenICML2014"
+key "ChenFoxGuestrin2014"
 
 \end_inset
 
@@ -1747,7 +1747,7 @@ key "Betancourt2015"
 \end_layout
 
 \begin_layout Section
-Apprpoximation schemes
+Efficient empirical estimators
 \end_layout
 
 \begin_layout Standard
@@ -1758,7 +1758,7 @@ reference "eq:infinite_exp_family"
 
 \end_inset
 
-, and all approximations are based on score matching, we begin by giving
+, and our approximations are based on score matching, we begin by giving
  a brief review, and continue by developing two approximation technique
  to the original estimator in 
 \begin_inset CommandInset citation
@@ -1809,31 +1809,35 @@ key "Hyvarinen-05"
 \end_inset
 
 , we assume that a variable 
-\begin_inset Formula $\xi\sim\pi$
+\begin_inset Formula $x\in\mathbb{{\cal X}}$
 \end_inset
 
- has some unknown probability density function 
-\begin_inset Formula $\pi(\cdot)$
+ has some unknown (normalised) probability density function 
+\begin_inset Formula $\pi_{Z}(x)=Z^{-1}\pi(x)$
 \end_inset
 
  defined on 
 \begin_inset Formula $\mathbb{R}^{d}$
 \end_inset
 
-.
+, where 
+\begin_inset Formula $\pi$
+\end_inset
+
+ as before is the unnormalised density.
  We model the log probability with a parametric model of the form 
 \begin_inset Formula 
 \begin{equation}
-\log\tilde{\pi}(\xi;\theta)=\log q(\xi;\theta)-\log Z(f),\label{eq:score_matching_parametric_model}
+\log\tilde{\pi}_{Z}(x;f)=\log\tilde{\pi}(x;f)-\log Z(f),\label{eq:score_matching_parametric_model}
 \end{equation}
 
 \end_inset
 
- where 
+where 
 \begin_inset Formula $f$
 \end_inset
 
- is a vector of parameters of yet unspecified dimension (c.f.
+ is a collection of parameters of yet unspecified dimension (c.f.
  natural parameters 
 \begin_inset Formula $f$
 \end_inset
@@ -1846,36 +1850,36 @@ reference "eq:infinite_exp_family"
 \end_inset
 
 ), and 
-\begin_inset Formula $Z(\theta)$
+\begin_inset Formula $Z(f)$
 \end_inset
 
- an unknown normalising constant.
+ the unknown normalising constant.
  We aim to approximate 
-\begin_inset Formula $\pi(\cdot)$
+\begin_inset Formula $\pi$
 \end_inset
 
  by 
-\begin_inset Formula $\tilde{\pi}(\cdot;\hat{\theta})$
+\begin_inset Formula $\tilde{\pi}$
 \end_inset
 
 , i.e., to find 
-\begin_inset Formula $\hat{\theta}$
+\begin_inset Formula $\hat{f}$
 \end_inset
 
- from a set of fixed i.i.d.
+ from a set of fixed 
+\begin_inset Formula $n$
+\end_inset
+
+ i.i.d.
  samples 
 \begin_inset Formula $\{x_{i}\sim\pi\}_{i=1}^{n}$
 \end_inset
 
- -- 
-\emph on
-without 
-\emph default
-estimating 
-\begin_inset Formula $Z(\theta)$
+, such that 
+\begin_inset Formula $\pi(x)\approx\tilde{\pi}(x;\hat{f})$
 \end_inset
 
-.
+ .
  From 
 \begin_inset CommandInset citation
 LatexCommand citet
@@ -1892,7 +1896,7 @@ key "Hyvarinen-05"
 
 \begin_inset Formula 
 \[
-J(\theta)=\frac{1}{2}\int_{\xi}\pi(\xi)\left\Vert \psi(\xi;\theta)-\psi_{\pi}(\xi)\right\Vert ^{2}d\xi,
+J(\theta)=\frac{1}{2}\int_{{\cal X}}\pi(x)\left\Vert \psi(x;f)-\psi_{\pi}(x)\right\Vert ^{2}dx,
 \]
 
 \end_inset
@@ -1900,21 +1904,21 @@ J(\theta)=\frac{1}{2}\int_{\xi}\pi(\xi)\left\Vert \psi(\xi;\theta)-\psi_{\pi}(\x
 where 
 \begin_inset Formula 
 \[
-\psi(\xi;\theta)=\nabla_{\xi}\log\tilde{\pi}(\xi;\theta),
+\tilde{\psi}(x;\theta)=\nabla_{x}\log\tilde{\pi}_{Z}(x;f)=\nabla_{x}\log\tilde{\pi}(x;f),
 \]
 
 \end_inset
 
 and 
-\begin_inset Formula $\psi_{\pi}(\xi)$
+\begin_inset Formula $\psi(x)$
 \end_inset
 
  is the derivative wrt 
-\begin_inset Formula $\xi$
+\begin_inset Formula $x$
 \end_inset
 
  of the unknown true density 
-\begin_inset Formula $\pi(\xi)$
+\begin_inset Formula $\pi(x)$
 \end_inset
 
 .
@@ -1930,14 +1934,14 @@ key "Hyvarinen-05"
 \begin_inset Formula $J(f)$
 \end_inset
 
- without access to the unknown 
-\begin_inset Formula $\psi_{\pi}(\xi)$
+ without access to the unknown score 
+\begin_inset Formula $\psi(x)$
 \end_inset
 
  as
 \begin_inset Formula 
 \[
-J(\theta)=\int_{\xi}\pi(\xi)\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(\xi;\theta)+\frac{1}{2}\psi_{\ell}(\xi;\theta)^{2}\right]d\xi,
+J(f)=\int_{{\cal X}}\pi(x)\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x;f)+\frac{1}{2}\psi_{\ell}(x;f)^{2}\right]dx,
 \]
 
 \end_inset
@@ -1945,7 +1949,7 @@ J(\theta)=\int_{\xi}\pi(\xi)\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(\x
 where
 \begin_inset Formula 
 \begin{equation}
-\psi_{\ell}(\xi;\theta)=\frac{\partial\log q(\xi;\theta)}{\partial\xi_{\ell}}\label{eq:score_match_first_score}
+\psi_{\ell}(x;f)=\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}\label{eq:score_match_first_score}
 \end{equation}
 
 \end_inset
@@ -1953,27 +1957,27 @@ where
 and
 \begin_inset Formula 
 \begin{equation}
-\partial_{\ell}\psi_{\ell}(\xi;\theta)=\frac{\partial^{2}\log q(\xi;\theta)}{\partial\xi_{\ell}^{2}}.\label{eq:score_match_second_score}
+\partial_{\ell}\psi_{\ell}(x;f)=\frac{\partial^{2}\log\tilde{\pi}(x;f)}{\partial x_{\ell}^{2}}.\label{eq:score_match_second_score}
 \end{equation}
 
 \end_inset
 
 Replacing the integral 
-\begin_inset Formula $\int_{\xi}\pi(\xi)$
+\begin_inset Formula $\int_{{\cal X}}\pi(x)dx$
 \end_inset
 
  with an average over the samples 
-\begin_inset Formula $x_{i}$
+\begin_inset Formula $x_{i}\sim\pi(x)$
 \end_inset
 
  gives us a sample version of 
-\begin_inset Formula $J(\theta)$
+\begin_inset Formula $J(f)$
 \end_inset
 
-, minimising of which is consistent,
+, minimising of which leads to a consistent estimator,
 \begin_inset Formula 
 \begin{equation}
-\hat{J}(\theta)=\frac{1}{m}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\theta)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};\theta)\right].\label{eq:score_matching_objective_sample_version}
+\hat{J}(f)=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};f)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};f)\right].\label{eq:score_matching_objective_sample_version}
 \end{equation}
 
 \end_inset
@@ -4075,8 +4079,8 @@ key "FilipponeIEEETPAMI13"
 .
  Pseudo-marginal MCMC methods 
 \begin_inset CommandInset citation
-LatexCommand citep
-key "andrieu2009pseudo"
+LatexCommand cite
+key "Andrieu2009a"
 
 \end_inset
 
