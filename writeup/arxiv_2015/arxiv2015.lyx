@@ -1930,54 +1930,31 @@ key "Hyvarinen-05"
 
 \end_inset
 
- using partial integration, it is possible to express 
+ using partial integration, it is possible to express an empirical version
+ of 
 \begin_inset Formula $J(f)$
 \end_inset
 
- without access to the unknown score 
-\begin_inset Formula $\psi(x)$
+ without access to the unknown score density 
+\begin_inset Formula $\pi$
+\end_inset
+
+, but only through samples 
+\begin_inset Formula $x_{i}\sim\pi(x)$
 \end_inset
 
  as
 \begin_inset Formula 
-\[
-J(f)=\int_{{\cal X}}\pi(x)\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x;f)+\frac{1}{2}\psi_{\ell}(x;f)^{2}\right]dx,
-\]
+\begin{equation}
+\hat{J}(f)=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};f)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};f)\right].\label{eq:score_matching_objective_sample_version}
+\end{equation}
 
 \end_inset
 
 where
 \begin_inset Formula 
 \begin{equation}
-\psi_{\ell}(x;f)=\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}\label{eq:score_match_first_score}
-\end{equation}
-
-\end_inset
-
-and
-\begin_inset Formula 
-\begin{equation}
-\partial_{\ell}\psi_{\ell}(x;f)=\frac{\partial^{2}\log\tilde{\pi}(x;f)}{\partial x_{\ell}^{2}}.\label{eq:score_match_second_score}
-\end{equation}
-
-\end_inset
-
-Replacing the integral 
-\begin_inset Formula $\int_{{\cal X}}\pi(x)dx$
-\end_inset
-
- with an average over the samples 
-\begin_inset Formula $x_{i}\sim\pi(x)$
-\end_inset
-
- gives us a sample version of 
-\begin_inset Formula $J(f)$
-\end_inset
-
-, minimising of which leads to a consistent estimator,
-\begin_inset Formula 
-\begin{equation}
-\hat{J}(f)=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};f)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};f)\right].\label{eq:score_matching_objective_sample_version}
+\psi_{\ell}(x;f)=\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}\qquad\text{and}\qquad\partial_{\ell}\psi_{\ell}(x;f)=\frac{\partial^{2}\log\tilde{\pi}(x;f)}{\partial x_{\ell}^{2}}.\label{eq:score_match_scores}
 \end{equation}
 
 \end_inset
@@ -2035,7 +2012,11 @@ key "SriFukKumGreHyv14"
 .
  As we are eventually interested in constructing an adaptive MCMC method
  we need to ensure feasability of updating the estimator on a regular basis.
- Therefore, we propose two novel approximations to 
+ 
+\end_layout
+
+\begin_layout Standard
+We next propose two novel approximations to 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
@@ -2046,7 +2027,7 @@ reference "eq:infinite_exp_family"
 \end_layout
 
 \begin_layout Subsection
-Infinite lite approximation
+Infinite exponential families lite
 \end_layout
 
 \begin_layout Standard
@@ -2153,7 +2134,14 @@ reference "eq:score_matching_objective_sample_version"
 
 .
  The estimator is summarised in the following proposition, which is prooved
- in Appendix TODO.
+ in Appendix 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sub:Appendix_lite_details"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Proposition
@@ -2242,7 +2230,7 @@ reference "sub:Appendix_lite_details"
 \end_layout
 
 \begin_layout Subsection
-Finite approximation
+Finite approximate infinite exponential families
 \end_layout
 
 \begin_layout Standard
@@ -2573,7 +2561,7 @@ Reference an example later that illustrates burn-in of both methods.
 \end_layout
 
 \begin_layout Subsection
-Theoretical guarantees
+Towards theoretical guarantees
 \end_layout
 
 \begin_layout Standard
@@ -2671,7 +2659,7 @@ status open
 \begin_layout Plain Layout
 
 \series bold
-Kamiltonian Monte Carlo
+Kamiltonian Monte Carlo (finite basis version)
 \begin_inset CommandInset label
 LatexCommand label
 name "alg:Kamiltonian-Monte-Carlo"
@@ -2725,8 +2713,7 @@ At iteration
 \begin_layout Itemize
 
 \shape italic
-Online-update density estimate.
- With probability 
+Online-update density estimate with probability 
 \begin_inset Formula $a_{t}$
 \end_inset
 
@@ -4410,7 +4397,7 @@ name "sub:Appendix_finite_details"
 compute the score matching functions in 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:score_match_first_score"
+reference "eq:score_match_scores"
 
 \end_inset
 
