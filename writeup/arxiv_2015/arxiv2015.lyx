@@ -2195,11 +2195,11 @@ reference "eq:score_matching_objective_sample_version"
 \end_inset
 
 where the exact form of 
-\begin_inset Formula $C$
+\begin_inset Formula $C\in\mathbb{R}^{n\times n}$
 \end_inset
 
  and 
-\begin_inset Formula $b$
+\begin_inset Formula $b\in\mathbb{R}^{n}$
 \end_inset
 
  can be found in Appendix 
@@ -2311,12 +2311,7 @@ We deliberately don't state the form of the approximation yet, but will
 \begin_inset Formula ${\cal H}_{m}=\mathbb{R}^{m}$
 \end_inset
 
- with a fixed set of random basis vectors 
-\begin_inset Formula $\{\omega_{i}\}_{i=1}^{m}$
-\end_inset
-
-.
- Denote by 
+, denote by 
 \begin_inset Formula $\phi_{x}\in\mathbb{{\cal H}}^{m}$
 \end_inset
 
@@ -2329,8 +2324,8 @@ We deliberately don't state the form of the approximation yet, but will
 \end_inset
 
 .
- We then can approximate the kernel function using the finite rank expansion
- 
+ Assume that the embedding approximates the kernel function as a finite
+ rank expansion 
 \begin_inset Formula $K_{ij}:=k(x_{i},x_{j})\approx\phi_{x_{i}}^{T}\phi_{x_{j}}$
 \end_inset
 
@@ -2359,7 +2354,7 @@ reference "eq:infinite_exp_family"
 \begin_inset Formula $\phi_{x}\in{\cal H}_{m}$
 \end_inset
 
-, giving
+, leading to
 \end_layout
 
 \begin_layout Standard
@@ -2370,12 +2365,8 @@ f(x) & =\langle\theta,\phi_{x}\rangle_{{\cal H}_{m}}=\theta^{T}\phi_{x}\label{eq
 
 \end_inset
 
-We obtain an finite dimensional approximate infinite exponential family
- model of the target density 
-\begin_inset Formula $\pi$
-\end_inset
-
-.
+We obtain a finite dimensional approximate infinite exponential family model
+ of the target density -- in primal form.
  In order to fit 
 \begin_inset Formula $\hat{\theta}$
 \end_inset
@@ -2388,8 +2379,197 @@ reference "eq:score_matching_objective_sample_version"
 \end_inset
 
 .
- The following proposition summarieses the estimator, where the proof and
- details can be found in Appendix 
+ The following proposition summarieses the estimator.
+ Proof, details, and an example basis for a feature space 
+\begin_inset Formula ${\cal H}^{m}$
+\end_inset
+
+ that is based on the random kitchen sink framework 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rahimi2007"
+
+\end_inset
+
+ can be found in Appendix 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sub:Appendix_finite_details"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:finite_estimator"
+
+\end_inset
+
+Given a set of samples 
+\begin_inset Formula $\mathbf{x}=\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+ and assuming 
+\begin_inset Formula $f(x)=\theta^{T}\phi_{x}$
+\end_inset
+
+ for a finite dimensional embedding 
+\begin_inset Formula $x\mapsto\phi_{x}\in\mathbb{R}^{m}$
+\end_inset
+
+, and 
+\begin_inset Formula $\lambda>0,$
+\end_inset
+
+ the unique minimiser of the empirical score matching objective 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ is given by 
+\begin_inset Formula 
+\begin{equation}
+\hat{\theta}:=C^{-1}b,\label{eq:finite_estimator}
+\end{equation}
+
+\end_inset
+
+where the exact form of 
+\begin_inset Formula $C\in\mathbb{R}^{m\times m}$
+\end_inset
+
+ and 
+\begin_inset Formula $b\in\mathbb{R}^{m}$
+\end_inset
+
+ depends on the basis of 
+\begin_inset Formula ${\cal H}^{m}$
+\end_inset
+
+ and the basis used, see Appendix 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sub:Appendix_finite_details"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The estimator has one-off costs of 
+\begin_inset Formula ${\cal O}(nm^{2}+m^{3})$
+\end_inset
+
+ computation and 
+\begin_inset Formula ${\cal O}(nm^{2})$
+\end_inset
+
+ storage.
+ However, given we have computed a solution based on the Markov chain history
+ 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+, it is straight forward to construct 
+\begin_inset Formula $C,b$
+\end_inset
+
+ and the solution 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ after a new point arrived 
+\begin_inset Formula $x_{t+1}$
+\end_inset
+
+ 
+\emph on
+without re-estimating
+\emph default
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:finite_estimator"
+
+\end_inset
+
+.
+ Instead, we can store running averages to compute 
+\begin_inset Formula $C,b$
+\end_inset
+
+ and perform cheap rank-
+\begin_inset Formula $d$
+\end_inset
+
+ updates to 
+\begin_inset Formula $C^{-1}$
+\end_inset
+
+ (or its Cholesky factorization).
+ This allows to update the estimator as the Markov chain runs in 
+\begin_inset Formula ${\cal O}(m^{2})$
+\end_inset
+
+ computation and storage, which is independent of 
+\begin_inset Formula $t$
+\end_inset
+
+ while not using a random subsample but 
+\emph on
+all 
+\emph default
+chain history.
+ See Appendix 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sub:Appendix_finite_details"
+
+\end_inset
+
+ for details.
+\end_layout
+
+\begin_layout Subsection
+Comparison of lite and finite approximation
+\end_layout
+
+\begin_layout Itemize
+Lite:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Pro: Tails correct
+\end_layout
+
+\begin_layout Itemize
+Con: Only use n data, re-estimating requires linear solve
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Finite:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Pro: Infinite data and cheap online updates
+\end_layout
+
+\begin_layout Itemize
+Con: Tails not guaranteed to decay
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Reference an example later that illustrates burn-in of both methods.
 \end_layout
 
 \begin_layout Subsection
@@ -2447,20 +2627,6 @@ key "SriFukKumGreHyv14"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Geometry extension (TODO)
-\end_layout
-
-\begin_layout Itemize
-Can we use second order information of our density estimate? Then run RM-HMC
- or M-MALA
-\end_layout
-
-\begin_layout Itemize
-What about the Kameleon proposal as a Hessian estimate? Formal relationship?
- In practice
 \end_layout
 
 \begin_layout Section
@@ -3954,11 +4120,17 @@ Autocorrelation and marginal posterior for a 10-dimensional skew normal
 \end_layout
 
 \begin_layout Subsection
-Comparisons to geometry HMC?
+Geometry extension (TODO)
 \end_layout
 
-\begin_layout Standard
-For that, first need to work out how we would even do that.
+\begin_layout Itemize
+Can we use second order information of our density estimate? Then run RM-HMC
+ or M-MALA
+\end_layout
+
+\begin_layout Itemize
+What about the Kameleon proposal as a Hessian estimate? Formal relationship?
+ In practice
 \end_layout
 
 \begin_layout Section
@@ -4222,6 +4394,16 @@ reference "eq:lite_estimator"
 
 \begin_layout Subsection
 Finite estimator
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Appendix_finite_details"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
