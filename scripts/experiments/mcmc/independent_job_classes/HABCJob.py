@@ -14,7 +14,7 @@ from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob,\
 from scripts.tools.plotting import evaluate_gradient_grid, plot_array,\
     evaluate_density_grid
 from kmc.densities.gaussian import log_gaussian_pdf
-
+import numdifftools as nd
 
 splitted = __file__.split(os.sep)
 idx = splitted.index('kamiltonian')
@@ -23,23 +23,39 @@ project_path = os.sep.join(splitted[:(idx + 1)])
 temp = 0
 
 class DummyHABCTarget(object):
-    def __init__(self, mu=None, L=None, prior=None):
-        self.mu = mu
-        self.L = L
-        self.prior = prior
+    def __init__(self, abc_target):
+                 
+        self.abc_target = abc_target
     
-    def set_up(self):
-        pass
-        
     def grad(self, theta):
-        log_lik = log_gaussian_pdf(theta, self.mu, self.L, is_cholesky=True,
-                                compute_grad=True)
-        log_prior = self.prior.grad(theta)
-        return log_lik + log_prior
+        
+        logger.debug("Computing finite differences gradient")
+        g = nd.Gradient(self.log_lik)(theta)
+        
+        return g + self.abc_target.prior.grad(theta)
+    
+    def update(self, theta):
+        D = self.abc_target.D
+        
+        # sample pseudo data to fit conditional model
+        pseudo_datas = np.zeros((self.abc_target.n_lik_samples, D))
+        for i in range(len(pseudo_datas)):
+            pseudo_datas[i] = self.abc_target.simulator(theta)
+        
+        # fit Gaussian, add ridge on diagonal for the epsilon likelihood kernel
+        self.mu = np.mean(pseudo_datas, 0)
+        Sigma = np.cov(pseudo_datas) + np.eye(D)*(self.abc_target.epsilon**2)
+        self.L = np.linalg.cholesky(Sigma)
+    
+    def log_lik(self, theta):
+        self.update(theta)
+        return log_gaussian_pdf(theta, self.mu, self.L, is_cholesky=True)
     
     def log_pdf(self, theta):
-        # should not happen, this is
-        assert False
+        self.update(theta)
+        log_lik = self.log_lik(theta)
+            
+        return log_lik  + self.abc_target.prior.log_pdf(theta)
 
 class HABCJob(HMCJob):
     def __init__(self, abc_target, momentum,
@@ -64,17 +80,8 @@ class HABCJob(HMCJob):
 
     @abstractmethod
     def propose(self, current, current_log_pdf, samples, accepted):
-        # sample pseudo data to fit conditional model
-        pseudo_datas = np.zeros((self.abc_target.n_lik_samples, self.D))
-        for i in range(len(pseudo_datas)):
-            pseudo_datas[i] = self.abc_target.simulator(current)
-        
-        # fit Gaussian, add ridge on diagonal for the epsilon likelihood kernel
-        mu = np.mean(pseudo_datas, 0)
-        Sigma = np.cov(pseudo_datas) + np.eye(len(mu))*(self.abc_target.epsilon**2)
-        L = np.linalg.cholesky(Sigma)
-        
-        self.target = DummyHABCTarget(mu, L, self.abc_target.prior)
+        # replace with dummy target responsible for gradient computation
+        self.target = DummyHABCTarget(self.abc_target)
         
         # use normal HMC mechanics from here
         return HMCJob.propose(self, current, current_log_pdf, samples, accepted)

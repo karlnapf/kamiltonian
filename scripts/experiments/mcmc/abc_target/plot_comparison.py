@@ -77,9 +77,6 @@ if __name__ == "__main__":
                 ax_kde.set_xlabel(r"$\theta_0$")
                 ax_kde.set_ylabel(r"$p(\theta_0)$")
                 
-                m = np.mean(samples[:,0])
-                ax_kde.plot([m,m], [0,0.1], 'x', markersize=10, color=colors[alg_idx]);
-                 
                 ax_kde.grid(True)
                 plt.sca(ax_kde)
                 plt.savefig("abc_target_marginal0.pdf", bbox_inches="tight")

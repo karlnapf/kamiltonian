@@ -1,5 +1,6 @@
 from matplotlib.widgets import Slider, Button, RadioButtons
 
+from kmc.densities.banana import sample_banana
 from kmc.densities.gaussian import log_gaussian_pdf, sample_gaussian
 from kmc.score_matching.kernel.kernels import gaussian_kernel,\
     gaussian_kernel_grad
@@ -163,10 +164,11 @@ if __name__ == "__main__":
     N = 200
     np.random.seed(0)
     Z = sample_gaussian(N, mu, Sigma=L, is_cholesky=True)
+    Z = sample_banana(N, D)
 #     print np.sum(Z) * np.std(Z) * np.sum(Z**2) * np.std(Z**2)
 
-    Xs = np.linspace(-3, 3)
-    Ys = np.linspace(-3, 3)
+    Xs = np.linspace(-15, 15)
+    Ys = np.linspace(-10, 5)
     
     plot_true()
     
