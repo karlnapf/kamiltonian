@@ -1889,7 +1889,13 @@ key "Hyvarinen-05"
 \end_inset
 
 , the criterion being optimised is the expected squared distance between
- score functions,
+ score functions.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
 \emph on
  
 \emph default
@@ -1922,7 +1928,11 @@ and
 \end_inset
 
 .
- As proved in 
+\end_layout
+
+\end_inset
+
+As proved in 
 \begin_inset CommandInset citation
 LatexCommand citet
 after "Theorem 1"
@@ -2314,7 +2324,7 @@ We deliberately don't state the form of the approximation yet, but will
 .
  Assume that the embedding approximates the kernel function as a finite
  rank expansion 
-\begin_inset Formula $K_{ij}:=k(x_{i},x_{j})\approx\phi_{x_{i}}^{T}\phi_{x_{j}}$
+\begin_inset Formula $K_{ij}:=k(x_{i},x_{j})\approx\phi_{x_{i}}^{\top}\phi_{x_{j}}$
 \end_inset
 
 .
@@ -2348,7 +2358,7 @@ reference "eq:infinite_exp_family"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align}
-f(x) & =\langle\theta,\phi_{x}\rangle_{{\cal H}_{m}}=\theta^{T}\phi_{x}\label{eq:infinite_exp_family_random_feats}
+f(x) & =\langle\theta,\phi_{x}\rangle_{{\cal H}_{m}}=\theta^{\top}\phi_{x}\label{eq:infinite_exp_family_random_feats}
 \end{align}
 
 \end_inset
@@ -2401,7 +2411,7 @@ Given a set of samples
 \end_inset
 
  and assuming 
-\begin_inset Formula $f(x)=\theta^{T}\phi_{x}$
+\begin_inset Formula $f(x)=\theta^{\top}\phi_{x}$
 \end_inset
 
  for a finite dimensional embedding 
@@ -2422,7 +2432,7 @@ reference "eq:score_matching_objective_sample_version"
  is given by 
 \begin_inset Formula 
 \begin{equation}
-\hat{\theta}:=C^{-1}b,\label{eq:finite_estimator}
+\hat{\theta}:=(C+\lambda I)^{-1}b,\label{eq:finite_estimator}
 \end{equation}
 
 \end_inset
@@ -2592,7 +2602,7 @@ Establish the approximation error of the RKHS function evaluation
 \end_inset
 
  as compared to 
-\begin_inset Formula $\theta^{T}\phi_{x}$
+\begin_inset Formula $\theta^{\top}\phi_{x}$
 \end_inset
 
  in 
@@ -2649,7 +2659,7 @@ The remainder of this section covers details on adaptation schedules needed
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
@@ -2659,7 +2669,7 @@ status open
 \begin_layout Plain Layout
 
 \series bold
-Kamiltonian Monte Carlo (finite basis version)
+Kamiltonian Monte Carlo -- pseudo-code
 \begin_inset CommandInset label
 LatexCommand label
 name "alg:Kamiltonian-Monte-Carlo"
@@ -2676,26 +2686,49 @@ name "alg:Kamiltonian-Monte-Carlo"
 
 \begin_layout Plain Layout
 
+\series bold
 \emph on
 Input
 \emph default
-: target 
+:
+\series default
+ Target (estimator) 
 \begin_inset Formula $\pi$
 \end_inset
 
-, momentum 
-\begin_inset Formula $\exp(-K(p))$
+, adaptation schedule 
+\begin_inset Formula $a_{t}$
 \end_inset
 
-, adaptation schedules 
-\begin_inset Formula $a_{t},\alpha_{t}$
+, HMC parameters: 
+\begin_inset Formula $\exp(-K(p)),\epsilon,\tau$
 \end_inset
 
-, random basis & offset 
-\begin_inset Formula $\{\omega_{i},b_{i}\}_{i=1}^{m}$
+,
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace{1cm}
+\end_layout
+
 \end_inset
 
+Number of basis functions 
+\begin_inset Formula $m$
+\end_inset
 
+ or subsample size 
+\begin_inset Formula $n$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
@@ -2703,8 +2736,12 @@ At iteration
 \begin_inset Formula $t+1$
 \end_inset
 
-, previous state 
+, current state 
 \begin_inset Formula $x_{t}$
+\end_inset
+
+, history 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
 \end_inset
 
 
@@ -2713,43 +2750,142 @@ At iteration
 \begin_layout Itemize
 
 \shape italic
-Online-update density estimate with probability 
-\begin_inset Formula $a_{t}$
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Enumerate
-Update sums 
-\begin_inset Formula 
-\begin{equation}
-\tilde{b}_{t}\leftarrow\alpha_{t}\tilde{b}_{t-1}-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t}}^{\ell}\quad\text{and}\quad\tilde{C}_{t}\leftarrow\alpha_{t}\tilde{C}_{t-1}+\frac{1}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t}}^{\ell}(\dot{\phi}_{x_{t}}^{\ell})^{T}\label{eq:algo_updating_b_C}
-\end{equation}
-
-\end_inset
-
- and perform rank-
-\begin_inset Formula $d$
-\end_inset
-
- update to obtain updated Cholesky factorisation 
-\begin_inset Formula $\tilde{L}_{t}\tilde{L}_{t}^{T}=\tilde{C}_{t}$
+Update gradient estimate 
+\begin_inset Formula $\nabla_{x}f(x)$
 \end_inset
 
 .
+ With probability 
+\begin_inset Formula $a_{t}$
+\end_inset
+
+,
+\end_layout
+
+\begin_deeper
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "50text%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+Lite estimator:
 \end_layout
 
 \begin_layout Enumerate
-Update approximate infinite exponential family parameters
+Update subsample 
+\begin_inset Formula $\mathbf{z}\subseteq\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+
 \end_layout
 
+\begin_layout Enumerate
+Re-compute 
+\begin_inset Formula $C,b$
+\end_inset
+
+ from Prop.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "prop:lite_estimator"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Solve 
+\begin_inset Formula $\hat{\alpha}=\frac{-\sigma}{2}(C+\lambda I)^{-1}b$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\nabla_{x}f(x)\leftarrow\sum_{i=1}^{n}\alpha_{i}\nabla_{x}k(x,z_{i})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "50text%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
 \begin_layout Plain Layout
-\begin_inset Formula 
-\[
-\hat{\theta}\leftarrow\tilde{L}_{t}^{-T}\tilde{L}_{t}^{-1}\tilde{b}_{t}
-\]
+
+\series bold
+Finite estimator:
+\end_layout
+
+\begin_layout Enumerate
+Update to 
+\begin_inset Formula $C,b$
+\end_inset
+
+ from Prop.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "prop:finite_estimator"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Perform rank-
+\begin_inset Formula $d$
+\end_inset
+
+ update to 
+\begin_inset Formula $C^{-1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Update 
+\begin_inset Formula $\hat{\theta}=(C+\lambda I)^{-1}b$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $\nabla_{x}f(x)\leftarrow\left[\nabla_{x}\phi_{x}\right]^{\top}\hat{\theta}$
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -2760,7 +2896,7 @@ Update approximate infinite exponential family parameters
 \begin_layout Itemize
 
 \shape italic
-Kernel induced Hamiltonian proposal.
+Kernel induced Hamiltonian proposal
 \end_layout
 
 \begin_deeper
@@ -2777,7 +2913,7 @@ setcounter{enumi}{3}
 
 \end_inset
 
-Sample momentum 
+Re-sample momentum 
 \begin_inset Formula $p'\sim\exp(-K(p))$
 \end_inset
 
@@ -2785,19 +2921,43 @@ Sample momentum
 \end_layout
 
 \begin_layout Enumerate
-Using 
-\begin_inset Formula $\hat{\theta}$
+Simulate kernel Hamiltonian flow 
+\begin_inset Formula $(p^{*},x^{*})=\phi_{\epsilon,\tau}^{\tilde{H}_{k}}(p',x_{t})$
 \end_inset
 
-, simulate kernel Hamiltonian flow 
-\begin_inset Formula $(p^{*},x^{*})=\phi_{\epsilon,\tau}^{\tilde{H}_{k}}(p',x_{t})$
+, using 
+\begin_inset Formula $\nabla_{x}\hat{U}_{k}=\nabla_{x}f$
 \end_inset
 
 
 \end_layout
 
+\end_deeper
+\begin_layout Itemize
+
+\emph on
+Correction of discretisation and estimation error
+\end_layout
+
+\begin_deeper
 \begin_layout Enumerate
-Perform Metropolis step 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[6.]
+\backslash
+setcounter{enumi}{3}
+\end_layout
+
+\end_inset
+
+Perform Metropolis step using 
+\begin_inset Formula $\pi$
+\end_inset
+
+ 
 \begin_inset Formula 
 \begin{align*}
 x_{t+1} & =\begin{cases}
@@ -2832,8 +2992,9 @@ name "sub:adaptive_subsampling"
 \end_layout
 
 \begin_layout Standard
-It is well known that construction of MCMC algorithms that utilise the history
- of the Markov chain for constructing proposals yields asymptotic bias.
+It is well known that construction of MCMC algorithms that utilising the
+ history of the Markov chain for constructing proposals might corrupt asymptotic
+ correctness of the Markov chain.
  Recent kernel based proposals in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -2857,41 +3018,31 @@ key "Andrieu2008"
 \end_inset
 
 , to avoid such biases.
- They update a fixed number of 
-\begin_inset Formula $n$
+ We follow the idea of 
+\begin_inset Quotes eld
 \end_inset
 
- random subsamples of the Markov chain history with a decaying probability.
- While this ensures asymptotic correctness, it is clearly undesirable to
- only use parts of the chain history.
-\end_layout
-
-\begin_layout Standard
-As established in Section 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "sub:rank_d_updates"
-
+vanishing adaptation
+\begin_inset Quotes erd
 \end_inset
 
-, updating the density estimator in Algorithm 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "alg:Kamiltonian-Monte-Carlo"
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
 
 \end_inset
 
- for a new point costs 
-\begin_inset Formula ${\cal O}(dm^{2})$
+,
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Andrieu2008"
+
 \end_inset
 
-, which allows us to update the proposal in 
-\emph on
-every 
-\emph default
-iteration of the Markov chain.
+.
  To guarantee convergence to the correct stationary distribution, we introduce
- a schedule of vanishing adaptation probabilities 
+ a schedule of decaying probabilities 
 \begin_inset Formula $\left\{ a_{t}\right\} _{i=0}^{\infty}$
 \end_inset
 
@@ -2903,15 +3054,16 @@ iteration of the Markov chain.
 
 \end_inset
 
-and update the sums in 
+and update the the density gradient estimate according to that schedule
+ in Algorithm 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:algo_updating_b_C"
+reference "alg:Kamiltonian-Monte-Carlo"
 
 \end_inset
 
- according to that schedule.
- Intuitively, adaptation becomes less likely as the MCMC chain is progressing.
+ Intuitively, adaptation becomes less likely as the MCMC chain is progressing,
+ but never fully stops.
  Formally, 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -2920,9 +3072,7 @@ key "RobertsRosenthal2007"
 
 \end_inset
 
- guarantees that the resulting Markov kernel is ergodic and converges to
- the correct target.
- 
+ guarantees that the resulting Markov kernel does not suffer from an a
 \end_layout
 
 \begin_layout Subsection
@@ -3050,7 +3200,7 @@ reference "par:illustrative_example"
 \end_layout
 
 \begin_layout Subsection
-Burn-in behaviour
+Burn-in behaviour / Sam's awesome theory result
 \end_layout
 
 \begin_layout Itemize
@@ -3065,47 +3215,15 @@ Should be faster since explored regions are traversed quicker
 Example?
 \end_layout
 
-\begin_layout Subsection
-Computational considerations
-\end_layout
-
-\begin_layout Itemize
-Costs and how they compare to plain HMC
-\end_layout
-
-\begin_layout Itemize
-ESS/time plot and maximise this via changing the number of basis functions
-\end_layout
-
-\begin_layout Subsection
-Smoothing and and annealing interpretation
-\end_layout
-
-\begin_layout Standard
-Write about the fact that we have an 
-\begin_inset Quotes eld
-\end_inset
-
-annealing
-\begin_inset Quotes erd
-\end_inset
-
- interpretation of the smoothing.
-\end_layout
-
-\begin_layout Subsection
-Incorporating geometric approaches
-\end_layout
-
-\begin_layout Standard
-Write about how this can be turned into a geometric version aka RM-HMC
-\end_layout
-
 \begin_layout Section
 Experiments
 \end_layout
 
 \begin_layout Subsection
+Finite estimator on synthetic problems
+\end_layout
+
+\begin_layout Subsubsection
 Stability of trajectories in high dimensions
 \end_layout
 
@@ -3306,7 +3424,7 @@ right
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 HMC-like mixing on a synthetic example
 \end_layout
 
@@ -3539,6 +3657,24 @@ ntly outperforms KAMH and RW.
 \end_layout
 
 \begin_layout Subsection
+Behaviour in the tails
+\end_layout
+
+\begin_layout Standard
+Trace and gradient norm of tails to illustrate that the online updates come
+ at the cost of wiggly tails.
+\end_layout
+
+\begin_layout Standard
+Say that the above results can be reproduced with the lite estimator, it
+ is just more expensive to do this in a Markov chain.
+\end_layout
+
+\begin_layout Subsection
+Lite estimator on real world problems
+\end_layout
+
+\begin_layout Subsubsection
 Pseudo-Marginal MCMC for GP Classification on real world data
 \end_layout
 
@@ -3884,7 +4020,7 @@ Results for 9-dimensional marginal posterior over length scales of a GPC
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsubsection
 MCMC for Approximate Bayesian Computation 
 \end_layout
 
@@ -4104,20 +4240,6 @@ Autocorrelation and marginal posterior for a 10-dimensional skew normal
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Geometry extension (TODO)
-\end_layout
-
-\begin_layout Itemize
-Can we use second order information of our density estimate? Then run RM-HMC
- or M-MALA
-\end_layout
-
-\begin_layout Itemize
-What about the Kameleon proposal as a Hessian estimate? Formal relationship?
- In practice
 \end_layout
 
 \begin_layout Section
@@ -5033,6 +5155,45 @@ all
  furthermore ensure that when combined with a MCMC, samples drawn from a
  not yet converged Markov chain, will not hurt the proposal in the asymptotic
  limit.
+\end_layout
+
+\begin_layout Subsubsection
+Algorithmic description:
+\end_layout
+
+\begin_layout Enumerate
+Update sums 
+\begin_inset Formula 
+\begin{equation}
+\tilde{b}_{t}\leftarrow\alpha_{t}\tilde{b}_{t-1}-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t}}^{\ell}\quad\text{and}\quad\tilde{C}_{t}\leftarrow\alpha_{t}\tilde{C}_{t-1}+\frac{1}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t}}^{\ell}(\dot{\phi}_{x_{t}}^{\ell})^{T}\label{eq:algo_updating_b_C-1}
+\end{equation}
+
+\end_inset
+
+ and perform rank-
+\begin_inset Formula $d$
+\end_inset
+
+ update to obtain updated Cholesky factorisation 
+\begin_inset Formula $\tilde{L}_{t}\tilde{L}_{t}^{T}=\tilde{C}_{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Update approximate infinite exponential family parameters
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\theta}\leftarrow\tilde{L}_{t}^{-T}\tilde{L}_{t}^{-1}\tilde{b}_{t}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \end_body
