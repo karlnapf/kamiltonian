@@ -135,11 +135,11 @@ theorems-std
 \end_layout
 
 \begin_layout Title
-Gradient free Hamiltonian Monte Carlo via kernels
+Gradient-free Kernel-based Hamiltonian Monte Carlo
 \end_layout
 
 \begin_layout Abstract
-We propose an adaptive, gradient free MCMC algorithm based on Hamiltonian
+We propose an adaptive, gradient-free MCMC algorithm based on Hamiltonian
  Monte Carlo (HMC), which allows simulation from intractable target probability
  densities.
  Our sampler fills a gap: when gradients of the target density are unavailable,
@@ -169,12 +169,13 @@ smoothing the chain history, we directly model gradients of the
 global
 \emph default
  log-density.
- To that end, we fit an unnormalised infinite exponential family models
- via score matching, where we reduce excessive computational costs by two
- novel efficient approximations for different use-cases.
- They provide a robust kernel-induced Hamiltonian flow which can be used
- to simulate trajectories on a level set that approaches the true one as
- the Markov chains continues to run.
+ To that end, we use an RKHS-based infinite-dimensional exponential family
+ model and score matching to estimate the RKHS functions modelling log-densities
+, where an excessive computational cost is reduced by two novel efficient
+ approximations suitable to different use-cases.
+ Resulting robust kernel-induced Hamiltonian flow gives trajectories that
+ become closer to the true level sets as adaptive sampling yields better
+ estimates of the log-densities.
  We construct an 
 \emph on
 exact 
@@ -185,10 +186,10 @@ Kamiltonian Monte Carlo (KMC)
 \emph default
 , that (i) behaves similarly to HMC in terms of autocorrelation and acceptance
  rates, but that (ii) does not require target gradients, and that in particular
- (iii) offers substantial mixing improvements in up to medium dimensions.
- In contrast to previous kernel based MCMC methods, free parameters can
+ (iii) offers substantial mixing improvements in medium dimensions.
+ In contrast to previous kernel-based MCMC methods, free parameters can
  be tuned in a principled way.
- We support our claims with experimental studies around pseudo-marginal
+ We support our claims with experimental studies which include pseudo-marginal
  MCMC and ABC methods.
 \end_layout
 
@@ -200,13 +201,13 @@ Introduction
 Statistical simulation using Markov Chain Monte Carlo (MCMC) is one of the
  most fundamental approximate inference techniques in Bayesian statistics.
  It allows to represent probability densities of interest via a finite set
- of samples that are constructed from discrete trajectories of Markov chains
- whose limiting distribution matches the target density.
+ of samples based on Markov chains whose limiting distribution matches the
+ target density.
  This representation allows to numerically approximate expectations with
  respect to posterior densities -- a problem at the core of Bayesian statistics.
  As the technique itself can be computationally demanding, and as the expected
  estimation error of MCMC directly depends on the correlation between successive
- points in the Markov chain, MCMC effeciency is achieved by taking large
+ points in the Markov chain, MCMC efficiency is achieved by taking large
  steps with high probability.
 \end_layout
 
@@ -219,7 +220,7 @@ key "neal2011mcmc"
 \end_inset
 
 , is an MCMC algorithm that achieves effeciency via using gradient information.
- It simulates particle movement along contour lines of a fictuous dynamical
+ It simulates particle movement along contour lines of a fictitious dynamical
  system that is constructed from the gradient of the target density.
  While projections of those trajectories cover wide parts of the target
  density, the probability of accepting a move along a trajectory is close
@@ -237,7 +238,7 @@ intractable
 \emph default
  
 \emph on
-densities
+target densities
 \emph default
 , gradient information is not available.
  For example, in Pseudo-Marginal MCMC (PM-MCMC), 
@@ -254,18 +255,19 @@ key "Andrieu2009a"
 
 \end_inset
 
-, the posterior density itself does not have a close form expression and
- cannot even be evaluated, but only estimated.
+, the posterior density does not have an analytic expression even up to
+ a normalising constant: it cannot be evaluated at any given point, but
+ only estimated.
  A related context is Approximate Bayesian Computation (ABC-MCMC), where
- Bayesian posterior simulation cannot be be solved consistently at all,
- but only through simulation from a likelihood model.
+ Bayesian posterior has to be approximated through repeated simulation from
+ a likelihood model.
  In both cases, plain HMC cannot be applied, leaving random walk methods
  as the only alternative.
 \end_layout
 
 \begin_layout Standard
-Efforts to tune random walk methods are based on taking local steps whose
- scalling matches the target density.
+Efforts to tune random walk methods are based on proposing local steps whose
+ scaling matches the target density.
  An initial attempt, Adaptive Metropolis-Hastings (AMH)
 \emph on
  
@@ -284,13 +286,22 @@ key "Andrieu2008"
 
 \end_inset
 
-, is based on learning the global linear scalling of a target density from
+, is based on learning the global linear scaling of a target density from
  the history of the Markov chain trajectory.
- While in principle, convergence properties of MCMC are lost if the proposal
- is based on the past trajectory, it is possible to adapt in a vanishing
- way that maintains the limiting distribution.
- For densities whose local scalling is significantly different from the
- global scalling, this approach does not work very well.
+ While in general ergodicity and convergence properties of MCMC can be violated
+ if the proposal is based on the past samples, it is possible to adapt in
+ a vanishing way that maintains convergence to the correct invariant distributio
+n 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "AndrieuMoulines2006"
+
+\end_inset
+
+.
+ For densities with nonlinear dependencies between dimensions, whose local
+ scaling is significantly different from the global scaling, this approach
+ does not work very well.
  Recently, 
 \begin_inset CommandInset citation
 LatexCommand citep
@@ -301,9 +312,9 @@ key "sejdinovic_kernel_2014"
  proposed a Kernel Adaptive Metropolis-Hastings (KAMH) algorithm, that produces
  proposal distributions that locally align to the target density -- increasing
  sampling efficiency.
- KAMH is based on embedding the Markov chain trajectory into a Reproducing
- Kernel Hilbert Space (RKHS), and using a notion of covariance therein to
- to produce an appropriately scalled local proposal.
+ KAMH is based on an embedding of the Markov chain trajectory into a Reproducing
+ Kernel Hilbert Space (RKHS), and uses a notion of a covariance operator
+ therein to produce an appropriately scaled local proposal.
 \end_layout
 
 \begin_layout Standard
@@ -319,7 +330,7 @@ globally
 \emph default
 .
  More precisely, we fit an unnormalised infinite exponential family model
- via score matching, 
+ via score matching following 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
@@ -328,14 +339,13 @@ key "SriFukKumGreHyv14"
 
 .
  This is a recently proposed non-parametric method to model the log unnormalised
- target density as an RKHS function, and that has been shown to approximate
- any density arbritarily well.
+ target density as an RKHS function which has been shown to approximate
+ a rich class of density functions arbitrarily well.
  More importantly, the method is relatively robust to increasing dimensions
- -- in contrast to classic kernel density estimation.
+ -- in sharp contrast to classical kernel density estimation.
  Intuitively, avoiding to estimate a normalisation constant of a non-parametric
  model allows to compute fits via minimising the expected gradient mismatch
- to the true density, i.e.
- via score matching 
+ to the true density, i.e., via score matching 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "Hyvarinen-05"
@@ -344,9 +354,10 @@ key "Hyvarinen-05"
 
 .
  As HMC requires exactly such log unnormalised densities, we can construct
- HMC-like proposals using this kernel induced surrogate.
- By combining the proposal with a standard accept-reject step, as used in
- plain HMC to correct for discretisation error, we arrive at 
+ HMC-like proposals using these kernel induced surrogates.
+ By combining the proposal with a standard accept-reject step, which is
+ also used in plain HMC to correct for the discretisation error, we arrive
+ at 
 \emph on
 Kamiltonian Monte Carlo
 \emph default
@@ -366,7 +377,7 @@ same
 
 \begin_layout Standard
 To make the algorithm more efficient in practice, we develop two novel approxima
-tions to the infinite exponential family estimator in
+tions to the infinite exponential family estimator from 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
@@ -375,8 +386,7 @@ key "SriFukKumGreHyv14"
 
 .
  The first approximation is based on fitting a finite exponential family
- model using random Fourier basis functions, i.e.
- random kitchen sinks, 
+ model using random Fourier basis functions of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Rahimi2007"
@@ -384,10 +394,14 @@ key "Rahimi2007"
 \end_inset
 
 .
- The second approximation is based on projecting the solution to a lower
- dimensional, yet growing, subspace in the RKHS.
+ The second approximation, termed 
+\emph on
+score matching lite
+\emph default
+, is based on projecting the solution to a lower dimensional, yet growing,
+ subspace in the RKHS.
  Both approximations come with their own advantages and disadvantages and
- choice ultimately depend on the context of the inference problem.
+ the choice ultimately depend on the context of the inference problem.
 \end_layout
 
 \begin_layout Standard
@@ -1758,7 +1772,7 @@ reference "eq:infinite_exp_family"
 
 \end_inset
 
-, and our approximations are based on score matching, we begin by giving
+ and our approximations are based on score matching, we begin by giving
  a brief review, and continue by developing two approximation technique
  to the original estimator in 
 \begin_inset CommandInset citation
@@ -1872,7 +1886,7 @@ reference "eq:infinite_exp_family"
 
  i.i.d.
  samples 
-\begin_inset Formula $\{x_{i}\sim\pi\}_{i=1}^{n}$
+\begin_inset Formula $\{x_{i}\}_{i=1}^{n}\sim\pi$
 \end_inset
 
 , such that 
@@ -1882,8 +1896,8 @@ reference "eq:infinite_exp_family"
  .
  From 
 \begin_inset CommandInset citation
-LatexCommand citet
-after "equation. 2"
+LatexCommand cite
+after "Eq. 2"
 key "Hyvarinen-05"
 
 \end_inset
@@ -2007,7 +2021,7 @@ key "SriFukKumGreHyv14"
 \begin_inset Formula $(nd\times nd)$
 \end_inset
 
- matrix, where recall 
+ matrix, where 
 \begin_inset Formula $n$
 \end_inset
 
@@ -2021,7 +2035,8 @@ key "SriFukKumGreHyv14"
 
 .
  As we are eventually interested in constructing an adaptive MCMC method
- we need to ensure feasability of updating the estimator on a regular basis.
+ we need to ensure the feasibility of updating the estimator on a regular
+ basis.
  
 \end_layout
 
@@ -2037,7 +2052,7 @@ reference "eq:infinite_exp_family"
 \end_layout
 
 \begin_layout Subsection
-Infinite exponential families lite
+Score matching lite
 \end_layout
 
 \begin_layout Standard
@@ -2061,29 +2076,32 @@ reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
-, which requires inervting a 
+.
+ The update of the proposal at the iteration 
+\begin_inset Formula $t$
+\end_inset
+
+ of MCMC which would make use of all the previous samples would thus require
+ inversion of a 
 \begin_inset Formula $td\times td$
 \end_inset
 
- matrix at MCMC iteration 
+ matrix.
+ This is clearly prohibitive if one is to run even a moderately large number
+ of iterations of a Markov chain.
+ A simple approach to avoid such prohibitive computational cost in 
 \begin_inset Formula $t$
 \end_inset
 
-.
- The dependence on 
-\begin_inset Formula $t$
-\end_inset
-
- is clearly limiting if samples comes from an increasingly long Markov chain.
- In order to limit these costs we follow 
+, following 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sejdinovic_kernel_2014"
 
 \end_inset
 
-, who side stepped the problem of increasing computation via repeatedly
- updating a random subsample of fixed size 
+, is to form the new proposal using only a random subsample of a fixed size
+ 
 \begin_inset Formula $n$
 \end_inset
 
@@ -2092,7 +2110,8 @@ key "sejdinovic_kernel_2014"
 \end_inset
 
 .
- In order to reduce excessive computational costs arising from large 
+ In addition, in order to reduce excessive computational costs arising from
+ large 
 \begin_inset Formula $d$
 \end_inset
 
@@ -2114,15 +2133,15 @@ key "SriFukKumGreHyv14"
 \end_inset
 
  as the original solution.
- That is, we assume that the log unnormalised log density of infinite exponentia
-l family model in 
+ That is, we assume that the log unnormalised density of infinite exponential
+ family model in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
 
 \end_inset
 
- take the dual form
+ takes the dual form
 \begin_inset Formula 
 \[
 f(x)=\sum_{i=1}^{n}\alpha_{i}k(z_{i},x),
@@ -2143,7 +2162,7 @@ reference "eq:score_matching_objective_sample_version"
 \end_inset
 
 .
- The estimator is summarised in the following proposition, which is prooved
+ The estimator is summarised in the following proposition (proof is given
  in Appendix 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -2151,7 +2170,7 @@ reference "sub:Appendix_lite_details"
 
 \end_inset
 
-.
+).
 \end_layout
 
 \begin_layout Proposition
@@ -2192,7 +2211,7 @@ reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
-where the exact form of 
+where the exact forms of 
 \begin_inset Formula $C\in\mathbb{R}^{n\times n}$
 \end_inset
 
@@ -2200,7 +2219,17 @@ where the exact form of
 \begin_inset Formula $b\in\mathbb{R}^{n}$
 \end_inset
 
- can be found in Appendix 
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+should mention that computing C and b is not expensive
+\end_layout
+
+\end_inset
+
+can be found in Appendix 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "sub:Appendix_lite_details"
@@ -2240,7 +2269,7 @@ reference "sub:Appendix_lite_details"
 \end_layout
 
 \begin_layout Subsection
-Finite approximate infinite exponential families
+Exponential family based on explicit feature spaces
 \end_layout
 
 \begin_layout Standard
@@ -2259,8 +2288,9 @@ reference "eq:lite_estimator"
 \end_inset
 
 .
- Instead of fitting an infinite dimensional model on a subset of the available
- data, we fit an approximation to the infinite model using 
+ Instead of fitting an infinite-dimensional model on a subset of the available
+ data, we fit a finite approximation to the infinite-dimensional model using
+ 
 \emph on
 all
 \emph default
@@ -2363,8 +2393,8 @@ f(x) & =\langle\theta,\phi_{x}\rangle_{{\cal H}_{m}}=\theta^{\top}\phi_{x}\label
 
 \end_inset
 
-We obtain a finite dimensional approximate infinite exponential family model
- of the target density -- in primal form.
+We obtain a finite-dimensional approximation to the infinite-dimensional
+ exponential family model of the target density -- in primal form.
  In order to fit 
 \begin_inset Formula $\hat{\theta}$
 \end_inset
@@ -2377,12 +2407,12 @@ reference "eq:score_matching_objective_sample_version"
 \end_inset
 
 .
- The following proposition summarieses the estimator.
+ The following proposition summarises the estimator.
  Proof, details, and an example basis for a feature space 
 \begin_inset Formula ${\cal H}^{m}$
 \end_inset
 
- that is based on the random kitchen sink framework 
+ that is based on the random Fourier feature framework of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Rahimi2007"
@@ -2414,7 +2444,7 @@ Given a set of samples
 \begin_inset Formula $f(x)=\theta^{\top}\phi_{x}$
 \end_inset
 
- for a finite dimensional embedding 
+ for a finite dimensional feature expansion 
 \begin_inset Formula $x\mapsto\phi_{x}\in\mathbb{R}^{m}$
 \end_inset
 
@@ -2445,11 +2475,8 @@ where the exact form of
 \begin_inset Formula $b\in\mathbb{R}^{m}$
 \end_inset
 
- depends on the basis of 
-\begin_inset Formula ${\cal H}^{m}$
-\end_inset
-
- and the basis used, see Appendix 
+ depend on the feature expansion used and the exact forms are given in Appendix
+ 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "sub:Appendix_finite_details"
@@ -2460,7 +2487,7 @@ reference "sub:Appendix_finite_details"
 \end_layout
 
 \begin_layout Standard
-The estimator has one-off costs of 
+The estimator has a one-off cost of 
 \begin_inset Formula ${\cal O}(nm^{2}+m^{3})$
 \end_inset
 
@@ -2469,8 +2496,8 @@ The estimator has one-off costs of
 \end_inset
 
  storage.
- However, given we have computed a solution based on the Markov chain history
- 
+ However, given that we have computed a solution based on the Markov chain
+ history 
 \begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
 \end_inset
 
@@ -2507,11 +2534,11 @@ reference "eq:finite_estimator"
 \end_inset
 
  updates to 
-\begin_inset Formula $C^{-1}$
+\begin_inset Formula $(C+\lambda I)^{-1}$
 \end_inset
 
- (or its Cholesky factorization).
- This allows to update the estimator as the Markov chain runs in 
+ (or the corresponding Cholesky factorization).
+ This allows to update the estimator in 
 \begin_inset Formula ${\cal O}(m^{2})$
 \end_inset
 
@@ -2519,19 +2546,19 @@ reference "eq:finite_estimator"
 \begin_inset Formula $t$
 \end_inset
 
- while not using a random subsample but 
+, and hence 
 \emph on
 all 
 \emph default
-chain history.
- See Appendix 
+chain history and there is no need for random subsampling.
+ Further details are given in Appendix 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "sub:Appendix_finite_details"
 
 \end_inset
 
- for details.
+.
 \end_layout
 
 \begin_layout Subsection
