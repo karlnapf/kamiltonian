@@ -121,6 +121,7 @@ theorems-std
 \html_math_output 0
 \html_css_as_file 0
 \html_be_strict false
+\author 456741484 "samuel" 
 \end_header
 
 \begin_body
@@ -165,16 +166,16 @@ cannot
  be applied.
  One is left with random walk methods, which suffer from bad mixing behaviour
  -- popular example cases include Approximate Bayesian Computation (ABC)
- and the Pseudo-Marginal MCMC framework.
- We extend recent ideas by 
+ and exact-approximate MCMC.
+ We extend recent ideas in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sejdinovic_kernel_2014"
 
 \end_inset
 
- of adaptively learning target covariance structure in a Reproducing Kernel
- Hilbert Space (RKHS), based on the history of the Markov chain.
+ of adaptively learning the target covariance structure in a Reproducing
+ Kernel Hilbert Space (RKHS), based on the history of the Markov chain.
  But rather than 
 \emph on
 locally 
@@ -213,10 +214,10 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-Statistical simulation using Markov Chain Monte Carlo (MCMC) is one of the
+Stochastic simulation using Markov Chain Monte Carlo (MCMC) is one of the
  most fundamental approximate inference techniques in Bayesian statistics.
  It allows to represent probability densities of interest via a finite set
- of samples based on Markov chains whose limiting distribution matches the
+ of samples from a Markov chain whose limiting distribution matches the
  target density.
  This representation allows to numerically approximate expectations with
  respect to posterior densities -- a problem at the core of Bayesian statistics.
@@ -234,7 +235,7 @@ key "neal2011mcmc"
 
 \end_inset
 
-, is an MCMC algorithm that achieves effeciency via using gradient information.
+, is an MCMC algorithm that achieves effeciency via gradient information.
  It simulates particle movement along contour lines of a fictitious dynamical
  system that is constructed from the gradient of the target density.
  While projections of those trajectories cover wide parts of the target
@@ -242,20 +243,14 @@ key "neal2011mcmc"
  to one.
  Remarkably, this property is almost invariant to the dimension of the input
  space.
- This makes HMC superior to random walk methods which have to decrease their
- step size to maintain a resonable acceptance probability as dimension increases.
+ This makes HMC often superior to random walk methods which have to decrease
+ their step size at a much faster rate to maintain a reasonable acceptance
+ probability as dimension increases.
 \end_layout
 
 \begin_layout Standard
-Unfortunately, for a large class of so called 
-\emph on
-intractable
-\emph default
- 
-\emph on
-target densities
-\emph default
-, gradient information is not available.
+Unfortunately, for a large class of problems gradient information is not
+ available.
  For example, in Pseudo-Marginal MCMC (PM-MCMC), 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -271,11 +266,11 @@ key "Andrieu2009a"
 \end_inset
 
 , the posterior density does not have an analytic expression even up to
- a normalising constant: it cannot be evaluated at any given point, but
- only estimated.
+ a normalising constant: it cannot be evaluated at any given point, only
+ estimated.
  A related context is Approximate Bayesian Computation (ABC-MCMC), where
- Bayesian posterior has to be approximated through repeated simulation from
- a likelihood model.
+ a Bayesian posterior has to be approximated through repeated simulation
+ from a likelihood model.
  In both cases, plain HMC cannot be applied, leaving random walk methods
  as the only alternative.
 \end_layout
@@ -358,36 +353,6 @@ key "SriFukKumGreHyv14"
  a rich class of density functions arbitrarily well.
  More importantly, the method is relatively robust to increasing dimensions
  -- in sharp contrast to classical kernel density estimation.
- Intuitively, avoiding to estimate a normalisation constant of a non-parametric
- model allows to compute fits via minimising the expected gradient mismatch
- to the true density, i.e., via score matching 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "Hyvarinen-05"
-
-\end_inset
-
-.
- As HMC requires exactly such log unnormalised densities, we can construct
- HMC-like proposals using these kernel induced surrogates.
- By combining the proposal with a standard accept-reject step, which is
- also used in plain HMC to correct for the discretisation error, we arrive
- at 
-\emph on
-Kamiltonian Monte Carlo
-\emph default
- (KMC).
- KMC is an 
-\emph on
-asymptotically exact
-\emph default
- MCMC algorithm, i.e.
- it targets the 
-\emph on
-same
-\emph default
- target density as plain HMC would -- without the need to ever evaluate
- gradients of the target density.
 \end_layout
 
 \begin_layout Standard
@@ -400,8 +365,8 @@ key "SriFukKumGreHyv14"
 \end_inset
 
 .
- The first approximation is based on fitting a finite exponential family
- model using random Fourier basis functions of 
+ The first approximation is based on using the random Fourier basis functions
+ of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Rahimi2007"
@@ -420,27 +385,9 @@ score matching lite
 \end_layout
 
 \begin_layout Standard
-Experiments show that KMC inherits effeciency properties from HMC and therefore
- mixes significantly better than any random walk based method on a number
- of target densities, including synthetic examples, PM-MCMC, and ABC-MCMC.
-\end_layout
-
-\begin_layout Paragraph
-Paper outline
-\end_layout
-
-\begin_layout Standard
-TODO.
- We begin by introducing basic notation and summarising existing work in
- Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:background_previous_work"
-
-\end_inset
-
-.
- 
+Experiments show that KMC inherits the efficiency of HMC and therefore mixes
+ significantly better than any random walk based method on a number of target
+ densities, including synthetic examples, PM-MCMC, and ABC-MCMC.
 \end_layout
 
 \begin_layout Section
@@ -462,7 +409,8 @@ Let
 \begin_inset Formula $\mathcal{X}=\mathbb{R}^{d}$
 \end_inset
 
- be the domain of interest, denote the unnormalized target density on 
+ be the domain of interest, and denote the unnormalized target density on
+ 
 \begin_inset Formula $\mathcal{X}$
 \end_inset
 
@@ -476,7 +424,7 @@ Let
 \end_inset
 
  such that 
-\begin_inset Formula $\lim_{x\to\infty}x_{t}\sim\pi$
+\begin_inset Formula $\lim_{t\to\infty}x_{t}\sim\pi$
 \end_inset
 
 .
@@ -517,7 +465,7 @@ x^{*}\sim q(\cdot|x_{t}),\label{eq:proposal}
 
 \end_inset
 
-and accepts 
+and sets 
 \begin_inset Formula $x_{t+1}\leftarrow x^{*}$
 \end_inset
 
@@ -525,7 +473,7 @@ and accepts
 \begin_inset Formula $\min(1,[\pi(x^{*})q(x_{t}|x^{*})]/[\pi(x_{t})q(x_{t}|x^{*})])$
 \end_inset
 
-, and reject 
+, and 
 \begin_inset Formula $x_{t+1}\leftarrow x_{t}$
 \end_inset
 
@@ -551,7 +499,7 @@ Unavailable due to analytic intractability, as opposed to computationally
 \end_inset
 
  nor 
-\begin_inset Formula $\nabla\pi(x)$
+\begin_inset Formula $\nabla\log\pi(x)$
 \end_inset
 
  for any 
@@ -567,8 +515,7 @@ Unavailable due to analytic intractability, as opposed to computationally
 \begin_inset Formula $\pi(x)$
 \end_inset
 
- with an unbiased estimator results in an asymptotically exact PM-MCMC,
- 
+ with an unbiased estimator results in PM-MCMC, 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "beaumont2003estimation"
@@ -591,7 +538,7 @@ key "Andrieu2009a"
 
 \begin_layout Standard
 In the absence of 
-\begin_inset Formula $\nabla\pi$
+\begin_inset Formula $\nabla\log\pi$
 \end_inset
 
 , the usual choice of 
@@ -614,7 +561,7 @@ q(\cdot|x_{t})={\cal N}(\cdot|x_{t},\Sigma_{t}).
 
 \end_inset
 
-A popular choice of the step scalling 
+A popular choice of the step scaling 
 \begin_inset Formula $\Sigma_{t}$
 \end_inset
 
@@ -624,10 +571,10 @@ A popular choice of the step scalling
 \end_inset
 
 , where 
-\begin_inset Formula $\nu=2.38/\sqrt{(d)}$
+\begin_inset Formula $\nu=2.38/\sqrt{d}$
 \end_inset
 
- is an optimal scalling factor 
+ is an optimal scaling factor 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "Gelman96"
@@ -635,9 +582,8 @@ key "Gelman96"
 \end_inset
 
 .
- When (unknown) scalling of the target density is not uniform across dimensions,
- e.g.
- it is correlated, the original AMH algorithm 
+ When the (unknown) scale of the target density is not uniform across dimensions
+, or their are strong correlations, the original AMH algorithm 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Haario1999"
@@ -658,11 +604,11 @@ key "Andrieu2008"
 
  from the history of the Markov chain, i.e.
  
-\begin_inset Formula $\Sigma_{t}=\nu^{2}/(t-1)\sum_{i=1}^{t}x_{t}x_{t}^{\top}$
+\begin_inset Formula $\Sigma_{t}=\nu^{2}/(t-1)\sum_{i=1}^{t}(x_{i}-\bar{x_{1:t}})(x_{i}-\bar{x_{1:t}})^{T}$
 \end_inset
 
- .
- Doing to with a decaying probability results in an asymptotically correct
+.
+ Doing so with a decaying probability results in an asymptotically correct
  Markov chain, 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -675,7 +621,7 @@ key "RobertsRosenthal2007"
 \end_layout
 
 \begin_layout Standard
-For cases where local scalling does not match the global covariance structure
+For cases where local scaling does not match the global covariance structure
  of 
 \begin_inset Formula $\pi$
 \end_inset
@@ -687,7 +633,7 @@ key "sejdinovic_kernel_2014"
 
 \end_inset
 
- improves mixing by learning target covariance structure in an RKHS.
+ improves mixing by learning the target covariance structure in an RKHS.
  When using a Gaussian similarity kernel, this effectively locally smoothes
  the chain history and constructs a proposal that locally aligns to the
  target 
@@ -695,17 +641,17 @@ key "sejdinovic_kernel_2014"
 \end_inset
 
  via setting 
-\begin_inset Formula $\Sigma=\gamma^{2}I+\nu^{2}M_{\mathbf{z},x_{t}}HM_{\mathbf{z},x_{t}}^{\top}$
+\begin_inset Formula $\Sigma_{t}=\gamma^{2}I+\nu^{2}M_{\mathbf{z},x_{t}}HM_{\mathbf{z},x_{t}}^{\top}$
 \end_inset
 
 .
- Here the second term quantifies local scalling of the Markov chain history
+ Here the second term quantifies local scaling of the Markov chain history
  based on a random sub-sample 
 \begin_inset Formula $\mathbf{z}$
 \end_inset
 
 , and the second term is an exploration term that avoids the 
-\begin_inset Formula $\Sigma$
+\begin_inset Formula $\Sigma_{t}$
 \end_inset
 
  to collapse in areas of 
@@ -722,7 +668,7 @@ key "sejdinovic_kernel_2014"
 not
 \emph default
  access to 
-\begin_inset Formula $\nabla\pi$
+\begin_inset Formula $\nabla\log\pi$
 \end_inset
 
 .
@@ -748,30 +694,33 @@ key "Betancourt2015"
 \end_inset
 
 .
- Hamiltonian Monte Carlo (HMC) is based on a fictitious dynamical system
- and utilises deterministic, measure-preserving maps to generate efficient
- Markov transitions.
- Starting from the unnormalised target density of the form 
+ Hamiltonian Monte Carlo (HMC) utilises deterministic, measure-preserving
+ maps to generate efficient Markov transitions.
+ Starting from the unnormalised target density 
 \begin_inset Formula $\pi(q)\propto\exp(-U(q))$
 \end_inset
 
-, referred to as 
+, with 
+\begin_inset Formula $U(q)$
+\end_inset
+
+ referred to as 
 \emph on
 potential energy, 
 \emph default
-we define a distribution of an auxiliary variable 
-\begin_inset Formula $p$
-\end_inset
-
-, called 
+we define introduce an auxiliary 
 \emph on
 momentum
 \emph default
- and distributed proportional to 
-\begin_inset Formula $\exp(-K(p))$
+ variable 
+\begin_inset Formula $p\sim\exp(-K(p))$
 \end_inset
 
-, referred to as 
+, with 
+\begin_inset Formula $K(p)$
+\end_inset
+
+ referred to as 
 \emph on
 kinetic energy
 \emph default
@@ -786,36 +735,32 @@ Note that both potential and momentum are real-valued.
 
 \end_inset
 
- The joint distribution is given by
-\begin_inset Formula 
-\begin{align*}
-\exp\left(-K(p)-U(q)\right) & \propto\exp\left(-H(p,q)\right)
-\end{align*}
-
+ The joint distribution is then proportional to 
+\begin_inset Formula $\exp\left(-H(p,q)\right)$
 \end_inset
 
-where we defined the (separable)
-\emph on
- Hamiltonian
-\emph default
- 
+where 
 \begin_inset Formula $H(p,q):=K(p)+U(q)$
 \end_inset
 
+ is called the (separable) 
+\emph on
+Hamiltonian
+\emph default
 .
- The Hamiltonian defines the 
+ 
+\begin_inset Formula $H(q,p)$
+\end_inset
+
+ defines a 
 \emph on
 Hamiltonian flow
 \emph default
- on the joint 
-\begin_inset Formula $(p,q)$
-\end_inset
-
- space, parametrised in 
+, parametrised by 
 \begin_inset Formula $t\in\mathbb{R}$
 \end_inset
 
-, and is a map
+, which is a map
 \emph on
 
 \begin_inset Formula 
@@ -840,12 +785,12 @@ The flow preserves the joint distribution, i.e.
  
 \begin_inset Formula 
 \[
-\exp\left(-H(p,q)\right)=\exp\left(-H(\phi_{t}^{H}(p,q)\right)
+\exp\left(-H(p,q)\right)=\exp\left(-H(\phi_{t}^{H}(p,q))\right)
 \]
 
 \end_inset
 
-which allows to construct of Markov chains.
+which allows construction of Markov chains.
  For a chain at state 
 \begin_inset Formula $q=x_{t}$
 \end_inset
@@ -874,8 +819,7 @@ apply the Hamiltonian flow for time
 \end_layout
 
 \begin_layout Standard
-Note that both steps leave the joint distribution unchanged.
- As re-sampling the momentum is independent of 
+As step 1 is independent of 
 \begin_inset Formula $q$
 \end_inset
 
@@ -883,11 +827,11 @@ Note that both steps leave the joint distribution unchanged.
 \begin_inset Formula $q$
 \end_inset
 
--marginal of the above procedure forms a Markov chain with 
+-marginal of the above procedure forms a 
 \begin_inset Formula $\pi$
 \end_inset
 
- as its stationary distribution.
+-invariant Markov chain.
  Trajectories of the Hamiltonian flow can be thought of as walking along
  the contour lines of the Hamiltonian 
 \begin_inset Formula $\{\phi_{t}^{H}(p,q)\mid t\in\mathbb{R}\}$
@@ -897,7 +841,7 @@ Note that both steps leave the joint distribution unchanged.
 \emph on
 level set
 \emph default
-.
+s.
  Consequently, re-sampling 
 \begin_inset Formula $p$
 \end_inset
@@ -1028,25 +972,12 @@ key "hairer2006geometric"
  with probability
 \begin_inset Formula 
 \begin{align}
-\alpha(\phi_{\epsilon,\tau}^{H}(p',q)) & =\min\left[1,\exp\left(H\circ\phi_{\epsilon,\tau}^{H}(p',q)-H(p',q)\right)\right].\label{eq:hmc_accept_prob}
+\alpha(\phi_{\epsilon,\tau}^{H}(p',q)) & =\min\left[1,\exp\left(-H\circ\phi_{\epsilon,\tau}^{H}(p',q)+H(p',q)\right)\right].\label{eq:hmc_accept_prob}
 \end{align}
 
 \end_inset
 
-It is clear that 
-\begin_inset Formula $\lim_{\epsilon\to0}H\circ\phi_{\epsilon,\tau}^{H}(p',q)-H(p',q)=0$
-\end_inset
-
- and the above acceptance probability tends to 
-\begin_inset Formula $1$
-\end_inset
-
- as the stepsize tends to 
-\begin_inset Formula $0$
-\end_inset
-
-.
- This makes HMC a powerful sampling algorithm, which is able to propose
+In practice HMC is a powerful sampling algorithm, which is able to propose
  distant, uncorrelated moves with a high acceptance probability.
 \end_layout
 
@@ -1154,7 +1085,11 @@ Kamiltonian Monte Carlo is based on the idea of replacing the potential
 \begin_inset Formula $\hat{U}$
 \end_inset
 
- in  
+ in
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
+ 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:potential_energy_operator"
@@ -1162,10 +1097,14 @@ reference "eq:potential_energy_operator"
 \end_inset
 
  by a kernel induced surrogate computed from the history of the Markov chain.
- As we will see, the surrogate will be tractable and while not requiring
- gradients of the log-target density.
+ As we will see, the surrogate will be tractable so the method does not
+ require gradients of the log-target density.
  It induces a kernel Hamiltonian flow, which can be numerically integrated
- using the integrator in  
+ using the integrator in
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
+ 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:leap_frog_flow"
@@ -1173,16 +1112,11 @@ reference "eq:leap_frog_flow"
 \end_inset
 
 .
- As the Hamiltonian 
-\begin_inset Formula $H(p,q)$
-\end_inset
-
- itself is 
-\emph on
-not
-\emph default
- changed, any deviation of the alternative kernel level set from the true
- level set is corrected for via the Metropolis acceptance procedure in 
+ Any deviation of the alternative kernel level set from the true level set
+ is corrected for via the Metropolis acceptance procedure in
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
  
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -1200,8 +1134,8 @@ remain correct
 status open
 
 \begin_layout Plain Layout
-As usually when constructing adaptive MCMC algorithms, we will need to take
- care generating proposals based on the history of the Markov chain.
+As usual when constructing adaptive MCMC algorithms, we will need to take
+ care when generating proposals based on the history of the Markov chain.
 \end_layout
 
 \end_inset
@@ -1220,7 +1154,11 @@ We now describe a technique to obtain a kernel induced potential energy
 \begin_inset Formula $\hat{U}$
 \end_inset
 
- in  
+ in
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
+ 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:potential_energy_operator"
@@ -1300,7 +1238,11 @@ natural parameters
 \end_inset
 
  is the cumulant generating function.
-  
+
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
+ 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
@@ -1324,7 +1266,11 @@ key "SriFukKumGreHyv14"
 \emph on
 unnormalised
 \emph default
- version of  
+ version of
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
+ 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
@@ -1349,7 +1295,7 @@ key "Hyvarinen-05"
  in an elegant way and reduces the problem to solving a linear system.
  More importantly, it makes the model relatively robust to increasing dimensions
 , as opposed to classic kernel density estimation, which was confirmed in
- experiements.
+ experiments.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1408,7 +1354,11 @@ We define a kernel induced Hamiltonian operator
 \begin_inset Formula $\hat{K}$
 \end_inset
 
- is defined as in  
+ is defined as in
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
+ 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:potential_energy_operator"
@@ -1437,14 +1387,18 @@ reference "eq:density_estimate_grad_random_feats"
 
 .
  Using the described numerical leap-frog integration, the approximate kernel
- induced Hamiltonian flow then follows similar to  
+ induced Hamiltonian flow then follows (similar to
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
+ 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:leap_frog_flow"
 
 \end_inset
 
-, 
+), 
 \begin_inset Formula 
 \begin{equation}
 \phi_{\epsilon,\tau}^{\tilde{H}_{k}}:=\left(\phi_{\frac{\epsilon}{2}}^{U_{k}}\circ\phi_{\epsilon}^{K}\circ\phi_{\frac{\epsilon}{2}}^{U_{k}}\right)^{L}\label{eq:kernel_leap_frog_flow}
@@ -1459,7 +1413,7 @@ reference "eq:kernel_potential_energy_operator"
 
 \end_inset
 
- results different level sets than those induced by the discretised true
+ results in different level sets than those induced by the discretised true
  Hamiltonian flow 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1469,7 +1423,11 @@ reference "eq:potential_energy_operator"
 
 .
  In order to correct for any induced bias on the resulting Markov chain,
- we perform the Metropolis acceptance step from  
+ we perform the Metropolis acceptance step from
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
+ 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:hmc_accept_prob"
@@ -1490,7 +1448,7 @@ true
 
 \end_inset
 
-Consequently, any deviations of the level sets induced by 
+Any deviations of the level sets induced by 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:kernel_leap_frog_flow"
@@ -1504,7 +1462,7 @@ reference "eq:leap_frog_flow"
 
 \end_inset
 
- will result in a decreased acceptance probability of approximate integrations
+ may result in a decreased acceptance probability of approximate integrations
  
 \begin_inset Formula $\alpha(\phi_{\epsilon,\tau}^{\tilde{H_{k}}}(p',q))$
 \end_inset
@@ -1540,7 +1498,7 @@ We now illustrate how well trajectories along the level set of the kernel
 \begin_inset Formula $K(p)=-\frac{1}{2}p^{T}p$
 \end_inset
 
- target density, i.e.
+ and target density, i.e.
  
 \begin_inset Formula $U(q)=\frac{1}{2}q^{T}q$
 \end_inset
@@ -1558,7 +1516,11 @@ We now illustrate how well trajectories along the level set of the kernel
 -space, we simulate approximate trajectories on both true and kernel induced
  Hamiltonian level sets, small leapfrog steps.
  For each point on this discrete trajectory, we compute the Metropolis acceptanc
-e probability in  
+e probability in
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
+ 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:hmc_accept_prob"
