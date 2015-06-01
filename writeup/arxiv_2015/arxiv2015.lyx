@@ -354,8 +354,14 @@ key "SriFukKumGreHyv14"
 \end_inset
 
 .
- The first approximation is based on using the random Fourier basis functions
- of 
+ The first approximation, termed 
+\emph on
+score matching lite
+\emph default
+, is based on projecting the solution to a lower dimensional, yet growing,
+ subspace in the RKHS.
+ The second approximation is based on using finite dimensional feature spaces,
+ here combined with the random Fourier features framework of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Rahimi2007"
@@ -363,12 +369,6 @@ key "Rahimi2007"
 \end_inset
 
 .
- The second approximation, termed 
-\emph on
-score matching lite
-\emph default
-, is based on projecting the solution to a lower dimensional, yet growing,
- subspace in the RKHS.
  Both approximations come with their own advantages and disadvantages and
  the choice ultimately depend on the context of the inference problem.
 \end_layout
@@ -593,7 +593,11 @@ key "Andrieu2008"
 
  from the history of the Markov chain, i.e.
  
-\begin_inset Formula $\Sigma_{t}=\nu^{2}/(t-1)\sum_{i=1}^{t}(x_{i}-\bar{x_{1:t}})(x_{i}-\bar{x_{1:t}})^{T}$
+\begin_inset Formula $\Sigma_{t}=\nu^{2}/(t-1)\sum_{i=1}^{t}(x_{i}-\bar{x}_{1:t})(x_{i}-\bar{x}_{1:t})^{T}$
+\end_inset
+
+, where 
+\begin_inset Formula $\bar{x}_{1:t}:=\sum_{i=1}^{t}x_{i}$
 \end_inset
 
 .
@@ -728,7 +732,7 @@ Note that both potential and momentum are real-valued.
 \begin_inset Formula $\exp\left(-H(p,q)\right)$
 \end_inset
 
-where 
+, where 
 \begin_inset Formula $H(p,q):=K(p)+U(q)$
 \end_inset
 
@@ -1156,14 +1160,14 @@ reference "eq:potential_energy_operator"
 
  by a kernel induced surrogate that is tractable and does not require gradients
  of the log-target.
- To that end, we fit an infinite exponential family model,
+ To that end, we fit an infinite exponential family model 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
 
 \end_inset
 
-, of the form
+ of the form
 \begin_inset Formula 
 \begin{equation}
 \exp\left(\langle f,k(x,\cdot)\rangle_{{\cal H}}-A(f)\right).\label{eq:infinite_exp_family}
@@ -1370,7 +1374,7 @@ with
  model from 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:density_estimate_grad_random_feats"
+reference "eq:infinite_exp_family"
 
 \end_inset
 
@@ -1518,7 +1522,7 @@ reference "eq:hmc_accept_prob"
 
  and 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:kmc_accept_prob"
 
 \end_inset
@@ -1799,7 +1803,28 @@ reference "eq:infinite_exp_family"
 \end_inset
 
  i.i.d.
- samples 
+ samples
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+We assume a fixed sample set here but will use both the full Markov chain
+ history 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+ and a subsample of size 
+\begin_inset Formula $n$
+\end_inset
+
+ later.
+ 
+\end_layout
+
+\end_inset
+
+.
+ 
 \begin_inset Formula $\{x_{i}\}_{i=1}^{n}\sim\pi$
 \end_inset
 
@@ -1807,7 +1832,7 @@ reference "eq:infinite_exp_family"
 \begin_inset Formula $\pi(x)\approx\tilde{\pi}(x;\hat{f})$
 \end_inset
 
- .
+.
  From 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1878,13 +1903,13 @@ key "Hyvarinen-05"
 \end_inset
 
 , but only through samples 
-\begin_inset Formula $x_{i}\sim\pi(x)$
+\begin_inset Formula $x_{i}$
 \end_inset
 
  as
 \begin_inset Formula 
 \begin{equation}
-\hat{J}(f)=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};f)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};f)\right].\label{eq:score_matching_objective_sample_version}
+\hat{J}(f)=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};f)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};f)\right],\label{eq:score_matching_objective_sample_version}
 \end{equation}
 
 \end_inset
@@ -1917,7 +1942,7 @@ reference "eq:infinite_exp_family"
 \end_inset
 
 .
- The proposed empirical estimator to 
+ The proposed score-matching-based empirical estimator to 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
@@ -1966,7 +1991,7 @@ reference "eq:infinite_exp_family"
 \end_layout
 
 \begin_layout Subsection
-Score matching lite
+Infinite exponential families lite
 \end_layout
 
 \begin_layout Standard
@@ -2190,26 +2215,11 @@ Gradients of theestimated log-density are given as
 \end_layout
 
 \begin_layout Subsection
-Exponential family based on explicit feature spaces
+Exponential families in finite feature spaces
 \end_layout
 
 \begin_layout Standard
-We now propose another estimator to 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
-, which takes an orthogonal approach to the lite version in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:lite_estimator"
-
-\end_inset
-
-.
- Instead of fitting an infinite-dimensional model on a subset of the available
+Instead of fitting an infinite-dimensional model on a subset of the available
  data, we fit a finite approximation to the infinite-dimensional model using
  
 \emph on
