@@ -136,11 +136,11 @@ theorems-std
 \end_layout
 
 \begin_layout Title
-From exponential families in RKHS to
+Gradient-free Hamiltonian Monte Carlo
 \begin_inset Newline newline
 \end_inset
 
-Gradient-free Hamiltonian Monte Carlo
+from kernel exponential families
 \end_layout
 
 \begin_layout Abstract
@@ -2533,8 +2533,8 @@ reference "alg:Kamiltonian-Monte-Carlo"
 
 \begin_layout Standard
 The remainder of this section covers details on adaptation schedules needed
- to ensure both asymptotic correctness and computational feasibility, and
- describe various tuning mechanisms for applying KMC in practice.
+ to ensure asymptotic correctness, a proof-sketch for ergodicity, and tuning
+ mechanisms for applying KMC in practice.
 \end_layout
 
 \begin_layout Standard
@@ -2959,120 +2959,6 @@ key "RobertsRosenthal2007"
 \end_layout
 
 \begin_layout Subsection
-Learning free parameters
-\end_layout
-
-\begin_layout Standard
-KMC, for both the lite and the finite estimatior has two free parameters:
- the Gaussian kernel bandwidth 
-\begin_inset Formula $\sigma$
-\end_inset
-
-, and the regularisation parameter 
-\begin_inset Formula $\lambda$
-\end_inset
-
-.
- Earlier adaptive kernel-based MCMC methods, 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sejdinovic_kernel_2014"
-
-\end_inset
-
-, did not cover choice of kernel parameters, i.e.
- the Gaussian bandwidth 
-\begin_inset Formula $\sigma$
-\end_inset
-
- in our case.
- As the choice of such parameters is crucial to obtain an efficient sampler,
- this clearly limits its generality.
- While in practice, pilot runs can to be devised in order to tune the parameter,
- a general framework to cover their choice is desirable.
-\end_layout
-
-\begin_layout Standard
-As KMC's performance is eventually tied with the accuracy of the infinite
- exponential family model in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
- and its approximate estimator in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family_random_feats"
-
-\end_inset
-
-, we can the score matching objective function in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_match_objective_random_feats"
-
-\end_inset
-
- to learn 
-\begin_inset Formula $\sigma,\lambda$
-\end_inset
-
-.
- In order to avoid overfitting, we use a standard cross-validation procedure
- to evaluate the objective function 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_matching_objective_sample_version"
-
-\end_inset
-
-, which allows to compare different 
-\begin_inset Formula $\sigma,\lambda$
-\end_inset
-
- pairs.
- As the 
-\begin_inset Formula $\sigma,\lambda$
-\end_inset
-
- surface is highly non-convex, we have to resort to global optimisation
- procedures, such as the computationally expensive grid-search 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "hsu2003practical"
-
-\end_inset
-
-, or faster alternatives from stochastic 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "hansen1996adapting"
-
-\end_inset
-
- or Bayesian optimisation 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "hernandez2014predictive"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-TODO: number of points in chain history / number of basis functions.
-\end_layout
-
-\begin_layout Standard
-In practice, we perform parameter selection after a burn-in period.
- TODO write that it is possible to change the kernel parameter for finite
- estimator if the number of basis dimensions stays the
-\end_layout
-
-\begin_layout Subsection
 Comparison of lite and finite approximation, tail behaviour, and ergodicity
 \end_layout
 
@@ -3203,6 +3089,120 @@ key "sejdinovic_kernel_2014"
 
 .
  See Figure TODO for an illustration.
+\end_layout
+
+\begin_layout Subsection
+Learning free parameters
+\end_layout
+
+\begin_layout Standard
+KMC, for both the lite and the finite estimatior has two free parameters:
+ the Gaussian kernel bandwidth 
+\begin_inset Formula $\sigma$
+\end_inset
+
+, and the regularisation parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ Earlier adaptive kernel-based MCMC methods, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, did not cover choice of kernel parameters, i.e.
+ the Gaussian bandwidth 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ in our case.
+ As the choice of such parameters is crucial to obtain an efficient sampler,
+ this clearly limits its generality.
+ While in practice, pilot runs can to be devised in order to tune the parameter,
+ a general framework to cover their choice is desirable.
+\end_layout
+
+\begin_layout Standard
+As KMC's performance is eventually tied with the accuracy of the infinite
+ exponential family model in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ and its approximate estimator in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_random_feats"
+
+\end_inset
+
+, we can the score matching objective function in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_objective_random_feats"
+
+\end_inset
+
+ to learn 
+\begin_inset Formula $\sigma,\lambda$
+\end_inset
+
+.
+ In order to avoid overfitting, we use a standard cross-validation procedure
+ to evaluate the objective function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+, which allows to compare different 
+\begin_inset Formula $\sigma,\lambda$
+\end_inset
+
+ pairs.
+ As the 
+\begin_inset Formula $\sigma,\lambda$
+\end_inset
+
+ surface is highly non-convex, we have to resort to global optimisation
+ procedures, such as the computationally expensive grid-search 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hsu2003practical"
+
+\end_inset
+
+, or faster alternatives from stochastic 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hansen1996adapting"
+
+\end_inset
+
+ or Bayesian optimisation 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hernandez2014predictive"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+TODO: number of points in chain history / number of basis functions.
+\end_layout
+
+\begin_layout Standard
+In practice, we perform parameter selection after a burn-in period.
+ TODO write that it is possible to change the kernel parameter for finite
+ estimator if the number of basis dimensions stays the
 \end_layout
 
 \begin_layout Section
@@ -5323,7 +5323,7 @@ from feature vectors derivatives
  We can then write the inverse of the new sum as
 \begin_inset Formula 
 \begin{align*}
-\tilde{C}_{n+1}^{-1}: & =\left(\tilde{C}_{t}+\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{t+1}}^{\ell}\left(\dot{\phi}_{x_{t+1}}^{\ell}\right)^{T}\right)\right)^{-1}.
+\tilde{C}_{t+1}^{-1}: & =\left(\tilde{C}_{t}+\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{t+1}}^{\ell}\left(\dot{\phi}_{x_{t+1}}^{\ell}\right)^{T}\right)\right)^{-1}.
 \end{align*}
 
 \end_inset
@@ -5499,18 +5499,22 @@ Algorithmic description:
 \begin_layout Enumerate
 Update sums 
 \begin_inset Formula 
-\begin{equation}
-\tilde{b}_{t}\leftarrow\tilde{b}_{t-1}-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t}}^{\ell}\quad\text{and}\quad\tilde{C}_{t}\leftarrow\tilde{C}_{t-1}+\frac{1}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t}}^{\ell}(\dot{\phi}_{x_{t}}^{\ell})^{T}\label{eq:algo_updating_b_C-1}
-\end{equation}
+\[
+\tilde{b}_{t+1}\leftarrow\tilde{b}_{t}-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t+1}}^{\ell}\quad\text{and}\quad\tilde{C}_{t+1}\leftarrow\tilde{C}_{t}+\frac{1}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t+1}}^{\ell}(\dot{\phi}_{x_{t+1}}^{\ell})^{T}
+\]
 
 \end_inset
 
- and perform rank-
+ 
+\end_layout
+
+\begin_layout Enumerate
+Perform rank-
 \begin_inset Formula $d$
 \end_inset
 
  update to obtain updated Cholesky factorisation 
-\begin_inset Formula $\tilde{L}_{t}\tilde{L}_{t}^{T}=\tilde{C}_{t}$
+\begin_inset Formula $\tilde{L}_{t+1}\tilde{L}_{t+1}^{T}=\tilde{C}_{t+1}$
 \end_inset
 
 .
@@ -5523,7 +5527,7 @@ Update approximate infinite exponential family parameters
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\hat{\theta}\leftarrow\tilde{L}_{t}^{-T}\tilde{L}_{t}^{-1}\tilde{b}_{t}
+\hat{\theta}\leftarrow\tilde{L}_{t+1}^{-T}\tilde{L}_{t+1}^{-1}\tilde{b}_{t+1}
 \]
 
 \end_inset
