@@ -3110,28 +3110,7 @@ Assume
 \begin_inset Formula $\pi(x)$
 \end_inset
 
- is log-concave in the tails, meaning 
-\begin_inset Formula $\exists x_{U}>0$
-\end_inset
-
- s.t.
- for 
-\begin_inset Formula $x^{*}>x_{t}>x_{U}$
-\end_inset
-
-, we have 
-\begin_inset Formula $\pi(x^{*})/\pi(x_{t})\leq e^{-\alpha_{1}(|x^{*}|-|x_{t}|)}$
-\end_inset
-
- and for 
-\begin_inset Formula $x_{t}>x^{*}>x_{U}$
-\end_inset
-
-, we have 
-\begin_inset Formula $\pi(x^{*})/\pi(x_{t})\geq e^{-\alpha_{1}(|x^{*}|-|x_{t}|)}$
-\end_inset
-
-, and a similar condition holds in the negative tail.
+ is log-concave in the tails.
  Assume
 \emph on
  
@@ -3144,25 +3123,17 @@ key "roberts1996geometric"
 \end_inset
 
 .
- Assume MCMC adaptation stops after a fixed time, a fixed number of leapfrog
- steps 
-\begin_inset Formula $L$
-\end_inset
-
-, a fixed step size 
-\begin_inset Formula $\epsilon$
-\end_inset
-
-, and a fixed mass matrix 
-\begin_inset Formula $I$
-\end_inset
-
-.
+ Assume MCMC adaptation stops after a fixed time, and fixed HMC parameters.
  If 
 \begin_inset Formula $\limsup_{|x|\to\infty}\nabla f(x)=0$
 \end_inset
 
- and 
+ and there exists an 
+\begin_inset Formula $M$
+\end_inset
+
+ s.t.
+ 
 \begin_inset Formula $|\nabla f(x)|<M$
 \end_inset
 
@@ -5750,7 +5721,7 @@ key "roberts1996geometric"
 Proof of Proposition 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "prop:finite_estimator"
+reference "prop:ergodicity_kmc_lite"
 
 \end_inset
 
@@ -5758,7 +5729,46 @@ reference "prop:finite_estimator"
 \end_layout
 
 \begin_layout Proof
-Following 
+We assumed 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+ is log-concave in the tails, meaning 
+\begin_inset Formula $\exists x_{U}>0$
+\end_inset
+
+ s.t.
+ for 
+\begin_inset Formula $x^{*}>x_{t}>x_{U}$
+\end_inset
+
+, we have 
+\begin_inset Formula $\pi(x^{*})/\pi(x_{t})\leq e^{-\alpha_{1}(|x^{*}|-|x_{t}|)}$
+\end_inset
+
+ and for 
+\begin_inset Formula $x_{t}>x^{*}>x_{U}$
+\end_inset
+
+, we have 
+\begin_inset Formula $\pi(x^{*})/\pi(x_{t})\geq e^{-\alpha_{1}(|x^{*}|-|x_{t}|)}$
+\end_inset
+
+, and a similar condition holds in the negative tail.
+ Assume fixed HMC parameters: a fixed number of leapfrog steps 
+\begin_inset Formula $L$
+\end_inset
+
+, a fixed step size 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+, and a fixed mass matrix 
+\begin_inset Formula $I$
+\end_inset
+
+.
+ Following 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "roberts1996geometric,mengersen1996rates"
