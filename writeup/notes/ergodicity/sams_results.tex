@@ -1,0 +1,121 @@
+\documentclass{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+%\usepackage{bbold}
+\usepackage{sectsty}
+\usepackage[compact]{titlesec}
+\usepackage{color}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{mdframed}
+%\usepackage{pgfornament}
+
+% Paragraph settings
+\setlength{\parindent}{0in}
+\setlength{\parskip}{0.3cm}
+
+% Title and section title spacing and formatting
+\titlespacing{\chapter}{0pt}{*0}{*0}
+\titlespacing{\section}{0pt}{*2.5}{*0}
+\titlespacing{\subsection}{0pt}{*0}{*0}
+%\allsectionsfont{\centering}
+\sectionfont{\normalsize}
+\subsectionfont{\normalsize \itshape}
+\subsubsectionfont{\normalfont \itshape}
+
+% new commands %
+\newcommand{\pd}[2]{ \frac{\partial #1}{\partial #2} }
+\newcommand{\comment}[1]{}
+\newcommand{\p}[1]{ (#1_t)_{t \geq 0} }
+\newcommand{\ch}[1]{ \{#1_t\}_{t \geq 0} }
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\B}{\mathcal{B}}
+%\newcommand{\proofbreak}{ \begin{center} \pgfornament[width = 10cm, color = black!60]{88} \end{center} }
+
+\newcommand{\startboxblue}[1]{ \begin{mdframed}[linecolor=blue!40,linewidth=4pt, frametitle = {#1}, frametitlerule=true,
+frametitlebackgroundcolor=gray!20, innertopmargin=\topskip, nobreak = true] }
+
+\newcommand{\startboxgreen}[1]{ \begin{mdframed}[linecolor=Green!40,linewidth=4pt, frametitle = {#1}, frametitlerule=true,
+frametitlebackgroundcolor=gray!20, innertopmargin=\topskip, nobreak = true] }
+
+\newcommand{\startboxred}[1]{ \begin{mdframed}[linecolor=red!40,linewidth=4pt, frametitle = {#1}, frametitlerule=true,
+frametitlebackgroundcolor=gray!20, innertopmargin=\topskip, nobreak = true] }
+
+\newcommand{\finishbox}{\end{mdframed}}
+
+\title{\Large \bfseries Geometric Ergodicity of KMC.}
+\author{Sam Livingstone}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\emph{Notation:} $P_K$ denotes the transition kernel and $Q$ the proposal.  $\pi(x)$ the target density, $f(x) = \sum a_i k(x_i,x)$ the kernel approximation to $\log\pi(x)$, $c(x_0) := \epsilon^2\sum_{i=0}^{N-1}\nabla f(x_{i\epsilon})/2$,
+$d(x_0) := \epsilon(\nabla f(x) + \nabla f(x_{N\epsilon}))/2$ + $\epsilon \sum_{i=1}^{N-1} \nabla f(x_{i\epsilon})$, and $|\cdot|$ is the Euclidean norm on $\mathbb{R}^d$.  Also let $a \wedge b = \min(a,b)$.
+
+\section{Intuition}
+
+If $x_t$ is the current point in the chain then the marginal KMC proposal on position space looks like
+\[
+x^*(p') = x_t + c(x_t) + N\epsilon p', ~~ p' \sim \mathcal{N}(0,I).
+\]
+This is then accepted with probability
+\[
+\alpha(x_t,x^*(p')) = 1 \wedge \frac{\pi(x^*(p'))}{\pi(x_t)} \exp \left( - \frac{1}{2} [ p' d(x_t) + d(x_t)^2] \right).
+\]
+From the distribution of $p'$, $c(x_t) \overset{p}{\to} 0$ as $|x_t| \to \infty$, and similarly for $d(x_t)$.  So for large $x_t$, $x^* \approx x_t + N\epsilon p'$ and $\alpha(x_t,x^*) \approx \pi(x^*)/\pi(x_t)$, meaning in the tails the chain will behave as a Random Walk Metropolis.  So $P_K$ should be geometrically ergodic whenever the Random Walk Metropolis is (i.e. for log-concave $\pi(x)$ in the tails, with the additional curvature condition of \cite{rob1996} for $d \geq 2$).
+
+\section{Rigour (1 dimension)}
+
+\emph{Assumption (i).} $\pi(x)$ is log-concave in the tails, meaning $\exists x_U > 0$ s.t . for $x^* > x_t > x_U$ $\pi(x^*)/\pi(x_t) \leq e^{-\alpha_1(|x^*| - |x_t|)}$ and for $x_t > x^* > x_U$ $\pi(x^*)/\pi(x_t) \geq e^{-\alpha_1(|x^*| - |x_t|)}$, and a similar condition holds in the negative tail.
+
+\emph{Assumption (ii).} Regularity conditions of Theorem 2.2 of \cite{rob1996} (implies $\pi$-irreducibility of $P_K$ and that all compact sets are small).  Adaptation stops after a fixed time, fixed number of leapfrog steps $N$ and step size $\epsilon$, $\limsup_{|x| \to \infty}\nabla f(x) =  0$, $|\nabla f(x)| < M$ and choice of mass matrix is $I$ (this can be relaxed but is done for ease of exposition).
+
+\textbf{Lemma.} \emph{Under (i) and (ii), in one dimension $P_K$ is geometrically ergodic from $\pi$-almost any starting point.}
+
+\emph{Proof:} Following \cite{meng1996, rob1996}, it is sufficient to show
+\[
+\limsup_{|x_t| \to \infty} \int \left[ e^{s(|x^*(p')| - |x_t|)} - 1 \right] \alpha(x_t,x^*(p'))\mu(dp') < 0,
+\]
+for some $s > 0$, where $\mu(\cdot)$ is a standard Gaussian measure.  Denoting the integral $I_{-\infty}^{\infty}$, we split it into
+\[
+I_{-\infty}^{-x_t^\delta} + I_{-x_t^\delta}^{x_t^\delta} + I_{x_t^\delta}^\infty,
+\]
+for some $\delta \in (0,1)$.  We show that the first and third terms decay to zero whilst the second remains strictly negative as $x_t \to \infty$ (a similar argument holds as $x_t \to -\infty$ under (i)).  Taking $I_{-x_t^\delta}^{x_t^\delta}$, we can choose an $x_t$ large enough that $x_t - C - N\epsilon x_t^\delta > x_U$, $-\gamma_1 < c(x_t-x_t^{\delta}) < 0$ and $-\gamma_2 < d(x_t - x_t^{\delta}) < 0$.  So for $p' \in (0,x_t^\delta)$ we have
+\[
+N\epsilon p' > x^* - x_t > N\epsilon p' - \gamma_1 \implies e^{-\alpha_1 (-\gamma_1 + N\epsilon p')} \geq e^{-\alpha_1 (x^* - x_t) } \geq \pi(x^*)/\pi(x_t),
+\]
+where the last inequality is from (i).  For $p' \in (\gamma_2^2/2,x_t^\delta)$
+\[
+\alpha(x_t,x^*)  \leq 1 \wedge \frac{\pi(x^*)}{\pi(x_t)} \exp \left( p'\gamma_2/2 - \gamma_2^2/2 \right) \leq 1 \wedge \exp \left( -\alpha_2 p' + \alpha_1\gamma_1 - \gamma_2^2/2 \right),
+\]
+where $x_t$ is large enough that $\alpha_2 = \alpha_1 N\epsilon - \gamma_2/2 > 0$. Similarly for $p' \in (\gamma_1/N\epsilon,x_t^\delta)$
+\[ e^{sN\epsilon p'} - 1 \geq e^{s(x^* - x_t)} - 1 \geq e^{s(N\epsilon p' - \gamma_1)} - 1 > 0. \]
+Because $\gamma_1$ and $\gamma_2$ can be chosen to be arbitrarily small, then for large enough $x_t$ we will have
+\begin{align}
+0 < I_0^{x_t^\delta} &\leq \int_{\gamma_1/N\epsilon}^{x_t^\delta}  [e^{sN\epsilon p'} - 1]\exp \left( -\alpha_2 p' + \alpha_1\gamma_1 - \gamma_2^2/2 \right) \mu(dp') + I_0^{\gamma_1/N\epsilon} \nonumber \\ \label{eqn1}
+&= e^{c_1}\int_{\gamma_1/N\epsilon}^{x_t^\delta} [e^{s_2 p'} - 1]e^{-\alpha_2 p'} \mu(dp')  + I_0^{\gamma_1/N\epsilon},
+\end{align}
+where $c_1 = \alpha_1\gamma_1 - \gamma_2^2/2 > 0$ for large enough $x_t$, as $\gamma_1$ and $\gamma_2$ are of the same order.  Now turning to $p' \in (-x_t^\delta,0)$, we can use an exact rearrangement of the same argument (noting that $c_1$ can be made arbitrarily small) to get
+\begin{equation}  \label{eqn2}
+I_{-x_t^\delta}^0 \leq e^{c_1}\int_{\gamma_1/N\epsilon}^{x_t^\delta} [e^{-s_2 p'} - 1] \mu(dp') < 0.
+\end{equation}
+Combining (\ref{eqn1}) and (\ref{eqn2}) and rearranging as in Theorem 3.2 of \cite{meng1996} shows that $I_{-x_t^\delta}^{x_t^\delta}$ is strictly negative in the limit if $s_2 = sN\epsilon$ is chosen small enough, as $I_0^{\gamma_2/N\epsilon}$ can also be made arbitrarily small.
+
+For $I_{-\infty}^{-x_t^\delta}$ it suffices to note that the Gaussian tails of $\mu(\cdot)$ will dominate the exponential growth of $e^{s(|x^*(p')|-|x_t|)}$ meaning the integral can be made arbitrarily small by choosing large enough $x_t$, and the same argument holds for $I_{x_t^\delta}^{\infty}$.
+
+\hfill $\square$
+
+\begin{thebibliography}{1}
+
+\bibitem{rob1996} Roberts, G. O., \& Tweedie, R. L. (1996). Geometric convergence and central limit theorems for multidimensional Hastings and Metropolis algorithms. \emph{Biometrika, 83(1), 95-110}.
+
+\bibitem{meng1996} Mengersen, K. L., \& Tweedie, R. L. (1996). Rates of convergence of the Hastings and Metropolis algorithms. \emph{The Annals of Statistics, 24(1), 101-121}.
+
+\end{thebibliography}
+
+\end{document}
