@@ -144,9 +144,8 @@ from kernel exponential families
 \end_layout
 
 \begin_layout Abstract
-We propose an adaptive, gradient-free MCMC algorithm based on Hamiltonian
- Monte Carlo (HMC), which allows simulation from intractable target probability
- densities.
+We propose a kernel-based, gradient-free adaptive MCMC algorithm based on
+ Hamiltonian Monte Carlo (HMC).
  Our sampler fills a gap: when gradients of the target density are unavailable,
  classic HMC methodology 
 \emph on
@@ -174,16 +173,22 @@ smoothing the chain history, we directly model gradients of the
 global
 \emph default
  log-density.
- To that end, we use an RKHS-based infinite-dimensional exponential family
- model and score matching to estimate the RKHS functions modelling log-densities
-, where an excessive computational cost is reduced by two novel efficient
- approximations suitable to different use-cases.
- Resulting robust kernel-induced Hamiltonian flow gives trajectories that
- become closer to the true level sets as adaptive sampling yields better
- estimates of the log-densities.
+ To that end, we fit an exponential family model in a RKHS using score matching
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+, where excessive computational costs are reduced by two novel efficient
+ approximations.
+ This gives a kernel-induced Hamiltonian flow with trajectories that become
+ closer to the true HMC level sets as adaptive sampling yields better estimates
+ of the log-densities.
  We construct an 
 \emph on
-exact 
+asymptotically exact 
 \emph default
 MCMC algorithm, 
 \emph on
@@ -192,8 +197,7 @@ Kamiltonian Monte Carlo (KMC)
 , that (i) behaves similarly to HMC in terms of autocorrelation and acceptance
  rates, but that (ii) does not require target gradients, and that in particular
  (iii) offers substantial mixing improvements in medium dimensions.
- In contrast to previous kernel-based MCMC methods, free parameters can
- be tuned in a principled way.
+ Free parameters can be tuned in a principled way.
  We support our claims with experimental studies which include pseudo-marginal
  MCMC and ABC methods.
 \end_layout
@@ -205,11 +209,20 @@ Introduction
 \begin_layout Standard
 Stochastic simulation using Markov Chain Monte Carlo (MCMC) is one of the
  most fundamental approximate inference techniques in Bayesian statistics.
- It allows to represent probability densities of interest via a finite set
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+It allows to represent probability densities of interest via a finite set
  of samples from a Markov chain whose limiting distribution matches the
  target density.
  This representation allows to numerically approximate expectations with
  respect to posterior densities -- a problem at the core of Bayesian statistics.
+\end_layout
+
+\end_inset
+
  As the technique itself can be computationally demanding, and as the expected
  estimation error of MCMC directly depends on the correlation between successive
  points in the Markov chain, MCMC efficiency is achieved by taking large
@@ -224,9 +237,10 @@ key "neal2011mcmc"
 
 \end_inset
 
-, is an MCMC algorithm that achieves effeciency via gradient information.
+, is an MCMC algorithm that achieves effeciency by exploiting gradient informati
+on.
  It simulates particle movement along contour lines of a fictitious dynamical
- system that is constructed from the gradient of the target density.
+ system that is constructed from the target density.
  While projections of those trajectories cover wide parts of the target
  density, the probability of accepting a move along a trajectory is close
  to one.
@@ -287,7 +301,12 @@ key "Andrieu2008"
 
 , is based on learning the global linear scaling of a target density from
  the history of the Markov chain trajectory.
- While in general ergodicity and convergence properties of MCMC can be violated
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+While in general ergodicity and convergence properties of MCMC can be violated
  if the proposal is based on the past samples, it is possible to adapt in
  a vanishing way that maintains convergence to the correct invariant distributio
 n 
@@ -298,8 +317,11 @@ key "AndrieuMoulines2006"
 \end_inset
 
 .
- For densities with nonlinear dependencies between dimensions, whose local
- scaling is significantly different from the global scaling, this approach
+\end_layout
+
+\end_inset
+
+ For densities with nonlinear dependencies between dimensions, this approach
  does not work very well.
  Recently, 
 \begin_inset CommandInset citation
@@ -308,12 +330,10 @@ key "sejdinovic_kernel_2014"
 
 \end_inset
 
- proposed a Kernel Adaptive Metropolis-Hastings (KAMH) algorithm, that produces
- proposal distributions that locally align to the target density -- increasing
- sampling efficiency.
- KAMH is based on an embedding of the Markov chain trajectory into a Reproducing
- Kernel Hilbert Space (RKHS), and uses a notion of a covariance operator
- therein to produce an appropriately scaled local proposal.
+ proposed a Kernel Adaptive Metropolis-Hastings (KAMH) algorithm, whose
+ proposals locally align with the target density.
+ Via learning target covariance in a Reproducing Kernel Hilbert Space (RKHS)
+ KAMH achieves improved sampling efficiency on such targets.
 \end_layout
 
 \begin_layout Standard
@@ -323,13 +343,13 @@ In this paper, we extend the idea of using kernel methods for efficient
 \emph on
 locally
 \emph default
- smoothing the target density, we do so 
+ smoothing the target density, we estiamte its gradients 
 \emph on
 globally
 \emph default
 .
- More precisely, we fit an unnormalised infinite exponential family model
- via score matching following 
+ More precisely, we fit an (unnormalised) infinite exponential family model
+ in a RKHS via score matching, following 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
@@ -338,22 +358,16 @@ key "SriFukKumGreHyv14"
 
 .
  This is a recently proposed non-parametric method to model the log unnormalised
- target density as an RKHS function which has been shown to approximate
+ target density as an RKHS function, which has been shown to approximate
  a rich class of density functions arbitrarily well.
  More importantly, the method is relatively robust to increasing dimensions
  -- in sharp contrast to classical kernel density estimation.
 \end_layout
 
 \begin_layout Standard
-To make the algorithm more efficient in practice, we develop two novel approxima
-tions to the infinite exponential family estimator from 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SriFukKumGreHyv14"
-
-\end_inset
-
-.
+To make the algorithm more efficient in the context of MCMC chains of growing
+ length, we develop two novel approximations to the infinite exponential
+ family model.
  The first approximation, termed 
 \emph on
 score matching lite
@@ -377,6 +391,14 @@ key "Rahimi2007"
 Experiments show that KMC inherits the efficiency of HMC and therefore mixes
  significantly better than any random walk based method on a number of target
  densities, including synthetic examples, PM-MCMC, and ABC-MCMC.
+\end_layout
+
+\begin_layout Paragraph
+Paper outline:
+\end_layout
+
+\begin_layout Standard
+TODO
 \end_layout
 
 \begin_layout Section
@@ -421,19 +443,15 @@ Let
 \begin_inset Formula $T$
 \end_inset
 
-, we can approximate any expectation of a function 
-\begin_inset Formula $\varphi$
-\end_inset
-
- on 
-\begin_inset Formula ${\cal X}$
-\end_inset
-
- w.r.t 
+, we can consistently approximate any expectation w.r.t 
 \begin_inset Formula $\pi$
 \end_inset
 
- as
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Formula 
 \[
 \mathbb{E}_{\pi(x)}\left\{ \varphi(x)\right\} =\int_{{\cal X}}\varphi(x)\pi(x)dx\approx\frac{1}{T}\sum_{t=1}^{T}\varphi(x_{t}).
@@ -441,8 +459,13 @@ Let
 
 \end_inset
 
-Markov chains are constructed using the Metropolis-Hastings algorithm, which
- at the current state 
+
+\end_layout
+
+\end_inset
+
+ Markov chains are constructed using the Metropolis-Hastings algorithm,
+ which at the current state 
 \begin_inset Formula $x_{t}$
 \end_inset
 
@@ -1424,7 +1447,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figures/gaussian_trajectories_hmc.eps
-	scale 50
+	scale 55
 	BoundingBox 50bp 0bp 175bp 144bp
 	clip
 
@@ -1433,7 +1456,7 @@ status open
 
 \begin_inset Graphics
 	filename figures/gaussian_trajectories_acceptance_hmc.eps
-	scale 50
+	scale 55
 
 \end_inset
 
@@ -1445,7 +1468,7 @@ status open
 
 
 \backslash
-hspace{1cm}
+hspace{.1cm}
 \end_layout
 
 \end_inset
@@ -1453,7 +1476,7 @@ hspace{1cm}
 
 \begin_inset Graphics
 	filename figures/gaussian_trajectories_kmc.eps
-	scale 50
+	scale 55
 	BoundingBox 50bp 0bp 175bp 144bp
 	clip
 
@@ -1462,7 +1485,7 @@ hspace{1cm}
 
 \begin_inset Graphics
 	filename figures/gaussian_trajectories_acceptance_kmc.eps
-	scale 50
+	scale 55
 
 \end_inset
 
