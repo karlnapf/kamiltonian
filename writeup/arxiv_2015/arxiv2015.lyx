@@ -2959,7 +2959,7 @@ key "RobertsRosenthal2007"
 \end_layout
 
 \begin_layout Subsection
-Comparison of lite and finite approximation, tail behaviour, and ergodicity
+Comparison of lite and finite approximation, and ergodicity
 \end_layout
 
 \begin_layout Standard
@@ -3058,27 +3058,11 @@ In situations where nothing about the target density is known, we suggest
 \end_inset
 
 .
- For vanishing gradients, HMC is known to fall to a standard random walk
- with the momentum proposal.
- Therefore, KMC with the lite estimator is able to recover the typical set
- when initialised in the tails.
- We formalise this intuition with the following ergodicity result, a proof
- of which can be found in Appendix 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "sub:Appenidx_ergodicity_lite_proof"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Proposition
-Sams theory result.
-\end_layout
-
-\begin_layout Standard
-This comes at the cost of increased computational costs as having to sub-sample
+ For such vanishing gradients, HMC is known to fall to a standard random
+ walk with the momentum proposal.
+ Intuitively, KMC with the lite estimator converges at least as good as
+ a random walk.
+ This comes at the cost of increased computational costs as having to sub-sample
  the chain history and to re-compute the estimator on every adaptation step
  as in 
 \begin_inset CommandInset citation
@@ -3089,6 +3073,104 @@ key "sejdinovic_kernel_2014"
 
 .
  See Figure TODO for an illustration.
+ We formalise this intuition in the following ergodicity result.
+ See Appendix 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sub:Appenidx_ergodicity_lite_proof"
+
+\end_inset
+
+ for details, a proof, and more intuition.
+ The result is for 
+\begin_inset Formula $d=1$
+\end_inset
+
+.
+ Generalisations to higher dimensions are out of the scope of this paper.
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:ergodicity_kmc_lite"
+
+\end_inset
+
+Assume
+\emph on
+ 
+\begin_inset Formula $d=1$
+\end_inset
+
+.
+ 
+\emph default
+Assume 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+ is log-concave in the tails, meaning 
+\begin_inset Formula $\exists x_{U}>0$
+\end_inset
+
+ s.t.
+ for 
+\begin_inset Formula $x^{*}>x_{t}>x_{U}$
+\end_inset
+
+, we have 
+\begin_inset Formula $\pi(x^{*})/\pi(x_{t})\leq e^{-\alpha_{1}(|x^{*}|-|x_{t}|)}$
+\end_inset
+
+ and for 
+\begin_inset Formula $x_{t}>x^{*}>x_{U}$
+\end_inset
+
+, we have 
+\begin_inset Formula $\pi(x^{*})/\pi(x_{t})\geq e^{-\alpha_{1}(|x^{*}|-|x_{t}|)}$
+\end_inset
+
+, and a similar condition holds in the negative tail.
+ Assume
+\emph on
+ 
+\emph default
+regularity conditions of Theorem 2.2 of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "roberts1996geometric"
+
+\end_inset
+
+.
+ Assume MCMC adaptation stops after a fixed time, a fixed number of leapfrog
+ steps 
+\begin_inset Formula $L$
+\end_inset
+
+, a fixed step size 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+, and a fixed mass matrix 
+\begin_inset Formula $I$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $\limsup_{|x|\to\infty}\nabla f(x)=0$
+\end_inset
+
+ and 
+\begin_inset Formula $|\nabla f(x)|<M$
+\end_inset
+
+ , then KMC lite is geometrically ergedic from 
+\begin_inset Formula $\pi$
+\end_inset
+
+-almost any starting point.
 \end_layout
 
 \begin_layout Subsection
@@ -5536,7 +5618,7 @@ Update approximate infinite exponential family parameters
 \end_layout
 
 \begin_layout Subsection
-Ergedicity result for KMC with the lite estimator
+Ergodicity of KMC lite
 \end_layout
 
 \begin_layout Standard
@@ -5547,6 +5629,367 @@ name "sub:Appenidx_ergodicity_lite_proof"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Paragraph
+Notation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $P_{K}$
+\end_inset
+
+ denotes the transition kernel and 
+\begin_inset Formula $Q$
+\end_inset
+
+ the proposal.
+ Define 
+\begin_inset Formula 
+\[
+c(x_{0}):=\epsilon^{2}\sum_{i=0}^{N-1}\nabla f(x_{i\epsilon})/2
+\]
+
+\end_inset
+
+and 
+\begin_inset Formula 
+\[
+d(x_{0}):=\epsilon(\nabla f(x)+\nabla f(x_{N\epsilon}))/2+\epsilon\sum_{i=1}^{N-1}\nabla f(x_{i\epsilon})
+\]
+
+\end_inset
+
+Let 
+\begin_inset Formula $a\wedge b=\min(a,b)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Intuition
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ is the current point in the chain then the marginal KMC proposal on position
+ space looks like 
+\begin_inset Formula 
+\[
+x^{*}(p')=x_{t}+c(x_{t})+N\epsilon p',~~p'\sim\mathcal{N}(0,I).
+\]
+
+\end_inset
+
+This is then accepted with probability 
+\begin_inset Formula 
+\[
+\alpha(x_{t},x^{*}(p'))=1\wedge\frac{\pi(x^{*}(p'))}{\pi(x_{t})}\exp\left(-\frac{1}{2}[p'd(x_{t})+d(x_{t})^{2}]\right).
+\]
+
+\end_inset
+
+From the distribution of 
+\begin_inset Formula $p'$
+\end_inset
+
+, 
+\begin_inset Formula $c(x_{t})\overset{p}{\to}0$
+\end_inset
+
+ as 
+\begin_inset Formula $\Vert x_{t}\Vert\to\infty$
+\end_inset
+
+, and similarly for 
+\begin_inset Formula $d(x_{t})$
+\end_inset
+
+.
+ So for large 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, 
+\begin_inset Formula $x^{*}\approx x_{t}+L\epsilon p'$
+\end_inset
+
+ and 
+\begin_inset Formula $\alpha(x_{t},x^{*})\approx\pi(x^{*})/\pi(x_{t})$
+\end_inset
+
+, meaning in the tails the chain will behave as a Random Walk Metropolis.
+ So 
+\begin_inset Formula $P_{K}$
+\end_inset
+
+ is geometrically ergodic whenever the Random Walk Metropolis is (i.e.
+ for log-concave 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+ in the tails, with the additional curvature condition of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "roberts1996geometric"
+
+\end_inset
+
+ for 
+\begin_inset Formula $d\geq2$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsubsection
+Proof of Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:finite_estimator"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+Following 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "roberts1996geometric,mengersen1996rates"
+
+\end_inset
+
+, it is sufficient to show 
+\begin_inset Formula 
+\[
+\limsup_{|x_{t}|\to\infty}\int\left[e^{s(\Vert x^{*}(p')\Vert-\Vert x_{t}\Vert)}-1\right]\alpha(x_{t},x^{*}(p'))\mu(dp')<0,
+\]
+
+\end_inset
+
+for some 
+\begin_inset Formula $s>0$
+\end_inset
+
+, where 
+\begin_inset Formula $\mu(\cdot)$
+\end_inset
+
+ is a standard Gaussian measure.
+ Denoting the integral 
+\begin_inset Formula $I_{-\infty}^{\infty}$
+\end_inset
+
+, we split it into 
+\begin_inset Formula 
+\[
+I_{-\infty}^{-x_{t}^{\delta}}+I_{-x_{t}^{\delta}}^{x_{t}^{\delta}}+I_{x_{t}^{\delta}}^{\infty},
+\]
+
+\end_inset
+
+for some 
+\begin_inset Formula $\delta\in(0,1)$
+\end_inset
+
+.
+ We show that the first and third terms decay to zero whilst the second
+ remains strictly negative as 
+\begin_inset Formula $x_{t}\to\infty$
+\end_inset
+
+ (a similar argument holds as 
+\begin_inset Formula $x_{t}\to-\infty$
+\end_inset
+
+ under (i)).
+ Taking 
+\begin_inset Formula $I_{-x_{t}^{\delta}}^{x_{t}^{\delta}}$
+\end_inset
+
+, we can choose an 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ large enough that 
+\begin_inset Formula $x_{t}-C-L\epsilon x_{t}^{\delta}>x_{U}$
+\end_inset
+
+, 
+\begin_inset Formula $-\gamma_{1}<c(x_{t}-x_{t}^{\delta})<0$
+\end_inset
+
+ and 
+\begin_inset Formula $-\gamma_{2}<d(x_{t}-x_{t}^{\delta})<0$
+\end_inset
+
+.
+ So for 
+\begin_inset Formula $p'\in(0,x_{t}^{\delta})$
+\end_inset
+
+ we have 
+\begin_inset Formula 
+\[
+L\epsilon p'>x^{*}-x_{t}>N\epsilon p'-\gamma_{1}\implies e^{-\alpha_{1}(-\gamma_{1}+N\epsilon p')}\geq e^{-\alpha_{1}(x^{*}-x_{t})}\geq\pi(x^{*})/\pi(x_{t}),
+\]
+
+\end_inset
+
+where the last inequality is from (i).
+ For 
+\begin_inset Formula $p'\in(\gamma_{2}^{2}/2,x_{t}^{\delta})$
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\alpha(x_{t},x^{*})\leq1\wedge\frac{\pi(x^{*})}{\pi(x_{t})}\exp\left(p'\gamma_{2}/2-\gamma_{2}^{2}/2\right)\leq1\wedge\exp\left(-\alpha_{2}p'+\alpha_{1}\gamma_{1}-\gamma_{2}^{2}/2\right),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ is large enough that 
+\begin_inset Formula $\alpha_{2}=\alpha_{1}L\epsilon-\gamma_{2}/2>0$
+\end_inset
+
+.
+ Similarly for 
+\begin_inset Formula $p'\in(\gamma_{1}/L\epsilon,x_{t}^{\delta})$
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+e^{sN\epsilon p'}-1\geq e^{s(x^{*}-x_{t})}-1\geq e^{s(N\epsilon p'-\gamma_{1})}-1>0.
+\]
+
+\end_inset
+
+Because 
+\begin_inset Formula $\gamma_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\gamma_{2}$
+\end_inset
+
+ can be chosen to be arbitrarily small, then for large enough 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ we will have 
+\begin_inset Formula 
+\begin{align}
+0<I_{0}^{x_{t}^{\delta}} & \leq\int_{\gamma_{1}/L\epsilon}^{x_{t}^{\delta}}[e^{sN\epsilon p'}-1]\exp\left(-\alpha_{2}p'+\alpha_{1}\gamma_{1}-\gamma_{2}^{2}/2\right)\mu(dp')+I_{0}^{\gamma_{1}/L\epsilon}\nonumber \\
+ & =e^{c_{1}}\int_{\gamma_{1}/L\epsilon}^{x_{t}^{\delta}}[e^{s_{2}p'}-1]e^{-\alpha_{2}p'}\mu(dp')+I_{0}^{\gamma_{1}/L\epsilon},\label{eqn1}
+\end{align}
+
+\end_inset
+
+where 
+\begin_inset Formula $c_{1}=\alpha_{1}\gamma_{1}-\gamma_{2}^{2}/2>0$
+\end_inset
+
+ for large enough 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, as 
+\begin_inset Formula $\gamma_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\gamma_{2}$
+\end_inset
+
+ are of the same order.
+ Now turning to 
+\begin_inset Formula $p'\in(-x_{t}^{\delta},0)$
+\end_inset
+
+, we can use an exact rearrangement of the same argument (noting that 
+\begin_inset Formula $c_{1}$
+\end_inset
+
+ can be made arbitrarily small) to get 
+\begin_inset Formula 
+\begin{equation}
+I_{-x_{t}^{\delta}}^{0}\leq e^{c_{1}}\int_{\gamma_{1}/L\epsilon}^{x_{t}^{\delta}}[e^{-s_{2}p'}-1]\mu(dp')<0.\label{eqn2}
+\end{equation}
+
+\end_inset
+
+Combining 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eqn1"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eqn2"
+
+\end_inset
+
+ and rearranging as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Theorem 3.2"
+key "mengersen1996rates"
+
+\end_inset
+
+ shows that 
+\begin_inset Formula $I_{-x_{t}^{\delta}}^{x_{t}^{\delta}}$
+\end_inset
+
+ is strictly negative in the limit if 
+\begin_inset Formula $s_{2}=sL\epsilon$
+\end_inset
+
+ is chosen small enough, as 
+\begin_inset Formula $I_{0}^{\gamma_{2}/L\epsilon}$
+\end_inset
+
+ can also be made arbitrarily small.
+\end_layout
+
+\begin_layout Proof
+For 
+\begin_inset Formula $I_{-\infty}^{-x_{t}^{\delta}}$
+\end_inset
+
+ it suffices to note that the Gaussian tails of 
+\begin_inset Formula $\mu(\cdot)$
+\end_inset
+
+ will dominate the exponential growth of 
+\begin_inset Formula $e^{s(|x^{*}(p')|-|x_{t}|)}$
+\end_inset
+
+ meaning the integral can be made arbitrarily small by choosing large enough
+ 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, and the same argument holds for 
+\begin_inset Formula $I_{x_{t}^{\delta}}^{\infty}$
+\end_inset
+
+.
 \end_layout
 
 \end_body
