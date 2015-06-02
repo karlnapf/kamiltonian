@@ -196,7 +196,9 @@ Kamiltonian Monte Carlo (KMC)
 \emph default
 , that (i) behaves similarly to HMC in terms of autocorrelation and acceptance
  rates, but that (ii) does not require target gradients, and that in particular
- (iii) offers substantial mixing improvements in medium dimensions.
+ (iii) offers substantial mixing improvements in up to medium dimensions,
+ while (iv) being geometrically ergodic on the same class of targets as
+ standard random walks.
  Free parameters can be tuned in a principled way.
  We support our claims with experimental studies which include pseudo-marginal
  MCMC and ABC methods.
@@ -374,6 +376,8 @@ score matching lite
 \emph default
 , is based on projecting the solution to a lower dimensional, yet growing,
  subspace in the RKHS.
+ KMC lite is geometrically ergodic on the same class of targets as standard
+ random walks.
  The second approximation is based on using finite dimensional feature spaces,
  here combined with the random Fourier features framework of 
 \begin_inset CommandInset citation
@@ -382,7 +386,8 @@ key "Rahimi2007"
 
 \end_inset
 
-.
+, is an extremely effecient on-line style estimator that allows to use all
+ of the Markov chain history.
  Both approximations come with their own advantages and disadvantages and
  the choice ultimately depend on the context of the inference problem.
 \end_layout
