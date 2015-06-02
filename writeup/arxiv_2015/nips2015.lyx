@@ -3298,13 +3298,9 @@ key "sejdinovic_kernel_2014"
 
 \end_inset
 
-, we use the 
-\begin_inset Formula $2.38/\sqrt{(d)}$
-\end_inset
-
- rule to scale RW, tune the scaling of KAMH to achieve roughly 23% acceptance
- probability, and select the Gaussian kernel bandwidth for KAMH by the median
- heuristic on the oracle samples.
+, tune the scaling of KAMH and RW to achieve roughly 23% acceptance probability,
+ and select the Gaussian kernel bandwidth for KAMH by the median heuristic
+ on the oracle samples.
  For HMC, we select a standard Gaussian momentum, a random number of leapfrog
  steps 
 \begin_inset Formula $L\in[10,100]$
@@ -3430,18 +3426,27 @@ ntly outperforms KAMH and RW.
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
 \begin_layout Subsection
 Behaviour in the tails
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Trace and gradient norm of tails to illustrate that the online updates come
  at the cost of wiggly tails.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Say that the above results can be reproduced with the lite estimator, it
  is just more expensive to do this in a Markov chain.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -3535,8 +3540,7 @@ where
 \begin_inset Formula $p(\theta|\mathbf{y})\propto p(\mathbf{y}|\theta)p(\theta)$
 \end_inset
 
-.
- This approach in line with 
+, as in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sejdinovic_kernel_2014"
@@ -3550,38 +3554,21 @@ key "FilipponeIEEETPAMI13"
 
 \end_inset
 
- and is a less ill-conditioned problem than sampling from the joint 
-\begin_inset Formula $(\theta,\mathbf{f})$
-\end_inset
-
--space via a Metropolis-within-Gibbs as the marginal posterior 
-\begin_inset Formula $p(\theta|\mathbf{y})$
-\end_inset
-
- is significantly less peaked than 
-\begin_inset Formula $p(\theta|\mathbf{f},\mathbf{y})$
-\end_inset
-
 .
- Unfortunately, the marginal likelihood 
+ While the marginal likelihood 
 \begin_inset Formula $p(\mathbf{y}|\theta)$
 \end_inset
 
- is intractable for non-Gaussian likelihoods 
-\begin_inset Formula $p(\mathbf{y}|\mathbf{f})$
-\end_inset
-
-.
- Pseudo-marginal MCMC methods 
+ is intractable , PM-MCMC 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Andrieu2009a"
 
 \end_inset
 
- allow 
+ allows 
 \emph on
-exact
+exact-approximate
 \emph default
  inference by replacing 
 \begin_inset Formula $p(\mathbf{y}|\theta)$
@@ -3597,38 +3584,15 @@ key "FilipponeIEEETPAMI13"
 \end_inset
 
  for state-of-the-art results.
-\end_layout
-
-\begin_layout Standard
-As noted in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sejdinovic_kernel_2014"
-
-\end_inset
-
-, for any pseudo-marginal MCMC sampler, gradients of 
+ As gradients of 
 \begin_inset Formula $p(\theta|\mathbf{y})$
 \end_inset
 
- are not available.
- This means HMC is 
+ are not available, HMC is 
 \emph on
 unavailable
 \emph default
  for this problem.
- Using appropriately scaled locally aligned proposal distributions for a
- random walk, KAMH was shown to outperform classic random walk samplers,
- as well as adaptive Metropolis Hastings methods 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Haario1999"
-
-\end_inset
-
-.
- We now show that KMC's ability to learn gradients from the MCMC history
- allows it to mix much better than any random walk sampler, including KAMH.
 \end_layout
 
 \begin_layout Standard
@@ -3643,37 +3607,23 @@ key "sejdinovic_kernel_2014"
 .
  We consider classification of window against non-window glass in the UCI
  Glass dataset.
- After whitening the dataset, we choose prior distributions 
-\begin_inset Formula $\log\theta\sim{\cal N}(0,$
-\end_inset
-
-5), and use 
+ and use 
 \begin_inset Formula $100$
 \end_inset
 
- importance samples from an EP approximations to the GP posterior to estimate
+ importance samples from an EP approximation to the GP posterior to estimate
  
 \begin_inset Formula $p(\mathbf{y}|\theta)$
 \end_inset
 
 .
- Due to the lack of any ground truth such as quantiles or moments of 
+ Due to the lack of any ground truth statistics of 
 \begin_inset Formula $p(\theta|\mathbf{y})$
 \end_inset
 
-, we produce a set of benchmark samples by running a large number of independent
- standard random walk chains for a long time, thinning heavily, and combining
- the resulting samples, resulting in a ground-truth sample set of roughly
- size 2000.
- As in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sejdinovic_kernel_2014"
-
-\end_inset
-
-, we compare convergence in terms of all mixed moments of order up to 3,
- by using the Maximum Mean Discrepancy (MMD), 
+, we produce a set of benchmark samples and compare convergence in terms
+ of all mixed moments of order up to 3, by using the Maximum Mean Discrepancy
+ (MMD), 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Grettonetal12"
@@ -3685,8 +3635,7 @@ key "Grettonetal12"
 \end_inset
 
  (lower is better).
- Here, we focus on mixing behaviour of 5000 iterations and therefore discard
- a previous burn-in.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -3717,7 +3666,8 @@ key "sejdinovic_kernel_2014"
 
 , a standard Gaussian momentum, and a cross-validation tuned kernel width
  (tuned after burn-in), which led to an average acceptance rate of 45%.
- Both KMC and KAMH use 1000 samples/basis functions from the chain history.
+ Both KMC and KAMH use 1000 samples/basis functions from the chain history
+ to match computational costs.
  Note that we did not tune the HMC parameters of KMC to a large extend as
  the current settings were sufficient for our purposes here.
 \end_layout
@@ -3726,19 +3676,20 @@ key "sejdinovic_kernel_2014"
 Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:experiment_gp_target"
+reference "fig:experiment_gp_abc"
 
 \end_inset
 
- shows results averaged over 30 repetitions, with 80% confidence bars.
+ (left) shows results averaged over 30 repetitions, with 80% confidence
+ bars.
  KMC clearly outperforms both RW and KAMH, and its resulting samples are
  an order of magnitude closer to the benchmark sample in terms of MMD.
- These results are backed by the average ESS, which is around 800 for KMC
- and is around 90 and 60 for KAMH and RW respectively.
- Remarkably, all sampler chains took roughly 1h of computing time: most
- time is spent on estimating the marginal likelihood -- time to compute
- the kernel estimatiors for KMC and KAMH are almost neglectible, which is
- in line with the findings in 
+ These results are backed by the average ESS (not plotted), which is around
+ 800 for KMC and is around 90 and 60 for KAMH and RW respectively.
+ Remarkably, all samplers took roughly 1h of computing time: most time is
+ spent on estimating the marginal likelihood -- time to compute the kernel
+ estimatiors for KMC and KAMH are almost neglectible, which is in line with
+ the findings in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sejdinovic_kernel_2014"
@@ -3746,52 +3697,6 @@ key "sejdinovic_kernel_2014"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figures/gp_target_results.eps
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:experiment_gp_target"
-
-\end_inset
-
-Results for 9-dimensional marginal posterior over length scales of a GPC
- model applied to the UCI Glass dataset.
- The plots shows convergence of all mixed moments up to order 3 to a previously
- generated ground-truth (lower MMD is better).
- KMC outperforms KAMH and RW by an order of magnitude while KAMH outperforms
- RW.
- Averaged over 30 repetitions with 80% quantiles of the results.
- All chains took roughly the same amount of computing time.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsubsection
@@ -3864,15 +3769,10 @@ where
 
 \end_inset
 
- As each likelihood evaluation requires to simulate from the likelihood
- and such simulations can be extremely costly in practice, the ultimate
- goal of all ABC methods is to reduce the number of such simulations.
- Since ABC is already targeting an approximate version of the true posterior,
- it is seen as acceptable to study samplers which improve mixing at the
- expense of introducing a (slight) additional bias.
- HMC methods promise highly efficient samples which might reduce overal
- computational costs massively.
- However, as in Pseudo-Marginal MCMC, gradients are not available.
+As each likelihood evaluation requires to simulate from the likelihood and
+ such simulations can be extremely costly in practice, the ultimate goal
+ of all ABC methods is to reduce the number of such simulations.
+ However, as in PM-MCMC, gradients and therefore plain HMC are not available.
 \end_layout
 
 \begin_layout Standard
@@ -3895,19 +3795,24 @@ key "Meeds2015"
  The idea is based on fitting a Gaussian conditional likelihood model to
  simulations, and then integrate the Hamiltonian flow using stochastic finite
  differences gradient approximations.
- This requires to simulate from the likelihood in every
+ This requires to simulate from the likelihood in 
 \emph on
- leapfrog
+every 
 \emph default
- step, which compromises the goal of reduced simulations.
+leapfrog step, which compromises the goal of reduced simulations.
  In addition, we here demonstrate that the additional bias introduced by
  a parametric synthetic likelihood approximation can be problematic in certain
  cases -- especially where likelihoods have a positive skew.
- In contrast, the kernel induced Hamiltonian flow of KMC circumvents both
- problems.
- The kernel induced Hamiltonain flow is does not require simulations from
- the likelihood and rather invests the likelihood simulations into an accept/rej
-ect step that ensures convergence to the 
+ In contrast, the kernel induced Hamiltonain flow is does not require simulation
+s from the likelihood but rather 'invests' the likelihood simulations into
+ an accept/reject step 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kmc_accept_prob"
+
+\end_inset
+
+ that ensures convergence to the 
 \emph on
 original
 \emph default
@@ -3928,15 +3833,11 @@ p(y|\theta) & = & 2\mathcal{N}\left(y;\theta,\Sigma\right)\Phi\left(\left\langle
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 We set 
 \begin_inset Formula $d=10$
 \end_inset
 
-,
+, 
 \begin_inset Formula $\Sigma=I$
 \end_inset
 
@@ -3952,13 +3853,19 @@ We set
  Figure 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "fig:experiment_abc_target"
+reference "fig:experiment_gp_abc"
 
 \end_inset
 
- compares the posterior distributions obtained via Random Walk-based ABC
- (RW-ABC), Hamiltonian ABC (HABC) and KMC-ABC, and gives chain autocorrelation
- for each approach.
+ (right) compares the posterior distributions obtained via random walk (RW-ABC),
+ Hamiltonian ABC (HABC, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Meeds2015"
+
+\end_inset
+
+) and KMC, and gives chain autocorrelation for each approach.
  The results demonstrate that KMC-ABC gives better mixing than RW-ABC without
  introducing the additional bias of HABC.
  Given these promising initial results, we think it might be better to globally
@@ -3976,15 +3883,22 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
+	filename figures/gp_target_results.eps
+	scale 50
+
+\end_inset
+
+
+\begin_inset Graphics
 	filename figures/abc_target_autocorr.pdf
-	scale 90
+	scale 55
 
 \end_inset
 
 
 \begin_inset Graphics
 	filename figures/abc_target_marginal0.pdf
-	scale 90
+	scale 55
 
 \end_inset
 
@@ -3997,18 +3911,41 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:experiment_abc_target"
+name "fig:experiment_gp_abc"
 
 \end_inset
 
-Autocorrelation and marginal posterior for a 10-dimensional skew normal
- likelihood.
- Note reached zero autocorrelation after 20 iterations, while RW needs around
+
+\series bold
+Left: 
+\series default
+Results for 9-dimensional marginal posterior over length scales of a GPC
+ model applied to the UCI Glass dataset.
+ The plots shows convergence of all mixed moments up to order 3 to a previously
+ generated ground-truth (lower MMD is better).
+ 
+\series bold
+Middle/right:
+\series default
+ ABC-MCMC autocorrelation and marginal (
+\begin_inset Formula $\theta_{0}$
+\end_inset
+
+) posterior for a 10-dimensional skew normal likelihood.
+ KMC reaches zero autocorrelation after 20 iterations, while RW needs around
  60.
- Once the posterior gradient is approximated resonably well, this does not
- come at cost of additional likelihood simulations.
- TODO: KMC matches mixing of HABC while not suffering from a positive bias
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: KMC matches mixing of HABC while not suffering from a positive bias
  from a parametric likelihood approximation, also more likelihood evaluations.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -4026,9 +3963,33 @@ Discussion
 \end_layout
 
 \begin_layout Standard
-Establishing consistency and convergence rates of both suggested estimators
- are ongoing work.
- We did however demonstrate strong empirical performance.
+We have introduced KMC, a kernel-based gradient free adaptive MCMC algorithm
+ that mimics HMC's behaviour via estimating target gradients in an RKHS
+ from the MCMC chain history.
+ In experiments, KMC outperforms random walk based sampling methods in up
+ to medium (
+\begin_inset Formula $d\leq100$
+\end_inset
+
+) dimensions, including recent kernel-based approaches 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+.
+ KMC is in particular useful when gradients of the target density are unavailabl
+e, as HMC is not an option there.
+ We have proposed two efficient empirical estimators with orthogonal strengths
+ and weaknesses and given experimental evidence of the robustness of both.
+\end_layout
+
+\begin_layout Standard
+Future work includes: establishing consistency results and uniform convergence
+ rates for the empirical estimators on the theoretical side; and a thorough
+ study in the ABC-MCMC context (where we see KMC's biggest potential) on
+ the experimental side.
 \end_layout
 
 \begin_layout Standard
