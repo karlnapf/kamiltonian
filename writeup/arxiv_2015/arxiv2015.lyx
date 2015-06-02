@@ -1757,7 +1757,8 @@ key "Hyvarinen-05"
 \end_inset
 
  as before is the unnormalised density.
- We model the log probability with a parametric model of the form 
+ We model the log unnormalised probability with a parametric model of the
+ form 
 \begin_inset Formula 
 \begin{equation}
 \log\tilde{\pi}_{Z}(x;f)=\log\tilde{\pi}(x;f)-\log Z(f),\label{eq:score_matching_parametric_model}
@@ -2135,7 +2136,11 @@ Given a set of samples
 \begin_inset Formula $\lambda>0,$
 \end_inset
 
- the unique minimiser of the empirical score matching objective 
+ the unique minimiser of the 
+\begin_inset Formula $\lambda\Vert f\Vert_{{\cal H}}$
+\end_inset
+
+-regularised empirical score matching objective 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_objective_sample_version"
@@ -2145,7 +2150,7 @@ reference "eq:score_matching_objective_sample_version"
  is given by 
 \begin_inset Formula 
 \begin{equation}
-\hat{\alpha}=\frac{-\sigma}{2}(C+\lambda I)^{-1}b,\label{eq:lite_estimator}
+\hat{\alpha}_{\lambda}=\frac{-\sigma}{2}(C+\lambda I)^{-1}b,\label{eq:lite_estimator}
 \end{equation}
 
 \end_inset
@@ -2383,7 +2388,11 @@ Given a set of samples
 \begin_inset Formula $\lambda>0,$
 \end_inset
 
- the unique minimiser of the empirical score matching objective 
+ the unique minimiser of the 
+\begin_inset Formula $\lambda\Vert\theta\Vert$
+\end_inset
+
+-regularised empirical score matching objective 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_objective_sample_version"
@@ -2393,7 +2402,7 @@ reference "eq:score_matching_objective_sample_version"
  is given by 
 \begin_inset Formula 
 \begin{equation}
-\hat{\theta}:=(C+\lambda I)^{-1}b,\label{eq:finite_estimator}
+\hat{\theta_{\lambda}}:=(C+\lambda I)^{-1}b,\label{eq:finite_estimator}
 \end{equation}
 
 \end_inset
