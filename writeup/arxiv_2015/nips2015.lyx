@@ -140,12 +140,12 @@ Gradient-free Hamiltonian Monte Carlo
 \begin_inset Newline newline
 \end_inset
 
-from kernel exponential families
+with kernel exponential families
 \end_layout
 
 \begin_layout Abstract
-We propose a kernel-based, gradient-free adaptive MCMC algorithm based on
- Hamiltonian Monte Carlo (HMC).
+We propose a gradient-free adaptive MCMC algorithm based on Hamiltonian
+ Monte Carlo (HMC).
  Our sampler fills a gap: when gradients of the target density are unavailable,
  classic HMC methodology 
 \emph on
@@ -155,53 +155,33 @@ cannot
  One is left with random walk methods, which suffer from bad mixing behaviour
  -- popular example cases include Approximate Bayesian Computation (ABC)
  and exact-approximate MCMC.
- We extend recent ideas in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sejdinovic_kernel_2014"
-
-\end_inset
-
- of adaptively learning the target covariance structure in a Reproducing
- Kernel Hilbert Space (RKHS), based on the history of the Markov chain.
+ We extend recent ideas of adaptively learning the target covariance structure
+ in a Reproducing Kernel Hilbert Space (RKHS).
  But rather than 
 \emph on
 locally 
 \emph default
-smoothing the chain history, we directly model gradients of the 
+smoothing the chain history, we 
 \emph on
-global
+globally
 \emph default
- log-density.
- To that end, we fit an exponential family model in a RKHS using score matching
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SriFukKumGreHyv14"
-
-\end_inset
-
-, where excessive computational costs are reduced by two novel efficient
- approximations.
- This gives a kernel-induced Hamiltonian flow with trajectories that become
- closer to those of true HMC as adaptive sampling yields better estimates
- of the log-densities.
- We construct an 
+ model its gradients.
+ To that end, we fit an exponential family model in a RKHS, where excessive
+ computational costs are reduced by two novel efficient approximations.
+ We construct an asymptotically exact
 \emph on
-asymptotically exact 
+ 
 \emph default
 MCMC algorithm, 
 \emph on
 Kamiltonian Monte Carlo (KMC)
 \emph default
-, that (i) behaves similarly to HMC in terms of autocorrelation and acceptance
- rates, but that (ii) does not require target gradients, and that in particular
- (iii) offers substantial mixing improvements in up to medium dimensions,
- while (iv) being geometrically ergodic on the same class of targets as
- standard random walks.
+, that (i) mimics HMC in terms of sampling effeciency, but that (ii) does
+ not require target gradients, and that in particular (iii) offers substantial
+ mixing improvements in up to medium dimensions.
  Free parameters can be tuned in a principled way.
- We support our claims with experimental studies which include pseudo-marginal
- MCMC and ABC methods.
+ We support our claims with experimental studies on both toy and real-world
+ applications.
 \end_layout
 
 \begin_layout Section
@@ -273,9 +253,32 @@ key "Andrieu2009a"
 , the posterior density does not have an analytic expression even up to
  a normalising constant: it cannot be evaluated at any given point, only
  estimated.
+ Applications include for example Bayesian Gaussian Process classification,
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "FilipponeIEEETPAMI13"
+
+\end_inset
+
+.
  A related context is Approximate Bayesian Computation (ABC-MCMC), where
  a Bayesian posterior has to be approximated through repeated simulation
- from a likelihood model.
+ from a likelihood model, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "marjoram2003markov"
+
+\end_inset
+
+,
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Sisson2010"
+
+\end_inset
+
+.
  In both cases, plain HMC cannot be applied, leaving random walk methods
  as the only alternative.
 \end_layout
@@ -477,7 +480,7 @@ status open
  draws a point from a proposal mechanism
 \begin_inset Formula 
 \begin{equation}
-x^{*}\sim q(\cdot|x_{t}),\label{eq:proposal}
+x^{*}\sim Q(\cdot|x_{t}),\label{eq:proposal}
 \end{equation}
 
 \end_inset
@@ -487,7 +490,7 @@ and sets
 \end_inset
 
  with probability 
-\begin_inset Formula $\min(1,[\pi(x^{*})q(x_{t}|x^{*})]/[\pi(x_{t})q(x_{t}|x^{*})])$
+\begin_inset Formula $\min(1,[\pi(x^{*})Q(x_{t}|x^{*})]/[\pi(x_{t})Q(x_{t}|x^{*})])$
 \end_inset
 
 , and 
@@ -571,14 +574,10 @@ reference "eq:proposal"
 
  is a random walk, i.e.
  a Gaussian 
-\begin_inset Formula 
-\[
-q(\cdot|x_{t})={\cal N}(\cdot|x_{t},\Sigma_{t}).
-\]
-
+\begin_inset Formula $Q(\cdot|x_{t})={\cal N}(\cdot|x_{t},\Sigma_{t}).$
 \end_inset
 
-A popular choice of the step scaling is 
+ A popular choice of the step scaling is 
 \begin_inset Formula $\Sigma_{t}\propto I$
 \end_inset
 
@@ -2892,8 +2891,15 @@ where
 
 \end_inset
 
-ABC-MCMC targets an approximate posterior, by constructing an unbiased Monte
- Carlo estimator of the approximate likelihood.
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "marjoram2003markov"
+
+\end_inset
+
+, targets an approximate posterior, by constructing an unbiased Monte Carlo
+ estimator of the approximate likelihood.
  As each such evaluation requires expensive simulations from the likelihood,
  the goal of all ABC methods is to reduce the number of such simulations.
  
@@ -2936,7 +2942,7 @@ original
 \end_inset
 
 -dimensional skw-normal distribution 
-\begin_inset Formula $p(y|\theta)=2\mathcal{N}\left(y;\theta,\Sigma\right)\Phi\left(\left\langle \alpha,y\right\rangle \right)$
+\begin_inset Formula $p(y|\theta)=2\mathcal{N}\left(\theta,I\right)\Phi\left(\left\langle \alpha,y\right\rangle \right)$
 \end_inset
 
  with 
@@ -3073,6 +3079,7 @@ Future work includes: establishing consistency results and uniform convergence
  rates for the empirical estimators on the theoretical side; and a thorough
  study in the ABC-MCMC context (where we see KMC's biggest potential) on
  the experimental side.
+ We plan to publish code to reproduce all experimental results.
 \end_layout
 
 \begin_layout Standard
