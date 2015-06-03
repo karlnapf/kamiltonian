@@ -184,7 +184,7 @@ key "SriFukKumGreHyv14"
 , where excessive computational costs are reduced by two novel efficient
  approximations.
  This gives a kernel-induced Hamiltonian flow with trajectories that become
- closer to the true HMC level sets as adaptive sampling yields better estimates
+ closer to those of true HMC as adaptive sampling yields better estimates
  of the log-densities.
  We construct an 
 \emph on
@@ -656,7 +656,11 @@ key "Betancourt2015"
 .
  Hamiltonian Monte Carlo (HMC) utilises deterministic, measure-preserving
  maps to generate efficient Markov transitions.
- Starting from the unnormalised target density 
+ Starting from the unnormalised target density, refered to as 
+\emph on
+potential energy
+\emph default
+, 
 \begin_inset Formula $\pi(q)\propto\exp(-U(q))$
 \end_inset
 
@@ -694,7 +698,7 @@ Note that both potential and momentum are real-valued.
 \begin_inset Formula $H(p,q):=K(p)+U(q)$
 \end_inset
 
- is called the (separable) 
+ is called the 
 \emph on
 Hamiltonian
 \emph default
@@ -781,7 +785,7 @@ key "neal2011mcmc"
 
 , the end-point of the approximate trajectory is accepted with probability
  
-\begin_inset Formula $\alpha=\min\left[1,\exp\left(-H(q^{*},p^{*})+H(p',q)\right)\right]$
+\begin_inset Formula $\min\left[1,\exp\left(-H(q^{*},p^{*})+H(p',q)\right)\right]$
 \end_inset
 
 .
@@ -790,7 +794,7 @@ key "neal2011mcmc"
 \end_layout
 
 \begin_layout Paragraph
-HMC and intractable densities
+Intractable densities
 \end_layout
 
 \begin_layout Standard
@@ -885,31 +889,13 @@ reference "eq:potential_energy_operator"
  As we will see, the surrogate does not require gradients of the log-target
  density.
  It induces a kernel Hamiltonian flow, which can be numerically integrated
- using the integrator in
-\change_deleted 456741484 1433169142
- 
-\change_unchanged
- 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:leap_frog_flow"
-
+ using standard 
+\begin_inset space \space{}
 \end_inset
 
-.
- Any deviation of the alternative kernel level set from the true level set
- is corrected for via the Metropolis acceptance procedure in
-\change_deleted 456741484 1433169142
- 
-\change_unchanged
- 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:hmc_accept_prob"
-
-\end_inset
-
-.
+leap-frog integration.
+ As the discretisation error in HMC, any deviation of the kernel induced
+ flow the trueflow is corrected for via the Metropolis acceptance procedure.
  Consequently, the stationary distribution of the Markov chain will 
 \emph on
 remain correct
@@ -933,9 +919,8 @@ Infinite exponential families in RKHS
 \end_layout
 
 \begin_layout Standard
-We now describe a technique to obtain a kernel induced potential energy
- surrogate whose gradients match the gradients of the true potential enegery
- 
+We construct a kernel induced potential energy surrogate whose gradients
+ match the gradients of the true potential enegery 
 \begin_inset Formula $\hat{U}$
 \end_inset
 
@@ -1036,17 +1021,14 @@ reference "eq:infinite_exp_family"
  defines a very rich class of probability distributions and a broad class
  of densities (for example continuous densities defined on compact domains)
  can be approximated arbitrarily well.
-\end_layout
-
-\begin_layout Standard
-It was shown in 
+ It was shown in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
 
 \end_inset
 
- that, under mild conditions, it is possible to consistently fit an 
+ that it is possible to consistently fit an 
 \emph on
 unnormalised
 \emph default
@@ -1092,14 +1074,14 @@ key "SriFukKumGreHyv14"
 \end_layout
 
 \begin_layout Standard
-We will come back to the topic of computational costs and develop two efficient
- approximate empirical estimators later.
+We will come back to the topic of estimation and develop two efficient approxima
+te empirical estimators later.
  For now, assume access to an 
 \begin_inset Formula $f\in{\cal H}$
 \end_inset
 
  such that 
-\begin_inset Formula $\nabla f(x)\approx\nabla\log\pi(x)$
+\begin_inset Formula $\nabla_{x}f(x)\approx\nabla_{x}\log\pi(x)$
 \end_inset
 
 .
@@ -1138,139 +1120,54 @@ reference "eq:potential_energy_operator"
 \end_inset
 
  .
- This induces a kernel induced potential energy operator and discretised
- (similar to 
+ This induces a kernel induced potential energy operator 
+\begin_inset Formula $\hat{U}_{k}=\frac{\partial U_{k}}{\partial p}\frac{\partial}{\partial q}$
+\end_inset
+
+ and corresponding kernel Hamiltonian flow.
+ It is clear that the kernel induced potential energy operator results in
+ different trajectories than those induced by the true operator 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:leap_frog_flow"
-
-\end_inset
-
-) Hamiltonian flow 
-\begin_inset Formula 
-\begin{equation}
-\hat{U}_{k}=\frac{\partial U_{k}}{\partial p}\frac{\partial}{\partial q}\qquad\text{and}\qquad\phi_{\epsilon,\tau}^{\tilde{H}_{k}}:=\left(\phi_{\frac{\epsilon}{2}}^{U_{k}}\circ\phi_{\epsilon}^{K}\circ\phi_{\frac{\epsilon}{2}}^{U_{k}}\right)^{L}.\label{eq:kernel_potential_energy_operator}
-\end{equation}
-
-\end_inset
-
-It is clear that the kernel induced potential energy operator 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:kernel_potential_energy_operator"
-
-\end_inset
-
- results in different level sets than those induced by the discretised true
- Hamiltonian flow 
-\begin_inset CommandInset ref
-LatexCommand ref
 reference "eq:potential_energy_operator"
 
 \end_inset
 
 .
- In order to correct for any induced bias on the resulting Markov chain,
- we perform the Metropolis acceptance step from
-\change_deleted 456741484 1433169142
- 
-\change_unchanged
- 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:hmc_accept_prob"
-
+ However, any bias on the resulting Markov chain, in addition to discretisation
+ error from the leap-frog integrator, is naturally corrected for in the
+ Metropolis step.
+ We accept an end-point 
+\begin_inset Formula $\phi_{t}^{\hat{H}}(p',q)$
 \end_inset
 
-.
- We propose the end-point of an approximate integration of the kernel induced
- Hamiltonian flow, and accept according to the value of the 
+ of a trajectory along the 
 \emph on
-true
+kernel induced 
 \emph default
- Hamiltonian,
+flow with probability
 \begin_inset Formula 
 \begin{equation}
-\alpha(\phi_{\epsilon,\tau}^{\tilde{H}_{k}}(p',q))=\min\left[1,\exp\left(H\circ\phi_{\epsilon,\tau}^{\tilde{H}_{k}}(p',q)-H(p',q)\right)\right].\label{eq:kmc_accept_prob}
+\min\left[1,\exp\left(H\left(\phi_{t}^{H_{k}}(p',q)\right)-H(p',q)\right)\right],\label{eq:kmc_accept_prob}
 \end{equation}
 
 \end_inset
 
-Any deviations of the level sets induced by 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:kernel_potential_energy_operator"
-
+where 
+\begin_inset Formula $H\left(\phi_{t}^{\hat{H}}(p',q)\right)$
 \end_inset
 
- from those induced by 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:leap_frog_flow"
-
-\end_inset
-
- may result in a decreased acceptance probability of approximate integrations
- 
-\begin_inset Formula $\alpha(\phi_{\epsilon,\tau}^{\tilde{H_{k}}}(p',q))$
+ denotes evaluation of the 
+\emph on
+true
+\emph default
+ Hamiltonian at 
+\begin_inset Formula $\phi_{t}^{H_{k}}(p',q)$
 \end_inset
 
 .
- We therefore need to control the approximation quality of the kernel induced
- potential energy to maintain good performance in practice.
- 
-\end_layout
-
-\begin_layout Paragraph
-An illustrative example
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset label
-LatexCommand label
-name "par:illustrative_example"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We show a simple toy example of a Hamiltonian defined by standard Gaussian
- both momentum 
-\begin_inset Formula $K(p)=-\frac{1}{2}p^{T}p$
-\end_inset
-
- and target density, i.e.
- 
-\begin_inset Formula $U(q)=\frac{1}{2}q^{T}q$
-\end_inset
-
-.
- We fit an approximate infinite exponential family model using 
-\begin_inset Formula $200$
-\end_inset
-
- oracle samples with a Gaussian kernel.
- Starting from a point in 
-\begin_inset Formula $(p,q)$
-\end_inset
-
--space, we simulate approximate trajectories on both true and kernel induced
- Hamiltonian level sets, small leapfrog steps.
- For each point on this discrete trajectory, we compute the Metropolis acceptanc
-e probability in
-\change_deleted 456741484 1433169142
- 
-\change_unchanged
- 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:hmc_accept_prob"
-
-\end_inset
-
- and 
+ Any deviations of the kernel induced flow from the true flow results in
+ a decreased acceptance probability 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:kmc_accept_prob"
@@ -1278,6 +1175,8 @@ reference "eq:kmc_accept_prob"
 \end_inset
 
 .
+ We therefore need to control the approximation quality of the kernel induced
+ potential energy to maintain high acceptance probability in practice.
  See Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1285,17 +1184,11 @@ reference "fig:kmc_trajectories"
 
 \end_inset
 
- for an example trajectory.
- For plain HMC, the average acceptance probability quantifies how well the
- leap-frog integration of the level sets align with the true level set --
- and is usually large.
- For kernel induced Hamiltonian dynamics, the average acceptance probability
- quantifies both the integration error 
-\emph on
-and
-\emph default
- how well the kernel induced Hamiltonian flow matches the true Hamiltonian
- flow.
+ for an illustrative example.
+\end_layout
+
+\begin_layout Paragraph
+
 \end_layout
 
 \begin_layout Standard
@@ -1363,30 +1256,23 @@ name "fig:kmc_trajectories"
 
 \end_inset
 
-Hamiltonian trajectories on 2-dimensional standard Gaussian both target
- and momentum.
+Hamiltonian trajectories on 2-dimensional standard Gaussian.
  End points of such trajectories (blue stars) form the proposal of HMC-like
  algorithms.
  
 \series bold
 Left:
 \series default
- Plain Hamiltonian trajectories oscillate on a stable orbit.
- Acceptance probability 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:hmc_accept_prob"
-
-\end_inset
-
- is high.
+ Plain Hamiltonian trajectories oscillate on a stable orbit and acceptance
+ probability is close to one.
  
 \series bold
 Right:
 \series default
- Kernel induced trajectories on an empirical energy function.
- The trajectories slightly drift compared to the true Hamiltonian flow.
- Acceptance prbability 
+ Kernel induced trajectoriesand acceptance probabilities on an estimated
+ energy function.
+ The trajectories slightly drift compared to the true Hamiltonian flow while
+ acceptance probability 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:kmc_accept_prob"
@@ -1422,7 +1308,7 @@ reference "eq:infinite_exp_family"
  from data.
  The original estimator of 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:infinite_exp_family"
 
 \end_inset
@@ -1450,288 +1336,21 @@ key "SriFukKumGreHyv14"
  As this is limiting in the adaptive MCMC context where the estimator has
  to be updated on a regular basis, we propose two efficient approximations,
  with orthogonal strengths and weaknesses.
- As both the original estimator for 
+ Both the original estimator for 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
 
 \end_inset
 
- and our approximations are based on score matching, we begin by giving
- a brief review of the latter.
-\end_layout
-
-\begin_layout Subsection
-Score matching
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-
-\series bold
-AG:
-\series default
- Score matching references, 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "Hyvarinen-05,Hyvarinen-07"
-
-\end_inset
-
-.
- The latter gave solutions in terms of a finite mixture at fixed centres.
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The presentation follows 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "Hyvarinen-05"
-
-\end_inset
-
-.
- We model the log unnormalised probability 
-\begin_inset Formula $\log\pi(x)$
-\end_inset
-
- with a parametric model of the form 
-\begin_inset Formula 
-\begin{equation}
-\log\tilde{\pi}_{Z}(x;f)=\log\tilde{\pi}(x;f)-\log Z(f),\label{eq:score_matching_parametric_model}
-\end{equation}
-
-\end_inset
-
-where 
-\begin_inset Formula $f$
-\end_inset
-
- is a collection of parameters of yet unspecified dimension (c.f.
- natural parameters 
-\begin_inset Formula $f$
-\end_inset
-
- of 
+ and our approximations are based on score matching, see Appendix 
 \begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
+LatexCommand ref
+reference "sub:Appendix_score_matching"
 
 \end_inset
 
-), and 
-\begin_inset Formula $Z(f)$
-\end_inset
-
- is an unknown normalising constant.
- We aim to approximate 
-\begin_inset Formula $\pi$
-\end_inset
-
- by 
-\begin_inset Formula $\tilde{\pi}$
-\end_inset
-
-, i.e., to find 
-\begin_inset Formula $\hat{f}$
-\end_inset
-
- from a set of fixed 
-\begin_inset Formula $n$
-\end_inset
-
- i.i.d.
- samples
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-We assume a fixed sample set here but will use both the full Markov chain
- history 
-\begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
-\end_inset
-
- and a subsample of size 
-\begin_inset Formula $n$
-\end_inset
-
- later.
- 
-\end_layout
-
-\end_inset
-
-.
- 
-\begin_inset Formula $\{x_{i}\}_{i=1}^{n}\sim\pi$
-\end_inset
-
-, such that 
-\begin_inset Formula $\pi(x)\approx\tilde{\pi}(x;\hat{f})\times\text{const}$
-\end_inset
-
-.
- From 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Eq. 2"
-key "Hyvarinen-05"
-
-\end_inset
-
-, the criterion being optimised is the expected squared distance between
- score functions.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-
-\emph on
- 
-\emph default
-
-\begin_inset Formula 
-\[
-J(\theta)=\frac{1}{2}\int_{{\cal X}}\pi(x)\left\Vert \psi(x;f)-\psi_{\pi}(x)\right\Vert ^{2}dx,
-\]
-
-\end_inset
-
-where 
-\begin_inset Formula 
-\[
-\tilde{\psi}(x;\theta)=\nabla_{x}\log\tilde{\pi}_{Z}(x;f)=\nabla_{x}\log\tilde{\pi}(x;f),
-\]
-
-\end_inset
-
-and 
-\begin_inset Formula $\psi(x)$
-\end_inset
-
- is the derivative wrt 
-\begin_inset Formula $x$
-\end_inset
-
- of the unknown true density 
-\begin_inset Formula $\pi(x)$
-\end_inset
-
-.
-\end_layout
-
-\end_inset
-
-As showed in 
-\begin_inset CommandInset citation
-LatexCommand citet
-after "Theorem 1"
-key "Hyvarinen-05"
-
-\end_inset
-
- using partial integration, it is possible to express an empirical version
- of 
-\begin_inset Formula $J(f)$
-\end_inset
-
- without access to the unknown score density 
-\begin_inset Formula $\pi$
-\end_inset
-
-, but only through samples 
-\begin_inset Formula $x_{i}$
-\end_inset
-
- as
-\begin_inset Formula 
-\begin{equation}
-\hat{J}(f)=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};f)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};f)\right],\label{eq:score_matching_objective_sample_version}
-\end{equation}
-
-\end_inset
-
-where
-\begin_inset Formula 
-\begin{equation}
-\psi_{\ell}(x;f)=\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}\qquad\text{and}\qquad\partial_{\ell}\psi_{\ell}(x;f)=\frac{\partial^{2}\log\tilde{\pi}(x;f)}{\partial x_{\ell}^{2}}.\label{eq:score_match_scores}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We next seek to apply the score matching estimator in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_matching_objective_sample_version"
-
-\end_inset
-
- to estimate the parameters of the infinite exponential family model in
- 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
-.
- The proposed score-matching-based empirical estimator to 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
- in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SriFukKumGreHyv14"
-
-\end_inset
-
- requires to invert an 
-\begin_inset Formula $(nd\times nd)$
-\end_inset
-
- matrix, where 
-\begin_inset Formula $n$
-\end_inset
-
- is the number of 
-\begin_inset Formula $d$
-\end_inset
-
--dimensional samples, resulting in computational costs of 
-\begin_inset Formula ${\cal O}(n^{3}d^{3})$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-We next propose two novel approximations to 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
-, which each come with different strengths and weaknesses.
- We restrict ourselves to the Gaussian kernel.
+ for a brief review.
 \end_layout
 
 \begin_layout Subsection
@@ -1746,17 +1365,18 @@ key "SriFukKumGreHyv14"
 \end_inset
 
  estimate 
+\begin_inset Formula $f$
+\end_inset
+
+ in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
 
 \end_inset
 
- in its dual form via minimising 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_matching_objective_sample_version"
-
+ in its dual form that lies in 
+\begin_inset Formula $\text{span}\left\{ k(x_{i\ell},\cdot)\right\} _{i,\ell=1}^{n,d}$
 \end_inset
 
 .
@@ -1764,27 +1384,25 @@ reference "eq:score_matching_objective_sample_version"
 \begin_inset Formula $t$
 \end_inset
 
- of MCMC which would make use of all the previous samples would thus require
- inversion of a 
+ of MCMC would require an inversion of a 
 \begin_inset Formula $td\times td$
 \end_inset
 
  matrix.
  This is clearly prohibitive if one is to run even a moderately large number
  of iterations of a Markov chain.
- A simple approach to avoid such prohibitive computational cost in 
-\begin_inset Formula $t$
-\end_inset
-
-, following 
+ Following 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sejdinovic_kernel_2014"
 
 \end_inset
 
-, is to form the new proposal using only a random subsample of a fixed size
- 
+, we take simple approach to avoid prohibitive computational cost in 
+\begin_inset Formula $t$
+\end_inset
+
+: forming a proposal using a random subsample of a fixed size 
 \begin_inset Formula $n$
 \end_inset
 
@@ -1844,11 +1462,18 @@ reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
+ in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appendix_score_matching"
+
+\end_inset
+
 .
  The estimator is summarised in the following proposition (proof is given
  in Appendix 
 \begin_inset CommandInset ref
-LatexCommand eqref
+LatexCommand ref
 reference "sub:Appendix_lite_details"
 
 \end_inset
@@ -2021,7 +1646,7 @@ We deliberately don't state the form of the approximation yet, but will
 .
  Assume that the embedding approximates the kernel function as a finite
  rank expansion 
-\begin_inset Formula $K_{ij}:=k(x_{i},x_{j})\approx\phi_{x_{i}}^{\top}\phi_{x_{j}}$
+\begin_inset Formula $k(x,y)\approx\phi_{x}^{\top}\phi_{y}$
 \end_inset
 
 .
@@ -2041,13 +1666,20 @@ f(x) & =\langle\theta,\phi_{x}\rangle_{{\cal H}_{m}}=\theta^{\top}\phi_{x}\label
 \end_inset
 
 In order to fit 
-\begin_inset Formula $\hat{\theta}$
+\begin_inset Formula $\theta\in\mathbb{R}^{m}$
 \end_inset
 
 , we again minimise the score matching objective in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appendix_score_matching"
 
 \end_inset
 
@@ -2066,7 +1698,7 @@ key "Rahimi2007"
 
  can be found in Appendix 
 \begin_inset CommandInset ref
-LatexCommand eqref
+LatexCommand ref
 reference "sub:Appendix_finite_details"
 
 \end_inset
@@ -2089,7 +1721,7 @@ Given a set of samples
 \begin_inset Formula $f(x)=\theta^{\top}\phi_{x}$
 \end_inset
 
- for a finite dimensional feature expansion 
+ for a finite dimensional feature embedding 
 \begin_inset Formula $x\mapsto\phi_{x}\in\mathbb{R}^{m}$
 \end_inset
 
@@ -2248,6 +1880,7 @@ name "alg:Kamiltonian-Monte-Carlo"
 \begin_layout Plain Layout
 
 \series bold
+\size footnotesize
 \emph on
 Input
 \emph default
@@ -2261,14 +1894,12 @@ Input
 \begin_inset Formula $a_{t}$
 \end_inset
 
-, HMC parameters: 
-\begin_inset Formula $\exp(-K(p)),\epsilon,\tau$
-\end_inset
-
-,
+, HMC parameters,
 \end_layout
 
 \begin_layout Plain Layout
+
+\size footnotesize
 \begin_inset ERT
 status open
 
@@ -2293,6 +1924,8 @@ Number of basis functions
 \end_layout
 
 \begin_layout Itemize
+
+\size footnotesize
 At iteration 
 \begin_inset Formula $t+1$
 \end_inset
@@ -2311,6 +1944,7 @@ At iteration
 \begin_layout Itemize
 
 \shape italic
+\size footnotesize
 Update gradient estimate 
 \begin_inset Formula $\nabla_{x}f(x)$
 \end_inset
@@ -2325,6 +1959,8 @@ Update gradient estimate
 
 \begin_deeper
 \begin_layout Plain Layout
+
+\size footnotesize
 \begin_inset Box Frameless
 position "t"
 hor_pos "c"
@@ -2341,10 +1977,13 @@ status open
 \begin_layout Plain Layout
 
 \series bold
+\size footnotesize
 KMC lite:
 \end_layout
 
 \begin_layout Enumerate
+
+\size footnotesize
 Update subsample 
 \begin_inset Formula $\mathbf{z}\subseteq\{x_{i}\}_{i=1}^{t}$
 \end_inset
@@ -2353,6 +1992,8 @@ Update subsample
 \end_layout
 
 \begin_layout Enumerate
+
+\size footnotesize
 Re-compute 
 \begin_inset Formula $C,b$
 \end_inset
@@ -2369,6 +2010,8 @@ reference "prop:lite_estimator"
 \end_layout
 
 \begin_layout Enumerate
+
+\size footnotesize
 Solve 
 \begin_inset Formula $\hat{\alpha}_{\lambda}=\frac{-\sigma}{2}(C+\lambda I)^{-1}b$
 \end_inset
@@ -2377,6 +2020,8 @@ Solve
 \end_layout
 
 \begin_layout Enumerate
+
+\size footnotesize
 \begin_inset Formula $\nabla_{x}f(x)\leftarrow\sum_{i=1}^{n}\alpha_{i}\nabla_{x}k(x,z_{i})$
 \end_inset
 
@@ -2402,10 +2047,13 @@ status open
 \begin_layout Plain Layout
 
 \series bold
+\size footnotesize
 KMC finite:
 \end_layout
 
 \begin_layout Enumerate
+
+\size footnotesize
 Update to 
 \begin_inset Formula $C,b$
 \end_inset
@@ -2422,6 +2070,8 @@ reference "prop:finite_estimator"
 \end_layout
 
 \begin_layout Enumerate
+
+\size footnotesize
 Perform rank-
 \begin_inset Formula $d$
 \end_inset
@@ -2434,6 +2084,8 @@ Perform rank-
 \end_layout
 
 \begin_layout Enumerate
+
+\size footnotesize
 Update 
 \begin_inset Formula $\hat{\theta}_{\lambda}=(C+\lambda I)^{-1}b$
 \end_inset
@@ -2442,6 +2094,8 @@ Update
 \end_layout
 
 \begin_layout Enumerate
+
+\size footnotesize
 \begin_inset Formula $\nabla_{x}f(x)\leftarrow\left[\nabla_{x}\phi_{x}\right]^{\top}\hat{\theta}$
 \end_inset
 
@@ -2457,6 +2111,7 @@ Update
 \begin_layout Itemize
 
 \shape italic
+\size footnotesize
 Kernel induced Hamiltonian proposal
 \end_layout
 
@@ -2474,6 +2129,8 @@ setcounter{enumi}{3}
 
 \end_inset
 
+
+\size footnotesize
 Re-sample momentum 
 \begin_inset Formula $p'\sim\exp(-K(p))$
 \end_inset
@@ -2482,12 +2139,10 @@ Re-sample momentum
 \end_layout
 
 \begin_layout Enumerate
-Integrate kernel Hamiltonian flow 
-\begin_inset Formula $(p^{*},x^{*})=\phi_{\epsilon,\tau}^{\tilde{H}_{k}}(p',x_{t})$
-\end_inset
 
-, using 
-\begin_inset Formula $\nabla_{x}\hat{U}_{k}=\nabla_{x}f$
+\size footnotesize
+Integrate kernel Hamiltonian flow 
+\begin_inset Formula $(p^{*},x^{*})=\phi_{t}^{H_{k}}(p',q)$
 \end_inset
 
 
@@ -2496,8 +2151,9 @@ Integrate kernel Hamiltonian flow
 \end_deeper
 \begin_layout Itemize
 
+\size footnotesize
 \emph on
-Correction of discretisation and estimation error
+Correction of discretisation and kernel estimation error
 \end_layout
 
 \begin_deeper
@@ -2514,19 +2170,17 @@ setcounter{enumi}{3}
 
 \end_inset
 
+
+\size footnotesize
 Perform Metropolis step using 
-\begin_inset Formula $\pi$
+\begin_inset Formula $\pi:$
 \end_inset
 
  
-\begin_inset Formula 
-\begin{align*}
-x_{t+1} & =\begin{cases}
+\begin_inset Formula $\qquad\qquad x_{t+1}\leftarrow\begin{cases}
 x^{*} & \text{with probability }\alpha(\phi_{\epsilon,\tau}^{\tilde{H}_{k}}(p',x_{t}))\\
 x_{t} & \text{otherwise}
-\end{cases}
-\end{align*}
-
+\end{cases}$
 \end_inset
 
  
@@ -2896,9 +2550,9 @@ reference "par:illustrative_example"
 \end_inset
 
 , and its relationship to dimension and number of data.
- This quantifies how much the level sets of the true and the kernel induced
- Hamiltonian differ -- deviations will damage acceptance probability and
- therefore the efficiency of the sampler.
+ This quantifies how much the flow of the true and the kernel induced Hamiltonia
+n differ -- deviations will damage acceptance probability and therefore
+ the efficiency of the sampler.
  To purely focus on the effect of dimensionality, and to avoid any artifacts
  induced by complicated models or MCMC adaptation schemes, we use a synthetic
  standard Gaussian target and standard Gaussian momentum.
@@ -3919,6 +3573,257 @@ onecolumn
 \begin_layout Section
 \start_of_appendix
 Proofs & details
+\end_layout
+
+\begin_layout Subsection
+Score matching
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Appendix_score_matching"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+AG:
+\series default
+ Score matching references, 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Hyvarinen-05,Hyvarinen-07"
+
+\end_inset
+
+.
+ The latter gave solutions in terms of a finite mixture at fixed centres.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The presentation follows 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Hyvarinen-05"
+
+\end_inset
+
+.
+ We model the log unnormalised probability 
+\begin_inset Formula $\log\pi(x)$
+\end_inset
+
+ with a parametric model of the form 
+\begin_inset Formula 
+\begin{equation}
+\log\tilde{\pi}_{Z}(x;f)=\log\tilde{\pi}(x;f)-\log Z(f),\label{eq:score_matching_parametric_model}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $f$
+\end_inset
+
+ is a collection of parameters of yet unspecified dimension (c.f.
+ natural parameters 
+\begin_inset Formula $f$
+\end_inset
+
+ of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+), and 
+\begin_inset Formula $Z(f)$
+\end_inset
+
+ is an unknown normalising constant.
+ We aim to approximate 
+\begin_inset Formula $\pi$
+\end_inset
+
+ by 
+\begin_inset Formula $\tilde{\pi}$
+\end_inset
+
+, i.e., to find 
+\begin_inset Formula $\hat{f}$
+\end_inset
+
+ from a set of fixed 
+\begin_inset Formula $n$
+\end_inset
+
+ i.i.d.
+ samples
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+We assume a fixed sample set here but will use both the full Markov chain
+ history 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+ and a subsample of size 
+\begin_inset Formula $n$
+\end_inset
+
+ later.
+ 
+\end_layout
+
+\end_inset
+
+.
+ 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{n}\sim\pi$
+\end_inset
+
+, such that 
+\begin_inset Formula $\pi(x)\approx\tilde{\pi}(x;\hat{f})\times\text{const}$
+\end_inset
+
+.
+ From 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Eq. 2"
+key "Hyvarinen-05"
+
+\end_inset
+
+, the criterion being optimised is the expected squared distance between
+ score functions.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\emph on
+ 
+\emph default
+
+\begin_inset Formula 
+\[
+J(\theta)=\frac{1}{2}\int_{{\cal X}}\pi(x)\left\Vert \psi(x;f)-\psi_{\pi}(x)\right\Vert ^{2}dx,
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula 
+\[
+\tilde{\psi}(x;\theta)=\nabla_{x}\log\tilde{\pi}_{Z}(x;f)=\nabla_{x}\log\tilde{\pi}(x;f),
+\]
+
+\end_inset
+
+and 
+\begin_inset Formula $\psi(x)$
+\end_inset
+
+ is the derivative wrt 
+\begin_inset Formula $x$
+\end_inset
+
+ of the unknown true density 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+As showed in 
+\begin_inset CommandInset citation
+LatexCommand citet
+after "Theorem 1"
+key "Hyvarinen-05"
+
+\end_inset
+
+ using partial integration, it is possible to express an empirical version
+ of 
+\begin_inset Formula $J(f)$
+\end_inset
+
+ without access to the unknown score density 
+\begin_inset Formula $\pi$
+\end_inset
+
+, but only through samples 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ as
+\begin_inset Formula 
+\begin{equation}
+\hat{J}(f)=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};f)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};f)\right],\label{eq:score_matching_objective_sample_version}
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{equation}
+\psi_{\ell}(x;f)=\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}\qquad\text{and}\qquad\partial_{\ell}\psi_{\ell}(x;f)=\frac{\partial^{2}\log\tilde{\pi}(x;f)}{\partial x_{\ell}^{2}}.\label{eq:score_match_scores}
+\end{equation}
+
+\end_inset
+
+Both proposed approximate estimators of the infinite exponential family
+ model 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+ are based on minimising 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ using approximate version of the scores 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_scores"
+
+\end_inset
+
+.
+ 
 \end_layout
 
 \begin_layout Subsection
