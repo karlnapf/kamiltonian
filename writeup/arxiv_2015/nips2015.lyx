@@ -722,7 +722,7 @@ Hamiltonian
 \emph default
 .
  
-\begin_inset Formula $H(q,p)$
+\begin_inset Formula $H(p,q)$
 \end_inset
 
  defines a 
@@ -742,7 +742,7 @@ Hamiltonian flow
 
 \emph default
  for which 
-\begin_inset Formula $H(q^{*},p^{*})=H(q,p)$
+\begin_inset Formula $H(p^{*},q^{*})=H(p,q)$
 \end_inset
 
  for any 
@@ -778,7 +778,7 @@ Hamiltonian operator
 
 \begin_inset Formula 
 \begin{align}
-\hat{H} & =\frac{\partial K}{\partial p}\frac{\partial}{\partial q}-\frac{\partial U}{\partial q}\frac{\partial}{\partial p}=:\hat{K}+\hat{U}\label{eq:potential_energy_operator}
+\hat{H} & =\frac{\partial K}{\partial p}\frac{\partial}{\partial q}-\frac{\partial U}{\partial q}\frac{\partial}{\partial p}=:\hat{K}+\hat{U}.\label{eq:potential_energy_operator}
 \end{align}
 
 \end_inset
@@ -803,7 +803,7 @@ key "neal2011mcmc"
 
 , the end-point of the approximate trajectory is accepted with probability
  
-\begin_inset Formula $\min\left[1,\exp\left(-H(q^{*},p^{*})+H(p',q)\right)\right]$
+\begin_inset Formula $\min\left[1,\exp\left(-H(p^{*}q^{*})+H(q,p')\right)\right]$
 \end_inset
 
 .
@@ -2015,7 +2015,7 @@ reference "prop:lite_estimator"
 
 \size footnotesize
 Solve 
-\begin_inset Formula $\hat{\alpha}_{\lambda}=\frac{-\sigma}{2}(C+\lambda I)^{-1}b$
+\begin_inset Formula $\hat{\alpha}_{\lambda}=-\frac{\sigma}{2}(C+\lambda I)^{-1}b$
 \end_inset
 
 
@@ -2398,8 +2398,8 @@ key "Andrieu2008"
 \begin_inset Formula $\lim_{t\to\infty}a_{t}=0\quad\text{and}\quad\sum_{t=0}^{\infty}a_{t}=\infty,$
 \end_inset
 
- and update the the density gradient estimate according to that schedule
- in Algorithm 
+ and update the density gradient estimate according to that schedule in
+ Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:Kamiltonian-Monte-Carlo"
@@ -2852,7 +2852,8 @@ key "sejdinovic_kernel_2014"
 \end_layout
 
 \begin_layout Paragraph
-KMC lite: Reducing simulations in Approximate Bayesian Computation 
+KMC lite: Reduced simulations and no additional bias in Approximate Bayesian
+ Computation 
 \end_layout
 
 \begin_layout Standard
