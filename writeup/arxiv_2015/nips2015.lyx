@@ -204,7 +204,7 @@ It allows to represent probability densities of interest via a finite set
 \end_layout
 
 \begin_layout Standard
-Hamiltonian Monte Carlo (HMC), 
+Hamiltonian Monte Carlo (HMC) 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "neal2011mcmc"
@@ -235,7 +235,7 @@ key "neal2011mcmc"
 \begin_layout Standard
 Unfortunately, for a large class of problems gradient information is not
  available.
- For example, in Pseudo-Marginal MCMC (PM-MCMC), 
+ For example, in Pseudo-Marginal MCMC (PM-MCMC) 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "beaumont2003estimation"
@@ -252,7 +252,7 @@ key "Andrieu2009a"
 , the posterior density does not have an analytic expression even up to
  a normalising constant.
  Therefore, it cannot be evaluated at any given point, only estimated, e.g.
- Bayesian Gaussian Process classification, 
+ Bayesian Gaussian Process classification 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "FilipponeIEEETPAMI13"
@@ -262,7 +262,7 @@ key "FilipponeIEEETPAMI13"
 .
  A related context is MCMC for Approximate Bayesian Computation (ABC-MCMC),
  where a Bayesian posterior has to be approximated through repeated simulation
- from a likelihood model, 
+ from a likelihood model 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "marjoram2003markov"
@@ -296,7 +296,7 @@ key "Meeds2015"
 
 .
  However, stochastic gradient based HMC methods often suffer from low acceptance
- rates or additional, hard to quantify bias, 
+ rates or additional, hard to quantify bias f 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Betancourt2015a"
@@ -384,7 +384,7 @@ globally
 \emph default
 .
  More precisely, we fit an (unnormalised) infinite dimensional exponential
- family model in a RKHS via score matching, following 
+ family model in a RKHS via score matching 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
@@ -414,7 +414,7 @@ key "wasserman2006all"
 
 .
  A related approach is to use Gaussian Process (GP) as an emulator the log
- target density in order to speed up HMC, 
+ target density in order to speed up HMC 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Rasmussen2003"
@@ -503,14 +503,15 @@ reference "sec:kernel_hmc"
 
 \end_inset
 
- and describe a number of experiments in Section 
+ and demonstrate the efficiency of our approach in a number of experiments
+ (Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Experiments"
 
 \end_inset
 
-.
+).
 \end_layout
 
 \begin_layout Section
@@ -648,7 +649,7 @@ Unavailable due to analytic intractability, as opposed to computationally
 \begin_inset Formula $\pi(x)$
 \end_inset
 
- with an unbiased estimator results in PM-MCMC, 
+ with an unbiased estimator results in PM-MCMC 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "beaumont2003estimation"
@@ -755,14 +756,14 @@ Hamiltonian Monte Carlo
 
 \begin_layout Standard
 Hamiltonian Monte Carlo (HMC) utilises deterministic, measure-preserving
- maps to generate efficient Markov transitions, 
+ maps to generate efficient Markov transitions 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "neal2011mcmc"
 
 \end_inset
 
-, 
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Betancourt2015"
@@ -934,7 +935,7 @@ key "Andrieu2008"
 
 .
  It is well known that overcoming random-walk behaviour can result in significan
-tly more efficient sampling, 
+tly more efficient sampling 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "neal2011mcmc"
@@ -1480,7 +1481,7 @@ reference "eq:infinite_exp_family"
 \begin_inset Formula $d$
 \end_inset
 
-, 
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
@@ -1941,7 +1942,7 @@ reference "eq:score_matching_objective_sample_version"
 where 
 \begin_inset Formula 
 \[
-b:=-\frac{1}{n}\sum_{i=1}^{t}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m},\quad\text{}\quad C:=\frac{1}{n}\sum_{i=1}^{t}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\in\mathbb{R}^{m\times m},
+b:=-\frac{1}{n}\sum_{i=1}^{t}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m},\quad\text{}\quad C:=\frac{1}{n}\sum_{i=1}^{t}\sum_{\ell=1}^{d}\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\in\mathbb{R}^{m\times m},
 \]
 
 \end_inset
@@ -1958,7 +1959,7 @@ b:=-\frac{1}{n}\sum_{i=1}^{t}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\math
 \end_layout
 
 \begin_layout Standard
-An example feature embedding based on random Fourier features, 
+An example feature embedding based on random Fourier features 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Rahimi2007"
@@ -2515,7 +2516,7 @@ reference "sub:Appenidx_ergodicity_lite_proof"
 
 \end_inset
 
- a proof.
+ for the detailed proof.
 \end_layout
 
 \begin_layout Proposition
@@ -2702,7 +2703,7 @@ vanishing adaptation
 \begin_inset Quotes erd
 \end_inset
 
-, 
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Andrieu2008"
@@ -3096,7 +3097,7 @@ key "sejdinovic_kernel_2014"
 \end_inset
 
 , we next apply KMC to sample the marginal posterior over hyper-parameters
- of a Gaussian Process Classification (GPC) model on the UCI Glass dataset,
+ of a Gaussian Process Classification (GPC) model on the UCI Glass dataset
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -3121,7 +3122,7 @@ key "sejdinovic_kernel_2014"
 
 , but uses only 200+5000 MCMC iterations.
  We compare convergence in terms of all mixed moments of order up to 3 to
- a set of benchmark samples (MMD, 
+ a set of benchmark samples (MMD 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Grettonetal12"
@@ -3227,7 +3228,7 @@ original
 \begin_inset Formula $10$
 \end_inset
 
--dimensional skw-normal distribution 
+-dimensional skew-normal distribution 
 \begin_inset Formula $p(y|\theta)=2\mathcal{N}\left(\theta,I\right)\Phi\left(\left\langle \alpha,y\right\rangle \right)$
 \end_inset
 
