@@ -201,8 +201,8 @@ on.
  It simulates particle movement along contour lines of a fictitious dynamical
  system that is constructed from the target density.
  While projections of those trajectories cover wide parts of the target
- density, the probability of accepting a move along a trajectory is close
- to one.
+ density, the probability of accepting a move along a trajectory is often
+ close to one.
  Remarkably, this property is almost invariant to the dimension of the input
  space.
  This makes HMC often superior to random walk methods which have to decrease
@@ -267,7 +267,14 @@ key "Sisson2010"
  In both cases, plain HMC cannot be applied, leaving random walk methods
  as the only mature alternative.
  There have been recent efforts to mimic HMC's behaviour using stochastic
- gradients from finite differences, 
+ gradients 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ChenFoxGuestrin2014"
+
+\end_inset
+
+,
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Meeds2015"
@@ -329,7 +336,7 @@ key "AndrieuMoulines2006"
 
 \end_inset
 
- For densities with nonlinear support across dimensions, this approach does
+ For densities with nonlinear support across components, this approach does
  not work very well.
  Recently, 
 \begin_inset CommandInset citation
@@ -414,7 +421,7 @@ key "Rahimi2007"
  to use all of the Markov chain history -- at the cost of decreased efficiency
  when initialised in the tails.
  A choice between the two approaches depends on the ability to initialise
- the sampler within the typical set of the target density.
+ the sampler withinhigh-density regions of the target density.
 \end_layout
 
 \begin_layout Standard
@@ -727,12 +734,13 @@ key "Betancourt2015"
 \end_inset
 
 .
- Starting from the unnormalised target density, referred to as 
+ Starting from the negative log unnormalised target density, referred to
+ as 
 \emph on
 potential energy
 \emph default
 , 
-\begin_inset Formula $\pi(q)\propto\exp(-U(q))$
+\begin_inset Formula $U(q)\propto-\log\pi(q)$
 \end_inset
 
 ,
@@ -2378,21 +2386,18 @@ full
  Markov chain history and therefore is a more elegant solution than sub-sampling.
  However, due to the parametric nature of this approximate model, the tails
  of the estimator are not guaranteed to decay.
- For example, the feature mapping 
-\begin_inset Formula $x\mapsto\phi_{x}$
-\end_inset
-
- based on the random Fourier features framework in Appendix 
+ For example, the random Fourier features embedding in below Proposition
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Appendix_finite_details"
+reference "prop:finite_estimator"
 
 \end_inset
 
  contains periodic cosine functions and therefore oscillates in the tails
  -- resulting in a catastrophic acceptance probability.
  As we will demonstrate in the experiments, this problem does not appear
- when initialised in the typical set of the posterior.
+ when initialised in high-density regions of the posterior.
  In situations where this information about the target density is unknown,
  we suggest to use the lite estimator 
 \begin_inset CommandInset ref
@@ -2414,7 +2419,7 @@ reference "eq:infinite_exp_family_lite"
  Consequently, it inherits convergence properties of random walk samplers,
  as formalised in the following result, which comes at the expense of increased
  computational costs and having to sub-sample the chain history.
- See Appendix 
+ We give intuition below, see Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Appenidx_ergodicity_lite_proof"
@@ -2451,8 +2456,12 @@ key "roberts1996geometric"
 
 \end_inset
 
-.
- Assume MCMC adaptation stops after a fixed time, and a fixed number 
+ (implying 
+\begin_inset Formula $\pi$
+\end_inset
+
+-irreducibility and smallness of compact sets), MCMC adaptation stops after
+ a fixed time, and a fixed number 
 \begin_inset Formula $L$
 \end_inset
 
@@ -2466,7 +2475,7 @@ key "roberts1996geometric"
 \end_inset
 
  and 
-\begin_inset Formula $\exists M:\forall x:\Vert\nabla f(x)\Vert_{2}<M$
+\begin_inset Formula $\exists M:\forall x:\|\nabla f(x)\|_{2}\leq M$
 \end_inset
 
 , then KMC lite is geometrically ergodic from 
