@@ -638,7 +638,7 @@ exact-approximate inference)
 .
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Paragraph
 (Kernel) Adaptive Metropolis-Hastings
 \end_layout
 
@@ -718,7 +718,7 @@ key "sejdinovic_kernel_2014"
 .
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Paragraph
 Hamiltonian Monte Carlo
 \end_layout
 
@@ -1008,7 +1008,7 @@ As usual when constructing adaptive MCMC algorithms, we will need to take
 .
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Paragraph
 Infinite exponential families in RKHS
 \end_layout
 
@@ -1165,11 +1165,8 @@ key "SriFukKumGreHyv14"
 
  also established convergences rates in Kullback-Leibler divergence, Hellinger
  and total-variation distances.
-\end_layout
-
-\begin_layout Standard
-We will come back to the topic of estimation and develop two efficient approxima
-te empirical estimators later.
+ We will come back to the topic of estimation and develop two efficient
+ approximate empirical estimators later.
  For now, assume access to an 
 \begin_inset Formula $f\in{\cal H}$
 \end_inset
@@ -1181,7 +1178,7 @@ te empirical estimators later.
 .
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Paragraph
 Kernel induced Hamiltonian flow
 \end_layout
 
@@ -1644,38 +1641,35 @@ reference "eq:score_matching_objective_sample_version"
 \end_inset
 
 where 
+\begin_inset Formula $b\in\mathbb{R}^{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $C\in\mathbb{R}^{n\times n}$
+\end_inset
+
+ with 
 \size footnotesize
 
-\begin_inset Formula $b=\sum_{\ell=1}^{d}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{n}$
+\begin_inset Formula 
+\[
+b=\sum_{\ell=1}^{d}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\text{ and }C=\sum_{\ell=1}^{d}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right],
+\]
+
 \end_inset
 
  
 \size default
-and 
-\size footnotesize
-
-\begin_inset Formula $C=\sum_{\ell=1}^{d}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\in\mathbb{R}^{n\times n}$
-\end_inset
-
- 
-\size default
-with entry-wise products 
-\size footnotesize
-
+and with entry-wise products 
 \begin_inset Formula $s_{\ell}:=x_{\ell}\odot x_{\ell}$
 \end_inset
 
-
-\size default
  and 
-\size footnotesize
-
 \begin_inset Formula $D_{x}:=\text{diag}(x)$
 \end_inset
 
-
-\size default
 .
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1866,38 +1860,22 @@ reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
-where the 
-\size footnotesize
+where 
+\begin_inset Formula 
+\[
+b:=-\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m},\quad\text{}\quad C:=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\in\mathbb{R}^{m\times m},
+\]
 
-\begin_inset Formula $b:=-\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}$
 \end_inset
 
-
-\size default
- and 
-\size footnotesize
-
-\begin_inset Formula $C:=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\in\mathbb{R}^{m\times m}$
-\end_inset
-
-
-\size default
  with 
-\size footnotesize
-
 \begin_inset Formula $\dot{\phi}_{x}^{\ell}:=\frac{\partial}{\partial x_{\ell}}\phi_{x}$
 \end_inset
 
-
-\size default
  and 
-\size footnotesize
-
 \begin_inset Formula $\ddot{\phi}_{x}^{\ell}:=\frac{\partial^{2}}{\partial x_{\ell}^{2}}\phi_{x}$
 \end_inset
 
-
-\size default
 .
 \end_layout
 
