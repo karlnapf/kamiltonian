@@ -3252,7 +3252,7 @@ e, such as PM-MCMC or ABC-MCMC, as HMC is not an option there.
 
 \begin_layout Standard
 Future work includes establishing theoretical consistency and uniform convergenc
-e rates for the empirical estimators, and a thorough experimen tal study
+e rates for the empirical estimators, and a thorough experimental study
  in the ABC-MCMC context where we see KMC's biggest potential.
  We will publish our code to reproduce all experimental results.
 \end_layout
