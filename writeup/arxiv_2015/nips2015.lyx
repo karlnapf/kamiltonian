@@ -155,7 +155,8 @@ Kamiltonian Monte Carlo (KMC)
  family model in a Reproducing Kernel Hilbert Space (RKHS).
  Computational costs are reduced by two novel efficient approximations.
  While being asymptotically exact, KMC mimics HMC in terms of sampling efficienc
-y and offers substantial mixing improvements in up to moderately high dimensions.
+y and offers substantial mixing improvements to state-of-the-art gradient
+ free samplers.
  We support our claims with experimental studies on both toy and real-world
  applications, including Approximate Bayesian Computation and exact-approximate
  MCMC.
@@ -281,8 +282,8 @@ key "Meeds2015"
 \end_inset
 
 .
- However, stochastic gradient based HMC methods typically suffer from low
- acceptance rates or additional, hard to quantify bias, 
+ However, stochastic gradient based HMC methods often suffer from low acceptance
+ rates or additional, hard to quantify bias, 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Betancourt2015a"
@@ -352,7 +353,14 @@ key "sejdinovic_kernel_2014"
 
 \begin_layout Standard
 In this paper, we extend the idea of using kernel methods for efficient
- proposal distributions.
+ proposal distributions 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+.
  However, rather than 
 \emph on
 locally
@@ -392,12 +400,21 @@ key "wasserman2006all"
 \end_inset
 
 .
+ A related approach is to use Gaussian Process (GP) as an emulator the log
+ target density in order to speed up HMC, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rasmussen2003"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
-To make the algorithm more efficient in the context of MCMC chains of growing
- length, we develop two novel approximations to the infinite dimensional
- exponential family model.
+To make our algorithm more efficient in the context of high-dimensional
+ MCMC chains of growing length, we develop two novel approximations to the
+ infinite dimensional exponential family model.
  The first approximation, 
 \emph on
 score matching lite
@@ -432,8 +449,9 @@ key "Rahimi2007"
 
 \begin_layout Standard
 Experiments show that KMC inherits the efficiency of HMC and therefore mixes
- significantly better than any random walk based method on a number of target
- densities, including synthetic examples, PM-MCMC, and ABC-MCMC.
+ significantly better than state-of-the-art gradient-free adaptive samplers
+ on a number of target densities, including synthetic examples, PM-MCMC,
+ and ABC-MCMC.
 \end_layout
 
 \begin_layout Paragraph
@@ -883,10 +901,10 @@ Intractable densities
 
 \begin_layout Standard
 In many cases the gradient of 
-\begin_inset Formula $\log\pi(q)=\text{const}-U(q)$
+\begin_inset Formula $\log\pi(q)=-U(q)$
 \end_inset
 
- is unavailable, often leaving random-walk based methods as the state-of-the-art
+ is unavailable, leaving random-walk based methods as the state-of-the-art
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -979,17 +997,21 @@ reference "eq:potential_energy_operator"
 
 \end_inset
 
- by a kernel induced surrogate computed from the history of the Markov chain.
- As we will see, the surrogate does not require gradients of the log-target
+ by a kernel induced surrogate 
+\begin_inset Formula $\hat{U}_{k}$
+\end_inset
+
+ computed from the history of the Markov chain.
+ As we will see, this surrogate does not require gradients of the log-target
  density.
- It induces a kernel Hamiltonian flow, which can be numerically integrated
+ It induces a kernel Hamiltonian flow, which can be numerically simulated
  using standard 
 \begin_inset space \space{}
 \end_inset
 
 leap-frog integration.
  As the discretisation error in HMC, any deviation of the kernel induced
- flow the true flow is corrected for via the Metropolis acceptance procedure.
+ flow to the true flow is corrected via a Metropolis acceptance procedure.
  Consequently, the stationary distribution of the Markov chain will 
 \emph on
 remain correct
@@ -3971,14 +3993,7 @@ Kb\approx(LL^{T})b=L(L^{T}b),
 \end_inset
 
 .
- Combining the technique with conjugate gradient (CG) 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "shewchuk1994introduction"
-
-\end_inset
-
- allows to solve 
+ Combining the technique with conjugate gradient (CG) allows to solve 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:lite_estimator"
