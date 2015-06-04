@@ -2429,7 +2429,7 @@ reference "eq:infinite_exp_family"
 
  and approximate estimators 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:infinite_exp_family_lite"
 
 \end_inset
@@ -2441,8 +2441,7 @@ reference "eq:infinite_exp_family_random_feats"
 
 \end_inset
 
- we arrive at a gradient free, adaptive kernel Hamiltonian Monte Carlo algorithm
-: 
+ we arrive at a gradient free, adaptive MCMC algorithm: 
 \emph on
 Kamiltonian Monte Carlo, 
 \emph default
@@ -2790,9 +2789,14 @@ reference "fig:kmc_trajectories_mean_acceptance"
 \begin_inset Formula $100$
 \end_inset
 
- independent trials as a function of (i) dimension and (ii) number of basis
- functions and data 
-\begin_inset Formula $m=n$
+ independent trials as a function of the number of data and of basis functions
+ which are set to be equal, i.e.
+ 
+\begin_inset Formula $n=m$
+\end_inset
+
+ and of dimension 
+\begin_inset Formula $d$
 \end_inset
 
 .
@@ -2873,16 +2877,20 @@ Left:
 
 
 \series default
- and 
+ (x-axis) and 
 \begin_inset Formula $d$
 \end_inset
 
-.
+ (y-axis).
  
 \series bold
 Middle: 
 \series default
-Slices through left plot with error bars as a function in 
+Slices through left plot with error bars for a fixed 
+\begin_inset Formula $n=m$
+\end_inset
+
+ and as a function in 
 \series bold
 
 \begin_inset Formula $d$
@@ -2890,17 +2898,24 @@ Slices through left plot with error bars as a function in
 
 
 \series default
-, and dimension 
+ (left), and for a fixed 
+\begin_inset Formula $d$
+\end_inset
+
+ as a function of 
 \begin_inset Formula $n=m$
 \end_inset
 
-.
+ (right).
  
 \series bold
 Right:
 \series default
- Data needed to reach a certain acceptance probability as a function in
- 
+ Number of data 
+\begin_inset Formula $n=m$
+\end_inset
+
+ needed to reach given acceptance probabilities as a function of 
 \begin_inset Formula $d$
 \end_inset
 
@@ -2934,8 +2949,8 @@ name "sub:experiment_hmc_like_mixing"
 \begin_layout Standard
 We now show that KMC is able to match performance of HMC as it sees more
  data.
- We compare KMC, HMC, an isotropic random walk (RW), and KAMH to sample
- from the 8-dimensional non-linear banana-shaped example from 
+ We compare KMC, HMC, an isotropic random walk (RW), and KAMH on the 8-dimension
+al non-linear banana-shaped target distribution from 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sejdinovic_kernel_2014"
@@ -2970,7 +2985,7 @@ y.
 
 , and average effective sample size (ESS) across dimensions.
  For KAMH and KMC, we repeat the experiment for an increasing number of
- samples/basis function 
+ samples/basis functions 
 \begin_inset Formula $m=n$
 \end_inset
 
@@ -3081,8 +3096,8 @@ key "sejdinovic_kernel_2014"
 \end_inset
 
 , we next apply KMC to sample the marginal posterior over hyper-parameters
- of a Gaussian Process Classification (GPC) model, induced by the UCI Glass
- dataset, 
+ of a Gaussian Process Classification (GPC) model on the UCI Glass dataset,
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Bache2013"
@@ -3094,7 +3109,8 @@ key "Bache2013"
 \emph on
 unavailable
 \emph default
- for this problem.
+ for this problem, due to the intractability of the marginal data likelihood
+ given the hyper-parameters.
  Our experimental protocol mostly follows 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -3284,7 +3300,8 @@ Left:
 Results for 9-dimensional marginal posterior over length scales of a GPC
  model applied to the UCI Glass dataset.
  The plots shows convergence of all mixed moments up to order 3 to a previously
- generated ground-truth (lower MMD is better).
+ generated heavily thinned benchmark sample used as ground truth (lower
+ MMD is better).
  
 \series bold
 Middle/right:
