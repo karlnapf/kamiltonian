@@ -8,8 +8,8 @@
 \usepackage{hyperref}
 \usepackage{url}
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
-
-
+\usepackage{natbib}
+\setlength{\bibsep}{0pt plus 0.3ex}
 \title{Kamiltonian Monte Carlo}
 
 
@@ -397,10 +397,18 @@ score matching lite
 \emph default
 , is based on projecting the solution to a lower dimensional, yet growing,
  subspace in the RKHS.
- KMC with score matching lite (KMC lite) is geometrically ergodic on the
- same class of targets as standard random walks.
- The second approximation is based on using finite dimensional feature (KMC
- finite), here combined with the random Fourier features framework of 
+ KMC with score matching lite (
+\emph on
+KMC lite
+\emph default
+) is geometrically ergodic on the same class of targets as standard random
+ walks.
+ The second approximation is based on using a finite dimensional feature
+ space (
+\emph on
+KMC finite
+\emph default
+), here combined with the random Fourier features framework of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Rahimi2007"
