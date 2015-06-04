@@ -152,7 +152,7 @@ Kamiltonian Monte Carlo (KMC)
  (HMC).
  On target densities where HMC is unavailable due to intractable gradients,
  KMC adaptively learns the target's gradient structure by fitting an exponential
- family model in a Reproducing Kernel Hilbert Space (RKHS).
+ family model in a Reproducing Kernel Hilbert Space.
  Computational costs are reduced by two novel efficient approximations.
  While being asymptotically exact, KMC mimics HMC in terms of sampling efficienc
 y and offers substantial mixing improvements to state-of-the-art gradient
@@ -1717,7 +1717,7 @@ b=\sum_{\ell=1}^{d}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{
 
  
 \size default
-and with entry-wise products 
+with entry-wise products 
 \begin_inset Formula $s_{\ell}:=x_{\ell}\odot x_{\ell}$
 \end_inset
 
@@ -1773,6 +1773,27 @@ Gradients of the estimated log-density are given as
 
 , i.e.
  they simply require to evaluate gradients of the kernel function.
+ Evaluation and storage of 
+\begin_inset Formula $\nabla f(\cdot)$
+\end_inset
+
+ cost 
+\begin_inset Formula ${\cal O}(n)$
+\end_inset
+
+ and 
+\begin_inset Formula ${\cal O}(dn)$
+\end_inset
+
+ repsectively, which interestingly is independent of the target 
+\begin_inset Formula $\pi$
+\end_inset
+
+, but only depends on the sub-sample 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -1920,7 +1941,7 @@ reference "eq:score_matching_objective_sample_version"
 where 
 \begin_inset Formula 
 \[
-b:=-\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m},\quad\text{}\quad C:=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\in\mathbb{R}^{m\times m},
+b:=-\frac{1}{n}\sum_{i=1}^{t}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m},\quad\text{}\quad C:=\frac{1}{n}\sum_{i=1}^{t}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\in\mathbb{R}^{m\times m},
 \]
 
 \end_inset
@@ -2031,6 +2052,23 @@ Gradients of the estimated log-density are given as
 
  , i.e.
  they require evaluation of the gradient of the feature space embedding.
+ Both evaluation and storage of 
+\begin_inset Formula $\nabla f(\cdot)$
+\end_inset
+
+ cost 
+\begin_inset Formula ${\cal O}(m)$
+\end_inset
+
+, which is again independent of 
+\begin_inset Formula $\pi$
+\end_inset
+
+ 
+\emph on
+and
+\emph default
+ the Markov chain history.
 \end_layout
 
 \begin_layout Section
