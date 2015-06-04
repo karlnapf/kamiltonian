@@ -160,6 +160,19 @@ y and offers substantial mixing improvements to state-of-the-art gradient
  We support our claims with experimental studies on both toy and real-world
  applications, including Approximate Bayesian Computation and exact-approximate
  MCMC.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -267,14 +280,14 @@ key "Sisson2010"
  In both cases, plain HMC cannot be applied, leaving random walk methods
  as the only mature alternative.
  There have been recent efforts to mimic HMC's behaviour using stochastic
- gradients 
+ gradients from mini-batches in Big Data 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "ChenFoxGuestrin2014"
 
 \end_inset
 
-
+, or stochastic finite differences in ABC 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Meeds2015"
@@ -929,6 +942,19 @@ key "neal2011mcmc"
 \end_inset
 
 .
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-1cm}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Paragraph
@@ -1310,10 +1336,6 @@ reference "fig:kmc_trajectories"
  for an illustrative example.
 \end_layout
 
-\begin_layout Paragraph
-
-\end_layout
-
 \begin_layout Standard
 \begin_inset Float figure
 wide false
@@ -1399,6 +1421,19 @@ Right:
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
 \end_layout
 
 \end_inset
@@ -2327,6 +2362,18 @@ reference "eq:kmc_accept_prob"
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
 Constructing a kernel induced Hamiltonian flow as in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -2476,10 +2523,22 @@ key "roberts1996geometric"
 
 -leapfrog steps.
  If 
-\begin_inset Formula $\limsup_{\Vert x\Vert_{2}\to\infty}\nabla f(x)=0$
+\begin_inset Formula $\nabla f(x)\nearrow0$
+\end_inset
+
+ as 
+\begin_inset Formula $x\to\infty$
 \end_inset
 
  and 
+\begin_inset Formula $\nabla f(x)\searrow0$
+\end_inset
+
+ as 
+\begin_inset Formula $x\to-\infty$
+\end_inset
+
+, and 
 \begin_inset Formula $\exists M:\forall x:\|\nabla f(x)\|_{2}\leq M$
 \end_inset
 
@@ -3130,8 +3189,12 @@ reference "fig:experiment_gp_abc"
 \end_inset
 
  (right) compares performance of RW, HABC, and KMC.
- KMC mixes as well as HABC compared to RW -- without suffering from additional
- bias.
+ KMC mixes as well as HABC -- without suffering from a bias, and at a factor
+ 
+\begin_inset Formula $L=50$
+\end_inset
+
+ reduced number of simulations after burn-in.
  We leave a systematic study for future work.
 \end_layout
 
@@ -3255,6 +3318,13 @@ Future work includes establishing theoretical consistency and uniform convergenc
 e rates for the empirical estimators, and a thorough experimental study
  in the ABC-MCMC context where we see KMC's biggest potential.
  We will publish our code to reproduce all experimental results.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
