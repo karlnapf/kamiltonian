@@ -140,7 +140,7 @@ Gradient-free Hamiltonian Monte Carlo
 \begin_inset Newline newline
 \end_inset
 
-with kernel exponential families
+with efficient kernel exponential families
 \end_layout
 
 \begin_layout Abstract
@@ -167,7 +167,7 @@ Introduction
 
 \begin_layout Standard
 Estimating expectations using Markov Chain Monte Carlo (MCMC) is a fundamental
- approximate inference techniques in Bayesian statistics.
+ approximate inference technique in Bayesian statistics.
  
 \begin_inset Note Note
 status open
@@ -206,8 +206,8 @@ on.
  to one.
  Remarkably, this property is mostly invariant with input space dimension.
  Thus, HMC is often superior to random walk methods which have to decrease
- their step size to maintain a reasonable acceptance probability with increasing
- dimension, 
+ their step size at a much faster rate to maintain a reasonable acceptance
+ probability with increasing dimension, 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "Sec. 4.4"
