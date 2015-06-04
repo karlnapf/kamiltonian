@@ -1,20 +1,11 @@
 from abc import abstractmethod
 import os
 
-from kmc.hamiltonian.hamiltonian import compute_log_accept_pr
-from kmc.hamiltonian.leapfrog import leapfrog, leapfrog_no_storing
-from kmc.score_matching.lite.estimator import LiteEstimatorGaussian
-from kmc.score_matching.lite.gaussian_rkhs import score_matching_sym
-from kmc.score_matching.random_feats.estimator import RandomFeatsEstimator
-from kmc.score_matching.random_feats.gaussian_rkhs_xvalidation import select_sigma_lambda_cma
-from kmc.tools.Log import logger
-import numpy as np
-from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob,\
-    HMCJobResultAggregator
-from scripts.tools.plotting import evaluate_gradient_grid, plot_array,\
-    evaluate_density_grid
 from kmc.densities.gaussian import log_gaussian_pdf
-import numdifftools as nd
+import numpy as np
+from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob, \
+    HMCJobResultAggregator
+
 
 splitted = __file__.split(os.sep)
 idx = splitted.index('kamiltonian')
@@ -22,17 +13,32 @@ project_path = os.sep.join(splitted[:(idx + 1)])
 
 temp = 0
 
+def SPSA(loss, theta, stepsize):
+    """
+    Implements Simultaneous perturbation stochastic approximation to estimate
+    gradient of given loss function
+    
+    """
+    D = len(theta)
+    delta=2*(np.random.rand(D)>.5).astype(int)-1
+    thetaplus=theta+stepsize*delta;
+    thetaminus=theta-stepsize*delta
+    yplus=loss(thetaplus)
+    yminus=loss(thetaminus);
+    grad_est=(yplus-yminus)/(2*stepsize*delta)
+    
+    return grad_est
+
 class DummyHABCTarget(object):
     def __init__(self, abc_target):
                  
         self.abc_target = abc_target
     
     def grad(self, theta):
+#         logger.debug("Computing SPSA gradient")
+        g_est = SPSA(self.log_lik, theta, stepsize=.2)
         
-        logger.debug("Computing finite differences gradient")
-        g = nd.Gradient(self.log_lik)(theta)
-        
-        return g + self.abc_target.prior.grad(theta)
+        return g_est + self.abc_target.prior.grad(theta)
     
     def update(self, theta):
         D = self.abc_target.D
