@@ -553,7 +553,16 @@ Unavailable due to analytic intractability, as opposed to computationally
 \begin_inset Formula $x$
 \end_inset
 
-, but can compute unbiased estimates of 
+ (throughout the paper 
+\begin_inset Formula $\nabla$
+\end_inset
+
+ denotes the gradient operator wrt.
+ to 
+\begin_inset Formula $x$
+\end_inset
+
+), but can compute unbiased estimates of 
 \begin_inset Formula $\pi(x)$
 \end_inset
 
@@ -1079,7 +1088,7 @@ key "Hyvarinen-05"
 \end_inset
 
 .
- This techniques avoids the problem of dealing with the intractable cumulant
+ This technique avoids the problem of dealing with the intractable cumulant
  generating function 
 \begin_inset Formula $A(f)$
 \end_inset
@@ -1107,7 +1116,7 @@ te empirical estimators later.
 \end_inset
 
  such that 
-\begin_inset Formula $\nabla_{x}f(x)\approx\nabla_{x}\log\pi(x)$
+\begin_inset Formula $\nabla f(x)\approx\nabla\log\pi(x)$
 \end_inset
 
 .
@@ -1155,7 +1164,7 @@ reference "eq:potential_energy_operator"
 \begin_inset Formula $U_{k}=f$
 \end_inset
 
- .
+.
  This induces a kernel induced potential energy operator 
 \begin_inset Formula $\hat{U}_{k}=\frac{\partial U_{k}}{\partial p}\frac{\partial}{\partial q}$
 \end_inset
@@ -1524,7 +1533,7 @@ Given a set of samples
 \end_inset
 
  for the Gaussian kernel of the form 
-\begin_inset Formula $k(x,y)=\exp\left(-\sigma^{-1}\|x-y\|^{2}\right)$
+\begin_inset Formula $k(x,y)=\exp\left(-\sigma^{-1}\|x-y\|_{2}^{2}\right)$
 \end_inset
 
 , and 
@@ -1532,7 +1541,7 @@ Given a set of samples
 \end_inset
 
  the unique minimiser of the 
-\begin_inset Formula $\lambda\Vert f\Vert_{{\cal H}}$
+\begin_inset Formula $\lambda\Vert f\Vert_{{\cal H}}^{2}$
 \end_inset
 
 -regularised empirical score matching objective 
@@ -1560,7 +1569,7 @@ where the exact forms of
 
  can be found in Appendix 
 \begin_inset CommandInset ref
-LatexCommand eqref
+LatexCommand ref
 reference "sub:Appendix_lite_details"
 
 \end_inset
@@ -1597,7 +1606,7 @@ linear
  computation and storage via low-rank approximations to the kernel matrix
  and conjugate gradient methods, see Appendix 
 \begin_inset CommandInset ref
-LatexCommand eqref
+LatexCommand ref
 reference "sub:Appendix_lite_details"
 
 \end_inset
@@ -1607,7 +1616,7 @@ reference "sub:Appendix_lite_details"
 
 \begin_layout Standard
 Gradients of the estimated log-density are given as 
-\begin_inset Formula $\nabla_{x}f(x)=\sum_{i=1}^{n}\alpha_{i}\nabla_{x}k(x,x_{i})$
+\begin_inset Formula $\nabla f(x)=\sum_{i=1}^{n}\alpha_{i}\nabla k(x,x_{i})$
 \end_inset
 
 , i.e.
@@ -1757,7 +1766,7 @@ Given a set of samples
 \end_inset
 
  the unique minimiser of the 
-\begin_inset Formula $\lambda\Vert\theta\Vert$
+\begin_inset Formula $\lambda\Vert\theta\Vert_{2}^{2}$
 \end_inset
 
 -regularised empirical score matching objective 
@@ -1789,7 +1798,7 @@ where the exact form of
 
  and exact forms are given in Appendix 
 \begin_inset CommandInset ref
-LatexCommand eqref
+LatexCommand ref
 reference "sub:Appendix_finite_details"
 
 \end_inset
@@ -1812,7 +1821,7 @@ The estimator has a one-off cost of
 \begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
 \end_inset
 
-, it is straight forward to on-line update 
+, it is straight-forward to on-line update 
 \begin_inset Formula $C,b$
 \end_inset
 
@@ -1837,7 +1846,7 @@ The estimator has a one-off cost of
 .
  Further details are given in Appendix 
 \begin_inset CommandInset ref
-LatexCommand eqref
+LatexCommand ref
 reference "sub:Appendix_finite_details"
 
 \end_inset
@@ -1847,7 +1856,7 @@ reference "sub:Appendix_finite_details"
 
 \begin_layout Standard
 Gradients of the estimated log-density are given as 
-\begin_inset Formula $\nabla_{x}f(x)=\left[\nabla_{x}\phi_{x}\right]^{T}\hat{\theta}$
+\begin_inset Formula $\nabla f(x)=\left[\nabla\phi_{x}\right]^{\top}\hat{\theta}$
 \end_inset
 
  , i.e.
@@ -1956,7 +1965,7 @@ At iteration
 \shape italic
 \size footnotesize
 Update gradient estimate 
-\begin_inset Formula $\nabla_{x}f(x)$
+\begin_inset Formula $\nabla f(x)$
 \end_inset
 
 .
@@ -2011,7 +2020,7 @@ Re-compute
  from Prop.
  
 \begin_inset CommandInset ref
-LatexCommand eqref
+LatexCommand ref
 reference "prop:lite_estimator"
 
 \end_inset
@@ -2032,7 +2041,7 @@ Solve
 \begin_layout Enumerate
 
 \size footnotesize
-\begin_inset Formula $\nabla_{x}f(x)\leftarrow\sum_{i=1}^{n}\alpha_{i}\nabla_{x}k(x,z_{i})$
+\begin_inset Formula $\nabla f(x)\leftarrow\sum_{i=1}^{n}\alpha_{i}\nabla k(x,z_{i})$
 \end_inset
 
 
@@ -2071,7 +2080,7 @@ Update to
  from Prop.
  
 \begin_inset CommandInset ref
-LatexCommand eqref
+LatexCommand ref
 reference "prop:finite_estimator"
 
 \end_inset
@@ -2106,7 +2115,7 @@ Update
 \begin_layout Enumerate
 
 \size footnotesize
-\begin_inset Formula $\nabla_{x}f(x)\leftarrow\left[\nabla_{x}\phi_{x}\right]^{\top}\hat{\theta}$
+\begin_inset Formula $\nabla f(x)\leftarrow\left[\nabla\phi_{x}\right]^{\top}\hat{\theta}$
 \end_inset
 
 
@@ -2313,7 +2322,7 @@ reference "eq:infinite_exp_family_lite"
  computational costs and having to sub-sample the chain history.
  See Appendix 
 \begin_inset CommandInset ref
-LatexCommand eqref
+LatexCommand ref
 reference "sub:Appenidx_ergodicity_lite_proof"
 
 \end_inset
@@ -2344,11 +2353,11 @@ Assume
  is log-concave in the tails and regularity conditions.
  Assume MCMC adaptation stops after a fixed time, and fixed HMC parameters.
  If 
-\begin_inset Formula $\limsup_{|x|\to\infty}\nabla f(x)=0$
+\begin_inset Formula $\limsup_{\Vert x\Vert_{2}\to\infty}\nabla f(x)=0$
 \end_inset
 
  and 
-\begin_inset Formula $\exists M:\forall x:|\nabla f(x)|<M$
+\begin_inset Formula $\exists M:\forall x:\Vert\nabla f(x)\Vert_{2}<M$
 \end_inset
 
 , then KMC lite is geometrically ergodic from 
@@ -2876,51 +2885,7 @@ key "Sisson2010"
 \end_inset
 
 .
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-ABC, for a given prior 
-\begin_inset Formula $p(\theta)$
-\end_inset
-
-, targets an 
-\emph on
-approximate posterior
-\emph default
-
-\begin_inset Formula 
-\begin{eqnarray*}
-p_{\epsilon}\left(\theta|\mathbf{y}\right) & \propto & p(\theta)\underset{p_{\epsilon}\left(\mathbf{y}|\theta\right)}{\underbrace{\int g_{\epsilon}(\mathbf{y}|\mathbf{x},\theta)p(\mathbf{x}|\theta)d\mathbf{x}}},
-\end{eqnarray*}
-
-\end_inset
-
-where 
-\begin_inset Formula $g_{\epsilon}(\mathbf{y}|x,\theta)$
-\end_inset
-
- is the appropriate similarity kernel giving more weight to the instances
- where the observed data 
-\begin_inset Formula $\mathbf{y}$
-\end_inset
-
- and the simulated data 
-\begin_inset Formula $\mathbf{x}$
-\end_inset
-
- are similar (in the simplest case 
-\begin_inset Formula $g_{\epsilon}(\mathbf{y}|\mathbf{x},\theta)=\mathbf{1}\left\{ \left\Vert \mathbf{x}-\mathbf{y}\right\Vert \leq\epsilon\right\} $
-\end_inset
-
-).
- 
-\end_layout
-
-\end_inset
-
-, 
+ ABC-MCMC 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "marjoram2003markov"
@@ -3212,7 +3177,7 @@ key "Hyvarinen-05"
  with a parametric model of the form 
 \begin_inset Formula 
 \begin{equation}
-\log\tilde{\pi}_{Z}(x;f)=\log\tilde{\pi}(x;f)-\log Z(f),\label{eq:score_matching_parametric_model}
+\log\tilde{\pi}_{Z}(x;f):=\log\tilde{\pi}(x;f)-\log Z(f),\label{eq:score_matching_parametric_model}
 \end{equation}
 
 \end_inset
@@ -3294,20 +3259,14 @@ key "Hyvarinen-05"
 \end_inset
 
 , the criterion being optimised is the expected squared distance between
- score functions.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-
+ score functions,
 \emph on
  
 \emph default
 
 \begin_inset Formula 
 \[
-J(\theta)=\frac{1}{2}\int_{{\cal X}}\pi(x)\left\Vert \psi(x;f)-\psi_{\pi}(x)\right\Vert ^{2}dx,
+J(f)=\frac{1}{2}\int_{{\cal X}}\pi(x)\left\Vert \psi(x;f)-\psi_{\pi}(x)\right\Vert _{2}^{2}dx,
 \]
 
 \end_inset
@@ -3315,7 +3274,7 @@ J(\theta)=\frac{1}{2}\int_{{\cal X}}\pi(x)\left\Vert \psi(x;f)-\psi_{\pi}(x)\rig
 where 
 \begin_inset Formula 
 \[
-\tilde{\psi}(x;\theta)=\nabla_{x}\log\tilde{\pi}_{Z}(x;f)=\nabla_{x}\log\tilde{\pi}(x;f),
+\tilde{\psi}(x;\theta)=\nabla\log\tilde{\pi}_{Z}(x;f)=\nabla\log\tilde{\pi}(x;f),
 \]
 
 \end_inset
@@ -3333,11 +3292,7 @@ and
 \end_inset
 
 .
-\end_layout
-
-\end_inset
-
-As showed in 
+ As showed in 
 \begin_inset CommandInset citation
 LatexCommand citet
 after "Theorem 1"
@@ -3959,7 +3914,7 @@ reference "eq:score_matching_parametric_model"
  takes the primal form in a finite dimensional feature space as in Proposition
  
 \begin_inset CommandInset ref
-LatexCommand eqref
+LatexCommand ref
 reference "prop:finite_estimator"
 
 \end_inset
@@ -4672,7 +4627,7 @@ Notation
 \begin_inset Formula $P_{K}$
 \end_inset
 
- denotes the transition kernel and 
+ denotes the transition kernel of KMC lite and 
 \begin_inset Formula $Q$
 \end_inset
 
@@ -4733,7 +4688,7 @@ x^{*}(p')=x_{t}+c(x_{t})+N\epsilon p',~~p'\sim\mathcal{N}(0,I).
 This is then accepted with probability 
 \begin_inset Formula 
 \[
-\alpha(x_{t},x^{*}(p'))=1\wedge\frac{\pi(x^{*}(p'))}{\pi(x_{t})}\exp\left(-\frac{1}{2}[p'd(x_{t})+d(x_{t})^{2}]\right).
+\alpha(x_{t},x^{*}(p'))=1\wedge\frac{\pi(x^{*}(p'))}{\pi(x_{t})}\exp\left(-\frac{1}{2}\left[p'd(x_{t})+d(x_{t})^{2}\right]\right).
 \]
 
 \end_inset
@@ -4747,7 +4702,7 @@ From the distribution of
 \end_inset
 
  as 
-\begin_inset Formula $\Vert x_{t}\Vert\to\infty$
+\begin_inset Formula $\Vert x_{t}\Vert_{2}\to\infty$
 \end_inset
 
 , and similarly for 
@@ -4824,7 +4779,7 @@ We assumed
 \end_inset
 
 , we have 
-\begin_inset Formula $\pi(x^{*})/\pi(x_{t})\leq e^{-\alpha_{1}(|x^{*}|-|x_{t}|)}$
+\begin_inset Formula $\pi(x^{*})/\pi(x_{t})\leq e^{-\alpha_{1}(\Vert x^{*}\Vert_{2}-\Vert x_{t}\Vert_{2})}$
 \end_inset
 
  and for 
@@ -4832,7 +4787,7 @@ We assumed
 \end_inset
 
 , we have 
-\begin_inset Formula $\pi(x^{*})/\pi(x_{t})\geq e^{-\alpha_{1}(|x^{*}|-|x_{t}|)}$
+\begin_inset Formula $\pi(x^{*})/\pi(x_{t})\geq e^{-\alpha_{1}(\Vert x^{*}\Vert_{2}-\Vert x_{t}\Vert_{2})}$
 \end_inset
 
 , and a similar condition holds in the negative tail.
@@ -4859,7 +4814,7 @@ key "roberts1996geometric,mengersen1996rates"
 , it is sufficient to show 
 \begin_inset Formula 
 \[
-\limsup_{|x_{t}|\to\infty}\int\left[e^{s(\Vert x^{*}(p')\Vert-\Vert x_{t}\Vert)}-1\right]\alpha(x_{t},x^{*}(p'))\mu(dp')<0,
+\limsup_{\Vert x_{t}\Vert_{2}\to\infty}\int\left[e^{s(\Vert x^{*}(p')\Vert_{2}-\Vert x_{t}\Vert_{2})}-1\right]\alpha(x_{t},x^{*}(p'))\mu(dp')<0,
 \]
 
 \end_inset
@@ -5068,7 +5023,7 @@ For
 \end_inset
 
  will dominate the exponential growth of 
-\begin_inset Formula $e^{s(|x^{*}(p')|-|x_{t}|)}$
+\begin_inset Formula $e^{s(\Vert x^{*}(p')\Vert_{2}-\Vert x_{t}\Vert_{2})}$
 \end_inset
 
  meaning the integral can be made arbitrarily small by choosing large enough
