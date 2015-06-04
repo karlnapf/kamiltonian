@@ -2478,7 +2478,7 @@ Define
 \end_inset
 
  and 
-\begin_inset Formula $d(x):=\epsilon(\nabla f(x)+\nabla f(x_{L\epsilon}))/2+\epsilon\sum_{i=1}^{L-1}\nabla f(x_{i\epsilon})$
+\begin_inset Formula $d(x_{0}):=\epsilon(\nabla f(x_{0})+\nabla f(x_{L\epsilon}))/2+\epsilon\sum_{i=1}^{L-1}\nabla f(x_{i\epsilon})$
 \end_inset
 
 .
@@ -2597,7 +2597,11 @@ key "Andrieu2008"
 \end_inset
 
  be a schedule of decaying probabilities such that 
-\begin_inset Formula $\lim_{t\to\infty}a_{t}=0\quad\text{and}\quad\sum_{t=0}^{\infty}a_{t}=\infty,$
+\begin_inset Formula $\lim_{t\to\infty}a_{t}=0$
+\end_inset
+
+ and 
+\begin_inset Formula $\sum_{t=0}^{\infty}a_{t}=\infty$
 \end_inset
 
  and update the density gradient estimate according to that schedule in
@@ -4768,6 +4772,10 @@ Notation
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Formula $P_{K}$
 \end_inset
 
@@ -4776,7 +4784,12 @@ Notation
 \end_inset
 
  the proposal.
- Denote by 
+ 
+\end_layout
+
+\end_inset
+
+Denote by 
 \begin_inset Formula $\alpha(x_{t},x^{*}(p'))$
 \end_inset
 
@@ -4843,15 +4856,19 @@ We assumed
 \end_inset
 
 , and a similar condition holds in the negative tail.
- Assume fixed HMC parameters: a fixed number of leapfrog steps 
+ Furthermore, we assumed fixed HMC parameters: 
 \begin_inset Formula $L$
 \end_inset
 
-, a fixed step size 
+ leapfrog steps 
+\begin_inset Formula $L$
+\end_inset
+
+ of size 
 \begin_inset Formula $\epsilon$
 \end_inset
 
-, and a fixed mass matrix 
+, and wlog the identity mass matrix 
 \begin_inset Formula $I$
 \end_inset
 
@@ -4906,7 +4923,7 @@ for some
 \begin_inset Formula $x_{t}\to-\infty$
 \end_inset
 
- under (i)).
+).
  Taking 
 \begin_inset Formula $I_{-x_{t}^{\delta}}^{x_{t}^{\delta}}$
 \end_inset
@@ -4935,7 +4952,7 @@ for some
  we have 
 \begin_inset Formula 
 \[
-L\epsilon p'>x^{*}-x_{t}>N\epsilon p'-\gamma_{1}\implies e^{-\alpha_{1}(-\gamma_{1}+N\epsilon p')}\geq e^{-\alpha_{1}(x^{*}-x_{t})}\geq\pi(x^{*})/\pi(x_{t}),
+L\epsilon p'>x^{*}-x_{t}>L\epsilon p'-\gamma_{1}\implies e^{-\alpha_{1}(-\gamma_{1}+L\epsilon p')}\geq e^{-\alpha_{1}(x^{*}-x_{t})}\geq\pi(x^{*})/\pi(x_{t}),
 \]
 
 \end_inset
@@ -4969,7 +4986,7 @@ where
  
 \begin_inset Formula 
 \[
-e^{sN\epsilon p'}-1\geq e^{s(x^{*}-x_{t})}-1\geq e^{s(N\epsilon p'-\gamma_{1})}-1>0.
+e^{sL\epsilon p'}-1\geq e^{s(x^{*}-x_{t})}-1\geq e^{s(L\epsilon p'-\gamma_{1})}-1>0.
 \]
 
 \end_inset
@@ -4989,7 +5006,7 @@ Because
  we will have 
 \begin_inset Formula 
 \begin{align}
-0<I_{0}^{x_{t}^{\delta}} & \leq\int_{\gamma_{1}/L\epsilon}^{x_{t}^{\delta}}[e^{sN\epsilon p'}-1]\exp\left(-\alpha_{2}p'+\alpha_{1}\gamma_{1}-\gamma_{2}^{2}/2\right)\mu(dp')+I_{0}^{\gamma_{1}/L\epsilon}\nonumber \\
+0<I_{0}^{x_{t}^{\delta}} & \leq\int_{\gamma_{1}/L\epsilon}^{x_{t}^{\delta}}[e^{sL\epsilon p'}-1]\exp\left(-\alpha_{2}p'+\alpha_{1}\gamma_{1}-\gamma_{2}^{2}/2\right)\mu(dp')+I_{0}^{\gamma_{1}/L\epsilon}\nonumber \\
  & =e^{c_{1}}\int_{\gamma_{1}/L\epsilon}^{x_{t}^{\delta}}[e^{s_{2}p'}-1]e^{-\alpha_{2}p'}\mu(dp')+I_{0}^{\gamma_{1}/L\epsilon},\label{eqn1}
 \end{align}
 
