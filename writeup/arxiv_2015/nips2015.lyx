@@ -3421,7 +3421,6 @@ We assume a fixed sample set here but will use both the full Markov chain
 
 \end_inset
 
-.
  
 \begin_inset Formula $\{x_{i}\}_{i=1}^{n}\sim\pi$
 \end_inset
@@ -3873,8 +3872,6 @@ key "SriFukKumGreHyv14"
 \end_inset
 
 .
- We use the un-regularised solution for notational ease throughout the rest
- of the paper, but always regularise in practice.
 \end_layout
 
 \begin_layout Subsubsection
@@ -4246,15 +4243,6 @@ reference "eq:score_match_objective_random_feats"
 \end_inset
 
 .
- We use the un-regularised solution 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_match_linear_system_random_feats"
-
-\end_inset
-
- for notational ease throughout the rest of the paper, but always regularise
- in practice.
 \end_layout
 
 \begin_layout Standard
