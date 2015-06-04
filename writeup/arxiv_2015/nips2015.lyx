@@ -3023,8 +3023,7 @@ key "sejdinovic_kernel_2014"
 \end_layout
 
 \begin_layout Paragraph
-KMC lite: Reduced simulations and no additional bias in Approximate Bayesian
- Computation 
+KMC lite: Reduced simulations and no additional bias in ABC
 \end_layout
 
 \begin_layout Standard
@@ -4777,6 +4776,19 @@ Notation
 \end_inset
 
  the proposal.
+ Denote by 
+\begin_inset Formula $\alpha(x_{t},x^{*}(p'))$
+\end_inset
+
+ is the probability of accepting a 
+\begin_inset Formula $(p',x^{*})$
+\end_inset
+
+ proposal at state 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+.
  Let 
 \begin_inset Formula $a\wedge b=\min(a,b)$
 \end_inset
