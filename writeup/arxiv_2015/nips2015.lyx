@@ -433,7 +433,46 @@ Paper outline:
 \end_layout
 
 \begin_layout Standard
-TODO
+We begin by covering the context, previous work, and HMC basics in Section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:background_previous_work"
+
+\end_inset
+
+.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:kernel_hamiltonian_dynamics"
+
+\end_inset
+
+ introduces Hamiltonian dynamics induced by kernel exponential families
+ and Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:estimators"
+
+\end_inset
+
+ contains two novel approximate estimators.
+ We introduce the KMC algorithm in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:kernel_hmc"
+
+\end_inset
+
+ and describe a number of experiments in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Experiments"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
@@ -900,6 +939,16 @@ Kernel induced Hamiltonian dynamics
 \begin_layout Standard
 \begin_inset CommandInset label
 LatexCommand label
+name "sec:kernel_hamiltonian_dynamics"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:kernel_hmc"
 
 \end_inset
@@ -1333,6 +1382,12 @@ Two efficient estimators for infinite exponential families in RKHS
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:estimators"
+
+\end_inset
+
 We now come back to the topic of estimating the infinite dimensional exponential
  family model 
 \begin_inset CommandInset ref
@@ -1868,6 +1923,13 @@ Kamiltonian Monte Carlo
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:KMC"
+
+\end_inset
+
+
 \begin_inset Float algorithm
 wide false
 sideways false
@@ -2490,6 +2552,12 @@ Experiments
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Experiments"
+
+\end_inset
+
 We start by quantifying KMC finite performance using the finite estimator
  on synthetic targets.
  We emphasise that these results can be reproduced with the lite version.
@@ -3046,6 +3114,12 @@ Discussion
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Discussion"
+
+\end_inset
+
 We have introduced KMC, a kernel-based gradient free adaptive MCMC algorithm
  that mimics HMC's behaviour via estimating target gradients in a RKHS from
  the MCMC chain history.
