@@ -3661,12 +3661,12 @@ key "Meeds2015"
 \end_inset
 
 .
- KMC mixes as well as HABC, without suffering from a significant bias, and
- at a factor of 
+ KMC mixes as well as HABC, but HABC suffers a far more severe bias; we
+ also reduce by a factor 
 \begin_inset Formula $L=50$
 \end_inset
 
- reduced number of simulations per proposal.
+ the number of simulations per proposal.
 \begin_inset ERT
 status open
 
