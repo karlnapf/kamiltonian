@@ -3330,7 +3330,7 @@ key "Meeds2015"
 
 \end_inset
 
- recently proposed Hamiltonian ABC: combining the synthetic likelihood approach,
+ recently proposed Hamiltonian ABC: combining the synthetic likelihood approach
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -3338,7 +3338,15 @@ key "Wood:2010aa"
 
 \end_inset
 
-, with gradients based on stochastic finite differences.
+, with gradients based on stochastic finite differences (sticky random numbers
+ and SPAS) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Meeds2015"
+
+\end_inset
+
+.
  We remark that this requires to simulate from the likelihood in 
 \emph on
 every 
@@ -3367,7 +3375,7 @@ original
 \end_inset
 
  with 
-\begin_inset Formula $\alpha=10$
+\begin_inset Formula $\theta=\alpha=\mathbf{1}\cdot10$
 \end_inset
 
 , Figure 
