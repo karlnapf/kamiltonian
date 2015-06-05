@@ -96,6 +96,11 @@ class DummyHABCTarget(object):
         self.mu = np.mean(pseudo_datas, 0)
         Sigma = np.cov(pseudo_datas) + np.eye(D) * (self.abc_target.epsilon ** 2)
         self.L = np.linalg.cholesky(Sigma)
+        
+#         logger.debug("Simulation")
+#         logger.debug("Theta: %s" % str(theta[:3]))
+#         logger.debug("Mean:  %s" % str(self.mu[:3]))
+        
     
 class HABCJob(HMCJob):
     def __init__(self, abc_target, momentum,
