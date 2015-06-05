@@ -24,10 +24,11 @@ def rw_generator_isotropic(num_warmup, thin_step):
     # tuned towards roughly 23% acceptance
     sigma_proposal = .55 # marginal sampler
     
-    start = np.zeros(10)
+    D=10
+    abc_target = ABCSkewNormalPosterior(theta_true=np.ones(D)*10)
+    start = abc_target.theta_true
     
-    target = ABCSkewNormalPosterior()
-    job = RWJob(target, num_iterations,
+    job = RWJob(abc_target, num_iterations,
                         start, sigma_proposal,
                         statistics, num_warmup, thin_step)
     
