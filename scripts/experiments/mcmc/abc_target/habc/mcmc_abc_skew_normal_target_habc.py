@@ -58,7 +58,7 @@ if __name__ == "__main__":
     
     # plain MCMC parameters, plan is to use every 200th sample
     thin_step = 1
-    num_iterations = 2200
+    num_iterations = 1200
     num_warmup = 200
     
     compute_local = False
