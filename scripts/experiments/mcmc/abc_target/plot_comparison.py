@@ -17,16 +17,14 @@ if __name__ == "__main__":
     logger.setLevel(10)
     
     warmup = 200
-    num_samples = 2000
-    num_Ns = 3
-    Ns = np.round(np.linspace(1, num_samples, num_Ns)).astype(int)
+    num_samples = 1000
     num_repetitions = 10
     
     benchmark_samples = np.load("ground_truth/benchmark_samples.arr")
 
-    fnames_kmc = glob('lite/KMC_N=1000_D=10_ground_truth_iterations=5200*.pkl')[:num_repetitions]
-    fnames_rw = glob('rw/RW_D=10_ground_truth_iterations=5200*.pkl')[:num_repetitions]
-    fnames_habc = glob('habc/HABC_D=10_ground_truth_iterations=2200*.pkl')[:num_repetitions]
+    fnames_kmc = glob('lite/theta=10/KMC_N=1000_D=10_ground_truth_iterations=5200*.pkl')[:num_repetitions]
+    fnames_rw = glob('rw/theta=10/RW_D=10_ground_truth_iterations=5200*.pkl')[:num_repetitions]
+    fnames_habc = glob('habc/theta=10/HABC_D=10_ground_truth_iterations=1200*.pkl')[:num_repetitions]
     
     colors = [
               "b",
@@ -38,6 +36,8 @@ if __name__ == "__main__":
     f_acor, ax_acor = plt.subplots()
     f_mean, ax_kde = plt.subplots()
     
+    marginal_samples = [[] for _ in range(3)]
+    
     for alg_idx, fnames in enumerate([
                    fnames_kmc,
                    fnames_rw,
@@ -45,9 +45,10 @@ if __name__ == "__main__":
                    ]):
         
         if len(fnames) <= 0:
-            exit()
-    
-        acorrs = np.zeros((len(fnames), 100))
+            continue
+        
+        len_acorr = np.min([100, num_samples/2])
+        acorrs = np.zeros((len(fnames), len_acorr))
         for i, fname in enumerate(fnames):
             logger.info("%s" % fname)
             with open(fname) as f:
@@ -55,7 +56,7 @@ if __name__ == "__main__":
                 
             # print some summary stats
             accepted = result.accepted
-            samples = result.samples
+            samples = result.samples[:num_samples]
             avg_ess = result.posterior_statistics["avg_ess"]
             min_ess = result.posterior_statistics["min_ess"]
             
@@ -71,22 +72,11 @@ if __name__ == "__main__":
             logger.info("Average ESS/s: %.2f" % (avg_ess / total_time_s))
             logger.info("Minimum ESS/s: %.2f" % (min_ess / total_time_s))
             
-            # KDE
-            if i==0:
-                sns.kdeplot(samples[:,0], shade=True, ax = ax_kde, color=colors[alg_idx]);
-                ax_kde.set_xlabel(r"$\theta_0$")
-                ax_kde.set_ylabel(r"$p(\theta_0)$")
-                
-#                 # plot mean
-#                 m = np.mean(samples[:,0])
-#                 sns.plt.plot([m,m], [0,.7], color=colors[alg_idx])
-                
-                ax_kde.grid(True)
-                plt.sca(ax_kde)
-                plt.savefig("abc_target_marginal0.pdf", bbox_inches="tight")
+            # store marginal samples
+            marginal_samples[alg_idx].append(samples)
                 
             # compute autocorrelation of the first dimension
-            acorrs[i,:] = autocorr(samples[:, 0])[:100]
+            acorrs[i,:] = autocorr(samples[:, 0])[:len_acorr]
         
         med =  np.median(acorrs, 0)
         lower =  np.percentile(acorrs, 20, 0)
@@ -105,4 +95,27 @@ if __name__ == "__main__":
     ax_acor.grid(True)
     plt.sca(ax_acor)
     plt.savefig("abc_target_autocorr.pdf", bbox_inches="tight")
+    
+    # KDE
+    for alg_idx, fnames in enumerate([
+                  fnames_kmc,
+                  fnames_rw,
+                  fnames_habc,
+                  ]):
+        if len(fnames) <= 0:
+            continue
+        
+        all_samples = np.vstack(marginal_samples[alg_idx])
+         
+        sns.kdeplot(all_samples[:,0], shade=True, ax = ax_kde, color=colors[alg_idx]);
+        ax_kde.set_xlabel(r"$\theta_0$")
+        ax_kde.set_ylabel(r"$p(\theta_0)$")
+        
+    #                 # plot mean
+    #                 m = np.mean(samples[:,0])
+    #                 sns.plt.plot([m,m], [0,.7], color=colors[alg_idx])
+        
+    ax_kde.grid(True)
+    plt.sca(ax_kde)
+    plt.savefig("abc_target_marginal0.pdf", bbox_inches="tight")
     plt.show()
