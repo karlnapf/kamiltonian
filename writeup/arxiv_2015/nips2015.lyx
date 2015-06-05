@@ -364,7 +364,7 @@ key "sejdinovic_kernel_2014"
 
  introduced a Kernel Adaptive Metropolis-Hastings (KAMH) algorithm, with
  proposals locally aligned to the target density.
- By adaptevely learning target covariance in a Reproducing Kernel Hilbert
+ By adaptively learning target covariance in a Reproducing Kernel Hilbert
  Space (RKHS), KAMH achieves improved sampling efficiency.
 \end_layout
 
@@ -1149,7 +1149,7 @@ Infinite Exponential Families in a RKHS
 \begin_layout Standard
 We construct a kernel induced potential energy surrogate whose gradients
  match the gradients of the true potential energy 
-\begin_inset Formula $\hat{U}$
+\begin_inset Formula $U$
 \end_inset
 
  in 
@@ -1157,10 +1157,6 @@ We construct a kernel induced potential energy surrogate whose gradients
 LatexCommand eqref
 reference "eq:potential_energy_operator"
 
-\end_inset
-
-, or 
-\begin_inset Formula $\log\pi(x)$
 \end_inset
 
 , but without accessing 
@@ -1171,8 +1167,12 @@ reference "eq:potential_energy_operator"
 \begin_inset Formula $\nabla\pi$
 \end_inset
 
- directly.
- We fit an infinite dimensional exponential family model 
+ directly, but only through the history of the Markov chain.
+ To that end, we model the target density 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+ with an infinite dimensional exponential family model 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
@@ -1182,8 +1182,16 @@ key "SriFukKumGreHyv14"
  of the form
 \begin_inset Formula 
 \begin{equation}
-\exp\left(\langle f,k(x,\cdot)\rangle_{{\cal H}}-A(f)\right).\label{eq:infinite_exp_family}
+\text{const}\times\pi(x)\approx\exp\left(\langle f,k(x,\cdot)\rangle_{{\cal H}}-A(f)\right),\label{eq:infinite_exp_family}
 \end{equation}
+
+\end_inset
+
+which implies
+\begin_inset Formula 
+\[
+-\nabla U_{k}=\nabla f\approx\nabla\log\pi=-\nabla U.
+\]
 
 \end_inset
 
@@ -1291,7 +1299,7 @@ reference "eq:infinite_exp_family"
 \end_inset
 
  (observed through samples).
- This is achieved by generalizing the score matching approach 
+ This is achieved by generalising the score matching approach 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Hyvarinen-05"
@@ -1315,7 +1323,7 @@ reference "sec:estimators"
 
 , where we develop two efficient approximate empirical estimators.
  For now, assume access to an 
-\begin_inset Formula $f\in{\cal H}$
+\begin_inset Formula $\hat{f}\in{\cal H}$
 \end_inset
 
  such that 
@@ -1809,7 +1817,7 @@ key "Hyvarinen-07"
 \begin_inset Formula $n$
 \end_inset
 
-, and we will require an additional regularizing term.
+, and we will require an additional regularising term.
  The estimator is summarised in the following proposition, which is proved
  in Appendix 
 \begin_inset CommandInset ref
@@ -2177,7 +2185,7 @@ key "Rahimi2007"
 \size default
 .
  The estimator has a one-off cost of 
-\begin_inset Formula ${\cal O}(tm^{2}+m^{3})$
+\begin_inset Formula ${\cal O}(tdm^{2}+m^{3})$
 \end_inset
 
  computation and 
@@ -2205,10 +2213,14 @@ key "Rahimi2007"
  arrives.
  This is achieved by storing running averages and performing low-rank updates
  of matrix inversions, and costs 
+\begin_inset Formula ${\cal O}(dm^{2})$
+\end_inset
+
+ computation and 
 \begin_inset Formula ${\cal O}(m^{2})$
 \end_inset
 
- computation and storage, 
+ storage, 
 \emph on
 independent
 \emph default
@@ -2676,7 +2688,7 @@ reference "eq:infinite_exp_family_random_feats"
 full
 \emph default
  Markov chain history, and is this respect a more elegant solution than
- KMC-lite, which has greater computational cost and requires sub-sampling
+ KMC lite, which has greater computational cost and requires sub-sampling
  the chain history.
  Due to the parametric nature of this approximate model, however, the tails
  of the estimator are not guaranteed to decay.
@@ -3016,7 +3028,7 @@ vspace{-.2cm}
 \end_layout
 
 \begin_layout Paragraph
-Free parameters
+Free Parameters
 \end_layout
 
 \begin_layout Standard
@@ -3128,7 +3140,7 @@ vspace{-.3cm}
 \end_layout
 
 \begin_layout Paragraph
-KMC finite: Stability of trajectories in high dimensions
+KMC Finite: Stability of Trajectories in High Dimensions
 \end_layout
 
 \begin_layout Standard
@@ -3303,7 +3315,7 @@ Right:
 \end_layout
 
 \begin_layout Paragraph
-KMC finite: HMC-like mixing on a synthetic example
+KMC Finite: HMC-like Mixing on a Synthetic Example
 \end_layout
 
 \begin_layout Standard
@@ -3466,7 +3478,7 @@ Say that the above results can be reproduced with the lite estimator, it
 \end_layout
 
 \begin_layout Paragraph
-KMC lite: Pseudo-Marginal MCMC for GP Classification on real world data
+KMC Lite: Pseudo-Marginal MCMC for GP Classification on Real World Data
 \end_layout
 
 \begin_layout Standard
@@ -3559,7 +3571,7 @@ vspace{-.4cm}
 \end_layout
 
 \begin_layout Paragraph
-KMC lite: Reduced simulations and no additional bias in ABC
+KMC Lite: Reduced Simulations and no Additional Bias in ABC
 \end_layout
 
 \begin_layout Standard
@@ -4822,7 +4834,7 @@ any
 \end_layout
 
 \begin_layout Subsubsection
-Example: Random Fourier features for the Gaussian kernel
+Example: Random Fourier Features for the Gaussian Kernel
 \end_layout
 
 \begin_layout Standard
@@ -5262,7 +5274,7 @@ all
 \end_layout
 
 \begin_layout Subsubsection
-Algorithmic description:
+Algorithmic Description:
 \end_layout
 
 \begin_layout Enumerate
