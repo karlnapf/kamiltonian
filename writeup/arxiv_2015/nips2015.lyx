@@ -1771,7 +1771,7 @@ vspace{-.2cm}
 
 \begin_inset Formula 
 \begin{equation}
-f(x)=\sum_{i=1}^{n}\alpha_{i}k(z_{i},x)\\\vspace{-.2cm},\label{eq:infinite_exp_family_lite}
+f(x)=\sum_{i=1}^{n}\alpha_{i}k(z_{i},x)\vspace{-.2cm},\label{eq:infinite_exp_family_lite}
 \end{equation}
 
 \end_inset
@@ -2818,7 +2818,7 @@ Define
  and 
 \size footnotesize
 
-\begin_inset Formula $d(x^{(0)}):=\epsilon(\nabla f(x^{(0)})+\nabla f(x^{(L\epsilon)}))/2+\epsilon\sum_{i=1}^{L-1}\nabla f(x_{i\epsilon})$
+\begin_inset Formula $d(x^{(0)}):=\epsilon(\nabla f(x^{(0)})+\nabla f(x^{(L\epsilon)}))/2+\epsilon\sum_{i=1}^{L-1}\nabla f(x^{(i\epsilon)})$
 \end_inset
 
 ,
@@ -2889,8 +2889,8 @@ Define
 \end_inset
 
 , meaning in the tails the chain will behave as a Random Walk Metropolis.
- So KMC lite is geometrically ergodic whenever the Random Walk Metropolis
- is.
+ Consequently, KMC lite is geometrically ergodic whenever the Random Walk
+ Metropolis is.
  Generalisations to 
 \begin_inset Formula $d\geq2$
 \end_inset
