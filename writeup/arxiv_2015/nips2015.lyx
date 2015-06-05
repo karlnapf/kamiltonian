@@ -1542,7 +1542,7 @@ name "sec:estimators"
 
 \end_inset
 
-We now come back to the topic of estimating the infinite dimensional exponential
+We now address the topic of estimating the infinite dimensional exponential
  family model 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -1578,9 +1578,10 @@ key "SriFukKumGreHyv14"
 \end_inset
 
 .
- As this is limiting in the adaptive MCMC context where the estimator has
- to be updated on a regular basis, we propose two efficient approximations,
- with orthogonal strengths and weaknesses.
+ This is problematic in the adaptive MCMC context, where the estimator has
+ to be updated on a regular basis.
+ We propose two efficient approximations, each with its particular strengths
+ and weaknesses.
  Both the original estimator for 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -1614,7 +1615,7 @@ reference "eq:infinite_exp_family"
 
 \end_inset
 
- takes a dual form in a RKHS sub-space spanned by 
+ takes a dual form in an RKHS sub-space spanned by 
 \begin_inset Formula $nd+1$
 \end_inset
 
@@ -1636,7 +1637,7 @@ key "SriFukKumGreHyv14"
 \end_inset
 
  matrix.
- This is clearly prohibitive if one is to run even a moderately large number
+ This is clearly prohibitive if we are to run even a moderately large number
  of iterations of a Markov chain.
  Following 
 \begin_inset CommandInset citation
@@ -1645,11 +1646,12 @@ key "sejdinovic_kernel_2014"
 
 \end_inset
 
-, we take simple approach to avoid prohibitive computational cost in 
+, we take a simple approach to avoid prohibitive computational costs in
+ 
 \begin_inset Formula $t$
 \end_inset
 
-: forming a proposal using a random sub-sample of a fixed size 
+: we form a proposal using a random sub-sample of a fixed size 
 \begin_inset Formula $n$
 \end_inset
 
@@ -1658,12 +1660,12 @@ key "sejdinovic_kernel_2014"
 \end_inset
 
 .
- In addition, in order to reduce excessive computational costs arising from
- large 
+ In addition, in order to reduce excessive computational costs arising when
+ 
 \begin_inset Formula $d$
 \end_inset
 
-, we develop an approximation to the full dual solution in 
+ is large, we develop an approximation to the full dual solution in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
@@ -1674,8 +1676,18 @@ key "SriFukKumGreHyv14"
 \begin_inset Formula $\text{span}\left(\left\{ k(z_{i},\cdot)\right\} _{i=1}^{n}\right)$
 \end_inset
 
+, which covers the support of the true density by construction, and grows
+ with increasing 
+\begin_inset Formula $n$
+\end_inset
+
 .
- This growing subspace of RKHS basis functions
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+This growing subspace of RKHS basis functions
 \begin_inset Foot
 status open
 
@@ -1698,6 +1710,13 @@ Note that any sub-space could be used as long as the support of
 \end_inset
 
 .
+ AG: I removed this since we don't have a proof, and it may well be that
+ we do need to increase the number of basis functions with increasing n
+ to get the best rates.
+\end_layout
+
+\end_inset
+
  That is, we assume that the log unnormalised density of infinite dimensional
  exponential family model in 
 \begin_inset CommandInset ref
@@ -1718,7 +1737,7 @@ where
 \begin_inset Formula $\alpha\in\mathbb{R}^{n}$
 \end_inset
 
- are real valued parameters that are obtained via minimising the empirical
+ are real valued parameters that are obtained by minimising the empirical
  score matching objective (see 
 \begin_inset CommandInset ref
 LatexCommand eqref
