@@ -17,7 +17,7 @@ if __name__ == "__main__":
     logger.setLevel(10)
     
     warmup = 200
-    num_samples = 5000
+    num_samples = 2000
     num_Ns = 3
     Ns = np.round(np.linspace(1, num_samples, num_Ns)).astype(int)
     num_repetitions = 10
@@ -26,12 +26,12 @@ if __name__ == "__main__":
 
     fnames_kmc = glob('lite/KMC_N=1000_D=10_ground_truth_iterations=5200*.pkl')[:num_repetitions]
     fnames_rw = glob('rw/RW_D=10_ground_truth_iterations=5200*.pkl')[:num_repetitions]
-#     fnames_habc = glob('habc/HABC_D=10_ground_truth_iterations=5200*.pkl')[:num_repetitions]
+    fnames_habc = glob('habc/HABC_D=10_ground_truth_iterations=2200*.pkl')[:num_repetitions]
     
     colors = [
               "b",
               "m",
-#               "y",
+            "y",
               ]
     
     # two figures: autocorrelation and mean estimation
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     for alg_idx, fnames in enumerate([
                    fnames_kmc,
                    fnames_rw,
-#                    fnamessns.set_style("whitegrid")_habc
+                   fnames_habc,
                    ]):
         
         if len(fnames) <= 0:
@@ -77,6 +77,10 @@ if __name__ == "__main__":
                 ax_kde.set_xlabel(r"$\theta_0$")
                 ax_kde.set_ylabel(r"$p(\theta_0)$")
                 
+#                 # plot mean
+#                 m = np.mean(samples[:,0])
+#                 sns.plt.plot([m,m], [0,.7], color=colors[alg_idx])
+                
                 ax_kde.grid(True)
                 plt.sca(ax_kde)
                 plt.savefig("abc_target_marginal0.pdf", bbox_inches="tight")
@@ -96,12 +100,8 @@ if __name__ == "__main__":
     ax_acor.set_ylabel("Autocorrelation")
     line1 = Line2D([0, 0], [0, 0], color=colors[0])
     line2 = Line2D([0, 0], [0, 0], color=colors[1])
-#     line3 = Line2D([0, 0], [0, 0], color=colors[2])
-    ax_acor.legend((line1, line2,
-#                     line3
-                    ), ["KMC", "RW",
-#                                            "HABC
-                                           ])
+    line3 = Line2D([0, 0], [0, 0], color=colors[2])
+    ax_acor.legend((line1, line2, line3), ["KMC", "RW","HABC"])
     ax_acor.grid(True)
     plt.sca(ax_acor)
     plt.savefig("abc_target_autocorr.pdf", bbox_inches="tight")
