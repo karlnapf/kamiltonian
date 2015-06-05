@@ -3007,6 +3007,77 @@ status open
 
 
 \backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Free parameters
+\end_layout
+
+\begin_layout Standard
+KMC has two free parameters: the Gaussian kernel bandwidth 
+\begin_inset Formula $\sigma$
+\end_inset
+
+, and the regularisation parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ Earlier adaptive kernel-based MCMC methods 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, did not cover choosing parameters.
+ As KMC's performance is eventually tied with the quality of the approximate
+ infinite dimensional exponential family model in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_lite"
+
+\end_inset
+
+ or 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_random_feats"
+
+\end_inset
+
+, we can use the score matching objective function in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appendix_score_matching"
+
+\end_inset
+
+ to compare 
+\begin_inset Formula $\sigma,\lambda$
+\end_inset
+
+ pairs via corss-validation in a principled way after burn-in.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
 vspace{-.3cm}
 \end_layout
 
@@ -3472,6 +3543,19 @@ key "sejdinovic_kernel_2014"
 \end_inset
 
 .
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.4cm}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Paragraph
@@ -3571,6 +3655,19 @@ key "Meeds2015"
 \end_inset
 
  reduced number of simulations per proposal.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.5cm}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3669,6 +3766,19 @@ name "sec:Discussion"
 
 \end_inset
 
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
+\end_inset
+
 We have introduced KMC, a kernel-based gradient free adaptive MCMC algorithm
  that mimics HMC's behaviour via estimating target gradients in a RKHS.
  In experiments, KMC outperforms random walk based sampling methods in up
@@ -3746,11 +3856,11 @@ onecolumn
 
 \begin_layout Section
 \start_of_appendix
-Proofs & details
+Proofs & Details
 \end_layout
 
 \begin_layout Subsection
-Score matching
+Score Matching
 \end_layout
 
 \begin_layout Standard
@@ -3790,7 +3900,7 @@ key "Hyvarinen-05,Hyvarinen-07"
 \end_layout
 
 \begin_layout Standard
-The presentation follows 
+Following 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "Hyvarinen-05"
@@ -3981,7 +4091,7 @@ reference "eq:score_match_scores"
 \end_layout
 
 \begin_layout Subsection
-Lite estimator
+Lite Estimator
 \end_layout
 
 \begin_layout Standard
@@ -4054,7 +4164,7 @@ As assumed the log unnormalised density takes the form
 \begin_layout Proof
 \begin_inset Formula 
 \[
-f(x)=\sum_{i=1}^{m}\alpha_{i}k(x_{i},\xi)
+f(x)=\sum_{i=1}^{m}\alpha_{i}k(x_{i},x)
 \]
 
 \end_inset
@@ -4066,14 +4176,14 @@ where
  is the Gaussian kernel in the form
 \begin_inset Formula 
 \[
-k(x_{i},\xi)=\exp\left(-\sigma^{-1}\|x_{i}-x\|^{2}\right)=\exp\left(-\frac{1}{\sigma}\sum_{\ell=1}^{d}(x_{i\ell}-x_{\ell})^{2}\right).
+k(x_{i},x)=\exp\left(-\frac{1}{\sigma}\|x_{i}-x\|^{2}\right)=\exp\left(-\frac{1}{\sigma}\sum_{\ell=1}^{d}(x_{i\ell}-x_{\ell})^{2}\right).
 \]
 
 \end_inset
 
 The score functions from 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:score_match_scores"
 
 \end_inset
@@ -4089,7 +4199,7 @@ reference "eq:score_match_scores"
 and
 \begin_inset Formula 
 \begin{align*}
-\partial_{\ell}\psi_{\ell}(x;\alpha) & =\frac{-2}{\sigma}\sum_{i=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)+\left(\frac{2}{\sigma}\right)^{2}\sum_{i=1}^{m}\alpha_{i}(x_{i\ell}-x_{\ell})^{2}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)\\
+\partial_{\ell}\psi_{\ell}(x;\alpha) & =-\frac{2}{\sigma}\sum_{i=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)+\left(\frac{2}{\sigma}\right)^{2}\sum_{i=1}^{n}\alpha_{i}(x_{i\ell}-x_{\ell})^{2}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)\\
  & =\frac{2}{\sigma}\sum_{i=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{\ell})^{2}\right].
 \end{align*}
 
@@ -4105,9 +4215,9 @@ reference "eq:score_matching_objective_sample_version"
  yields
 \begin_inset Formula 
 \begin{align*}
-J(\alpha) & =\frac{1}{m}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\alpha)+\frac{1}{2}\psi_{\ell}(x_{i};\alpha)^{2}\right]\\
- & =\frac{2}{m\sigma}\sum_{\ell=1}^{d}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{j\ell})^{2}\right]\\
- & \qquad+\frac{2}{m\sigma^{2}}\sum_{\ell=1}^{d}\sum_{i=1}^{n}\left[\sum_{j=1}^{n}\alpha_{j}(x_{j\ell}-x_{i\ell})\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}.
+J(\alpha) & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\alpha)+\frac{1}{2}\psi_{\ell}(x_{i};\alpha)^{2}\right]\\
+ & =\frac{2}{n\sigma}\sum_{\ell=1}^{d}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{j\ell})^{2}\right]\\
+ & \qquad+\frac{2}{n\sigma^{2}}\sum_{\ell=1}^{d}\sum_{i=1}^{n}\left[\sum_{j=1}^{n}\alpha_{j}(x_{j\ell}-x_{i\ell})\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}.
 \end{align*}
 
 \end_inset
@@ -4128,7 +4238,7 @@ We now rewrite
 \begin_layout Proof
 
 \series bold
-First term
+First Term
 \series default
 :
 \begin_inset Formula 
@@ -4201,7 +4311,7 @@ Likewise
 \begin_layout Proof
 
 \series bold
-Second term
+Second Term
 \series default
 : Considering only the 
 \begin_inset Formula $\ell$
@@ -4285,11 +4395,7 @@ Assuming
 \begin_inset Formula $C$
 \end_inset
 
- is invertible, for 
-\begin_inset Formula $\lambda>0$
-\end_inset
-
-, this is minimised by 
+ is invertible, this is minimised by 
 \emph on
 
 \begin_inset Formula 
@@ -4311,7 +4417,7 @@ key "SriFukKumGreHyv14"
 \end_inset
 
 , we in practice add a term 
-\begin_inset Formula $\lambda\Vert\alpha\Vert^{2}$
+\begin_inset Formula $\lambda\Vert f\Vert_{{\cal H}}^{2}$
 \end_inset
 
  for 
@@ -4331,7 +4437,7 @@ key "SriFukKumGreHyv14"
 \end_layout
 
 \begin_layout Subsubsection
-Linear computational costs via low-rank approximations
+Linear Computational Costs via Low-rank Approximations and Conjugate Gradient
 \end_layout
 
 \begin_layout Standard
@@ -4495,7 +4601,7 @@ total cost of
 \end_layout
 
 \begin_layout Subsection
-Finite feature space estimator
+Finite Feature Space Estimator
 \end_layout
 
 \begin_layout Standard
@@ -4582,9 +4688,6 @@ reference "eq:score_match_scores"
 \end_inset
 
  then can be written as the simple linear form
-\end_layout
-
-\begin_layout Proof
 \begin_inset Formula 
 \begin{align}
 \psi_{\ell}(\xi;\theta) & =\theta^{T}\dot{\phi}_{x}^{\ell}\quad\text{and}\quad\partial_{\ell}\psi_{\ell}(\xi;\theta)=\theta^{T}\ddot{\phi}_{x}^{\ell},\label{eq:score_function_fourier}
@@ -4675,7 +4778,7 @@ key "SriFukKumGreHyv14"
 \end_inset
 
 , we in practice add a term 
-\begin_inset Formula $\lambda\Vert\theta\Vert^{2}$
+\begin_inset Formula $\lambda\Vert\theta\Vert_{2}^{2}$
 \end_inset
 
  for 
@@ -4702,7 +4805,7 @@ reference "eq:score_match_objective_random_feats"
 \end_layout
 
 \begin_layout Standard
-Next, we be more concrete about the approximate feature space 
+Next, we give an example for the approximate feature space 
 \begin_inset Formula ${\cal H}^{m}$
 \end_inset
 
@@ -4732,7 +4835,7 @@ random kitchen sink
 \begin_inset Quotes erd
 \end_inset
 
- framework made popular by 
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Rahimi2007"
@@ -4814,11 +4917,12 @@ key "Rahimi2007"
 \end_inset
 
  for details and a uniform convergence bound.
- Note that one can achieve logarithmic computational costs in 
+ Note that it is possible to achieve logarithmic computational costs in
+ 
 \begin_inset Formula $d$
 \end_inset
 
- exploiting properties of Hadamard matrices, see 
+ exploiting properties of Hadamard matrices 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "le2013fastfood"
@@ -4873,13 +4977,13 @@ where
 \end_inset
 
  is the element-wise product.
- Consequently the gradient itself is given by 
+ Consequently the gradient is given by 
 \begin_inset Formula 
 \[
 \nabla_{\xi}\phi_{\xi}=\begin{bmatrix}\dot{\phi}_{\xi}^{1}\\
 \vdots\\
 \dot{\phi}_{\xi}^{d}
-\end{bmatrix}\in\mathbb{R}^{d\times m}
+\end{bmatrix}\in\mathbb{R}^{d\times m}.
 \]
 
 \end_inset
@@ -4896,7 +5000,7 @@ Gaussian kernel
  are
 \begin_inset Formula 
 \[
-k(x,y)={\cal \exp}\left(-\gamma\Vert x-y\Vert_{2}^{2}\right)\quad\text{and}\quad\Gamma(\omega)={\cal N}\left(\omega_{i}\Big\vert\mathbf{0},\gamma^{2}I_{m}\right).
+k(x,y)={\cal \exp}\left(-\sigma\Vert x-y\Vert_{2}^{2}\right)\quad\text{and}\quad\Gamma(\omega)={\cal N}\left(\omega\Big\vert\mathbf{0},\sigma^{2}I_{m}\right).
 \]
 
 \end_inset
@@ -4905,7 +5009,7 @@ k(x,y)={\cal \exp}\left(-\gamma\Vert x-y\Vert_{2}^{2}\right)\quad\text{and}\quad
 \end_layout
 
 \begin_layout Subsubsection
-Constant cost updates
+Constant Cost Updates
 \end_layout
 
 \begin_layout Standard
@@ -4922,7 +5026,7 @@ name "sub:rank_d_updates"
 A convenient property of the finite feature space approximation is that
  its primal representation of the solution allows to update 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:b_and_C_random_feats"
 
 \end_inset
@@ -4949,19 +5053,19 @@ reference "eq:b_and_C_random_feats"
 \end_inset
 
  respectively.
- Consequently, when at iteration 
+ Consequently, at iteration 
 \begin_inset Formula $t$
 \end_inset
 
 , rather than fully re-computing 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:score_match_linear_system_random_feats"
 
 \end_inset
 
  at the cost of 
-\begin_inset Formula ${\cal O}(tm^{3})$
+\begin_inset Formula ${\cal O}(tdm^{2}+m^{3})$
 \end_inset
 
  for every new point, we can use rank-
@@ -4970,7 +5074,7 @@ reference "eq:score_match_linear_system_random_feats"
 
  updates to construct the minimiser of 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:score_match_objective_random_feats"
 
 \end_inset
@@ -4979,7 +5083,7 @@ reference "eq:score_match_objective_random_feats"
  Assume we have computed the sum of all moving average terms, 
 \begin_inset Formula 
 \[
-\tilde{C}_{t}^{-1}:=\left(\sum_{i=1}^{t}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\right)^{-1}
+\bar{C}_{t}^{-1}:=\left(\sum_{i=1}^{t}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\right)^{-1}
 \]
 
 \end_inset
@@ -5000,7 +5104,7 @@ from feature vectors derivatives
  We can then write the inverse of the new sum as
 \begin_inset Formula 
 \begin{align*}
-\tilde{C}_{t+1}^{-1}: & =\left(\tilde{C}_{t}+\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{t+1}}^{\ell}\left(\dot{\phi}_{x_{t+1}}^{\ell}\right)^{T}\right)\right)^{-1}.
+\bar{C}_{t+1}^{-1}: & =\left(\bar{C}_{t}+\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{t+1}}^{\ell}\left(\dot{\phi}_{x_{t+1}}^{\ell}\right)^{T}\right)\right)^{-1}.
 \end{align*}
 
 \end_inset
@@ -5010,7 +5114,7 @@ This is the inverse of the rank-
 \end_inset
 
  perturbed previous matrix 
-\begin_inset Formula $\tilde{C}_{t}$
+\begin_inset Formula $\bar{C}_{t}$
 \end_inset
 
 .
@@ -5032,7 +5136,7 @@ key "gill1974methods"
 
  computation.
  Since 
-\begin_inset Formula $\tilde{C}_{t}$
+\begin_inset Formula $\bar{C}_{t}$
 \end_inset
 
  is positive definite
@@ -5054,7 +5158,7 @@ status open
 
 , we can represent its inverse as a numerically much more stable Cholesky
  factorisation 
-\begin_inset Formula $\tilde{C}_{t}=\tilde{L}_{t}\tilde{L}_{t}^{T}$
+\begin_inset Formula $\bar{C}_{t}=\bar{L}_{t}\bar{L}_{t}^{T}$
 \end_inset
 
 .
@@ -5062,21 +5166,7 @@ status open
 \begin_inset Formula $d$
 \end_inset
 
- updates of such Cholesky factors, see 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "gill1974methods"
-
-\end_inset
-
-
-\begin_inset CommandInset citation
-LatexCommand cite
-key "seeger2004low"
-
-\end_inset
-
-
+ updates of such Cholesky factors
 \begin_inset Foot
 status open
 
@@ -5097,9 +5187,16 @@ https://github.com/jcrudy/choldate
 
 \end_inset
 
+, see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gill1974methods,seeger2004low"
+
+\end_inset
+
 .
  Denote by 
-\begin_inset Formula $\tilde{b}_{t}$
+\begin_inset Formula $\bar{b}_{t}$
 \end_inset
 
  the sum of the moving average 
@@ -5117,21 +5214,21 @@ reference "eq:score_match_linear_system_random_feats"
  as 
 \begin_inset Formula 
 \begin{align*}
-\hat{\theta} & =C^{-1}b=\left(\frac{1}{t}\tilde{C}_{t}\right)^{-1}\left(\frac{1}{t}\tilde{b}_{t}\right)=\tilde{C}_{t}^{-1}\tilde{b}_{t}=\tilde{L}_{t}^{-T}\tilde{L}_{t}^{-1}\tilde{b}_{t},
+\hat{\theta} & =C^{-1}b=\left(\frac{1}{t}\bar{C}_{t}\right)^{-1}\left(\frac{1}{t}\bar{b}_{t}\right)=\bar{C}_{t}^{-1}\bar{b}_{t}=\bar{L}_{t}^{-T}\bar{L}_{t}^{-1}\bar{b}_{t},
 \end{align*}
 
 \end_inset
 
 using cheap triangular back-substitution from 
-\begin_inset Formula $\tilde{L}_{t}$
+\begin_inset Formula $\bar{L}_{t}$
 \end_inset
 
 , and never storing 
-\begin_inset Formula $\tilde{C}_{t}^{-1}$
+\begin_inset Formula $\bar{C}_{t}^{-1}$
 \end_inset
 
  or 
-\begin_inset Formula $\tilde{L}_{t}^{-1}$
+\begin_inset Formula $\bar{L}_{t}^{-1}$
 \end_inset
 
  explicitly.
@@ -5160,12 +5257,7 @@ We can therefore use
 \emph on
 all
 \emph default
- points in the history for constructing a proposal -- without the previously
- exploding computational costs of 
-\begin_inset Formula ${\cal O}(tdm^{3})$
-\end_inset
-
-.
+ points in the history for constructing a proposal.
  
 \end_layout
 
@@ -5177,7 +5269,7 @@ Algorithmic description:
 Update sums 
 \begin_inset Formula 
 \[
-\tilde{b}_{t+1}\leftarrow\tilde{b}_{t}-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t+1}}^{\ell}\quad\text{and}\quad\tilde{C}_{t+1}\leftarrow\tilde{C}_{t}+\frac{1}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t+1}}^{\ell}(\dot{\phi}_{x_{t+1}}^{\ell})^{T}
+\bar{b}_{t+1}\leftarrow\bar{b}_{t}-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t+1}}^{\ell}\quad\text{and}\quad\bar{C}_{t+1}\leftarrow\bar{C}_{t}+\frac{1}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t+1}}^{\ell}(\dot{\phi}_{x_{t+1}}^{\ell})^{T}
 \]
 
 \end_inset
@@ -5191,7 +5283,7 @@ Perform rank-
 \end_inset
 
  update to obtain updated Cholesky factorisation 
-\begin_inset Formula $\tilde{L}_{t+1}\tilde{L}_{t+1}^{T}=\tilde{C}_{t+1}$
+\begin_inset Formula $\bar{L}_{t+1}\bar{L}_{t+1}^{T}=\bar{C}_{t+1}$
 \end_inset
 
 .
@@ -5204,7 +5296,7 @@ Update approximate infinite dimensional exponential family parameters
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\hat{\theta}\leftarrow\tilde{L}_{t+1}^{-T}\tilde{L}_{t+1}^{-1}\tilde{b}_{t+1}
+\hat{\theta}\leftarrow\bar{L}_{t+1}^{-T}\bar{L}_{t+1}^{-1}\bar{b}_{t+1}
 \]
 
 \end_inset
@@ -5331,11 +5423,7 @@ We assumed
 \begin_inset Formula $L$
 \end_inset
 
- leapfrog steps 
-\begin_inset Formula $L$
-\end_inset
-
- of size 
+ leapfrog steps of size 
 \begin_inset Formula $\epsilon$
 \end_inset
 
@@ -5576,62 +5664,6 @@ For
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Section
-Various
-\end_layout
-
-\begin_layout Paragraph
-Free parameters
-\end_layout
-
-\begin_layout Standard
-KMC, for both the lite and the finite estimator has two free parameters:
- the Gaussian kernel bandwidth 
-\begin_inset Formula $\sigma$
-\end_inset
-
-, and the regularisation parameter 
-\begin_inset Formula $\lambda$
-\end_inset
-
-.
- Earlier adaptive kernel-based MCMC methods, 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sejdinovic_kernel_2014"
-
-\end_inset
-
-, did not cover choosing parameters.
- As KMC's performance is eventually tied with the quality of the approximate
- infinite dimensional exponential family model in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family_lite"
-
-\end_inset
-
- or 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family_random_feats"
-
-\end_inset
-
-, we can use the score matching objective function in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_match_objective_random_feats"
-
-\end_inset
-
- to compare 
-\begin_inset Formula $\sigma,\lambda$
-\end_inset
-
- pairs via corss-validation in a principled way.
 \end_layout
 
 \end_body
