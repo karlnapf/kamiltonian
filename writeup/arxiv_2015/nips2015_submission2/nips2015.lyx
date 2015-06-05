@@ -1,0 +1,5639 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{nips14submit_e,times}
+\usepackage{hyperref}
+\usepackage{url}
+%\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
+\usepackage{natbib}
+\setlength{\bibsep}{0pt plus 0.3ex}
+\title{Kamiltonian Monte Carlo}
+
+
+\author{
+Heiko Strathmann%\thanks{ Use footnote for providing further information about author (webpage, alternative address)---\emph{not} for acknowledging funding agencies.}
+\\
+Gatsby Unit\\
+University College London \\
+\texttt{heiko.strathmann@gmail.com} \\
+\And
+Dino Sejdinovic \\
+Department of Statistics \\
+University of Oxford \\
+\texttt{dino.sejdinovic@gmail.com} \\
+\And
+Samuel Livingstone\\
+Department of Statistics \\
+University College London \\
+\texttt{samuel.livingstone@ucl.ac.uk} \\
+\And
+Zoltán Szabó\\
+Gatsby Unit \\
+University College London \\
+\texttt{zoltan.szabo@gatsby.ucl.ac.uk } \\
+\AND
+Arthur Gretton \\
+Gatsby Unit\\
+University College London \\
+\texttt{arthur.gretton@gmail.com} 
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+%\nipsfinalcopy % Uncomment for camera-ready version
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\end_preamble
+\use_default_options false
+\begin_modules
+theorems-std
+\end_modules
+\maintain_unincluded_children false
+\language british
+\language_package none
+\inputencoding auto
+\fontencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize letterpaper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 1
+\use_package mhchem 0
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\author 456741484 "samuel" 
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\diag}{\text{diag}}
+{\text{diag}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Gradient-free Hamiltonian Monte Carlo
+\begin_inset Newline newline
+\end_inset
+
+with Efficient Kernel exponential families
+\end_layout
+
+\begin_layout Abstract
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+We propose 
+\emph on
+Kamiltonian Monte Carlo (KMC)
+\emph default
+, a gradient-free adaptive MCMC algorithm based on Hamiltonian Monte Carlo
+ (HMC).
+ On target densities where HMC is unavailable due to intractable gradients,
+ KMC adaptively learns the target's gradient structure by fitting an exponential
+ family model in a Reproducing Kernel Hilbert Space.
+ Computational costs are reduced by two novel efficient approximations to
+ this gradient.
+ While being asymptotically exact, KMC mimics HMC in terms of sampling efficienc
+y and offers substantial mixing improvements to state-of-the-art gradient
+ free samplers.
+ We support our claims with experimental studies on both toy and real-world
+ applications, including Approximate Bayesian Computation and exact-approximate
+ MCMC.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+Estimating expectations using Markov Chain Monte Carlo (MCMC) is a fundamental
+ approximate inference technique in Bayesian statistics.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+It allows to represent probability densities of interest via a finite set
+ of samples from a Markov chain whose limiting distribution matches the
+ target density.
+ This representation allows to numerically approximate expectations with
+ respect to posterior densities -- a problem at the core of Bayesian statistics.
+\end_layout
+
+\end_inset
+
+ MCMC itself can be computationally demanding, and the expected estimation
+ error depends directly on the correlation between successive points in
+ the Markov chain.
+ Therefore, MCMC efficiency can be achieved by taking large steps with high
+ probability.
+\end_layout
+
+\begin_layout Standard
+Hamiltonian Monte Carlo (HMC) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "neal2011mcmc"
+
+\end_inset
+
+ is an MCMC algorithm that improves efficiency by exploiting gradient informatio
+n.
+ It simulates particle movement along the contour lines of a dynamical system
+ which is constructed from the target density.
+ Projections of these trajectories cover wide parts of the target's support,
+ and the probability of accepting a move along a trajectory is often close
+ to one.
+ Remarkably, this property is mostly invariant to dimensionality.
+ Thus, HMC is often superior to random walk methods, which need to decrease
+ their step size at a much faster rate to maintain a reasonable acceptance
+ probability with increasing dimension 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Sec. 4.4"
+key "neal2011mcmc"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Unfortunately, for a large class of problems, gradient information is not
+ available.
+ For example, in Pseudo-Marginal MCMC (PM-MCMC) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "beaumont2003estimation,Andrieu2009a"
+
+\end_inset
+
+, the posterior density does not have an analytic expression even up to
+ a normalising constant, e.g.
+ in Bayesian Gaussian Process classification 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "FilipponeIEEETPAMI13"
+
+\end_inset
+
+.
+ Therefore, it can only be estimated at any given point.
+ A related context is MCMC for Approximate Bayesian Computation (ABC-MCMC),
+ where a Bayesian posterior has to be approximated through repeated simulation
+ from a likelihood model 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "marjoram2003markov,Sisson2010"
+
+\end_inset
+
+.
+ In both cases, plain HMC cannot be applied, leaving random walk methods
+ as the only mature alternative.
+ Recently, there have been efforts to mimic HMC's behaviour using stochastic
+ gradients from mini-batches in Big Data 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ChenFoxGuestrin2014"
+
+\end_inset
+
+, or stochastic finite differences in ABC 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Meeds2015"
+
+\end_inset
+
+.
+ However, stochastic gradient based HMC methods often suffer from low acceptance
+ rates or additional bias that is hard to quantify 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Betancourt2015a"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Random walk methods can be tuned by proposing local steps whose scaling
+ matches the target density.
+ For example, Adaptive Metropolis-Hastings (AMH)
+\emph on
+ 
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Haario1999,Andrieu2008"
+
+\end_inset
+
+ is based on learning the global linear scaling of a target density from
+ the history of the Markov chain.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+While in general ergodicity and convergence properties of MCMC can be violated
+ if the proposal is based on the past samples, it is possible to adapt in
+ a vanishing way that maintains convergence to the correct invariant distributio
+n 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "AndrieuMoulines2006"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ Yet, for densities with nonlinear support across components, this approach
+ does not work very well.
+ Recently, 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+ introduced a Kernel Adaptive Metropolis-Hastings (KAMH) algorithm, with
+ proposals locally aligned to the target density.
+ By adaptevely learning target covariance in a Reproducing Kernel Hilbert
+ Space (RKHS), KAMH achieves improved sampling efficiency.
+\end_layout
+
+\begin_layout Standard
+In this paper, we extend the idea of using kernel methods to learn efficient
+ proposal distributions 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+.
+ Rather than 
+\emph on
+locally
+\emph default
+ smoothing the target density, however, we estimate its gradients 
+\emph on
+globally
+\emph default
+.
+ More precisely, we fit an (unnormalised) infinite dimensional exponential
+ family model in a RKHS via score matching 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14,Hyvarinen-05"
+
+\end_inset
+
+.
+ This is a non-parametric method to model the log unnormalised target density
+ as an RKHS function, and has been shown to approximate a rich class of
+ density functions arbitrarily well.
+ More importantly, the method has been empirically observed to be relatively
+ robust to increasing dimensionality -- in sharp contrast to classical kernel
+ density estimation, 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Sec. 6.5"
+key "wasserman2006all"
+
+\end_inset
+
+.
+ A Gaussian Process (GP) was also used in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rasmussen2003"
+
+\end_inset
+
+ as an emulator of the target density in order to speed up HMC, however
+ this work requires access to the log target density in closed form, to
+ provide training points for the GP regressor.
+ 
+\end_layout
+
+\begin_layout Standard
+We require our adaptive algorithm to be computationally efficient, as it
+ deals with high-dimensional MCMC chains of growing length.
+ Thus, we develop two novel approximations to the infinite dimensional exponenti
+al family model.
+ The first approximation, 
+\emph on
+score matching lite
+\emph default
+, is based on computing the solution in terms of a lower dimensional, yet
+ growing, subspace in the RKHS.
+ KMC with score matching lite (
+\emph on
+KMC lite
+\emph default
+) is geometrically ergodic on the same class of targets as standard random
+ walks.
+ The second approximation uses a finite dimensional feature space (
+\emph on
+KMC finite
+\emph default
+), combined with the random Fourier features framework of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rahimi2007"
+
+\end_inset
+
+.
+ This results in an extremely efficient online estimator that allows to
+ use all of the Markov chain history, at the cost of decreased efficiency
+ when initialised in the tails.
+ A choice between KMC lite and KMC finite will ultimately depend on the
+ ability to initialise the sampler within high-density regions of the target
+ density; alternatively the two approaches could be combined.
+\end_layout
+
+\begin_layout Standard
+Experiments show that KMC inherits the efficiency of HMC, and therefore
+ mixes significantly better than state-of-the-art gradient-free adaptive
+ samplers on a number of target densities, including on synthetic examples,
+ and when used in PM-MCMC and ABC-MCMC.
+\end_layout
+
+\begin_layout Paragraph
+Paper outline:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+In Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:background_previous_work"
+
+\end_inset
+
+, we place our contribution in the context of previous work and cover HMC
+ basics.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:kernel_hamiltonian_dynamics"
+
+\end_inset
+
+ introduces Hamiltonian dynamics induced by kernel exponential families.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:estimators"
+
+\end_inset
+
+ contains our approximate estimators of of the log density and its gradient,
+ and Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:KMC"
+
+\end_inset
+
+ applies these results to obtain our Kamiltonian Monte Carlo algorithm.
+ We
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:kernel_hmc"
+
+\end_inset
+
+ and
+\end_layout
+
+\end_inset
+
+ demonstrate the efficiency of KMC in a number of experiments in Section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Experiments"
+
+\end_inset
+
+.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Background and Previous Work
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:background_previous_work"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+Let the domain of interest 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+ be a compact
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+The compactness restriction is imposed to satisfy the assumptions in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ subset of 
+\begin_inset Formula $\mathbb{R}^{d}$
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+AG: our score matching proofs only apply on compact domains, so we should
+ use this restriction throughout
+\end_layout
+
+\end_inset
+
+, and denote the unnormalised 
+\emph on
+target
+\emph default
+ density on 
+\begin_inset Formula $\mathcal{X}$
+\end_inset
+
+ by 
+\begin_inset Formula $\pi$
+\end_inset
+
+.
+ We are interested in constructing a Markov chain 
+\begin_inset Formula $x_{1}\to x_{2}\to\dots$
+\end_inset
+
+ such that 
+\begin_inset Formula $\lim_{t\to\infty}x_{t}\sim\pi$
+\end_inset
+
+.
+ By running the Markov chain for a long time 
+\begin_inset Formula $T$
+\end_inset
+
+, we can consistently approximate any expectation w.r.t 
+\begin_inset Formula $\pi$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\mathbb{E}_{\pi(x)}\left\{ \varphi(x)\right\} =\int_{{\cal X}}\varphi(x)\pi(x)dx\approx\frac{1}{T}\sum_{t=1}^{T}\varphi(x_{t}).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ Markov chains are constructed using the Metropolis-Hastings algorithm,
+ which at the current state 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ draws a point from a proposal mechanism 
+\begin_inset Formula $x^{*}\sim Q(\cdot|x_{t}),$
+\end_inset
+
+ and sets 
+\begin_inset Formula $x_{t+1}\leftarrow x^{*}$
+\end_inset
+
+ with probability 
+\begin_inset Formula $\min(1,[\pi(x^{*})Q(x_{t}|x^{*})]/[\pi(x_{t})Q(x^{*}|x_{t})])$
+\end_inset
+
+, and 
+\begin_inset Formula $x_{t+1}\leftarrow x_{t}$
+\end_inset
+
+ otherwise.
+ In this paper, we generally assume that 
+\begin_inset Formula $\pi$
+\end_inset
+
+ is intractable
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Unavailable due to analytic intractability, as opposed to computationally
+ expensive in the Big Data context.
+\end_layout
+
+\end_inset
+
+, i.e.
+ that we can neither evaluate 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+ nor
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Throughout the paper 
+\begin_inset Formula $\nabla$
+\end_inset
+
+ denotes the gradient operator wrt.
+ to 
+\begin_inset Formula $x$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula $\nabla\log\pi(x)$
+\end_inset
+
+ for any 
+\begin_inset Formula $x$
+\end_inset
+
+, but can compute unbiased estimates of 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+.
+ Replacing 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+ with an unbiased estimator results in PM-MCMC 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "beaumont2003estimation,Andrieu2009a"
+
+\end_inset
+
+, which asymptotically remains exact (
+\emph on
+exact-approximate inference)
+\emph default
+.
+\end_layout
+
+\begin_layout Paragraph
+(Kernel) Adaptive Metropolis-Hastings
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+In the absence of 
+\begin_inset Formula $\nabla\log\pi$
+\end_inset
+
+, the usual choice of 
+\begin_inset Formula $Q$
+\end_inset
+
+ is a random walk, i.e.
+ 
+\begin_inset Formula $Q(\cdot|x_{t})={\cal N}(\cdot|x_{t},\Sigma_{t}).$
+\end_inset
+
+ A popular choice of the scaling is 
+\begin_inset Formula $\Sigma_{t}\propto I$
+\end_inset
+
+.
+ When the (unknown) scale of the target density is not uniform across dimensions
+, or if there are strong correlations, the original AMH algorithm 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Haario1999,Andrieu2008"
+
+\end_inset
+
+ improves mixing by adaptively learning global covariance structure of 
+\begin_inset Formula $\pi$
+\end_inset
+
+ from the history of the Markov chain.
+ For cases where the local scaling does not match the global covariance
+ structure of 
+\begin_inset Formula $\pi$
+\end_inset
+
+, for instance when the support of the target is highly nonlinear, KAMH
+ 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+ improves mixing by learning the target covariance structure in a RKHS.
+ KAMH proposals are Gaussian with a covariance that matches the local covariance
+ of 
+\begin_inset Formula $\pi$
+\end_inset
+
+ around the current state 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, without requiring access to 
+\begin_inset Formula $\nabla\log\pi$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Hamiltonian Monte Carlo
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+Hamiltonian Monte Carlo (HMC) often overcomes random walk behaviour by utilising
+ deterministic, measure-preserving maps to generate efficient Markov transitions
+ that 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "neal2011mcmc,Betancourt2015"
+
+\end_inset
+
+.
+ Starting from the negative log unnormalised target density, referred to
+ as the 
+\emph on
+potential energy
+\emph default
+ 
+\begin_inset Formula $U(q)\propto-\log\pi(q)$
+\end_inset
+
+,
+\emph on
+ 
+\emph default
+we introduce an auxiliary 
+\emph on
+momentum
+\emph default
+ variable 
+\begin_inset Formula $p\sim\exp(-K(p))$
+\end_inset
+
+ with 
+\begin_inset Formula $p\in{\cal X}$
+\end_inset
+
+.
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Note that both potential and momentum are real-valued.
+\end_layout
+
+\end_inset
+
+ The joint distribution of 
+\begin_inset Formula $(p,q)$
+\end_inset
+
+ is then proportional to 
+\begin_inset Formula $\exp\left(-H(p,q)\right)$
+\end_inset
+
+, where 
+\begin_inset Formula $H(p,q):=K(p)+U(q)$
+\end_inset
+
+ is called the 
+\emph on
+Hamiltonian
+\emph default
+.
+ 
+\begin_inset Formula $H(p,q)$
+\end_inset
+
+ defines a 
+\emph on
+Hamiltonian flow
+\emph default
+, parametrised by a trajectory length 
+\begin_inset Formula $t\in\mathbb{R}$
+\end_inset
+
+, which is a map
+\emph on
+ 
+\begin_inset Formula $\phi_{t}^{H}:(p,q)\mapsto(p^{*},q^{*})$
+\end_inset
+
+
+\emph default
+ for which 
+\begin_inset Formula $H(p^{*},q^{*})=H(p,q)$
+\end_inset
+
+ for any 
+\begin_inset Formula $t\in\mathbb{R}$
+\end_inset
+
+.
+ This allows construction of 
+\begin_inset Formula $\pi$
+\end_inset
+
+-invariant Markov chains: for a chain at state 
+\begin_inset Formula $q=x_{t}$
+\end_inset
+
+, we repeatedly (i) re-sample 
+\begin_inset Formula $p'\sim\exp(-K(\cdot))$
+\end_inset
+
+, and then (ii) apply the Hamiltonian flow for time 
+\begin_inset Formula $t$
+\end_inset
+
+, giving 
+\begin_inset Formula $(p^{*},q^{*})=\phi_{t}^{H}(p',q$
+\end_inset
+
+).
+ The flow can be generated by the 
+\emph on
+Hamiltonian operator
+\emph default
+
+\begin_inset Formula 
+\begin{align}
+\hat{H} & :=\frac{\partial K}{\partial p}\frac{\partial}{\partial q}-\frac{\partial U}{\partial q}\frac{\partial}{\partial p}=:\hat{K}+\hat{U}.\label{eq:potential_energy_operator}
+\end{align}
+
+\end_inset
+
+In practice, 
+\begin_inset Formula $\hat{H}$
+\end_inset
+
+ is usually unavailable and we need to resort to approximations.
+ Here, we limit ourselves to the leap-frog integrator; see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "neal2011mcmc"
+
+\end_inset
+
+ for details.
+ To correct for discretisation error, a Metropolis acceptance procedure
+ can be applied: starting from 
+\begin_inset Formula $(p',q)$
+\end_inset
+
+, the end-point of the approximate trajectory is accepted with probability
+ 
+\begin_inset Formula $\min\left[1,\exp\left(-H(p^{*}q^{*})+H(q,p')\right)\right]$
+\end_inset
+
+.
+ HMC is often able to propose distant, uncorrelated moves with a high acceptance
+ probability.
+\end_layout
+
+\begin_layout Paragraph
+Intractable densities
+\end_layout
+
+\begin_layout Standard
+In many cases the gradient of 
+\begin_inset Formula $\log\pi(q)=-U(q)$
+\end_inset
+
+ is unavailable, leaving random-walk based methods as the state-of-the-art
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014,Andrieu2008"
+
+\end_inset
+
+.
+ KMC aims to overcome random-walk behaviour, so as to obtain significantly
+ more efficient sampling 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "neal2011mcmc"
+
+\end_inset
+
+.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Kernel Induced Hamiltonian Dynamics
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:kernel_hamiltonian_dynamics"
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:kernel_hmc"
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
+\end_inset
+
+KMC replaces the potential energy operator 
+\begin_inset Formula $\hat{U}$
+\end_inset
+
+ in
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:potential_energy_operator"
+
+\end_inset
+
+ by a kernel induced surrogate 
+\begin_inset Formula $\hat{U}_{k}$
+\end_inset
+
+ computed from the history of the Markov chain.
+ As we will see, this surrogate does not require gradients of the log-target
+ density.
+ The surrogate induces a kernel Hamiltonian flow, which can be numerically
+ simulated using standard 
+\begin_inset space \space{}
+\end_inset
+
+leap-frog integration.
+ As with the discretisation error in HMC, any deviation of the kernel induced
+ flow to the true flow is corrected via a Metropolis acceptance procedure.
+ Consequently, the stationary distribution of the Markov chain will remain
+ correct
+\emph on
+.
+\emph default
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+As usual when constructing adaptive MCMC algorithms, we will need to take
+ care when generating proposals based on the history of the Markov chain.
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Infinite Exponential Families in a RKHS
+\end_layout
+
+\begin_layout Standard
+We construct a kernel induced potential energy surrogate whose gradients
+ match the gradients of the true potential energy 
+\begin_inset Formula $\hat{U}$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:potential_energy_operator"
+
+\end_inset
+
+, or 
+\begin_inset Formula $\log\pi(x)$
+\end_inset
+
+, but without accessing 
+\begin_inset Formula $\pi$
+\end_inset
+
+ or 
+\begin_inset Formula $\nabla\pi$
+\end_inset
+
+ directly.
+ We fit an infinite dimensional exponential family model 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+ of the form
+\begin_inset Formula 
+\begin{equation}
+\exp\left(\langle f,k(x,\cdot)\rangle_{{\cal H}}-A(f)\right).\label{eq:infinite_exp_family}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here 
+\begin_inset Formula ${\cal H}$
+\end_inset
+
+ is a RKHS of real valued functions on 
+\begin_inset Formula ${\cal X}$
+\end_inset
+
+.
+ The RKHS has a uniquely associated symmetric, positive definite 
+\emph on
+kernel
+\emph default
+ 
+\begin_inset Formula $k:{\cal X}\times{\cal X}\rightarrow\mathbb{R}$
+\end_inset
+
+, which satisfies 
+\begin_inset Formula $f(x)=\langle f,k(x,\cdot)\rangle$
+\end_inset
+
+ for any 
+\begin_inset Formula $f\in{\cal H}$
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "BerTho04"
+
+\end_inset
+
+.
+ The canonical feature map 
+\begin_inset Formula $k(\cdot,x)\in{\cal H}$
+\end_inset
+
+ here takes the role of the 
+\emph on
+sufficient statistics
+\emph default
+ while 
+\begin_inset Formula $f\in{\cal H}$
+\end_inset
+
+ are the 
+\emph on
+natural parameters
+\emph default
+, and 
+\begin_inset Formula $A(f):=\log\int_{{\cal X}}\exp(\langle f,k(x,\cdot)\rangle_{{\cal H}})dx$
+\end_inset
+
+ is the cumulant generating function.
+
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ defines broad class of densities: when universal kernels are used, the
+ family is dense in the space of continuous densities on compact domains,
+ with respect to the Total Variation, KL, and Hellinger divergences 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Section 3"
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+.
+ It is possible to consistently fit an 
+\emph on
+unnormalised
+\emph default
+ version of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ by directly minimising the expected gradient mismatch between the model
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ and the true target density 
+\begin_inset Formula $\pi$
+\end_inset
+
+ (observed through samples).
+ This is achieved by generalizing the score matching approach 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Hyvarinen-05"
+
+\end_inset
+
+ to infinite dimensional parameter spaces.
+ The technique avoids the problem of dealing with the intractable 
+\begin_inset Formula $A(f)$
+\end_inset
+
+, and reduces the problem to solving a linear system.
+ More importantly, the approach is observed to be relatively robust to increasin
+g dimensions, as opposed to classic kernel density estimation.
+ We will return to the topic of estimation in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:estimators"
+
+\end_inset
+
+, where we develop two efficient approximate empirical estimators.
+ For now, assume access to an 
+\begin_inset Formula $f\in{\cal H}$
+\end_inset
+
+ such that 
+\begin_inset Formula $\nabla f(x)\approx\nabla\log\pi(x)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Kernel Induced Hamiltonian Flow
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:kernel_hmc_flow"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We define a kernel induced Hamiltonian operator 
+\begin_inset Formula $\hat{H}_{k}:=\hat{K}+\hat{U}_{k}$
+\end_inset
+
+, where 
+\begin_inset Formula $\hat{K}$
+\end_inset
+
+ is defined as in
+\change_deleted 456741484 1433169142
+ 
+\change_unchanged
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:potential_energy_operator"
+
+\end_inset
+
+, and we have replaced the potential energy 
+\begin_inset Formula $U$
+\end_inset
+
+ with the kernel surrogate 
+\begin_inset Formula $U_{k}=f$
+\end_inset
+
+.
+ This induces a kernel induced potential energy operator 
+\begin_inset Formula $\hat{U}_{k}=\frac{\partial U_{k}}{\partial p}\frac{\partial}{\partial q}$
+\end_inset
+
+ and a corresponding kernel Hamiltonian flow.
+ It is clear that the kernel induced potential energy operator results in
+ different trajectories than those induced by the true operator 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:potential_energy_operator"
+
+\end_inset
+
+.
+ That said, any bias on the resulting Markov chain, in addition to discretisatio
+n error from the leap-frog integrator, is naturally corrected for in the
+ Metropolis step.
+ We accept an end-point 
+\begin_inset Formula $\phi_{t}^{\hat{H}}(p',q)$
+\end_inset
+
+ of a trajectory starting at 
+\begin_inset Formula $(p',q)$
+\end_inset
+
+ along the 
+\emph on
+kernel induced 
+\emph default
+flow with probability
+\begin_inset Formula 
+\begin{equation}
+\min\left[1,\exp\left(H\left(\phi_{t}^{H_{k}}(p',q)\right)-H(p',q)\right)\right],\label{eq:kmc_accept_prob}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $H\left(\phi_{t}^{\hat{H}}(p',q)\right)$
+\end_inset
+
+ denotes evaluation of the 
+\emph on
+true
+\emph default
+ Hamiltonian at 
+\begin_inset Formula $\phi_{t}^{H_{k}}(p',q)$
+\end_inset
+
+.
+ Any deviations of the kernel induced flow from the true flow results in
+ a decreased acceptance probability 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kmc_accept_prob"
+
+\end_inset
+
+.
+ We therefore need to control the approximation quality of the kernel induced
+ potential energy to maintain high acceptance probability in practice.
+ See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:kmc_trajectories"
+
+\end_inset
+
+ for an illustrative example.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/gaussian_trajectories_hmc.eps
+	scale 55
+	BoundingBox 50bp 0bp 175bp 144bp
+	clip
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/gaussian_trajectories_acceptance_hmc.eps
+	scale 55
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace{.1cm}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/gaussian_trajectories_kmc.eps
+	scale 55
+	BoundingBox 50bp 0bp 175bp 144bp
+	clip
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/gaussian_trajectories_acceptance_kmc.eps
+	scale 55
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:kmc_trajectories"
+
+\end_inset
+
+Hamiltonian trajectories on a 2-dimensional standard Gaussian.
+ End points of such trajectories (red stars to blue stars) form the proposal
+ of HMC-like algorithms.
+ 
+\series bold
+Left:
+\series default
+ Plain Hamiltonian trajectories oscillate on a stable orbit, and acceptance
+ probability is close to one.
+ 
+\series bold
+Right:
+\series default
+ Kernel induced trajectories and acceptance probabilities on an estimated
+ energy function.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Two Efficient Estimators for Infinite Exponential Families in RKHS
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:estimators"
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+We now address the topic of estimating the infinite dimensional exponential
+ family model 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ from data.
+ The original estimator in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+ has large computational costs.
+ This is problematic in the adaptive MCMC context, where the model has to
+ be updated on a regular basis.
+ We propose two efficient approximations, each with its particular strengths
+ and weaknesses.
+ Both the original estimator for 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ and our approximations are based on score matching, see Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appendix_score_matching"
+
+\end_inset
+
+ for a brief review.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Infinite Exponential Families Lite
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+The original estimator of 
+\begin_inset Formula $f$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ takes a dual form in a RKHS sub-space spanned by 
+\begin_inset Formula $nd+1$
+\end_inset
+
+ kernel derivatives, 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Thm. 4"
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+.
+ The update of the proposal at the iteration 
+\begin_inset Formula $t$
+\end_inset
+
+ of MCMC requires inversion of a 
+\begin_inset Formula $(td+1)\times(td+1)$
+\end_inset
+
+ matrix.
+ This is clearly prohibitive if we are to run even a moderately large number
+ of iterations of a Markov chain.
+ Following 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, we take a simple approach to avoid prohibitive computational costs in
+ 
+\begin_inset Formula $t$
+\end_inset
+
+: we form a proposal using a random sub-sample of a fixed size 
+\begin_inset Formula $n$
+\end_inset
+
+ from the Markov chain history, 
+\begin_inset Formula $\mathbf{z}:=\{z_{i}\}_{i=1}^{n}\subseteq\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+.
+ In order to reduce excessive computational costs arising when 
+\begin_inset Formula $d$
+\end_inset
+
+ is large, we develop an approximation to the full dual solution in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+ by expressing the solution in terms of 
+\begin_inset Formula $\text{span}\left(\left\{ k(z_{i},\cdot)\right\} _{i=1}^{n}\right)$
+\end_inset
+
+, which covers the support of the true density by construction, and grows
+ with increasing 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+This growing subspace of RKHS basis functions
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Note that any sub-space could be used as long as the support of 
+\begin_inset Formula $\pi$
+\end_inset
+
+ is covered.
+\end_layout
+
+\end_inset
+
+ does not grow in 
+\begin_inset Formula $d$
+\end_inset
+
+ but only in 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ AG: I removed this since we don't have a proof, and it may well be that
+ we do need to increase the number of basis functions with increasing n
+ to get the best rates.
+\end_layout
+
+\end_inset
+
+ That is, we assume that the log unnormalised density of the model in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ takes the dual form
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+f(x)=\sum_{i=1}^{n}\alpha_{i}k(z_{i},x)\vspace{-.2cm},\label{eq:infinite_exp_family_lite}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\alpha\in\mathbb{R}^{n}$
+\end_inset
+
+ are real valued parameters that are obtained by minimising the empirical
+ score matching objective (see 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appendix_score_matching"
+
+\end_inset
+
+).
+ This representation is of a form similar to 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Section 4.1"
+key "Hyvarinen-07"
+
+\end_inset
+
+, the main differences being that the basis functions are chosen randomly,
+ the basis set grows with 
+\begin_inset Formula $n$
+\end_inset
+
+, and we will require an additional regularizing term.
+ The estimator is summarised in the following proposition, which is proved
+ in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appendix_lite_details"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:lite_estimator"
+
+\end_inset
+
+Given a set of samples 
+\begin_inset Formula $\mathbf{z}=\{z_{i}\}_{i=1}^{n}$
+\end_inset
+
+ and assuming 
+\begin_inset Formula $f(x)=\sum_{i=1}^{n}\alpha_{i}k(z_{i},x)$
+\end_inset
+
+ for the Gaussian kernel of the form 
+\begin_inset Formula $k(x,y)=\exp\left(-\sigma^{-1}\|x-y\|_{2}^{2}\right)$
+\end_inset
+
+, and 
+\begin_inset Formula $\lambda>0,$
+\end_inset
+
+ the unique minimiser of the 
+\begin_inset Formula $\lambda\Vert f\Vert_{{\cal H}}^{2}$
+\end_inset
+
+-regularised empirical score matching objective 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ is given by 
+\begin_inset Formula 
+\begin{equation}
+\hat{\alpha}_{\lambda}=-\frac{\sigma}{2}(C+\lambda I)^{-1}b,\label{eq:lite_estimator}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $b\in\mathbb{R}^{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $C\in\mathbb{R}^{n\times n}$
+\end_inset
+
+ with 
+\size footnotesize
+
+\begin_inset Formula 
+\[
+b=\sum_{\ell=1}^{d}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\text{ and }C=\sum_{\ell=1}^{d}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right],
+\]
+
+\end_inset
+
+ 
+\size default
+with entry-wise products 
+\begin_inset Formula $s_{\ell}:=x_{\ell}\odot x_{\ell}$
+\end_inset
+
+ and 
+\begin_inset Formula $D_{x}:=\text{diag}(x)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The estimator has a cost of 
+\begin_inset Formula ${\cal O}(n^{3}+dn^{2})$
+\end_inset
+
+ in computation (both for computing 
+\begin_inset Formula $C,b$
+\end_inset
+
+, and for inverting 
+\begin_inset Formula $C$
+\end_inset
+
+) and 
+\begin_inset Formula ${\cal O}(n^{2})$
+\end_inset
+
+ storage for a fixed random chain history sub-sample size 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ This can be further reduced to 
+\emph on
+linear
+\emph default
+ computation and storage via low-rank approximations to the kernel matrix
+ and conjugate gradient methods, which are derived in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appendix_lite_details"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Gradients of the estimated log-density are given as 
+\begin_inset Formula $\nabla f(x)=\sum_{i=1}^{n}\alpha_{i}\nabla k(x,x_{i})$
+\end_inset
+
+, i.e.
+ they simply require to evaluate gradients of the kernel function.
+ Evaluation and storage of 
+\begin_inset Formula $\nabla f(\cdot)$
+\end_inset
+
+ both cost 
+\begin_inset Formula ${\cal O}(dn)$
+\end_inset
+
+, which interestingly is independent of the target 
+\begin_inset Formula $\pi$
+\end_inset
+
+, and only depends on the sub-sample 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Exponential Families in Finite Feature Spaces
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+Instead of fitting an infinite-dimensional model on a subset of the available
+ data, the second estimator is based on fitting a finite dimensional approximati
+on using 
+\emph on
+all
+\emph default
+ available data 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+, in 
+\emph on
+primal
+\emph default
+ form.
+ As we will see, updating the estimator when a new data point arrives can
+ be done online.
+\end_layout
+
+\begin_layout Standard
+Define an 
+\begin_inset Formula $m$
+\end_inset
+
+-dimensional approximate
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+We deliberately don't state the form of the approximation yet, but will
+ give details later.
+\end_layout
+
+\end_inset
+
+ feature space 
+\begin_inset Formula ${\cal H}_{m}=\mathbb{R}^{m}$
+\end_inset
+
+, and denote by 
+\begin_inset Formula $\phi_{x}\in\mathbb{{\cal H}}^{m}$
+\end_inset
+
+ the embedding of a point 
+\begin_inset Formula $x\in{\cal X}=\mathbb{R}^{d}$
+\end_inset
+
+ into 
+\begin_inset Formula ${\cal H}_{m}=\mathbb{R}^{m}$
+\end_inset
+
+.
+ Assume that the embedding approximates the kernel function as a finite
+ rank expansion 
+\begin_inset Formula $k(x,y)\approx\phi_{x}^{\top}\phi_{y}$
+\end_inset
+
+.
+ The log unnormalised density of the infinite model 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ can be approximated in this feature space as
+\begin_inset Formula 
+\begin{align}
+f(x) & =\langle\theta,\phi_{x}\rangle_{{\cal H}_{m}}=\theta^{\top}\phi_{x}\label{eq:infinite_exp_family_random_feats}
+\end{align}
+
+\end_inset
+
+In order to fit 
+\begin_inset Formula $\theta\in\mathbb{R}^{m}$
+\end_inset
+
+, we again minimise the score matching objective in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appendix_score_matching"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:finite_estimator"
+
+\end_inset
+
+Given a set of samples 
+\begin_inset Formula $\mathbf{x}=\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+ and assuming 
+\begin_inset Formula $f(x)=\theta^{\top}\phi_{x}$
+\end_inset
+
+ for a finite dimensional feature embedding 
+\begin_inset Formula $x\mapsto\phi_{x}\in\mathbb{R}^{m}$
+\end_inset
+
+, and 
+\begin_inset Formula $\lambda>0,$
+\end_inset
+
+ the unique minimiser of the 
+\begin_inset Formula $\lambda\Vert\theta\Vert_{2}^{2}$
+\end_inset
+
+-regularised empirical score matching objective 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ is given by 
+\begin_inset Formula 
+\begin{equation}
+\hat{\theta}_{\lambda}:=(C+\lambda I)^{-1}b,\label{eq:finite_estimator}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula 
+\[
+b:=-\frac{1}{n}\sum_{i=1}^{t}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m},\quad\text{}\quad C:=\frac{1}{n}\sum_{i=1}^{t}\sum_{\ell=1}^{d}\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\in\mathbb{R}^{m\times m},
+\]
+
+\end_inset
+
+ with 
+\begin_inset Formula $\dot{\phi}_{x}^{\ell}:=\frac{\partial}{\partial x_{\ell}}\phi_{x}$
+\end_inset
+
+ and 
+\begin_inset Formula $\ddot{\phi}_{x}^{\ell}:=\frac{\partial^{2}}{\partial x_{\ell}^{2}}\phi_{x}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+An example feature embedding based on random Fourier features 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rahimi2007"
+
+\end_inset
+
+ and a standard Gaussian kernel is 
+\size footnotesize
+
+\begin_inset Formula $\phi_{x}=\sqrt{\frac{2}{m}}\left[\cos(\omega_{1}^{T}x+u_{1}),\dots,\cos(\omega_{m}^{T}x+u_{m})\right]$
+\end_inset
+
+
+\size default
+, with 
+\size footnotesize
+
+\begin_inset Formula $\omega_{i}\sim{\cal N}(\omega)$
+\end_inset
+
+
+\size default
+ and 
+\size footnotesize
+
+\begin_inset Formula $u_{i}\sim\texttt{Uniform}[0,2\pi]$
+\end_inset
+
+
+\size default
+.
+ The estimator has a one-off cost of 
+\begin_inset Formula ${\cal O}(tm^{2}+m^{3})$
+\end_inset
+
+ computation and 
+\begin_inset Formula ${\cal O}(m^{2})$
+\end_inset
+
+ storage.
+ However, given that we have computed a solution based on the Markov chain
+ history 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+, it is straightforward to update 
+\begin_inset Formula $C,b$
+\end_inset
+
+, and the solution 
+\begin_inset Formula $\hat{\theta}_{\lambda}$
+\end_inset
+
+ online, after a new point 
+\begin_inset Formula $x_{t+1}$
+\end_inset
+
+ arrives.
+ This is achieved by storing running averages and performing low-rank updates
+ of matrix inversions, and costs 
+\begin_inset Formula ${\cal O}(m^{2})$
+\end_inset
+
+ computation and storage, 
+\emph on
+independent
+\emph default
+ of 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ Further details are given in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appendix_finite_details"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Gradients of the estimated log-density are written 
+\begin_inset Formula $\nabla f(x)=\left[\nabla\phi_{x}\right]^{\top}\hat{\theta}$
+\end_inset
+
+ , i.e., they require the evaluation of the gradient of the feature space
+ embedding.
+ Both the evaluation and storage of 
+\begin_inset Formula $\nabla f(\cdot)$
+\end_inset
+
+ cost 
+\begin_inset Formula ${\cal O}(m)$
+\end_inset
+
+, which is again independent of 
+\begin_inset Formula $\pi$
+\end_inset
+
+ 
+\emph on
+and
+\emph default
+ the Markov chain history.
+\end_layout
+
+\begin_layout Section
+Kamiltonian Monte Carlo
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:KMC"
+
+\end_inset
+
+
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\series bold
+Kamiltonian Monte Carlo -- Pseudo-code
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Kamiltonian-Monte-Carlo"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\series bold
+\size footnotesize
+\emph on
+Input
+\emph default
+:
+\series default
+ Target (estimator) 
+\begin_inset Formula $\pi$
+\end_inset
+
+, adaptation schedule 
+\begin_inset Formula $a_{t}$
+\end_inset
+
+, HMC parameters,
+\end_layout
+
+\begin_layout Plain Layout
+
+\size footnotesize
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace{1cm}
+\end_layout
+
+\end_inset
+
+Size of basis 
+\begin_inset Formula $m$
+\end_inset
+
+ or sub-sample size 
+\begin_inset Formula $n$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+
+\size footnotesize
+At iteration 
+\begin_inset Formula $t+1$
+\end_inset
+
+, current state 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, history 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+
+\shape italic
+, 
+\emph on
+perform (1-4) with probability 
+\emph default
+
+\begin_inset Formula $a_{t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\size footnotesize
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "50text%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\size footnotesize
+KMC lite:
+\end_layout
+
+\begin_layout Enumerate
+
+\size footnotesize
+Update sub-sample 
+\begin_inset Formula $\mathbf{z}\subseteq\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+
+\size footnotesize
+Re-compute 
+\begin_inset Formula $C,b$
+\end_inset
+
+ from Prop.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:lite_estimator"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+
+\size footnotesize
+Solve 
+\begin_inset Formula $\hat{\alpha}_{\lambda}=-\frac{\sigma}{2}(C+\lambda I)^{-1}b$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+
+\size footnotesize
+\begin_inset Formula $\nabla f(x)\leftarrow\sum_{i=1}^{n}\alpha_{i}\nabla k(x,z_{i})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "50text%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+\size footnotesize
+KMC finite:
+\end_layout
+
+\begin_layout Enumerate
+
+\size footnotesize
+Update to 
+\begin_inset Formula $C,b$
+\end_inset
+
+ from Prop.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:finite_estimator"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+
+\size footnotesize
+Perform rank-
+\begin_inset Formula $d$
+\end_inset
+
+ update to 
+\begin_inset Formula $C^{-1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+
+\size footnotesize
+Update 
+\begin_inset Formula $\hat{\theta}_{\lambda}=(C+\lambda I)^{-1}b$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+
+\size footnotesize
+\begin_inset Formula $\nabla f(x)\leftarrow\left[\nabla\phi_{x}\right]^{\top}\hat{\theta}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[5.]
+\backslash
+setcounter{enumi}{3}
+\end_layout
+
+\end_inset
+
+
+\size footnotesize
+Propose 
+\begin_inset Formula $(p',x^{*})$
+\end_inset
+
+ with kernel induced Hamiltonian flow, using 
+\begin_inset Formula $\nabla_{x}U=\nabla_{x}f$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+[6.]
+\backslash
+setcounter{enumi}{3}
+\end_layout
+
+\end_inset
+
+
+\size footnotesize
+Perform Metropolis step using 
+\begin_inset Formula $\pi$
+\end_inset
+
+, 
+\begin_inset Formula $\qquad x_{t+1}\leftarrow x^{*}$
+\end_inset
+
+ w.p.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kmc_accept_prob"
+
+\end_inset
+
+ and 
+\begin_inset Formula $x_{t+1}\leftarrow x_{t}$
+\end_inset
+
+ otherwise
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
+\end_inset
+
+Constructing a kernel induced Hamiltonian flow as in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:kernel_hmc_flow"
+
+\end_inset
+
+ from the gradients of the infinite dimensional exponential family model
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+, and approximate estimators 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_lite"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_random_feats"
+
+\end_inset
+
+, we arrive at a gradient free, adaptive MCMC algorithm: 
+\emph on
+Kamiltonian Monte Carlo,
+\emph default
+ see Algorithm 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Kamiltonian-Monte-Carlo"
+
+\end_inset
+
+.
+ KMC overcomes random-walk behaviour of competing state-of-the-art
+\emph on
+ 
+\emph default
+samplers KAMH and AMH.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Computational Efficiency, Geometric Ergodicity, and Burn-in
+\end_layout
+
+\begin_layout Standard
+KMC finite using 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_random_feats"
+
+\end_inset
+
+ allows for online updates using the 
+\emph on
+full
+\emph default
+ Markov chain history and therefore is a more elegant solution than sub-sampling.
+ However, due to the parametric nature of this approximate model, the tails
+ of the estimator are not guaranteed to decay.
+ For example, the random Fourier features embedding described below Proposition
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:finite_estimator"
+
+\end_inset
+
+ contains periodic cosine functions and therefore oscillates in the tails
+ of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_random_feats"
+
+\end_inset
+
+, resulting in a reduced acceptance probability.
+ As we will demonstrate in the experiments, this problem does not appear
+ when KMC finite is initialised in high-density regions, and after burn-in.
+ In situations where this information about the target density is unknown,
+ and during burn-in, we suggest to use the lite estimator 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lite_estimator"
+
+\end_inset
+
+, whose gradients decay outside of the training data.
+ Consequently, in the tails or before burn-in completion, KMC lite is guaranteed
+ to fall back to a random walk, and smoothly transitions to HMC-like proposals
+ as the MCMC chain grows.
+ This is formalised in the following result, which comes at the expense
+ of increased computational costs and having to sub-sample the chain history.
+ We give intuition below, see Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appenidx_ergodicity_lite_proof"
+
+\end_inset
+
+ for the detailed proof.
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:ergodicity_kmc_lite"
+
+\end_inset
+
+Assume
+\emph on
+ 
+\begin_inset Formula $d=1$
+\end_inset
+
+,
+\emph default
+ 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+ is log-concave in the tails, regularity conditions of 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Thm 2.2"
+key "roberts1996geometric"
+
+\end_inset
+
+ (implying 
+\begin_inset Formula $\pi$
+\end_inset
+
+-irreducibility and smallness of compact sets), MCMC adaptation stops after
+ a fixed time, and a fixed number 
+\begin_inset Formula $L$
+\end_inset
+
+ of 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+-leapfrog steps.
+ If 
+\begin_inset Formula $\nabla f(x)\nearrow0$
+\end_inset
+
+ as 
+\begin_inset Formula $x\to\infty$
+\end_inset
+
+ and 
+\begin_inset Formula $\nabla f(x)\searrow0$
+\end_inset
+
+ as 
+\begin_inset Formula $x\to-\infty$
+\end_inset
+
+, and 
+\begin_inset Formula $\exists M:\forall x:\|\nabla f(x)\|_{2}\leq M$
+\end_inset
+
+, then KMC lite is geometrically ergodic from 
+\begin_inset Formula $\pi$
+\end_inset
+
+-almost any starting point.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Proof Sketch
+\end_layout
+
+\begin_layout Standard
+Define 
+\size footnotesize
+
+\begin_inset Formula $c(x^{(0)}):=\epsilon^{2}\sum_{i=0}^{L-1}\nabla f(x^{(i\epsilon)})/2$
+\end_inset
+
+
+\size default
+ and 
+\size footnotesize
+
+\begin_inset Formula $d(x^{(0)}):=\epsilon(\nabla f(x^{(0)})+\nabla f(x^{(L\epsilon)}))/2+\epsilon\sum_{i=1}^{L-1}\nabla f(x^{(i\epsilon)})$
+\end_inset
+
+,
+\size default
+ where 
+\begin_inset Formula $x^{(i\epsilon)}$
+\end_inset
+
+ is the 
+\begin_inset Formula $i$
+\end_inset
+
+-th point of the leapfrog integration from 
+\begin_inset Formula $x=x^{(0)}$
+\end_inset
+
+.
+ At 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, the marginal KMC proposal on position space looks like 
+\begin_inset Formula $x^{*}(p')=x_{t}+c(x_{t})+N\epsilon p'$
+\end_inset
+
+ where wlog.
+ 
+\begin_inset Formula $p'\sim\mathcal{N}(0,I)$
+\end_inset
+
+.
+ This is accepted with probability 
+\size footnotesize
+
+\begin_inset Formula $\text{acc}(x_{t},x^{*}(p'))=\min\left(1,\frac{\pi(x^{*}(p'))}{\pi(x_{t})}\exp\left(-\frac{1}{2}\left[p'd(x_{t})+d(x_{t})^{2}\right]\right)\right)$
+\end_inset
+
+
+\size default
+.
+ From the distribution of 
+\begin_inset Formula $p'$
+\end_inset
+
+, we have 
+\begin_inset Formula $c(x_{t})\overset{p}{\to}0$
+\end_inset
+
+ as 
+\begin_inset Formula $\Vert x_{t}\Vert_{2}\to\infty$
+\end_inset
+
+, and similarly for 
+\begin_inset Formula $d(x_{t})$
+\end_inset
+
+.
+ So for large 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, we have 
+\begin_inset Formula $x^{*}\approx x_{t}+L\epsilon p'$
+\end_inset
+
+ and 
+\begin_inset Formula $\text{acc}(x_{t},x^{*})\approx\min(1,\pi(x^{*})/\pi(x_{t}))$
+\end_inset
+
+, meaning in the tails the chain will behave as a Random Walk Metropolis.
+ Consequently, KMC lite is geometrically ergodic whenever the Random Walk
+ Metropolis is.
+ Generalisations to 
+\begin_inset Formula $d\geq2$
+\end_inset
+
+ require an additional curvature condition of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "roberts1996geometric"
+
+\end_inset
+
+ but are out of the scope of this paper.
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Vanishing adaptation
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:adaptive_subsampling"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+MCMC algorithms that use the history of the Markov chain for constructing
+ proposals might not be asymptotically correct.
+ We follow 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Sec. 4.2"
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+ and the idea of 
+\begin_inset Quotes eld
+\end_inset
+
+vanishing adaptation
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Andrieu2008"
+
+\end_inset
+
+, to avoid such biases.
+ Let 
+\begin_inset Formula $\left\{ a_{t}\right\} _{i=0}^{\infty}$
+\end_inset
+
+ be a schedule of decaying probabilities such that 
+\begin_inset Formula $\lim_{t\to\infty}a_{t}=0$
+\end_inset
+
+ and 
+\begin_inset Formula $\sum_{t=0}^{\infty}a_{t}=\infty$
+\end_inset
+
+.
+ We update the density gradient estimate according to that schedule in Algorithm
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Kamiltonian-Monte-Carlo"
+
+\end_inset
+
+.
+ Intuitively, adaptation becomes less likely as the MCMC chain is progressing,
+ but never fully stops while sharing asymptotic convergence with adaptation
+ that stops at a fixed point, 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Theorem 1"
+key "RobertsRosenthal2007"
+
+\end_inset
+
+.
+ Note that Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:ergodicity_kmc_lite"
+
+\end_inset
+
+ is a stronger statement about the convergence rate.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Experiments
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Experiments"
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
+\end_inset
+
+We start by quantifying performance of KMC finite on synthetic targets.
+ We emphasise that these results can be reproduced with the lite version.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+KMC finite: Stability of trajectories in high dimensions
+\end_layout
+
+\begin_layout Standard
+In order to quantify efficiency in growing dimensions, we study average
+ acceptance probabilities purely over trajectories from the origin along
+ the kernel induced Hamiltonian flow (no MCMC yet) on a standard Gaussian
+ target.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:kmc_trajectories_mean_acceptance"
+
+\end_inset
+
+ shows the average acceptance over 
+\begin_inset Formula $100$
+\end_inset
+
+ independent trials as a function of the number of data and of basis functions,
+ which are set to be equal 
+\begin_inset Formula $n=m$
+\end_inset
+
+, and of dimension 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ In dimensions up to 
+\begin_inset Formula $d\approx100$
+\end_inset
+
+, we are able to obtain acceptance probabilities comparable to plain HMC
+ with the finite estimator fitted in a few seconds on a laptop computer.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/average_accept_gaussian_target_kmc.eps
+	scale 50
+	BoundingBox 0bp 0bp 200bp 144bp
+	clip
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/average_accept_gaussian_target_N=2000.eps
+	scale 50
+	BoundingBox 5bp 0bp 200bp 144bp
+	clip
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/average_accept_gaussian_target_D=16.eps
+	scale 50
+	BoundingBox 5bp 0bp 206bp 144bp
+	clip
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/average_accept_gaussian_target_data_needs_kmc.eps
+	scale 50
+	BoundingBox 5bp 0bp 206bp 144bp
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:kmc_trajectories_mean_acceptance"
+
+\end_inset
+
+Acceptance probability of kernel induced Hamiltonian flow in high dimensions.
+ 
+\series bold
+Left:
+\series default
+ As a function of
+\series bold
+ 
+\begin_inset Formula $n=m$
+\end_inset
+
+
+\series default
+ (x-axis) and 
+\begin_inset Formula $d$
+\end_inset
+
+ (y-axis).
+ 
+\series bold
+Middle: 
+\series default
+Slices through left plot with error bars for a fixed 
+\begin_inset Formula $n=m$
+\end_inset
+
+ and as a function in 
+\series bold
+
+\begin_inset Formula $d$
+\end_inset
+
+
+\series default
+ (left), and for a fixed 
+\begin_inset Formula $d$
+\end_inset
+
+ as a function of 
+\begin_inset Formula $n=m$
+\end_inset
+
+ (right).
+ 
+\series bold
+Right:
+\series default
+ Number of data 
+\begin_inset Formula $n=m$
+\end_inset
+
+ needed to reach given acceptance probabilities as a function of 
+\begin_inset Formula $d$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+KMC finite: HMC-like mixing on a synthetic example
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:experiment_hmc_like_mixing"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We now show that KMC is able to match performance of HMC as it sees more
+ data.
+ We compare KMC, HMC, an isotropic random walk (RW), and KAMH on the 8-dimension
+al nonlinear banana-shaped target from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014,Haario1999"
+
+\end_inset
+
+.
+ To only quantify mixing, both KMC and KAMH use the same set of fixed burn-in
+ samples.
+ We quantify performance on estimating the target's mean, which is exactly
+ 
+\begin_inset Formula $\mathbf{0}$
+\end_inset
+
+.
+ We tune the scaling of KAMH and RW to achieve 23% acceptance.
+ We set HMC parameters to achieve 80% acceptance and then use the same parameter
+s for KMC.
+ We run all samplers for 2000+200 iterations from a random start point (chosen
+ from burn-in samples), discard the burn-in and compute average acceptance
+ rate, the norm of the empirical mean 
+\begin_inset Formula $\mathbb{\Vert\hat{E}}[x]\Vert$
+\end_inset
+
+, and average effective sample size (ESS) across dimensions.
+ For KAMH and KMC, we repeat the experiment for an increasing number of
+ burn-in samples and basis functions 
+\begin_inset Formula $m=n$
+\end_inset
+
+.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:experiment_synthetic_banana"
+
+\end_inset
+
+ shows the results as a function of 
+\begin_inset Formula $m=n$
+\end_inset
+
+.
+ KMC clearly outperforms RW and KAMH, and eventually achieves performance
+ close to HMC as 
+\begin_inset Formula $n=m$
+\end_inset
+
+ grows.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/banana_8_acc.eps
+	scale 50
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/banana_8_norm_of_mean.eps
+	scale 50
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/banana_8_ESS.eps
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:experiment_synthetic_banana"
+
+\end_inset
+
+Results for 8-dimensional synthetic Banana.
+ As the number of seen data increases, KMC performs close to HMC -- outperformin
+g KAMH and RW.
+ 80% error bars over 30 runs.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Subsection
+Behaviour in the tails
+\end_layout
+
+\begin_layout Plain Layout
+Trace and gradient norm of tails to illustrate that the online updates come
+ at the cost of wiggly tails.
+\end_layout
+
+\begin_layout Plain Layout
+Say that the above results can be reproduced with the lite estimator, it
+ is just more expensive to do this in a Markov chain.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+KMC lite: Pseudo-Marginal MCMC for GP Classification on real world data
+\end_layout
+
+\begin_layout Standard
+Following 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Section 5.1"
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, we next apply KMC to sample the marginal posterior over hyper-parameters
+ of a Gaussian Process Classification (GPC) model on the UCI Glass dataset
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Bache2013"
+
+\end_inset
+
+.
+ Note that HMC is 
+\emph on
+unavailable
+\emph default
+ for this problem, due to the intractability of the marginal data likelihood
+ given the hyper-parameters.
+ Our experimental protocol mostly follows 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Section 5.1"
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, but uses only 1200+5000 MCMC iterations.
+ We compare convergence in terms of all mixed moments of order up to 3 to
+ a set of benchmark samples (MMD 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Grettonetal12"
+
+\end_inset
+
+, lower is better).
+ KMC randomly uses between 1 and 10 leapfrog steps of a size chosen uniformly
+ in 
+\begin_inset Formula $[0.01,0.1]$
+\end_inset
+
+, a standard Gaussian momentum, and a cross-validation tuned kernel width
+ (tuned after burn-in), achieving 45% acceptance.
+ We did not extensively tune the HMC parameters of KMC as the current settings
+ were sufficient.
+ Both KMC and KAMH use 1000 samples from the chain history.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:experiment_gp_abc"
+
+\end_inset
+
+ (left) shows that KMC clearly outperforms both RW and the earlier state-of-the-
+art KAMH.
+ These results are backed by the average ESS (not plotted), which is around
+ 800 for KMC and is around 90 and 60 for KAMH and RW respectively.
+ All samplers took roughly 1h of computing time as most time is spent on
+ estimating the marginal likelihood, which is in line with 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Sec. 5.1"
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+KMC lite: Reduced simulations and no additional bias in ABC
+\end_layout
+
+\begin_layout Standard
+We now apply KMC in the context of Approximate Bayesian Computation (ABC),
+ which often is employed when the data likelihood is intractable but can
+ be simulated from, see e.g.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Sisson2010"
+
+\end_inset
+
+.
+ ABC-MCMC 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "marjoram2003markov"
+
+\end_inset
+
+, targets an approximate posterior, by constructing an unbiased Monte Carlo
+ estimator of the approximate likelihood.
+ As each such evaluation requires expensive simulations from the likelihood,
+ the goal of all ABC methods is to reduce the number of such simulations.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Meeds2015"
+
+\end_inset
+
+ recently proposed Hamiltonian ABC: combining the synthetic likelihood approach
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Wood:2010aa"
+
+\end_inset
+
+, with gradients based on stochastic finite differences.
+ We remark that this requires to simulate from the likelihood in 
+\emph on
+every 
+\emph default
+leapfrog step, and that the additional bias from Gaussian likelihood approximati
+on can be problematic.
+ In contrast, KMC does not require simulations to construct a proposal but
+ rather 'invests' simulations into an accept/reject step 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kmc_accept_prob"
+
+\end_inset
+
+ that ensures convergence to the 
+\emph on
+original
+\emph default
+ ABC target.
+ On a 
+\begin_inset Formula $10$
+\end_inset
+
+-dimensional skew-normal distribution 
+\begin_inset Formula $p(y|\theta)=2\mathcal{N}\left(\theta,I\right)\Phi\left(\left\langle \alpha,y\right\rangle \right)$
+\end_inset
+
+ with 
+\begin_inset Formula $\theta=\alpha=\mathbf{1}\cdot10$
+\end_inset
+
+, Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:experiment_gp_abc"
+
+\end_inset
+
+ (right) compares performance of RW, HABC (sticky random numbers and SPAS,
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Sec. 4.3, 4.4"
+key "Meeds2015"
+
+\end_inset
+
+), and KMC.
+ KMC mixes as well as HABC -- without suffering from a significant bias,
+ and at a factor of 
+\begin_inset Formula $L=50$
+\end_inset
+
+ reduced number of simulations per proposal.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/gp_target_results.eps
+	scale 50
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/abc_target_autocorr.pdf
+	scale 55
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/abc_target_marginal0.pdf
+	scale 55
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:experiment_gp_abc"
+
+\end_inset
+
+
+\series bold
+Left: 
+\series default
+Results for 9-dimensional marginal posterior over length scales of a GPC
+ model applied to the UCI Glass dataset.
+ The plots shows convergence of all mixed moments up to order 3 to a previously
+ generated heavily thinned benchmark sample used as ground truth (lower
+ MMD is better).
+ 
+\series bold
+Middle/right:
+\series default
+ ABC-MCMC auto-correlation and marginal 
+\begin_inset Formula $\theta_{1}$
+\end_inset
+
+ posterior for a 10-dimensional skew normal likelihood.
+ While KMC mixes as well as HABC, it does not suffer from a significant
+ bias (overlaps with RW) and requires fewer simulations per proposal.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: KMC matches mixing of HABC while not suffering from a positive bias
+ from a parametric likelihood approximation, also more likelihood evaluations.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Discussion
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Discussion"
+
+\end_inset
+
+We have introduced KMC, a kernel-based gradient free adaptive MCMC algorithm
+ that mimics HMC's behaviour via estimating target gradients in a RKHS.
+ In experiments, KMC outperforms random walk based sampling methods in up
+ to moderately high dimensions (
+\begin_inset Formula $d\leq100$
+\end_inset
+
+), including the recent kernel-based KAMH  
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+.
+ KMC is in particular useful when gradients of the target density are unavailabl
+e, such as PM-MCMC or ABC-MCMC, as HMC is not an option there.
+ We have proposed two efficient empirical estimators with orthogonal strengths
+ and weaknesses and given experimental evidence of the robustness of both.
+\end_layout
+
+\begin_layout Standard
+Future work includes establishing theoretical consistency and uniform convergenc
+e rates for the empirical estimators, and a thorough experimental study
+ in the ABC-MCMC context where we see KMC's biggest potential.
+ We will publish our code to reproduce all experimental results.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "local"
+options "unsrt"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+normalsize
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+onecolumn
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+Proofs & details
+\end_layout
+
+\begin_layout Subsection
+Score matching
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Appendix_score_matching"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+AG:
+\series default
+ Score matching references, 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Hyvarinen-05,Hyvarinen-07"
+
+\end_inset
+
+.
+ The latter gave solutions in terms of a finite mixture at fixed centres.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The presentation follows 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Hyvarinen-05"
+
+\end_inset
+
+.
+ We model the log unnormalised probability 
+\begin_inset Formula $\log\pi(x)$
+\end_inset
+
+ with a parametric model of the form 
+\begin_inset Formula 
+\begin{equation}
+\log\tilde{\pi}_{Z}(x;f):=\log\tilde{\pi}(x;f)-\log Z(f),\label{eq:score_matching_parametric_model}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $f$
+\end_inset
+
+ is a collection of parameters of yet unspecified dimension (c.f.
+ natural parameters 
+\begin_inset Formula $f$
+\end_inset
+
+ of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+), and 
+\begin_inset Formula $Z(f)$
+\end_inset
+
+ is an unknown normalising constant.
+ We aim to approximate 
+\begin_inset Formula $\pi$
+\end_inset
+
+ by 
+\begin_inset Formula $\tilde{\pi}$
+\end_inset
+
+, i.e., to find 
+\begin_inset Formula $\hat{f}$
+\end_inset
+
+ from a set of fixed 
+\begin_inset Formula $n$
+\end_inset
+
+ i.i.d.
+ samples
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+We assume a fixed sample set here but will use both the full Markov chain
+ history 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+ and a sub-sample of size 
+\begin_inset Formula $n$
+\end_inset
+
+ later.
+ 
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{n}\sim\pi$
+\end_inset
+
+, such that 
+\begin_inset Formula $\pi(x)\approx\tilde{\pi}(x;\hat{f})\times\text{const}$
+\end_inset
+
+.
+ From 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Eq. 2"
+key "Hyvarinen-05"
+
+\end_inset
+
+, the criterion being optimised is the expected squared distance between
+ score functions,
+\emph on
+ 
+\emph default
+
+\begin_inset Formula 
+\[
+J(f)=\frac{1}{2}\int_{{\cal X}}\pi(x)\left\Vert \psi(x;f)-\psi_{\pi}(x)\right\Vert _{2}^{2}dx,
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula 
+\[
+\tilde{\psi}(x;\theta)=\nabla\log\tilde{\pi}_{Z}(x;f)=\nabla\log\tilde{\pi}(x;f),
+\]
+
+\end_inset
+
+and 
+\begin_inset Formula $\psi(x)$
+\end_inset
+
+ is the derivative wrt 
+\begin_inset Formula $x$
+\end_inset
+
+ of the unknown true density 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+.
+ As shown in 
+\begin_inset CommandInset citation
+LatexCommand citet
+after "Theorem 1"
+key "Hyvarinen-05"
+
+\end_inset
+
+, the 
+\emph on
+Fisher score
+\emph default
+ takes the form
+\begin_inset Formula 
+\begin{equation}
+\hat{J}(f)=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};f)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};f)\right],\label{eq:score_matching_objective_sample_version}
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{equation}
+\psi_{\ell}(x;f)=\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}\qquad\text{and}\qquad\partial_{\ell}\psi_{\ell}(x;f)=\frac{\partial^{2}\log\tilde{\pi}(x;f)}{\partial x_{\ell}^{2}}.\label{eq:score_match_scores}
+\end{equation}
+
+\end_inset
+
+Both proposed approximate estimators of the infinite dimensional exponential
+ family model 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+ are based on minimising 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ using approximate version of the scores 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_scores"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsection
+Lite estimator
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Appendix_lite_details"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Proof of Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:lite_estimator"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The proof below extends the model in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Section 4.1"
+key "Hyvarinen-07"
+
+\end_inset
+
+.
+ We assume the model log-density 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_parametric_model"
+
+\end_inset
+
+ takes the dual form in Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:lite_estimator"
+
+\end_inset
+
+, then directly implement score functions 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_scores"
+
+\end_inset
+
+ and derive a matrix expression of the empirical score matching objective
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+, which can be minimised with a linear solve.
+\end_layout
+
+\begin_layout Proof
+As assumed the log unnormalised density takes the form
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\[
+f(x)=\sum_{i=1}^{m}\alpha_{i}k(x_{i},\xi)
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $k:\mathbb{R}^{d}\times\mathbb{R}^{d}\to\mathbb{R}$
+\end_inset
+
+ is the Gaussian kernel in the form
+\begin_inset Formula 
+\[
+k(x_{i},\xi)=\exp\left(-\sigma^{-1}\|x_{i}-x\|^{2}\right)=\exp\left(-\frac{1}{\sigma}\sum_{\ell=1}^{d}(x_{i\ell}-x_{\ell})^{2}\right).
+\]
+
+\end_inset
+
+The score functions from 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:score_match_scores"
+
+\end_inset
+
+ are then given by
+\begin_inset Formula 
+\[
+\psi_{\ell}(x;\alpha)=\frac{2}{\sigma}\sum_{i=1}^{n}\alpha_{i}(x_{i\ell}-x_{\ell})\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\begin{align*}
+\partial_{\ell}\psi_{\ell}(x;\alpha) & =\frac{-2}{\sigma}\sum_{i=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)+\left(\frac{2}{\sigma}\right)^{2}\sum_{i=1}^{m}\alpha_{i}(x_{i\ell}-x_{\ell})^{2}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)\\
+ & =\frac{2}{\sigma}\sum_{i=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{\ell})^{2}\right].
+\end{align*}
+
+\end_inset
+
+Substituting this into 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ yields
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{1}{m}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\alpha)+\frac{1}{2}\psi_{\ell}(x_{i};\alpha)^{2}\right]\\
+ & =\frac{2}{m\sigma}\sum_{\ell=1}^{d}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{j\ell})^{2}\right]\\
+ & \qquad+\frac{2}{m\sigma^{2}}\sum_{\ell=1}^{d}\sum_{i=1}^{n}\left[\sum_{j=1}^{n}\alpha_{j}(x_{j\ell}-x_{i\ell})\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}.
+\end{align*}
+
+\end_inset
+
+We now rewrite 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ in matrix form.
+ The expression for the term 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ being optimised is the sum of two terms.
+ 
+\end_layout
+
+\begin_layout Proof
+
+\series bold
+First term
+\series default
+:
+\begin_inset Formula 
+\[
+\sum_{\ell=1}^{d}\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{j\ell})^{2}\right]
+\]
+
+\end_inset
+
+ We only need to compute
+\begin_inset Formula 
+\begin{align*}
+ & \sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)(x_{i\ell}-x_{j\ell})^{2}\\
+= & \sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\left(x_{i\ell}^{2}+x_{j\ell}^{2}-2x_{i\ell}x_{j\ell}\right).
+\end{align*}
+
+\end_inset
+
+Define 
+\begin_inset Formula 
+\[
+x_{\ell}:=\left[\begin{array}{ccc}
+x_{1\ell} & \hdots & x_{m\ell}\end{array}\right]^{\top}.
+\]
+
+\end_inset
+
+The final term may be computed with the right ordering of operations,
+\begin_inset Formula 
+\[
+-2(\alpha\odot x_{\ell})^{\top}Kx_{\ell},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\alpha\odot x_{\ell}$
+\end_inset
+
+ is the entry-wise product.
+ The remaining terms are sums with constant row or column terms, define
+ 
+\begin_inset Formula $s_{\ell}:=x_{\ell}\odot x_{\ell}$
+\end_inset
+
+ with components 
+\begin_inset Formula $s_{i\ell}=x_{i\ell}^{2}$
+\end_inset
+
+.
+ Then
+\begin_inset Formula 
+\begin{align*}
+\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_{i}k_{ij}s_{j\ell} & =\alpha^{\top}Ks_{\ell}.
+\end{align*}
+
+\end_inset
+
+Likewise
+\begin_inset Formula 
+\[
+\sum_{i=1}^{n}\sum_{j=1}^{n}\alpha_{i}x_{i\ell}^{2}k_{ij}=(\alpha\odot s_{\ell})^{\top}K\mathbf{1}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+
+\series bold
+Second term
+\series default
+: Considering only the 
+\begin_inset Formula $\ell$
+\end_inset
+
+-th dimension, this is
+\begin_inset Formula 
+\begin{align*}
+ & \sum_{i=1}^{n}\left[\sum_{j=1}^{n}\alpha_{j}(x_{j\ell}-x_{i\ell})\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}
+\end{align*}
+
+\end_inset
+
+In matrix notation, the inner sum is a column vector,
+\begin_inset Formula 
+\[
+K(\alpha\odot x_{\ell})-\left(K\alpha\right)\odot x_{\ell}.
+\]
+
+\end_inset
+
+We take the entry-wise square and sum the resulting vector.
+ Denote by 
+\begin_inset Formula $D_{x}:=\text{diag}(x)$
+\end_inset
+
+, then the following two relations hold
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\begin{align*}
+K(\alpha\odot x) & =KD_{x}\alpha\\
+(K\alpha)\odot x & =D_{x}K\alpha.
+\end{align*}
+
+\end_inset
+
+This means that 
+\begin_inset Formula $J(\alpha)$
+\end_inset
+
+ as defined previously,
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{2}{n\sigma}\sum_{\ell=1}^{d}\left[\frac{2}{\sigma}\left[\alpha^{T}Ks_{\ell}+(\alpha\odot s_{\ell})^{T}K\mathbf{1}-2(\alpha\odot x_{\ell})^{T}Kx_{\ell}\right]-\alpha^{T}K\mathbf{1}\right]\\
+ & +\frac{2}{n\sigma^{2}}\sum_{\ell=1}^{d}\left[(\alpha\odot x_{\ell})^{T}K-x_{\ell}^{T}\odot(\alpha^{T}K)\right]\left[K(\alpha\odot x_{\ell})-(K\alpha)\odot x_{\ell}\right],
+\end{align*}
+
+\end_inset
+
+can be rewritten as
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\begin{align*}
+J(\alpha) & =\frac{2}{n\sigma}\alpha^{T}\sum_{\ell=1}^{d}\left[\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right]\\
+ & +\frac{2}{n\sigma^{2}}\alpha^{T}\left(\sum_{\ell=1}^{d}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\right)\alpha\\
+ & =\frac{2}{n\sigma}\alpha^{T}b+\frac{2}{n\sigma^{2}}\alpha^{T}C\alpha,
+\end{align*}
+
+\end_inset
+
+where
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\begin{align*}
+b & =\sum_{\ell=1}^{d}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{n}\\
+C & =\sum_{\ell=1}^{d}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\in\mathbb{R}^{n\times n}.
+\end{align*}
+
+\end_inset
+
+Assuming 
+\begin_inset Formula $C$
+\end_inset
+
+ is invertible, for 
+\begin_inset Formula $\lambda>0$
+\end_inset
+
+, this is minimised by 
+\emph on
+
+\begin_inset Formula 
+\[
+\hat{\alpha}=\frac{-\sigma}{2}C^{-1}b.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Similar to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+, we in practice add a term 
+\begin_inset Formula $\lambda\Vert\alpha\Vert^{2}$
+\end_inset
+
+ for 
+\begin_inset Formula $\lambda\in\mathbb{R}^{+}$
+\end_inset
+
+, in order to control the norm of the natural parameters in the RKHS 
+\begin_inset Formula $\Vert f\Vert_{{\cal H}}^{2}$
+\end_inset
+
+.
+ This results in the regularised and numerically more stable solution 
+\begin_inset Formula $\hat{\alpha}_{\lambda}:=(C+\lambda I)^{-1}b$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Linear computational costs via low-rank approximations
+\end_layout
+
+\begin_layout Standard
+Solving the linear system in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lite_estimator"
+
+\end_inset
+
+ requires 
+\begin_inset Formula ${\cal O}(n^{3})$
+\end_inset
+
+ computation and 
+\begin_inset Formula ${\cal O}(n^{2})$
+\end_inset
+
+ storage for a fixed random sub-sample of the chain history 
+\begin_inset Formula $\mathbf{z}.$
+\end_inset
+
+ In order to allow for large 
+\begin_inset Formula $n$
+\end_inset
+
+, and to exploit potential manifold structure in the RKHS, we apply a low-rank
+ approximation to the kernel matrix via incomplete Cholesky 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Alg. 5.12"
+key "shawe2004kernel"
+
+\end_inset
+
+, that is a standard way to achieve linear computational costs for kernel
+ methods.
+ We rewrite the kernel matrix 
+\begin_inset Formula 
+\[
+K\approx LL^{T},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $L\in\mathbb{R}^{n\times\ell}$
+\end_inset
+
+ is obtained via dual partial Gram–Schmidt orthonormalisation and costs
+ both 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ computation and storage.
+ Usually 
+\begin_inset Formula $\ell\ll n$
+\end_inset
+
+, and 
+\begin_inset Formula $\ell$
+\end_inset
+
+ can be chosen via an accuracy cut-off parameter on the kernel spectrum
+ in the same fashion as for other low-rank approximations, such as PCA
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In this paper, we solely use the Gaussian kernel, whose spectrum decays
+ exponentially fast.
+\end_layout
+
+\end_inset
+
+.
+ Given such a representation of 
+\begin_inset Formula $K$
+\end_inset
+
+, we can rewrite any matrix-vector product as 
+\begin_inset Formula 
+\[
+Kb\approx(LL^{T})b=L(L^{T}b),
+\]
+
+\end_inset
+
+ where each left multiplication of 
+\begin_inset Formula $L$
+\end_inset
+
+ costs 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ and we never need to store 
+\begin_inset Formula $LL^{T}$
+\end_inset
+
+.
+ This idea can be used to achieve costs of 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ when computing 
+\begin_inset Formula $b$
+\end_inset
+
+, and left-multiplying 
+\begin_inset Formula $C$
+\end_inset
+
+.
+ Combining the technique with conjugate gradient (CG) allows to solve 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lite_estimator"
+
+\end_inset
+
+ with a maximum of 
+\begin_inset Formula $n$
+\end_inset
+
+ such matrix-vector products, yielding a total computational cost of 
+\begin_inset Formula ${\cal O}(n^{2}\ell)$
+\end_inset
+
+.
+ In practice, we can monitor residuals and stop CG after a fixed number
+ of iterations 
+\begin_inset Formula $\tau\ll n$
+\end_inset
+
+, where 
+\begin_inset Formula $\tau$
+\end_inset
+
+ depends on the decay of the spectrum of 
+\begin_inset Formula $K$
+\end_inset
+
+.
+ We arrive at a 
+\emph on
+linear 
+\emph default
+total cost of 
+\begin_inset Formula ${\cal O}(n\ell\tau)$
+\end_inset
+
+ computation and 
+\begin_inset Formula ${\cal O}(n\ell)$
+\end_inset
+
+ storage.
+ CG also has the advantage of allowing for 'hot starts', i.e.
+ initialising the linear solver at a previous solution.
+ Further details will be published with the implementation.
+\end_layout
+
+\begin_layout Subsection
+Finite feature space estimator
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Appendix_finite_details"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Proof of Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:finite_estimator"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We assume the model log-density 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_parametric_model"
+
+\end_inset
+
+ takes the primal form in a finite dimensional feature space as in Proposition
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:finite_estimator"
+
+\end_inset
+
+, then again directly implement score functions 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_scores"
+
+\end_inset
+
+ and minimise the empirical score matching objective 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ via a linear solve.
+\end_layout
+
+\begin_layout Proof
+As assumed the log unnormalised density takes the form
+\begin_inset Formula 
+\[
+f(x)=\langle\theta,\phi_{x}\rangle_{{\cal H}_{m}}=\theta^{\top}\phi_{x},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $x\in\mathbb{R}^{d}$
+\end_inset
+
+ is embedded into a finite dimensional feature space 
+\begin_inset Formula ${\cal H}_{m}=\mathbb{R}^{m}$
+\end_inset
+
+ as 
+\begin_inset Formula $x\mapsto\phi_{x}$
+\end_inset
+
+.
+ The score function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_scores"
+
+\end_inset
+
+ then can be written as the simple linear form
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\begin{align}
+\psi_{\ell}(\xi;\theta) & =\theta^{T}\dot{\phi}_{x}^{\ell}\quad\text{and}\quad\partial_{\ell}\psi_{\ell}(\xi;\theta)=\theta^{T}\ddot{\phi}_{x}^{\ell},\label{eq:score_function_fourier}
+\end{align}
+
+\end_inset
+
+where we defined the 
+\begin_inset Formula $m$
+\end_inset
+
+-dimensional feature vector derivatives 
+\begin_inset Formula $\dot{\phi}_{x}^{\ell}:=\frac{\partial}{\partial x_{\ell}}\phi_{x}$
+\end_inset
+
+ and 
+\begin_inset Formula $\ddot{\phi}_{x}^{\ell}:=\frac{\partial^{2}}{\partial x_{\ell}^{2}}\phi_{x}$
+\end_inset
+
+.
+ Plugging those into the empirical score matching objective in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+, we arrive at
+\begin_inset Formula 
+\begin{align}
+J(\theta) & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};\theta)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};\theta)\right]\nonumber \\
+ & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\theta^{T}\ddot{\phi}_{x_{i}}^{\ell}+\frac{1}{2}\theta^{T}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\theta\right]\nonumber \\
+ & =\frac{1}{2}\theta^{T}C\theta-\theta^{T}b\label{eq:score_match_objective_random_feats}
+\end{align}
+
+\end_inset
+
+ where
+\begin_inset Formula 
+\begin{equation}
+b:=-\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}\quad\text{and}\quad C:=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\in\mathbb{R}^{m\times m}.\label{eq:b_and_C_random_feats}
+\end{equation}
+
+\end_inset
+
+Assuming 
+\begin_inset Formula $C$
+\end_inset
+
+ is invertible (trivial for 
+\begin_inset Formula $n\geq m$
+\end_inset
+
+), the objective is uniquely minimised by differentiating 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_objective_random_feats"
+
+\end_inset
+
+ wrt.
+ 
+\begin_inset Formula $\theta$
+\end_inset
+
+, setting to zero, and solving for 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+ This gives
+\begin_inset Formula 
+\begin{equation}
+\hat{\theta}:=C^{-1}b.\label{eq:score_match_linear_system_random_feats}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Again, similar to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+, we in practice add a term 
+\begin_inset Formula $\lambda\Vert\theta\Vert^{2}$
+\end_inset
+
+ for 
+\begin_inset Formula $\lambda\in\mathbb{R}^{+}$
+\end_inset
+
+ to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_objective_random_feats"
+
+\end_inset
+
+, in order to control the norm of the natural parameters 
+\begin_inset Formula $\theta\in{\cal H}^{m}$
+\end_inset
+
+.
+ This results in the regularised and numerically more stable solution 
+\begin_inset Formula $\hat{\theta}_{\lambda}:=(C+\lambda I)^{-1}b$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Next, we be more concrete about the approximate feature space 
+\begin_inset Formula ${\cal H}^{m}$
+\end_inset
+
+.
+ Note that the above approach can be combined with 
+\emph on
+any
+\emph default
+ set of finite dimensional approximate feature mappings 
+\begin_inset Formula $\phi_{x}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Example: Random Fourier features for the Gaussian kernel
+\end_layout
+
+\begin_layout Standard
+We now combine the finite dimensional approximate infinite dimensional exponenti
+al family model with the 
+\begin_inset Quotes eld
+\end_inset
+
+random kitchen sink
+\begin_inset Quotes erd
+\end_inset
+
+ framework made popular by 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rahimi2007"
+
+\end_inset
+
+.
+ Assume a translation invariant kernel 
+\begin_inset Formula $k(x,y)=\tilde{k}(x-y)$
+\end_inset
+
+.
+ Bochner's theorem gives the representation
+\begin_inset Formula 
+\[
+k(x,y)=\tilde{k}(x-y)=\int_{\mathbb{R}^{d}}\exp\left(i\omega^{T}(x-y)\right)d\Gamma(\omega),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\Gamma(\omega)$
+\end_inset
+
+ is the Fourier transform of the kernel.
+ An approximate feature mapping for such kernels can be obtained via dropping
+ imaginary terms and approximating the integral with Monte Carlo integration.
+ This gives 
+\begin_inset Formula 
+\[
+\phi_{x}=\sqrt{\frac{2}{m}}\left[\cos(\omega_{1}^{T}x+u_{1}),\dots,\cos(\omega_{m}^{T}x+u_{m})\right],
+\]
+
+\end_inset
+
+with fixed random basis vector realisations that depend on the kernel via
+ 
+\begin_inset Formula $\Gamma(\omega)$
+\end_inset
+
+,
+\begin_inset Formula 
+\begin{align*}
+\omega_{i}\sim\Gamma(\omega),
+\end{align*}
+
+\end_inset
+
+and fixed random offset realisations 
+\begin_inset Formula 
+\[
+u_{i}\sim\texttt{Uniform}[0,2\pi],
+\]
+
+\end_inset
+
+for 
+\begin_inset Formula $i=1\dots m$
+\end_inset
+
+.
+ It is easy to see that this approximation is consistent for 
+\begin_inset Formula $m\to\infty$
+\end_inset
+
+, i.e.
+\begin_inset Formula 
+\[
+\mathbb{E}_{\omega,b}\left[\phi_{x}^{T}\phi_{y}\right]=k(x,y).
+\]
+
+\end_inset
+
+See 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rahimi2007"
+
+\end_inset
+
+ for details and a uniform convergence bound.
+ Note that one can achieve logarithmic computational costs in 
+\begin_inset Formula $d$
+\end_inset
+
+ exploiting properties of Hadamard matrices, see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "le2013fastfood"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The score functions 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:score_function_fourier"
+
+\end_inset
+
+ are given by
+\begin_inset Formula 
+\begin{align*}
+\dot{\phi}_{\xi}^{\ell} & =\sqrt{\frac{2}{m}}\frac{\partial}{\partial\xi_{\ell}}\left[\cos(\omega_{1}^{T}\xi+u_{1}),\dots,\cos(\omega_{m}^{T}\xi+u_{m})\right]\\
+ & =-\sqrt{\frac{2}{m}}\left[\sin(\omega_{1}^{T}\xi+u_{1})\omega_{1\ell},\dots,\sin(\omega_{m}^{T}\xi+u_{m})\omega_{m\ell}\right]\\
+ & =-\sqrt{\frac{2}{m}}\left[\sin(\omega_{1}^{T}\xi+u_{1}),\dots,\sin(\omega_{m}^{T}\xi+u_{m})\right]\odot\left[\omega_{1\ell},\dots,\omega_{m\ell}\right],
+\end{align*}
+
+\end_inset
+
+where 
+\begin_inset Formula $\omega_{1\ell}$
+\end_inset
+
+ is the 
+\begin_inset Formula $\ell$
+\end_inset
+
+-th component of 
+\begin_inset Formula $\omega_{1}$
+\end_inset
+
+, and
+\begin_inset Formula 
+\begin{align*}
+\ddot{\phi}_{\xi}^{\ell}: & =-\sqrt{\frac{2}{m}}\frac{\partial}{\partial\xi_{\ell}}\left[\sin(\omega_{1}^{T}\xi+u_{1}),\dots,\sin(\omega_{m}^{T}\xi+u_{m})\right]\odot\left[\omega_{1\ell},\dots,\omega_{m\ell}\right]\\
+ & =-\sqrt{\frac{2}{m}}\left[\cos(\omega_{1}^{T}\xi+u_{1}),\dots,\cos(\omega_{m}^{T}\xi+u_{m})\right]\odot\left[\omega_{1\ell}^{2},\dots,\omega_{m\ell}^{2}\right]\\
+ & =-\phi_{\xi}\odot\left[\omega_{1\ell}^{2},\dots,\omega_{m\ell}^{2}\right],
+\end{align*}
+
+\end_inset
+
+where 
+\begin_inset Formula $\odot$
+\end_inset
+
+ is the element-wise product.
+ Consequently the gradient itself is given by 
+\begin_inset Formula 
+\[
+\nabla_{\xi}\phi_{\xi}=\begin{bmatrix}\dot{\phi}_{\xi}^{1}\\
+\vdots\\
+\dot{\phi}_{\xi}^{d}
+\end{bmatrix}\in\mathbb{R}^{d\times m}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+An example pair of translation invariant kernel and its Fourier transform
+ for the well-known 
+\emph on
+Gaussian kernel
+\emph default
+ are
+\begin_inset Formula 
+\[
+k(x,y)={\cal \exp}\left(-\gamma\Vert x-y\Vert_{2}^{2}\right)\quad\text{and}\quad\Gamma(\omega)={\cal N}\left(\omega_{i}\Big\vert\mathbf{0},\gamma^{2}I_{m}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Constant cost updates
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:rank_d_updates"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A convenient property of the finite feature space approximation is that
+ its primal representation of the solution allows to update 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:b_and_C_random_feats"
+
+\end_inset
+
+ in an online fashion.
+ When combined with MCMC, each new point 
+\begin_inset Formula $x_{t+1}$
+\end_inset
+
+ of the Markov chain history only adds a term of the form 
+\begin_inset Formula $-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t+1}}^{\ell}\in\mathbb{R}^{m}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sum_{\ell=1}^{d}\dot{\phi}_{x_{t+1}}^{\ell}(\dot{\phi}_{x_{t+1}}^{\ell})^{T}\in\mathbb{R}^{m\times m}$
+\end_inset
+
+ to the moving averages of 
+\begin_inset Formula $b$
+\end_inset
+
+ and 
+\begin_inset Formula $C$
+\end_inset
+
+ respectively.
+ Consequently, when at iteration 
+\begin_inset Formula $t$
+\end_inset
+
+, rather than fully re-computing 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:score_match_linear_system_random_feats"
+
+\end_inset
+
+ at the cost of 
+\begin_inset Formula ${\cal O}(tm^{3})$
+\end_inset
+
+ for every new point, we can use rank-
+\begin_inset Formula $d$
+\end_inset
+
+ updates to construct the minimiser of 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:score_match_objective_random_feats"
+
+\end_inset
+
+ from the solution of the previous iteration.
+ Assume we have computed the sum of all moving average terms, 
+\begin_inset Formula 
+\[
+\tilde{C}_{t}^{-1}:=\left(\sum_{i=1}^{t}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\right)^{-1}
+\]
+
+\end_inset
+
+from feature vectors derivatives 
+\begin_inset Formula $\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}$
+\end_inset
+
+ of some set of points 
+\begin_inset Formula $\left\{ x_{i}\right\} _{i=1}^{t}$
+\end_inset
+
+, and subsequently receive receive a new point 
+\begin_inset Formula $x_{t+1}$
+\end_inset
+
+.
+ We can then write the inverse of the new sum as
+\begin_inset Formula 
+\begin{align*}
+\tilde{C}_{t+1}^{-1}: & =\left(\tilde{C}_{t}+\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{t+1}}^{\ell}\left(\dot{\phi}_{x_{t+1}}^{\ell}\right)^{T}\right)\right)^{-1}.
+\end{align*}
+
+\end_inset
+
+This is the inverse of the rank-
+\begin_inset Formula $d$
+\end_inset
+
+ perturbed previous matrix 
+\begin_inset Formula $\tilde{C}_{t}$
+\end_inset
+
+.
+ We can therefore construct this inverse using 
+\begin_inset Formula $d$
+\end_inset
+
+ successive applications of the Sherman-Morrison-Woodbury formula for rank-one
+ updates 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gill1974methods"
+
+\end_inset
+
+, each using 
+\begin_inset Formula ${\cal O}(m^{2})$
+\end_inset
+
+ computation.
+ Since 
+\begin_inset Formula $\tilde{C}_{t}$
+\end_inset
+
+ is positive definite
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $C$
+\end_inset
+
+ is the empirical covariance of the feature derivatives 
+\begin_inset Formula $\dot{\phi}_{x_{i}}^{\ell}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+, we can represent its inverse as a numerically much more stable Cholesky
+ factorisation 
+\begin_inset Formula $\tilde{C}_{t}=\tilde{L}_{t}\tilde{L}_{t}^{T}$
+\end_inset
+
+.
+ It is also possible to perform cheap rank-
+\begin_inset Formula $d$
+\end_inset
+
+ updates of such Cholesky factors, see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gill1974methods"
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "seeger2004low"
+
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+We use the open-source implementation provided at 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/jcrudy/choldate
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
+ Denote by 
+\begin_inset Formula $\tilde{b}_{t}$
+\end_inset
+
+ the sum of the moving average 
+\begin_inset Formula $b$
+\end_inset
+
+.
+ We solve 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_linear_system_random_feats"
+
+\end_inset
+
+ as 
+\begin_inset Formula 
+\begin{align*}
+\hat{\theta} & =C^{-1}b=\left(\frac{1}{t}\tilde{C}_{t}\right)^{-1}\left(\frac{1}{t}\tilde{b}_{t}\right)=\tilde{C}_{t}^{-1}\tilde{b}_{t}=\tilde{L}_{t}^{-T}\tilde{L}_{t}^{-1}\tilde{b}_{t},
+\end{align*}
+
+\end_inset
+
+using cheap triangular back-substitution from 
+\begin_inset Formula $\tilde{L}_{t}$
+\end_inset
+
+, and never storing 
+\begin_inset Formula $\tilde{C}_{t}^{-1}$
+\end_inset
+
+ or 
+\begin_inset Formula $\tilde{L}_{t}^{-1}$
+\end_inset
+
+ explicitly.
+\end_layout
+
+\begin_layout Standard
+Using such updates, the computational costs for updating the approximate
+ infinite dimensional exponential family model in 
+\emph on
+every 
+\emph default
+iteration of the Markov chain are 
+\begin_inset Formula ${\cal O}(dm^{2})$
+\end_inset
+
+, which 
+\emph on
+constant in 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ 
+\emph default
+We can therefore use 
+\emph on
+all
+\emph default
+ points in the history for constructing a proposal -- without the previously
+ exploding computational costs of 
+\begin_inset Formula ${\cal O}(tdm^{3})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Algorithmic description:
+\end_layout
+
+\begin_layout Enumerate
+Update sums 
+\begin_inset Formula 
+\[
+\tilde{b}_{t+1}\leftarrow\tilde{b}_{t}-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t+1}}^{\ell}\quad\text{and}\quad\tilde{C}_{t+1}\leftarrow\tilde{C}_{t}+\frac{1}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t+1}}^{\ell}(\dot{\phi}_{x_{t+1}}^{\ell})^{T}
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Enumerate
+Perform rank-
+\begin_inset Formula $d$
+\end_inset
+
+ update to obtain updated Cholesky factorisation 
+\begin_inset Formula $\tilde{L}_{t+1}\tilde{L}_{t+1}^{T}=\tilde{C}_{t+1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Update approximate infinite dimensional exponential family parameters
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\theta}\leftarrow\tilde{L}_{t+1}^{-T}\tilde{L}_{t+1}^{-1}\tilde{b}_{t+1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Ergodicity of KMC lite
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Appenidx_ergodicity_lite_proof"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Notation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $P_{K}$
+\end_inset
+
+ denotes the transition kernel of KMC lite and 
+\begin_inset Formula $Q$
+\end_inset
+
+ the proposal.
+ 
+\end_layout
+
+\end_inset
+
+Denote by 
+\begin_inset Formula $\alpha(x_{t},x^{*}(p'))$
+\end_inset
+
+ is the probability of accepting a 
+\begin_inset Formula $(p',x^{*})$
+\end_inset
+
+ proposal at state 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $a\wedge b=\min(a,b)$
+\end_inset
+
+.
+ Define 
+\begin_inset Formula $c(x_{0}):=\epsilon^{2}\sum_{i=0}^{L-1}\nabla f(x^{(i\epsilon)})/2$
+\end_inset
+
+ and 
+\begin_inset Formula $d(x):=\epsilon(\nabla f(x)+\nabla f(x^{(L\epsilon)}))/2+\epsilon\sum_{i=1}^{L-1}\nabla f(x^{(i\epsilon)})$
+\end_inset
+
+, where 
+\begin_inset Formula $x^{(i\epsilon)}$
+\end_inset
+
+ is the 
+\begin_inset Formula $i$
+\end_inset
+
+-th point of the leapfrog integration from 
+\begin_inset Formula $x=x^{(0)}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Proof of Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:ergodicity_kmc_lite"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+We assumed 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+ is log-concave in the tails, meaning 
+\begin_inset Formula $\exists x_{U}>0$
+\end_inset
+
+ s.t.
+ for 
+\begin_inset Formula $x^{*}>x_{t}>x_{U}$
+\end_inset
+
+, we have 
+\begin_inset Formula $\pi(x^{*})/\pi(x_{t})\leq e^{-\alpha_{1}(\Vert x^{*}\Vert_{2}-\Vert x_{t}\Vert_{2})}$
+\end_inset
+
+ and for 
+\begin_inset Formula $x_{t}>x^{*}>x_{U}$
+\end_inset
+
+, we have 
+\begin_inset Formula $\pi(x^{*})/\pi(x_{t})\geq e^{-\alpha_{1}(\Vert x^{*}\Vert_{2}-\Vert x_{t}\Vert_{2})}$
+\end_inset
+
+, and a similar condition holds in the negative tail.
+ Furthermore, we assumed fixed HMC parameters: 
+\begin_inset Formula $L$
+\end_inset
+
+ leapfrog steps 
+\begin_inset Formula $L$
+\end_inset
+
+ of size 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+, and wlog the identity mass matrix 
+\begin_inset Formula $I$
+\end_inset
+
+.
+ Following 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "roberts1996geometric,mengersen1996rates"
+
+\end_inset
+
+, it is sufficient to show 
+\begin_inset Formula 
+\[
+\limsup_{\Vert x_{t}\Vert_{2}\to\infty}\int\left[e^{s(\Vert x^{*}(p')\Vert_{2}-\Vert x_{t}\Vert_{2})}-1\right]\alpha(x_{t},x^{*}(p'))\mu(dp')<0,
+\]
+
+\end_inset
+
+for some 
+\begin_inset Formula $s>0$
+\end_inset
+
+, where 
+\begin_inset Formula $\mu(\cdot)$
+\end_inset
+
+ is a standard Gaussian measure.
+ Denoting the integral 
+\begin_inset Formula $I_{-\infty}^{\infty}$
+\end_inset
+
+, we split it into 
+\begin_inset Formula 
+\[
+I_{-\infty}^{-x_{t}^{\delta}}+I_{-x_{t}^{\delta}}^{x_{t}^{\delta}}+I_{x_{t}^{\delta}}^{\infty},
+\]
+
+\end_inset
+
+for some 
+\begin_inset Formula $\delta\in(0,1)$
+\end_inset
+
+.
+ We show that the first and third terms decay to zero whilst the second
+ remains strictly negative as 
+\begin_inset Formula $x_{t}\to\infty$
+\end_inset
+
+ (a similar argument holds as 
+\begin_inset Formula $x_{t}\to-\infty$
+\end_inset
+
+).
+ Taking 
+\begin_inset Formula $I_{-x_{t}^{\delta}}^{x_{t}^{\delta}}$
+\end_inset
+
+, we can choose an 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ large enough that 
+\begin_inset Formula $x_{t}-C-L\epsilon x_{t}^{\delta}>x_{U}$
+\end_inset
+
+, 
+\begin_inset Formula $-\gamma_{1}<c(x_{t}-x_{t}^{\delta})<0$
+\end_inset
+
+ and 
+\begin_inset Formula $-\gamma_{2}<d(x_{t}-x_{t}^{\delta})<0$
+\end_inset
+
+.
+ So for 
+\begin_inset Formula $p'\in(0,x_{t}^{\delta})$
+\end_inset
+
+ we have 
+\begin_inset Formula 
+\[
+L\epsilon p'>x^{*}-x_{t}>L\epsilon p'-\gamma_{1}\implies e^{-\alpha_{1}(-\gamma_{1}+L\epsilon p')}\geq e^{-\alpha_{1}(x^{*}-x_{t})}\geq\pi(x^{*})/\pi(x_{t}),
+\]
+
+\end_inset
+
+where the last inequality is from (i).
+ For 
+\begin_inset Formula $p'\in(\gamma_{2}^{2}/2,x_{t}^{\delta})$
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\alpha(x_{t},x^{*})\leq1\wedge\frac{\pi(x^{*})}{\pi(x_{t})}\exp\left(p'\gamma_{2}/2-\gamma_{2}^{2}/2\right)\leq1\wedge\exp\left(-\alpha_{2}p'+\alpha_{1}\gamma_{1}-\gamma_{2}^{2}/2\right),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ is large enough that 
+\begin_inset Formula $\alpha_{2}=\alpha_{1}L\epsilon-\gamma_{2}/2>0$
+\end_inset
+
+.
+ Similarly for 
+\begin_inset Formula $p'\in(\gamma_{1}/L\epsilon,x_{t}^{\delta})$
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+e^{sL\epsilon p'}-1\geq e^{s(x^{*}-x_{t})}-1\geq e^{s(L\epsilon p'-\gamma_{1})}-1>0.
+\]
+
+\end_inset
+
+Because 
+\begin_inset Formula $\gamma_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\gamma_{2}$
+\end_inset
+
+ can be chosen to be arbitrarily small, then for large enough 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+ we will have 
+\begin_inset Formula 
+\begin{align}
+0<I_{0}^{x_{t}^{\delta}} & \leq\int_{\gamma_{1}/L\epsilon}^{x_{t}^{\delta}}[e^{sL\epsilon p'}-1]\exp\left(-\alpha_{2}p'+\alpha_{1}\gamma_{1}-\gamma_{2}^{2}/2\right)\mu(dp')+I_{0}^{\gamma_{1}/L\epsilon}\nonumber \\
+ & =e^{c_{1}}\int_{\gamma_{1}/L\epsilon}^{x_{t}^{\delta}}[e^{s_{2}p'}-1]e^{-\alpha_{2}p'}\mu(dp')+I_{0}^{\gamma_{1}/L\epsilon},\label{eqn1}
+\end{align}
+
+\end_inset
+
+where 
+\begin_inset Formula $c_{1}=\alpha_{1}\gamma_{1}-\gamma_{2}^{2}/2>0$
+\end_inset
+
+ for large enough 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, as 
+\begin_inset Formula $\gamma_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\gamma_{2}$
+\end_inset
+
+ are of the same order.
+ Now turning to 
+\begin_inset Formula $p'\in(-x_{t}^{\delta},0)$
+\end_inset
+
+, we can use an exact rearrangement of the same argument (noting that 
+\begin_inset Formula $c_{1}$
+\end_inset
+
+ can be made arbitrarily small) to get 
+\begin_inset Formula 
+\begin{equation}
+I_{-x_{t}^{\delta}}^{0}\leq e^{c_{1}}\int_{\gamma_{1}/L\epsilon}^{x_{t}^{\delta}}[e^{-s_{2}p'}-1]\mu(dp')<0.\label{eqn2}
+\end{equation}
+
+\end_inset
+
+Combining 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eqn1"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eqn2"
+
+\end_inset
+
+ and rearranging as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Theorem 3.2"
+key "mengersen1996rates"
+
+\end_inset
+
+ shows that 
+\begin_inset Formula $I_{-x_{t}^{\delta}}^{x_{t}^{\delta}}$
+\end_inset
+
+ is strictly negative in the limit if 
+\begin_inset Formula $s_{2}=sL\epsilon$
+\end_inset
+
+ is chosen small enough, as 
+\begin_inset Formula $I_{0}^{\gamma_{2}/L\epsilon}$
+\end_inset
+
+ can also be made arbitrarily small.
+\end_layout
+
+\begin_layout Proof
+For 
+\begin_inset Formula $I_{-\infty}^{-x_{t}^{\delta}}$
+\end_inset
+
+ it suffices to note that the Gaussian tails of 
+\begin_inset Formula $\mu(\cdot)$
+\end_inset
+
+ will dominate the exponential growth of 
+\begin_inset Formula $e^{s(\Vert x^{*}(p')\Vert_{2}-\Vert x_{t}\Vert_{2})}$
+\end_inset
+
+ meaning the integral can be made arbitrarily small by choosing large enough
+ 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, and the same argument holds for 
+\begin_inset Formula $I_{x_{t}^{\delta}}^{\infty}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Various
+\end_layout
+
+\begin_layout Paragraph
+Free parameters
+\end_layout
+
+\begin_layout Standard
+KMC, for both the lite and the finite estimator has two free parameters:
+ the Gaussian kernel bandwidth 
+\begin_inset Formula $\sigma$
+\end_inset
+
+, and the regularisation parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ Earlier adaptive kernel-based MCMC methods, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, did not cover choosing parameters.
+ As KMC's performance is eventually tied with the quality of the approximate
+ infinite dimensional exponential family model in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_lite"
+
+\end_inset
+
+ or 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_random_feats"
+
+\end_inset
+
+, we can use the score matching objective function in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_match_objective_random_feats"
+
+\end_inset
+
+ to compare 
+\begin_inset Formula $\sigma,\lambda$
+\end_inset
+
+ pairs via corss-validation in a principled way.
+\end_layout
+
+\end_body
+\end_document
