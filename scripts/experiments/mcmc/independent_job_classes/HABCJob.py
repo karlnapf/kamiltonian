@@ -36,7 +36,7 @@ class DummyHABCTarget(object):
     
     def grad(self, theta):
 #         logger.debug("Computing SPSA gradient")
-        g_est = SPSA(self.log_lik, theta, stepsize=.2)
+        g_est = SPSA(self.log_lik, theta, stepsize=.05)
         
         return g_est + self.abc_target.prior.grad(theta)
     
