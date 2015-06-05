@@ -251,7 +251,7 @@ key "Andrieu2009a"
 
 , the posterior density does not have an analytic expression even up to
  a normalising constant.
- Therefore, it cannot be evaluated at any given point, only estimated, e.g.
+ Therefore, it only be estimated at any given point, e.g.
  Bayesian Gaussian Process classification 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -279,7 +279,7 @@ key "Sisson2010"
 .
  In both cases, plain HMC cannot be applied, leaving random walk methods
  as the only mature alternative.
- There have been recent efforts to mimic HMC's behaviour using stochastic
+ Recently, there have been efforts to mimic HMC's behaviour using stochastic
  gradients from mini-batches in Big Data 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -296,7 +296,7 @@ key "Meeds2015"
 
 .
  However, stochastic gradient based HMC methods often suffer from low acceptance
- rates or additional, hard to quantify bias f 
+ rates or additional bias that is hard to quantify 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Betancourt2015a"
@@ -399,9 +399,9 @@ key "Hyvarinen-05"
 \end_inset
 
 .
- This is a recently proposed non-parametric method to model the log unnormalised
- target density as a RKHS function, and has been shown to approximate a
- rich class of density functions arbitrarily well.
+ This is a non-parametric method to model the log unnormalised target density
+ as a RKHS function, and has been shown to approximate a rich class of density
+ functions arbitrarily well.
  More importantly, the method has been empirically observed to be relatively
  robust to increasing dimensions -- in sharp contrast to classical kernel
  density estimation, 
@@ -413,8 +413,9 @@ key "wasserman2006all"
 \end_inset
 
 .
- A related approach is to use Gaussian Process (GP) as an emulator the log
- target density in order to speed up HMC 
+ A related approach with a slightly orthogonal goal is to use a Gaussian
+ Process (GP) as an emulator for the target density in order to speed up
+ HMC 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Rasmussen2003"
@@ -533,7 +534,7 @@ Let
 \begin_inset Formula $\mathcal{X}=\mathbb{R}^{d}$
 \end_inset
 
- be the domain of interest, and denote the unnormalised target density on
+ be the domain of interest and denote the unnormalised target density on
  
 \begin_inset Formula $\mathcal{X}$
 \end_inset
@@ -619,7 +620,7 @@ Unavailable due to analytic intractability, as opposed to computationally
 \end_inset
 
 , i.e.
- that we do can neither evaluate 
+ that we can neither evaluate 
 \begin_inset Formula $\pi(x)$
 \end_inset
 
@@ -627,11 +628,12 @@ Unavailable due to analytic intractability, as opposed to computationally
 \begin_inset Formula $\nabla\log\pi(x)$
 \end_inset
 
- for any 
-\begin_inset Formula $x$
-\end_inset
 
- (throughout the paper 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Throughout the paper 
 \begin_inset Formula $\nabla$
 \end_inset
 
@@ -640,7 +642,16 @@ Unavailable due to analytic intractability, as opposed to computationally
 \begin_inset Formula $x$
 \end_inset
 
-), but can compute unbiased estimates of 
+.
+\end_layout
+
+\end_inset
+
+ for any 
+\begin_inset Formula $x$
+\end_inset
+
+, but can compute unbiased estimates of 
 \begin_inset Formula $\pi(x)$
 \end_inset
 
@@ -701,7 +712,7 @@ reference "eq:proposal"
 
 .
  When the (unknown) scale of the target density is not uniform across dimensions
-, or their are strong correlations, the original AMH algorithm 
+ or there are strong correlations, the original AMH algorithm 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Haario1999"
@@ -934,8 +945,8 @@ key "Andrieu2008"
 \end_inset
 
 .
- It is well known that overcoming random-walk behaviour can result in significan
-tly more efficient sampling 
+ KMC aims to overcome random-walk behaviour, which is well known to result
+ in significantly more efficient sampling 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "neal2011mcmc"
@@ -1525,11 +1536,11 @@ reference "eq:infinite_exp_family"
 
 \end_inset
 
- takes a dual form and lies in 
-\begin_inset Formula $\text{span}\left\{ k(x_{i\ell},\cdot)\right\} _{i,\ell=1}^{n,d}$
+ takes a dual form in a RKHS sub-space spanned by 
+\begin_inset Formula $nd+1$
 \end_inset
 
-, 
+ kernel derivatives, 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "Thm. 4"
@@ -1543,7 +1554,7 @@ key "SriFukKumGreHyv14"
 \end_inset
 
  of MCMC would require an inversion of a 
-\begin_inset Formula $td\times td$
+\begin_inset Formula $(td+1)\times(td+1)$
 \end_inset
 
  matrix.
@@ -1630,7 +1641,7 @@ where
 \end_inset
 
  are real valued parameters that are obtained via minimising the empirical
- score matching objective 
+ score matching objective (see 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_objective_sample_version"
@@ -1644,16 +1655,16 @@ reference "sub:Appendix_score_matching"
 
 \end_inset
 
-.
- The estimator is summarised in the following proposition (proof is given
- in Appendix 
+).
+ The estimator is summarised in the following proposition and aproof is
+ given in Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Appendix_lite_details"
 
 \end_inset
 
-).
+.
 \end_layout
 
 \begin_layout Proposition
@@ -2444,9 +2455,9 @@ reference "eq:infinite_exp_family_random_feats"
 
  we arrive at a gradient free, adaptive MCMC algorithm: 
 \emph on
-Kamiltonian Monte Carlo, 
+Kamiltonian Monte Carlo,
 \emph default
-see Algorithm 
+ see Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:Kamiltonian-Monte-Carlo"
@@ -2454,6 +2465,11 @@ reference "alg:Kamiltonian-Monte-Carlo"
 \end_inset
 
 .
+ KMC overcomes random-walk behaviour of competing state-of-the-art
+\emph on
+ 
+\emph default
+samplers KAMH and AMH.
 \end_layout
 
 \begin_layout Paragraph
@@ -2999,7 +3015,7 @@ y.
 
 , and average effective sample size (ESS) across dimensions.
  For KAMH and KMC, we repeat the experiment for an increasing number of
- samples/basis functions 
+ samples and basis functions 
 \begin_inset Formula $m=n$
 \end_inset
 
@@ -3011,7 +3027,7 @@ reference "fig:experiment_synthetic_banana"
 
 \end_inset
 
- shows results as a function of data used.
+ shows the results as a function of data used.
  KMC clearly outperforms RW and KAMH, and almost matches performance of
  HMC.
 \end_layout
