@@ -26,7 +26,6 @@ statistics['min_ess'] = min_ess
 
 def kmc_generator(num_warmup, thin_step):
     D = 10
-    start = np.random.randn(D) * 0
     
     step_size_min = 0.01
     step_size_max = .1
@@ -38,7 +37,9 @@ def kmc_generator(num_warmup, thin_step):
     
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
     
-    target = ABCSkewNormalPosterior()
+    abc_target = ABCSkewNormalPosterior(theta_true=np.ones(D)*10)
+    start = abc_target.theta_true
+    
     Z = np.load("../ground_truth/benchmark_samples.arr")[:1000]
     learn_parameters = False
     force_relearn_parameters = False
@@ -52,7 +53,7 @@ def kmc_generator(num_warmup, thin_step):
         
     logger.info("Using sigma=%.6f" % sigma)
     
-    job = KMCLiteJob(Z, sigma, lmbda, target,
+    job = KMCLiteJob(Z, sigma, lmbda, abc_target,
                             momentum, num_iterations,
                             start,
                             num_steps_min, num_steps_max, step_size_min, step_size_max,

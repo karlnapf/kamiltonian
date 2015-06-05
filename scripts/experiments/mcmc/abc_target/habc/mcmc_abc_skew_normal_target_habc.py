@@ -24,7 +24,6 @@ statistics['min_ess'] = min_ess
 
 def habc_generator(num_warmup, thin_step):
     D=10
-    start = np.zeros(D)
     
     step_size_min = 0.01
     step_size_max = .1
@@ -36,7 +35,8 @@ def habc_generator(num_warmup, thin_step):
     
     momentum = IsotropicZeroMeanGaussian(sigma=sigma_p, D=D)
     
-    abc_target = ABCSkewNormalPosterior()
+    abc_target = ABCSkewNormalPosterior(theta_true=np.ones(D)*10)
+    start = abc_target.theta_true
     
     job = HABCJob(abc_target, 
                   momentum,

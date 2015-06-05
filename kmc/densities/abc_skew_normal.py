@@ -57,20 +57,18 @@ def skew_normal_simulator(theta):
     return np.mean(sample_skew_normal(N, theta, Sigma, alphas), 0)
 
 class ABCSkewNormalPosterior(ABCPosterior):
-    def __init__(self, D=10, n_lik_samples=10, epsilon=.55, prior=WideZeroMeanNormalPrior(10)):
+    def __init__(self, D=10, n_lik_samples=10, epsilon=.55, prior=WideZeroMeanNormalPrior(10), theta_true=0):
         
         ABCPosterior.__init__(self, skew_normal_simulator, n_lik_samples, epsilon, prior)
         self.D = D
+        self.theta_true = theta_true
         
     def set_up(self):
         logger.info("Generating dataset")
-        # true vale of theta
-        theta_true = np.zeros(self.D)
-        
         old = np.random.get_state()
         np.random.seed(0)
         
-        self.data = skew_normal_simulator(theta_true)
+        self.data = skew_normal_simulator(self.theta_true)
         np.random.set_state(old)
     
 
