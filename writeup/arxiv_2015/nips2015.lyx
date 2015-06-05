@@ -1166,12 +1166,12 @@ reference "eq:potential_energy_operator"
 \begin_inset Formula $\nabla\pi$
 \end_inset
 
- directly, but only through the history of the Markov chain.
- To that end, we model the (unnormalized) target density
- \begin_inset Formula $\pi(x)$
+ directly, but only using the history of the Markov chain.
+ To that end, we model the (unnormalized) target density 
+\begin_inset Formula $\pi(x)$
 \end_inset
 
-with an infinite dimensional exponential family model 
+ with an infinite dimensional exponential family model 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
@@ -3661,8 +3661,8 @@ key "Meeds2015"
 \end_inset
 
 .
- KMC mixes as well as HABC, but HABC suffers a far more severe bias; we
- also reduce by a factor 
+ KMC mixes as well as HABC, but HABC suffers from a severe bias; we also
+ reduce by a factor 
 \begin_inset Formula $L=50$
 \end_inset
 
@@ -3741,8 +3741,9 @@ Middle/right:
 \end_inset
 
  posterior for a 10-dimensional skew normal likelihood.
- While KMC mixes as well as HABC, it does not suffer from a significant
- bias (overlaps with RW) and requires fewer simulations per proposal.
+ While KMC mixes as well as HABC, it does not suffer from any bias (overlaps
+ with RW, while HABC is significantly different) and requires fewer simulations
+ per proposal.
  
 \begin_inset Note Note
 status open
