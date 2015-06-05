@@ -268,7 +268,7 @@ key "beaumont2003estimation,Andrieu2009a"
 \end_inset
 
 , the posterior density does not have an analytic expression even up to
- a normalising constant, e.g.
+ a normalising constant, but can only be estimated at any given point, e.g.
  in Bayesian Gaussian Process classification 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -277,7 +277,6 @@ key "FilipponeIEEETPAMI13"
 \end_inset
 
 .
- Therefore, it can only be estimated at any given point.
  A related context is MCMC for Approximate Bayesian Computation (ABC-MCMC),
  where a Bayesian posterior has to be approximated through repeated simulation
  from a likelihood model 
@@ -305,8 +304,9 @@ key "Meeds2015"
 
 \end_inset
 
-, yet stochastic gradient based HMC methods often suffer from low acceptance
- rates or additional bias that is hard to quantify 
+.
+ Stochastic gradient based HMC methods, however, often suffer from low acceptanc
+e rates or additional bias that is hard to quantify 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Betancourt2015a"
@@ -400,7 +400,7 @@ key "SriFukKumGreHyv14,Hyvarinen-05"
  density functions arbitrarily well.
  More importantly, the method has been empirically observed to be relatively
  robust to increasing dimensionality -- in sharp contrast to classical kernel
- density estimation, 
+ density estimation 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "Sec. 6.5"
@@ -646,7 +646,8 @@ target
 \begin_inset Formula $T$
 \end_inset
 
-, we can consistently approximate any expectation w.r.t 
+, we can consistently approximate any expectation w.r.t.
+ 
 \begin_inset Formula $\pi$
 \end_inset
 
@@ -698,7 +699,10 @@ status open
 status open
 
 \begin_layout Plain Layout
-Unavailable due to analytic intractability, as opposed to computationally
+\begin_inset Formula $\pi$
+\end_inset
+
+ is unavailable due to analytic intractability, as opposed to computationally
  expensive in the Big Data context.
 \end_layout
 
@@ -718,7 +722,7 @@ Throughout the paper
 \begin_inset Formula $\nabla$
 \end_inset
 
- denotes the gradient operator wrt.
+ denotes the gradient operator w.r.t.
  to 
 \begin_inset Formula $x$
 \end_inset
@@ -870,7 +874,7 @@ key "neal2011mcmc,Betancourt2015"
 potential energy
 \emph default
  
-\begin_inset Formula $U(q)\propto-\log\pi(q)$
+\begin_inset Formula $U(q)=-\log\pi(q)$
 \end_inset
 
 ,
@@ -1102,11 +1106,7 @@ reference "eq:potential_energy_operator"
  As we will see, this surrogate does not require gradients of the log-target
  density.
  The surrogate induces a kernel Hamiltonian flow, which can be numerically
- simulated using standard 
-\begin_inset space \space{}
-\end_inset
-
-leap-frog integration.
+ simulated using standard leap-frog integration.
  As with the discretisation error in HMC, any deviation of the kernel induced
  flow to the true flow is corrected via a Metropolis acceptance procedure.
  Consequently, the stationary distribution of the Markov chain will remain
@@ -1142,12 +1142,12 @@ vspace{-.2cm}
 \end_layout
 
 \begin_layout Paragraph
-Infinite Exponential Families in a RKHS
+Infinite Dimensional Exponential Families in a RKHS
 \end_layout
 
 \begin_layout Standard
 We construct a kernel induced potential energy surrogate whose gradients
- match the gradients of the true potential energy 
+ approximate the gradients of the true potential energy 
 \begin_inset Formula $U$
 \end_inset
 
@@ -1167,11 +1167,11 @@ reference "eq:potential_energy_operator"
 \end_inset
 
  directly, but only through the history of the Markov chain.
- To that end, we model the (unnormalized) target density 
-\begin_inset Formula $\pi(x)$
+ To that end, we model the (unnormalized) target density
+ \begin_inset Formula $\pi(x)$
 \end_inset
 
- with an infinite dimensional exponential family model 
+with an infinite dimensional exponential family model 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
@@ -1186,10 +1186,10 @@ key "SriFukKumGreHyv14"
 
 \end_inset
 
-which implies
+which in particular implies
 \begin_inset Formula 
 \[
--\nabla U_{k}=\nabla f\approx\nabla\log\pi=-\nabla U.
+\nabla f\approx-\nabla U=\nabla\log\pi.
 \]
 
 \end_inset
@@ -1223,7 +1223,7 @@ kernel
 \begin_inset Formula $f\in{\cal H}$
 \end_inset
 
-, 
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "BerTho04"
@@ -1297,7 +1297,7 @@ reference "eq:infinite_exp_family"
 \begin_inset Formula $\pi$
 \end_inset
 
- (observed through samples).
+ (observed through the Markov chain history).
  This is achieved by generalising the score matching approach 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1552,7 +1552,7 @@ vspace{-.2cm}
 \end_layout
 
 \begin_layout Section
-Two Efficient Estimators for Infinite Exponential Families in RKHS
+Two Efficient Estimators for Exponential Families in RKHS
 \end_layout
 
 \begin_layout Standard
@@ -1627,7 +1627,7 @@ vspace{-.2cm}
 \end_layout
 
 \begin_layout Subsection
-Infinite Exponential Families Lite
+Infinite Dimensional Exponential Families Lite
 \end_layout
 
 \begin_layout Standard
