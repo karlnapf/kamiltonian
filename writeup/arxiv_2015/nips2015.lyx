@@ -140,7 +140,7 @@ Gradient-free Hamiltonian Monte Carlo
 \begin_inset Newline newline
 \end_inset
 
-with Efficient Kernel exponential families
+with Efficient Kernel Exponential Families
 \end_layout
 
 \begin_layout Abstract
@@ -2185,12 +2185,12 @@ key "Rahimi2007"
 \end_inset
 
  storage.
- However, given that we have computed a solution based on the Markov chain
- history 
+ Given that we have computed a solution based on the Markov chain history
+ 
 \begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
 \end_inset
 
-, it is straightforward to update 
+, however, it is straightforward to update 
 \begin_inset Formula $C,b$
 \end_inset
 
@@ -2629,16 +2629,16 @@ reference "eq:infinite_exp_family_random_feats"
 
 , we arrive at a gradient free, adaptive MCMC algorithm: 
 \emph on
-Kamiltonian Monte Carlo,
+Kamiltonian Monte Carlo
 \emph default
- see Algorithm 
+ (Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:Kamiltonian-Monte-Carlo"
 
 \end_inset
 
-.
+).
  KMC overcomes random-walk behaviour of competing state-of-the-art
 \emph on
  
@@ -2675,10 +2675,12 @@ reference "eq:infinite_exp_family_random_feats"
 \emph on
 full
 \emph default
- Markov chain history and therefore is a more elegant solution than sub-sampling.
- However, due to the parametric nature of this approximate model, the tails
+ Markov chain history, and is this respect a more elegant solution than
+ KMC-lite, which has greater computational cost and requires sub-sampling
+ the chain history.
+ Due to the parametric nature of this approximate model, however, the tails
  of the estimator are not guaranteed to decay.
- For example, the random Fourier features embedding described below Proposition
+ For example, the random Fourier feature embedding described below Proposition
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -2686,7 +2688,7 @@ reference "prop:finite_estimator"
 
 \end_inset
 
- contains periodic cosine functions and therefore oscillates in the tails
+ contains periodic cosine functions, and therefore oscillates in the tails
  of 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -2696,8 +2698,8 @@ reference "eq:infinite_exp_family_random_feats"
 
 , resulting in a reduced acceptance probability.
  As we will demonstrate in the experiments, this problem does not appear
- when KMC finite is initialised in high-density regions, and after burn-in.
- In situations where this information about the target density is unknown,
+ when KMC finite is initialised in high-density regions, nor after burn-in.
+ In situations where information about the target density support is unknown,
  and during burn-in, we suggest to use the lite estimator 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -2706,19 +2708,9 @@ reference "eq:lite_estimator"
 \end_inset
 
 , whose gradients decay outside of the training data.
- Consequently, in the tails or before burn-in completion, KMC lite is guaranteed
- to fall back to a random walk, and smoothly transitions to HMC-like proposals
+ More formally, in the tails or before burn-in completion, KMC lite is guarantee
+d to fall back to a random walk, and smoothly transitions to HMC-like proposals
  as the MCMC chain grows.
- This is formalised in the following result, which comes at the expense
- of increased computational costs and having to sub-sample the chain history.
- We give intuition below, see Appendix 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Appenidx_ergodicity_lite_proof"
-
-\end_inset
-
- for the detailed proof.
 \end_layout
 
 \begin_layout Proposition
@@ -2740,7 +2732,7 @@ Assume
 \begin_inset Formula $\pi(x)$
 \end_inset
 
- is log-concave in the tails, regularity conditions of 
+ is log-concave in the tails, and the regularity conditions of 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "Thm 2.2"
@@ -2807,7 +2799,14 @@ Proof Sketch
 \end_layout
 
 \begin_layout Standard
-Define 
+(see Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appenidx_ergodicity_lite_proof"
+
+\end_inset
+
+ for the detailed proof) Define 
 \size footnotesize
 
 \begin_inset Formula $c(x^{(0)}):=\epsilon^{2}\sum_{i=0}^{L-1}\nabla f(x^{(i\epsilon)})/2$
@@ -2973,7 +2972,7 @@ key "Andrieu2008"
 \end_inset
 
 .
- We update the density gradient estimate according to that schedule in Algorithm
+ We update the density gradient estimate according to this schedule in Algorithm
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -2982,9 +2981,9 @@ reference "alg:Kamiltonian-Monte-Carlo"
 \end_inset
 
 .
- Intuitively, adaptation becomes less likely as the MCMC chain is progressing,
- but never fully stops while sharing asymptotic convergence with adaptation
- that stops at a fixed point, 
+ Intuitively, adaptation becomes less likely as the MCMC chain progresses,
+ but never fully stops, while sharing asymptotic convergence with adaptation
+ that stops at a fixed point 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "Theorem 1"
