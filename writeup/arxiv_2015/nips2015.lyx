@@ -2457,8 +2457,7 @@ reference "alg:Kamiltonian-Monte-Carlo"
 \end_layout
 
 \begin_layout Paragraph
-Computational efficiency vs.
- geometric ergodicity
+Computational efficiency, geometric ergodicity, and burn-in
 \end_layout
 
 \begin_layout Standard
@@ -2485,20 +2484,27 @@ reference "prop:finite_estimator"
 \end_inset
 
  contains periodic cosine functions and therefore oscillates in the tails
- -- resulting in a catastrophic acceptance probability.
- As we will demonstrate in the experiments, this problem does not appear
- when initialised in high-density regions of the posterior.
- In situations where this information about the target density is unknown,
- we suggest to use the lite estimator 
+ of 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family_lite"
 
 \end_inset
 
-, at least for burn-in.
- KMC lite falls back to a random walk in the tails as gradients of the estimator
- 
+ -- resulting in a reduced acceptance probability.
+ As we will demonstrate in the experiments, this problem does not appear
+ when KMC finite is initialised in high-density regions after burn-in.
+ In situations where this information about the target density is unknown,
+ and for burn-in, we suggest to use the lite estimator 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lite_estimator"
+
+\end_inset
+
+.
+ KMC lite is guaranteed to fall back to a random walk as gradients of the
+ estimator 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family_lite"
@@ -2506,9 +2512,16 @@ reference "eq:infinite_exp_family_lite"
 \end_inset
 
  decay.
- Consequently, it inherits convergence properties of random walk samplers,
- as formalised in the following result, which comes at the expense of increased
- computational costs and having to sub-sample the chain history.
+ This is in particular useful during burn-in or when initialised in the
+ tails of 
+\begin_inset Formula $\pi$
+\end_inset
+
+, where KMC lite is guaranteed to fall back to a random walk to initially
+ explore the target -- inheriting convergence properties and smoothly transition
+ing to HMC-like proposals as the MCMC chain grows.
+ This is formalised in the following result, which comes at the expense
+ of increased computational costs and having to sub-sample the chain history.
  We give intuition below, see Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -2976,11 +2989,11 @@ key "Haario1999"
 .
  We tune the scaling of KAMH and RW to achieve roughly 23% acceptance probabilit
 y.
- We set HMC parameters to achieve 80% acceptance probability and then match
- those of KMC.
- We run all samplers for 2000+200 iterations from a randomly chosen start
- point (within a higher density region), discard the burn-in and compute
- average acceptance rate, the norm of the empirical mean 
+ We set HMC parameters to achieve 80% acceptance probability and then use
+ the same parameters for KMC.
+ We run all samplers for 2000+200 iterations from a random start point (chosen
+ from burn-in samples), discard the burn-in and compute average acceptance
+ rate, the norm of the empirical mean 
 \begin_inset Formula $\mathbb{\Vert\hat{E}}[x]\Vert$
 \end_inset
 
@@ -3204,15 +3217,15 @@ key "Wood:2010aa"
 
 \end_inset
 
-, with stochastic finite differences gradients.
+, with gradients based on stochastic finite differences.
  We remark that this requires to simulate from the likelihood in 
 \emph on
 every 
 \emph default
 leapfrog step, and that the additional bias from Gaussian likelihood approximati
 on can be problematic.
- In contrast, KMC does not require simulations to propose but rather invests
- into an accept/reject step 
+ In contrast, KMC does not require simulations to construct a proposal but
+ rather 'invests' simulations into an accept/reject step 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:kmc_accept_prob"
@@ -3250,7 +3263,6 @@ reference "fig:experiment_gp_abc"
 \end_inset
 
  reduced number of simulations after burn-in.
- We leave a systematic study for future work.
 \end_layout
 
 \begin_layout Standard
