@@ -1167,7 +1167,7 @@ reference "eq:potential_energy_operator"
 \end_inset
 
  directly, but only through the history of the Markov chain.
- To that end, we model the target density 
+ To that end, we model the (unnormalized) target density 
 \begin_inset Formula $\pi(x)$
 \end_inset
 
