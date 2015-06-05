@@ -305,8 +305,7 @@ key "Meeds2015"
 
 \end_inset
 
-.
- However, stochastic gradient based HMC methods often suffer from low acceptance
+, yet stochastic gradient based HMC methods often suffer from low acceptance
  rates or additional bias that is hard to quantify 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1159,7 +1158,7 @@ reference "eq:potential_energy_operator"
 
 \end_inset
 
-, but without accessing 
+, without accessing 
 \begin_inset Formula $\pi$
 \end_inset
 
@@ -3041,16 +3040,8 @@ KMC has two free parameters: the Gaussian kernel bandwidth
 \end_inset
 
 .
- Earlier adaptive kernel-based MCMC methods 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sejdinovic_kernel_2014"
-
-\end_inset
-
-, did not cover choosing parameters.
- As KMC's performance is eventually tied with the quality of the approximate
- infinite dimensional exponential family model in 
+ KMC's performance depends on the quality of the approximate infinite dimensiona
+l exponential family model in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family_lite"
@@ -3064,7 +3055,8 @@ reference "eq:infinite_exp_family_random_feats"
 
 \end_inset
 
-, we can use the score matching objective function in 
+, hence a principled approach is to use the score matching objective function
+ in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_objective_sample_version"
@@ -3078,11 +3070,19 @@ reference "sub:Appendix_score_matching"
 
 \end_inset
 
- to compare 
+ to choose 
 \begin_inset Formula $\sigma,\lambda$
 \end_inset
 
- pairs via corss-validation in a principled way after burn-in.
+ pairs via cross-validation (after burn-in).
+ Earlier adaptive kernel-based MCMC methods 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+ did address parameter choice.
 \begin_inset ERT
 status open
 
@@ -3159,7 +3159,7 @@ reference "fig:kmc_trajectories_mean_acceptance"
 \begin_inset Formula $100$
 \end_inset
 
- independent trials as a function of the number of data and of basis functions,
+ independent trials as a function of the number of data and basis functions,
  which are set to be equal 
 \begin_inset Formula $n=m$
 \end_inset
@@ -3174,7 +3174,7 @@ reference "fig:kmc_trajectories_mean_acceptance"
 \end_inset
 
 , we are able to obtain acceptance probabilities comparable to plain HMC
- with the finite estimator fitted in a few seconds on a laptop computer.
+ with the finite estimator obtained in a few seconds on a laptop computer.
 \begin_inset ERT
 status open
 
@@ -3329,8 +3329,8 @@ name "sub:experiment_hmc_like_mixing"
 \end_layout
 
 \begin_layout Standard
-We now show that KMC is able to match performance of HMC as it sees more
- data.
+We now show that KMC is able to match the performance of HMC as it sees
+ more data.
  We compare KMC, HMC, an isotropic random walk (RW), and KAMH on the 8-dimension
 al nonlinear banana-shaped target from 
 \begin_inset CommandInset citation
@@ -3340,7 +3340,7 @@ key "sejdinovic_kernel_2014,Haario1999"
 \end_inset
 
 .
- To only quantify mixing, both KMC and KAMH use the same set of fixed burn-in
+ To only quantify mixing, both KMC and KAMH used the same set of fixed burn-in
  samples.
  We quantify performance on estimating the target's mean, which is exactly
  
@@ -3348,17 +3348,17 @@ key "sejdinovic_kernel_2014,Haario1999"
 \end_inset
 
 .
- We tune the scaling of KAMH and RW to achieve 23% acceptance.
- We set HMC parameters to achieve 80% acceptance and then use the same parameter
-s for KMC.
- We run all samplers for 2000+200 iterations from a random start point (chosen
- from burn-in samples), discard the burn-in and compute average acceptance
+ We tuned the scaling of KAMH and RW to achieve 23% acceptance.
+ We set HMC parameters to achieve 80% acceptance and then used the same
+ parameters for KMC.
+ We ran all samplers for 2000+200 iterations from a random start point (chosen
+ from burn-in samples), discarded the burn-in and computed average acceptance
  rate, the norm of the empirical mean 
 \begin_inset Formula $\mathbb{\Vert\hat{E}}[x]\Vert$
 \end_inset
 
 , and average effective sample size (ESS) across dimensions.
- For KAMH and KMC, we repeat the experiment for an increasing number of
+ For KAMH and KMC, we repeated the experiment for an increasing number of
  burn-in samples and basis functions 
 \begin_inset Formula $m=n$
 \end_inset
@@ -3524,16 +3524,16 @@ key "Grettonetal12"
 \end_inset
 
 , lower is better).
- KMC randomly uses between 1 and 10 leapfrog steps of a size chosen uniformly
+ KMC randomly used between 1 and 10 leapfrog steps of a size chosen uniformly
  in 
 \begin_inset Formula $[0.01,0.1]$
 \end_inset
 
 , a standard Gaussian momentum, and a cross-validation tuned kernel width
  (tuned after burn-in), achieving 45% acceptance.
- We did not extensively tune the HMC parameters of KMC as the current settings
- were sufficient.
- Both KMC and KAMH use 1000 samples from the chain history.
+ We did not extensively tune the HMC parameters of KMC as the described
+ settings were sufficient.
+ Both KMC and KAMH used 1000 samples from the chain history.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3544,9 +3544,9 @@ reference "fig:experiment_gp_abc"
  (left) shows that KMC clearly outperforms both RW and the earlier state-of-the-
 art KAMH.
  These results are backed by the average ESS (not plotted), which is around
- 800 for KMC and is around 90 and 60 for KAMH and RW respectively.
- All samplers took roughly 1h of computing time as most time is spent on
- estimating the marginal likelihood, which is in line with 
+ 800 for KMC and is around 90 and 60 for KAMH and RW, respectively.
+ All samplers took roughly 1h of computing time, with most of the time spent
+ on estimating the marginal likelihood, in line with 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "Sec. 5.1"
@@ -3577,7 +3577,7 @@ KMC Lite: Reduced Simulations and no Additional Bias in ABC
 \begin_layout Standard
 We now apply KMC in the context of Approximate Bayesian Computation (ABC),
  which often is employed when the data likelihood is intractable but can
- be simulated from, see e.g.
+ be obtained by simulation, see e.g.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -3593,7 +3593,7 @@ key "marjoram2003markov"
 
 \end_inset
 
-, targets an approximate posterior, by constructing an unbiased Monte Carlo
+ targets an approximate posterior by constructing an unbiased Monte Carlo
  estimator of the approximate likelihood.
  As each such evaluation requires expensive simulations from the likelihood,
  the goal of all ABC methods is to reduce the number of such simulations.
@@ -3604,7 +3604,7 @@ key "Meeds2015"
 
 \end_inset
 
- recently proposed Hamiltonian ABC: combining the synthetic likelihood approach
+ recently proposed Hamiltonian ABC, combining the synthetic likelihood approach
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -3612,15 +3612,15 @@ key "Wood:2010aa"
 
 \end_inset
 
-, with gradients based on stochastic finite differences.
+ with gradients based on stochastic finite differences.
  We remark that this requires to simulate from the likelihood in 
 \emph on
 every 
 \emph default
-leapfrog step, and that the additional bias from Gaussian likelihood approximati
-on can be problematic.
- In contrast, KMC does not require simulations to construct a proposal but
- rather 'invests' simulations into an accept/reject step 
+leapfrog step, and that the additional bias from the Gaussian likelihood
+ approximation can be problematic.
+ In contrast, KMC does not require simulations to construct a proposal,
+ but rather 'invests' simulations into an accept/reject step 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:kmc_accept_prob"
@@ -3632,19 +3632,7 @@ reference "eq:kmc_accept_prob"
 original
 \emph default
  ABC target.
- On a 
-\begin_inset Formula $10$
-\end_inset
-
--dimensional skew-normal distribution 
-\begin_inset Formula $p(y|\theta)=2\mathcal{N}\left(\theta,I\right)\Phi\left(\left\langle \alpha,y\right\rangle \right)$
-\end_inset
-
- with 
-\begin_inset Formula $\theta=\alpha=\mathbf{1}\cdot10$
-\end_inset
-
-, Figure 
+ Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:experiment_gp_abc"
@@ -3660,9 +3648,21 @@ key "Meeds2015"
 
 \end_inset
 
-), and KMC.
- KMC mixes as well as HABC -- without suffering from a significant bias,
- and at a factor of 
+), and KMC on a 
+\begin_inset Formula $10$
+\end_inset
+
+-dimensional skew-normal distribution 
+\begin_inset Formula $p(y|\theta)=2\mathcal{N}\left(\theta,I\right)\Phi\left(\left\langle \alpha,y\right\rangle \right)$
+\end_inset
+
+ with 
+\begin_inset Formula $\theta=\alpha=\mathbf{1}\cdot10$
+\end_inset
+
+.
+ KMC mixes as well as HABC, without suffering from a significant bias, and
+ at a factor of 
 \begin_inset Formula $L=50$
 \end_inset
 
@@ -3791,8 +3791,8 @@ vspace{-.3cm}
 
 \end_inset
 
-We have introduced KMC, a kernel-based gradient free adaptive MCMC algorithm
- that mimics HMC's behaviour via estimating target gradients in a RKHS.
+We have introduced KMC, a kernel-based gradient free adaptive MCMC algorithm,
+ that mimics HMC's behaviour by estimating target gradients in an RKHS.
  In experiments, KMC outperforms random walk based sampling methods in up
  to moderately high dimensions (
 \begin_inset Formula $d\leq100$
@@ -3806,10 +3806,11 @@ key "sejdinovic_kernel_2014"
 \end_inset
 
 .
- KMC is in particular useful when gradients of the target density are unavailabl
-e, such as PM-MCMC or ABC-MCMC, as HMC is not an option there.
- We have proposed two efficient empirical estimators with orthogonal strengths
- and weaknesses and given experimental evidence of the robustness of both.
+ KMC is particularly useful when gradients of the target density are unavailable
+, as in PM-MCMC or ABC-MCMC, where HMC is not an option.
+ We have proposed two efficient empirical estimators, each with different
+ strengths and weaknesses, and have given experimental evidence of the robustnes
+s of both.
 \end_layout
 
 \begin_layout Standard
