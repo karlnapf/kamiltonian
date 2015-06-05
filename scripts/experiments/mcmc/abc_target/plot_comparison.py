@@ -108,8 +108,8 @@ if __name__ == "__main__":
         all_samples = np.vstack(marginal_samples[alg_idx])
          
         sns.kdeplot(all_samples[:,0], shade=True, ax = ax_kde, color=colors[alg_idx]);
-        ax_kde.set_xlabel(r"$\theta_0$")
-        ax_kde.set_ylabel(r"$p(\theta_0)$")
+        ax_kde.set_xlabel(r"$\theta_1$")
+        ax_kde.set_ylabel(r"$p(\theta_1)$")
         
     #                 # plot mean
     #                 m = np.mean(samples[:,0])
