@@ -44,7 +44,7 @@ def habc_generator(num_warmup, thin_step):
                   num_steps_min, num_steps_max, step_size_min, step_size_max,
                   momentum_seed, statistics, num_warmup, thin_step)
     
-    job.walltime = 24* 60 * 60
+    job.walltime = 60 * 60
     
     # store results in home dir straight away
     d = os.sep.join(os.path.abspath(__file__).split(os.sep)[:-1]) + os.sep
