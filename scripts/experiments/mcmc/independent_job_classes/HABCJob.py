@@ -30,6 +30,9 @@ def SPSA(loss, theta, stepsize, num_repeats=1):
         yminus = loss(thetaminus);
         grad_ests[i] = (yplus - yminus) / (2 * stepsize * delta)
     
+#     L=np.linalg.cholesky(np.cov(grad_ests.T) + np.eye(D)*1e-5)
+#     print 2*np.sum(np.log(np.diag(L)))
+    
     return np.mean(grad_ests, 0)
 
 def test_SPSA():
@@ -45,7 +48,7 @@ if __name__ == "__main__":
     
 
 class DummyHABCTarget(object):
-    def __init__(self, abc_target, num_spsa_repeats=3):
+    def __init__(self, abc_target, num_spsa_repeats=1):
                  
         self.abc_target = abc_target
         
@@ -55,13 +58,15 @@ class DummyHABCTarget(object):
 #         self.current_theta = None
     
     def grad(self, theta):
+#         logger.info("theta_0=%.2f" % theta[0])
+        
         # update likelihood term
         self._update(theta)
         
         log_lik = lambda theta: log_gaussian_pdf(theta, self.mu, self.L, is_cholesky=True)
         
 #         logger.debug("Computing SPSA gradient")
-        grad_lik_est = SPSA(log_lik, theta, stepsize=1., num_repeats=self.num_spsa_repeats)
+        grad_lik_est = SPSA(log_lik, theta, stepsize=5., num_repeats=self.num_spsa_repeats)
         grad_prior = self.abc_target.prior.grad(theta)
         
 #         logger.debug("grad_lik_est: %s" % str(grad_lik_est))
@@ -94,7 +99,7 @@ class DummyHABCTarget(object):
         
         # fit Gaussian, add ridge on diagonal for the epsilon likelihood kernel
         self.mu = np.mean(pseudo_datas, 0)
-        Sigma = np.cov(pseudo_datas) + np.eye(D) * (self.abc_target.epsilon ** 2)
+        Sigma = np.cov(pseudo_datas.T) + np.eye(D) * (self.abc_target.epsilon ** 2)
         self.L = np.linalg.cholesky(Sigma)
         
 #         logger.debug("Simulation")
