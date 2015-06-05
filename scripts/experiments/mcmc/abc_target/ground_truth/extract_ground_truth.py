@@ -10,7 +10,7 @@ from scripts.experiments.mcmc.independent_job_classes.debug import plot_mcmc_res
 if __name__ == "__main__":
     logger.setLevel(10)
     
-    thin = 390
+    thin = 300
     warmup = 1000
     
     samples = []
@@ -43,6 +43,8 @@ if __name__ == "__main__":
             samples += [result.samples[i]]
     
     samples = np.array(samples)
+    samples = samples[np.random.permutation(len(samples))]
+    logger.info("Extracted %d samples in dimension %d" % (samples.shape[0], samples.shape[1]))
     if True:
         with open("benchmark_samples.arr", 'w+') as f:
             np.save(f, samples)
