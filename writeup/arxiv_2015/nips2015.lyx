@@ -438,16 +438,6 @@ score matching lite
 \emph default
 , is based on computing the solution in terms of a lower dimensional, yet
  growing, subspace in the RKHS.
- The solution takes the form 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Section 4.1"
-key "Hyvarinen-07"
-
-\end_inset
-
-, the main difference being that the basis functions are themselves chosen
- randomly, and the set grows with increasing sample size.
  KMC with score matching lite (
 \emph on
 KMC lite
@@ -501,8 +491,7 @@ reference "sec:kernel_hamiltonian_dynamics"
 
 \end_inset
 
- introduces Hamiltonian dynamics induced by kernel exponential families,
- and describes the KMC algorithm.
+ introduces Hamiltonian dynamics induced by kernel exponential families.
  Section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -510,7 +499,15 @@ reference "sec:estimators"
 
 \end_inset
 
- contains our approximate estimators.
+ contains our approximate estimators of of the log density and its gradient,
+ and Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:KMC"
+
+\end_inset
+
+ applies these results to obtain our Khamiltonian Monte Carlo algorithm.
  We
 \begin_inset Note Note
 status open
@@ -528,8 +525,8 @@ reference "sec:kernel_hmc"
 
 \end_inset
 
- demonstrate the efficiency of our approach in a number of experiments (Section
- 
+ demonstrate the efficiency of our sampling algorithm in a number of experiments
+ (Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Experiments"
@@ -1753,8 +1750,19 @@ reference "sub:Appendix_score_matching"
 \end_inset
 
 ).
- The estimator is summarised in the following proposition and aproof is
- given in Appendix 
+ This representation is of a form similar to 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Section 4.1"
+key "Hyvarinen-07"
+
+\end_inset
+
+, the main differences being that the basis functions are themselves chosen
+ randomly, the basis set grows with increasing sample size, and we require
+ an additional regularizing term.
+ The estimator is summarised in the following proposition, which is proved
+ in Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Appendix_lite_details"
@@ -1839,15 +1847,15 @@ with entry-wise products
 \end_layout
 
 \begin_layout Standard
-The estimator has costs of 
+The estimator has a cost of 
 \begin_inset Formula ${\cal O}(n^{3}+dn^{2})$
 \end_inset
 
- computation (for both computing 
+ in computation (both for computing 
 \begin_inset Formula $C,b$
 \end_inset
 
- and inverting 
+, and for inverting 
 \begin_inset Formula $C$
 \end_inset
 
@@ -1865,7 +1873,7 @@ The estimator has costs of
 linear
 \emph default
  computation and storage via low-rank approximations to the kernel matrix
- and conjugate gradient methods, see Appendix 
+ and conjugate gradient methods, which are derived in Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Appendix_lite_details"
@@ -1898,7 +1906,7 @@ Gradients of the estimated log-density are given as
 \begin_inset Formula $\pi$
 \end_inset
 
-, but only depends on the sub-sample 
+, and only depends on the sub-sample 
 \begin_inset Formula $\mathbf{z}$
 \end_inset
 
@@ -1920,13 +1928,13 @@ all
 \begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
 \end_inset
 
- -- in 
+, in 
 \emph on
 primal
 \emph default
  form.
  As we will see, updating the estimator when a new data point arrives can
- be done in an online fashion.
+ be done online.
 \end_layout
 
 \begin_layout Standard
@@ -1949,7 +1957,7 @@ We deliberately don't state the form of the approximation yet, but will
 \begin_inset Formula ${\cal H}_{m}=\mathbb{R}^{m}$
 \end_inset
 
-, denote by 
+, and denote by 
 \begin_inset Formula $\phi_{x}\in\mathbb{{\cal H}}^{m}$
 \end_inset
 
@@ -1994,7 +2002,7 @@ reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
- in Appendix 
+, with details in Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Appendix_score_matching"
@@ -2074,7 +2082,7 @@ key "Rahimi2007"
 
 \end_inset
 
-, and a standard Gaussian kernel, 
+ and a standard Gaussian kernel is 
 \size footnotesize
 
 \begin_inset Formula $\phi_{x}=\sqrt{\frac{2}{m}}\left[\cos(\omega_{1}^{T}x+u_{1}),\dots,\cos(\omega_{m}^{T}x+u_{m})\right]$
@@ -2099,7 +2107,7 @@ key "Rahimi2007"
 
 \size default
 .
- Proof and details can be found in Appendix 
+ Further details can be found in Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Appendix_finite_details"
@@ -2121,25 +2129,25 @@ reference "sub:Appendix_finite_details"
 \begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
 \end_inset
 
-, it is straight-forward to on-line update 
+, it is straightforward to update 
 \begin_inset Formula $C,b$
 \end_inset
 
- and the solution 
+, and the solution 
 \begin_inset Formula $\hat{\theta}_{\lambda}$
 \end_inset
 
- after a new point arrived 
+ online, after a new point 
 \begin_inset Formula $x_{t+1}$
 \end_inset
 
-.
- This is achieved via storing running averages and low-rank updates of matrix
- inversions and allows to update the estimator in 
+ arrives.
+ This is achieved by storing running averages and low-rank updates of matrix
+ inversions, and allows the estimator to be updated in 
 \begin_inset Formula ${\cal O}(m^{2})$
 \end_inset
 
- computation and storage, which is independent of 
+ computation and storage, independent of 
 \begin_inset Formula $t$
 \end_inset
 
@@ -2155,13 +2163,13 @@ reference "sub:Appendix_finite_details"
 \end_layout
 
 \begin_layout Standard
-Gradients of the estimated log-density are given as 
+Gradients of the estimated log-density are written 
 \begin_inset Formula $\nabla f(x)=\left[\nabla\phi_{x}\right]^{\top}\hat{\theta}$
 \end_inset
 
- , i.e.
- they require evaluation of the gradient of the feature space embedding.
- Both evaluation and storage of 
+ , i.e., they require the evaluation of the gradient of the feature space
+ embedding.
+ Both the evaluation and storage of 
 \begin_inset Formula $\nabla f(\cdot)$
 \end_inset
 
@@ -3810,7 +3818,16 @@ reference "prop:lite_estimator"
 \end_layout
 
 \begin_layout Standard
-We assume the model log-density 
+The proof below extends the model in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Section 4.1"
+key "Hyvarinen-07"
+
+\end_inset
+
+.
+ We assume the model log-density 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_parametric_model"
