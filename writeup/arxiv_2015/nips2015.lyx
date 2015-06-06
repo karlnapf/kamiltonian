@@ -2766,19 +2766,7 @@ key "roberts1996geometric"
 
 -leapfrog steps.
  If 
-\begin_inset Formula $\nabla f(x)\nearrow0$
-\end_inset
-
- as 
-\begin_inset Formula $x\to\infty$
-\end_inset
-
- and 
-\begin_inset Formula $\nabla f(x)\searrow0$
-\end_inset
-
- as 
-\begin_inset Formula $x\to-\infty$
+\begin_inset Formula $\limsup_{\|x\|_{2}\to\infty}\|\nabla f(x)\|_{2}=0$
 \end_inset
 
 , and 
@@ -5373,11 +5361,11 @@ Denote by
 
 .
  Define 
-\begin_inset Formula $c(x_{0}):=\epsilon^{2}\sum_{i=0}^{L-1}\nabla f(x^{(i\epsilon)})/2$
+\begin_inset Formula $c(x^{(0)}):=\epsilon^{2}\sum_{i=0}^{L-1}\nabla f(x^{(i\epsilon)})/2$
 \end_inset
 
  and 
-\begin_inset Formula $d(x):=\epsilon(\nabla f(x)+\nabla f(x^{(L\epsilon)}))/2+\epsilon\sum_{i=1}^{L-1}\nabla f(x^{(i\epsilon)})$
+\begin_inset Formula $d(x^{(0)}):=\epsilon(\nabla f(x^{(0)})+\nabla f(x^{(L\epsilon)}))/2+\epsilon\sum_{i=1}^{L-1}\nabla f(x^{(i\epsilon)})$
 \end_inset
 
 , where 
@@ -5497,6 +5485,15 @@ for some
 \end_inset
 
 ).
+ We detail the case 
+\begin_inset Formula $\nabla f(x)\uparrow0$
+\end_inset
+
+ as 
+\begin_inset Formula $x\to\infty$
+\end_inset
+
+ here, the other is analogous.
  Taking 
 \begin_inset Formula $I_{-x_{t}^{\delta}}^{x_{t}^{\delta}}$
 \end_inset
