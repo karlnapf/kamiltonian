@@ -168,8 +168,8 @@ Kamiltonian Monte Carlo (KMC)
  Computational costs are reduced by two novel efficient approximations to
  this gradient.
  While being asymptotically exact, KMC mimics HMC in terms of sampling efficienc
-y and offers substantial mixing improvements to state-of-the-art gradient
- free samplers.
+y and offers substantial mixing improvements to state-of-the-art gradient-free
+ samplers.
  We support our claims with experimental studies on both toy and real-world
  applications, including Approximate Bayesian Computation and exact-approximate
  MCMC.
