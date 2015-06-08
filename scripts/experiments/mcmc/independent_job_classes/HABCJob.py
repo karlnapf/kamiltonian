@@ -7,45 +7,12 @@ from kmc.tools.Log import logger
 import numpy as np
 from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob, \
     HMCJobResultAggregator
+from scripts.tools.SPSA import SPSA
 
 
 splitted = __file__.split(os.sep)
 idx = splitted.index('kamiltonian')
 project_path = os.sep.join(splitted[:(idx + 1)])
-
-def SPSA(loss, theta, stepsize, num_repeats=1):
-    """
-    Implements Simultaneous perturbation stochastic approximation to estimate
-    gradient of given loss function
-    
-    """
-    D = len(theta)
-    grad_ests = np.zeros((num_repeats, D))
-    
-    for i in range(num_repeats):
-        delta = 2 * (np.random.rand(D) > .5).astype(int) - 1
-        thetaplus = theta + stepsize * delta;
-        thetaminus = theta - stepsize * delta
-        yplus = loss(thetaplus)
-        yminus = loss(thetaminus);
-        grad_ests[i] = (yplus - yminus) / (2 * stepsize * delta)
-    
-#     L=np.linalg.cholesky(np.cov(grad_ests.T) + np.eye(D)*1e-5)
-#     print 2*np.sum(np.log(np.diag(L)))
-    
-    return np.mean(grad_ests, 0)
-
-def test_SPSA():
-    loss = lambda x: 0.5 * x.dot(x)
-    grad_true = lambda x: x
-    
-    x_test = np.array([1, 2])
-    grad_est = SPSA(loss, x_test, stepsize=.05, num_repeats=1000)
-    assert_allclose(grad_true(x_test), grad_est, atol=.1)
-    
-if __name__ == "__main__":
-    test_SPSA()
-    
 
 class DummyHABCTarget(object):
     def __init__(self, abc_target, num_spsa_repeats=1):
@@ -56,6 +23,10 @@ class DummyHABCTarget(object):
         self.fixed_rnd_state = np.random.get_state()
         self.num_spsa_repeats = num_spsa_repeats
 #         self.current_theta = None
+
+        # for running average of gradient covariances
+        self.current_sum_outer = np.zeros((abc_target.D, abc_target.D))
+        self.sum_outer_counter = 0
     
     def grad(self, theta):
 #         logger.info("theta_0=%.2f" % theta[0])
@@ -66,8 +37,12 @@ class DummyHABCTarget(object):
         log_lik = lambda theta: log_gaussian_pdf(theta, self.mu, self.L, is_cholesky=True)
         
 #         logger.debug("Computing SPSA gradient")
-        grad_lik_est = SPSA(log_lik, theta, stepsize=5., num_repeats=self.num_spsa_repeats)
+        grad_lik_est = SPSA(log_lik, theta, stepsize=5.,
+                                          num_repeats=self.num_spsa_repeats)
         grad_prior = self.abc_target.prior.grad(theta)
+        
+        self.current_sum_outer += np.outer(grad_lik_est, grad_lik_est)
+        self.sum_outer_counter += 1
         
 #         logger.debug("grad_lik_est: %s" % str(grad_lik_est))
 #         logger.debug("grad_prior: %s" % str(grad_prior))
@@ -168,3 +143,4 @@ class HABCJobResultAggregator(HMCJobResultAggregator):
         strings = HMCJobResultAggregator.fire_and_forget_result_strings(self)
         
         return [str(self.result.D)] + strings
+
