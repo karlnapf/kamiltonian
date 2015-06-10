@@ -1,4 +1,6 @@
 import numpy as np
+from kmc.tools.Log import logger
+from kmc.densities.gaussian import sample_gaussian
 
 def leapfrog(q, dlogq, p, dlogp, step_size=0.3, num_steps=1):
     # for storing trajectory
@@ -35,6 +37,7 @@ def leapfrog(q, dlogq, p, dlogp, step_size=0.3, num_steps=1):
     return Qs, Ps
 
 def leapfrog_no_storing(q, dlogq, p, dlogp, step_size=0.3, num_steps=1):
+    logger.debug("Entering")
     # create copy of state
     p = np.array(p.copy())
     q = np.array(q.copy())
@@ -56,4 +59,50 @@ def leapfrog_no_storing(q, dlogq, p, dlogp, step_size=0.3, num_steps=1):
         if i != num_steps - 1:
             p = p - (step_size / 2) * -dlogq_eval
 
+    logger.debug("Leaving")
+    return q, p
+
+def leapfrog_friction_habc_no_storing(c, V, q, dlogq, p, dlogp, step_size=0.3, num_steps=1):
+    logger.debug("Entering")
+    """
+    MATLAB code by Chen:
+    
+function [ newx ] = sghmc( U, gradU, m, dt, nstep, x, C, V )
+%% SGHMC using gradU, for nstep, starting at position x
+
+p = randn( size(x) ) * sqrt( m );
+B = 0.5 * V * dt; 
+D = sqrt( 2 * (C-B) * dt );
+
+for i = 1 : nstep
+    p = p - gradU( x ) * dt  - p * C * dt  + randn(1)*D;
+    x = x + p./m * dt;
+end
+newx = x;
+end
+    """
+    
+    # friction term (as in HABC)
+    D = len(q)
+    B = 0.5 * V * step_size
+    C = np.eye(D) * c + V
+    L_friction = np.linalg.cholesky(2 * step_size * (C - B))
+    zeros_D = np.zeros(D)
+    
+    # create copy of state
+    p = np.array(p.copy())
+    q = np.array(q.copy())
+    
+    # alternate full momentum and variable updates
+    for _ in range(num_steps):
+        friction = sample_gaussian(N=1, mu=zeros_D, Sigma=L_friction, is_cholesky=True)[0]
+
+        # just like normal momentum update but with friction
+        p = p - step_size * -dlogq(q) - step_size * C.dot(-dlogp(p)) + friction
+
+        # normal position update
+        q = q + step_size * -dlogp(p)
+        
+
+    logger.debug("Leaving")
     return q, p
