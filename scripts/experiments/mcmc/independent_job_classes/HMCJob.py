@@ -4,7 +4,7 @@ from kmc.hamiltonian.leapfrog import leapfrog_no_storing
 from kmc.tools.Log import logger
 import numpy as np
 from scripts.experiments.mcmc.independent_job_classes.MCMCJob import MCMCJob,\
-    MCMCJobResultAggregator, MCMCJobResult
+    MCMCJobResultAggregator
 
 
 class HMCJob(MCMCJob):
@@ -23,7 +23,6 @@ class HMCJob(MCMCJob):
         self.step_size_min = step_size_min
         self.step_size_max = step_size_max
         self.momentum_seed = momentum_seed
-
     
     @abstractmethod
     def set_up(self):
@@ -31,6 +30,9 @@ class HMCJob(MCMCJob):
         logger.info("Using momentum seed: %d" % self.momentum_seed)
         np.random.seed(self.momentum_seed)
         self.hmc_rnd_state = np.random.get_state()
+
+        # standard leapfrog integrator
+        self.integrator = leapfrog_no_storing
 
         MCMCJob.set_up(self)
     
@@ -51,7 +53,7 @@ class HMCJob(MCMCJob):
         np.random.set_state(rnd_state)
         
         logger.debug("Simulating Hamiltonian flow")
-        q, p = leapfrog_no_storing(current, self.target.grad, p0, self.momentum.grad, step_size, num_steps)
+        q, p = self.integrator(current, self.target.grad, p0, self.momentum.grad, step_size, num_steps)
         
         # compute acceptance probability, extracting log_pdf of q
         p_log_pdf = self.momentum.log_pdf(p)

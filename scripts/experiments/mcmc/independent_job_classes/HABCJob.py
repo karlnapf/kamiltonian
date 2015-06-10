@@ -1,8 +1,10 @@
+from Crypto.Hash.SHA import SHA1Hash
 from abc import abstractmethod
-from numpy.testing.utils import assert_allclose
+import hashlib
 import os
 
 from kmc.densities.gaussian import log_gaussian_pdf
+from kmc.hamiltonian.leapfrog import leapfrog_friction_habc_no_storing
 from kmc.tools.Log import logger
 import numpy as np
 from scripts.experiments.mcmc.independent_job_classes.HMCJob import HMCJob, \
@@ -18,18 +20,22 @@ class DummyHABCTarget(object):
     def __init__(self, abc_target, num_spsa_repeats=1):
                  
         self.abc_target = abc_target
+        self.num_spsa_repeats = num_spsa_repeats
         
         # sticky random numbers: fixed seed to simulate data for this instance of DummyHABCTarget
-        self.fixed_rnd_state = np.random.get_state()
-        self.num_spsa_repeats = num_spsa_repeats
-#         self.current_theta = None
-
+        self.update_fixed_random_state()
+        
         # for running average of gradient covariances
-        self.current_sum_outer = np.zeros((abc_target.D, abc_target.D))
-        self.sum_outer_counter = 0
+        self.grad_cov_est_mean = np.zeros(abc_target.D)
+        self.grad_cov_est_M2 = np.zeros((abc_target.D, abc_target.D))
+        self.grad_cov_est = np.zeros((abc_target.D, abc_target.D))
+        self.grad_cov_est_n = 0
+    
+    def update_fixed_random_state(self):
+        self.fixed_rnd_state = np.random.get_state()
     
     def grad(self, theta):
-#         logger.info("theta_0=%.2f" % theta[0])
+        logger.debug("Entering")
         
         # update likelihood term
         self._update(theta)
@@ -41,8 +47,16 @@ class DummyHABCTarget(object):
                                           num_repeats=self.num_spsa_repeats)
         grad_prior = self.abc_target.prior.grad(theta)
         
-        self.current_sum_outer += np.outer(grad_lik_est, grad_lik_est)
-        self.sum_outer_counter += 1
+        
+        # update online covariance matrix estimate
+        self.grad_cov_est_n += 1
+        delta = grad_lik_est - self.grad_cov_est_mean
+        self.grad_cov_est_mean += delta/self.grad_cov_est_n
+        self.grad_cov_est_M2 += np.outer(delta,grad_lik_est - self.grad_cov_est_mean)
+ 
+        if self.grad_cov_est_n > 1:
+            self.grad_cov_est = self.grad_cov_est_M2/(self.grad_cov_est_n - 1)
+            logger.debug("Variance grad_0: %.4f" % self.grad_cov_est[0,0])
         
 #         logger.debug("grad_lik_est: %s" % str(grad_lik_est))
 #         logger.debug("grad_prior: %s" % str(grad_prior))
@@ -50,15 +64,14 @@ class DummyHABCTarget(object):
 #         logger.debug("||grad_prior||: %.2f" % np.linalg.norm(grad_prior))
 #         logger.debug("||grad_lik_est-grad_prior||: %.2f" % np.linalg.norm(grad_lik_est-grad_prior))
         
+        logger.debug("Leaving")
         return grad_lik_est + grad_prior
     
     def _update(self, theta):
-#         # dont re-simulate if not needed
-#         if self.current_theta is not None and np.allclose(self.current_theta, theta):
-#             logger.debug("Theta=%s was already simulated from." % str(theta))
-#             return
-#         else:
-#             self.current_theta = theta
+        logger.debug("Entering")
+        
+        state_hash = hashlib.sha1(str(self.fixed_rnd_state)).hexdigest()
+        logger.debug("Simulating using rnd_state %s" % state_hash)
         
         D = self.abc_target.D
         
@@ -80,6 +93,8 @@ class DummyHABCTarget(object):
 #         logger.debug("Simulation")
 #         logger.debug("Theta: %s" % str(theta[:3]))
 #         logger.debug("Mean:  %s" % str(self.mu[:3]))
+
+        logger.debug("Entering")
         
     
 class HABCJob(HMCJob):
@@ -101,12 +116,22 @@ class HABCJob(HMCJob):
         # remember orginal abc target for later
         self.abc_target = self.target
         
-        HMCJob.set_up(self)
-
-    @abstractmethod
-    def propose(self, current, current_log_pdf, samples, accepted):
         # replace with dummy target responsible for gradient computation
         self.target = DummyHABCTarget(self.abc_target)
+        
+        HMCJob.set_up(self)
+        
+    @abstractmethod
+    def propose(self, current, current_log_pdf, samples, accepted):
+        # fixed seed for this trajectory
+        self.target.update_fixed_random_state()
+        
+        # friction leapfrog integrator, broadcasted with current covariance of noise
+        c = 1e-5
+        V = self.target.grad_cov_est
+        self.integrator = lambda q, dlogq, p, dlogp, step_size, num_steps: \
+                        leapfrog_friction_habc_no_storing(c, V,
+                                                     q, dlogq, p, dlogp, step_size, num_steps)
         
         # use normal HMC mechanics from here
         return HMCJob.propose(self, current, current_log_pdf, samples, accepted)
