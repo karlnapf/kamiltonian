@@ -53,7 +53,7 @@ def habc_generator(num_warmup, thin_step):
     return job
 
 if __name__ == "__main__":
-    logger.setLevel(10)
+    logger.setLevel(20)
     num_repetitions = 10
     
     # plain MCMC parameters, plan is to use every 200th sample
