@@ -24,24 +24,27 @@ if __name__ == "__main__":
 
     fnames_kmc = glob('lite/theta=10/KMC_N=1000_D=10_ground_truth_iterations=5200*.pkl')[:num_repetitions]
     fnames_rw = glob('rw/theta=10/RW_D=10_ground_truth_iterations=5200*.pkl')[:num_repetitions]
-    fnames_habc = glob('habc/theta=10/HABC_D=10_ground_truth_iterations=1200*.pkl')[:num_repetitions]
+    fnames_habc = glob('habc/without_friction/theta=10/HABC_D=10_ground_truth_iterations=1200*.pkl')[:num_repetitions]
+    fnames_habc_friction = glob('habc/with_friction/HABC_D=10_ground_truth_iterations=1200*.pkl')[:num_repetitions]
     
     colors = [
               "b",
               "m",
             "y",
+            "orange"
               ]
     
     # two figures: autocorrelation and mean estimation
     f_acor, ax_acor = plt.subplots()
     f_mean, ax_kde = plt.subplots()
     
-    marginal_samples = [[] for _ in range(3)]
+    marginal_samples = [[] for _ in range(4)]
     
     for alg_idx, fnames in enumerate([
                    fnames_kmc,
                    fnames_rw,
                    fnames_habc,
+                   fnames_habc_friction,
                    ]):
         
         if len(fnames) <= 0:
@@ -91,7 +94,8 @@ if __name__ == "__main__":
     line1 = Line2D([0, 0], [0, 0], color=colors[0])
     line2 = Line2D([0, 0], [0, 0], color=colors[1])
     line3 = Line2D([0, 0], [0, 0], color=colors[2])
-    ax_acor.legend((line1, line2, line3), ["KMC", "RW","HABC"])
+    line4 = Line2D([0, 0], [0, 0], color=colors[3])
+    ax_acor.legend((line1, line2, line3, line4), ["KMC", "RW","HABC naive", "HABC friction"])
     ax_acor.grid(True)
     plt.sca(ax_acor)
     plt.savefig("abc_target_autocorr.pdf", bbox_inches="tight")
@@ -101,6 +105,7 @@ if __name__ == "__main__":
                   fnames_kmc,
                   fnames_rw,
                   fnames_habc,
+                  fnames_habc_friction,
                   ]):
         if len(fnames) <= 0:
             continue
