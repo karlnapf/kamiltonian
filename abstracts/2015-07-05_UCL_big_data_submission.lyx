@@ -1,0 +1,158 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass scrartcl
+\begin_preamble
+\usepackage{nips14submit_e,times}
+\usepackage{hyperref}
+\usepackage{url}
+%\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
+\usepackage{natbib}
+\setlength{\bibsep}{0pt plus 0.3ex}
+\title{Kamiltonian Monte Carlo}
+
+
+\author{
+Heiko Strathmann%\thanks{ Use footnote for providing further information about author (webpage, alternative address)---\emph{not} for acknowledging funding agencies.}
+\\
+Gatsby Unit\\
+University College London \\
+\texttt{heiko.strathmann@gmail.com} \\
+\And
+Dino Sejdinovic \\
+Department of Statistics \\
+University of Oxford \\
+\texttt{dino.sejdinovic@gmail.com} \\
+\And
+Samuel Livingstone\\
+Department of Statistics \\
+University College London \\
+\texttt{samuel.livingstone@ucl.ac.uk} \\
+\And
+Zoltán Szabó\\
+Gatsby Unit \\
+University College London \\
+\texttt{zoltan.szabo@gatsby.ucl.ac.uk } \\
+\AND
+Arthur Gretton \\
+Gatsby Unit\\
+University College London \\
+\texttt{arthur.gretton@gmail.com} 
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\nipsfinalcopy % Uncomment for camera-ready version
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+theorems-sec
+\end_modules
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type numerical
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Gradient-free Hamiltonian Monte Carlo
+\begin_inset Newline newline
+\end_inset
+
+with Efficient Kernel Exponential Families
+\end_layout
+
+\begin_layout Abstract
+We propose 
+\emph on
+Kamiltonian Monte Carlo (KMC)
+\emph default
+, a gradient-free adaptive MCMC algorithm based on Hamiltonian Monte Carlo
+ (HMC).
+ On target densities where HMC is unavailable due to intractable gradients,
+ KMC adaptively learns the target's gradient structure by fitting an exponential
+ family model in a Reproducing Kernel Hilbert Space.
+ Computational costs are reduced by two novel efficient approximations to
+ this gradient.
+ While being asymptotically exact, KMC mimics HMC in terms of sampling efficienc
+y and offers substantial mixing improvements to state-of-the-art gradient-free
+ samplers.
+ We support our claims with experimental studies on both toy and real-world
+ applications, including Approximate Bayesian Computation and exact-approximate
+ MCMC.
+\end_layout
+
+\end_body
+\end_document
