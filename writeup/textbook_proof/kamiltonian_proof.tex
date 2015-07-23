@@ -13,6 +13,7 @@
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage{mdframed}
 %\usepackage{pgfornament}
+\usepackage{todonotes}
 
 % Paragraph settings
 \setlength{\parindent}{0in}
@@ -34,41 +35,69 @@
 \newcommand{\ch}[1]{ \{#1_t\}_{t \geq 0} }
 \newcommand{\X}{\mathcal{X}}
 \newcommand{\B}{\mathcal{B}}
+\newcommand{\TV}{\text{TV}}
 
 
 \title{\Large \bfseries A textbook proof of geometric ergodicity.}
-\author{Sam Livingstone}
+\author{Sam Livingstone, Heiko Strathmann}
 \date{\today}
 
 \begin{document}
 \maketitle
 
+\listoftodos
+
+\section{Notation and Concepts}
+
+\begin{itemize}
+\item We use upper-case letters for random variables $X$ and events $A\in \mathcal{B}$. Random variables can take lower-case values $X=x$.
+\item Denote by $\mathbb{P}(X_{i+1} \in A |X_i = x)$ the probability of the event $X_{i+1} \in A$ given that $X_i = x$.
+\item \textbf{Total variation distance}
+\begin{equation*}
+\|\mu(\cdot) - \nu(\cdot)\|_{\TV} := \sup_{A \in \mathcal{B}} |\mu(A) - \nu(A)|
+\end{equation*}
+is the total variation distance between $\mu(\cdot)$ and $\nu(\cdot)$. Informally, this is the largest possible difference between the probabilities that $\mu(\cdot)$ and $\nu(\cdot)$ can assign to the same event.
+\item \textbf{Irreducibility}. \todo{HS: Define}
+\item \textbf{Aperiodicity}. \todo{HS: Define}
+
+
+\end{itemize}
+
 \section{Geometric Ergodicity of Markov chains}
 
-We describe the Markov chain $\{ X_t \}_{t \geq 0}$ on the measurable space $(\mathcal{X},\mathcal{B})$ through a starting point $X_0 = x$ and a transition kernel $P(x,A) = \mathbb{P}(X_{i+1} \in A |X_i = x)$.  The $m$-step kernel $P^n(x,A)$ is defined similarly for $X_{i+n}$.  We say $\pi(\cdot)$ is an invariant distribution if $\int P(x,A)\pi(dx) = \pi(A)$.  The chain is called geometrically ergodic if
+We describe the Markov chain $\{ X_t \}_{t \geq 0}$ on the measurable space $(\mathcal{X},\mathcal{B})$ through a starting point $X_0 = x$ and a transition kernel $P(x,A) = \mathbb{P}(X_{i+1} \in A |X_i = x)$\todo{HS: Could we say something about the differences between $P(x,A)$, $P(x,\cdot)$, and $P(X,\cdot)$?}.  The $m$-step kernel $P^n(x,A)$ is defined similarly for $X_{i+n}$.  We say $\pi(\cdot)$ is an invariant distribution of $P$ if $\int P(x,A)\pi(dx) = \pi(A)$\todo{HS: Sorry for stupid question, but is that the same as $\int P(x,A)\pi(x)dx$?}. The chain is called geometrically ergodic if
 \begin{equation} \label{eqn:ge}
-\| P^n(x,\cdot) - \pi(\cdot) \|_{TV} = O(\rho^n)
+\| P^n(x,\cdot) - \pi(\cdot) \|_{\TV} = \mathcal{O}(\rho^n)
 \end{equation}
-for some $\rho < 1$, where $\|\mu(\cdot) - \nu(\cdot)\|_{TV} := \sup_{A \in \mathcal{B}} |\mu(A) - \nu(A)|$ is the total variation distance. 
+for some $\rho < 1$.  In words, $P^n(x,\cdot)$ approaches $\pi(\cdot)$ at a geometric rate in $n$. \todo{HS: I guess $\pi(\cdot)$ being an invariant distribution of $P$ is a necessary condition for geometric ergodicity?}
 
 \section{Establishing Geometric Ergodicity}
 
 In fact, all Markov chains with a finite state space ($|\mathcal{X}| < \infty$) which are irreducible and aperiodic have a unique invariant measure \cite{Norris_1997}, and are geometrically ergodic.  A straightforward way of establishing this is through the \emph{coupling inequality}
 \begin{equation}
-\|\mu(\cdot) - \nu(\cdot)\|_{TV} \leq \mathbb{P}(X \neq Y),
+\|\mu(\cdot) - \nu(\cdot)\|_{\TV} \leq \mathbb{P}(X \neq Y),
 \end{equation}
-where $(X,Y)$ is some pair of random variables such that marginally $X \sim \mu(\cdot)$ and $Y \sim \nu(\cdot)$ (the proof is straightforward, see e.g. \cite{2004}).  We can use the coupling inequality to establish (\ref{eqn:ge}) by constructing two Markov chains $\{Y_t\}_{t \geq 0}$ and $\{ X_t\}_{t \geq 0}$ such that $Y_n \sim \pi(\cdot)$ for all $n$ and $\mathbb{P}(X_n \neq Y_n)$ decreases geometrically with $n$.
+where $(X,Y)$ is some pair of random variables such that marginally $X \sim \mu(\cdot)$ and $Y \sim \nu(\cdot)$ (the proof is straightforward, see e.g. \cite{2004}).  We can use the coupling inequality to establish (\ref{eqn:ge}) by constructing two Markov chains $\{Y_t\}_{t \geq 0}$ and $\{ X_t\}_{t \geq 0}$ such that (i) $Y_n \sim \pi(\cdot)$ for all $n$, and (ii) the upper bound on the TV, $\mathbb{P}(X_n \neq Y_n),$ decreases geometrically with $n$. 
 
-Imagine that we can write $P$ as a mixture
+Imagine\todo{HS: I can imagine that, but can any transition kernel be written this way? Do we need $0<\epsilon<1$?} that we can write $P$ as a mixture, i.e. assume there exists a measure $\nu(\cdot)$, a transition kernel $R(x,A)$, and a $0<\epsilon<1$, such that
 \begin{equation} \label{eqn:doeblin}
 P(x,\cdot) = \epsilon \nu(\cdot) + (1 - \epsilon)R(x,A).
 \end{equation}
-The following procedure will then give such a bound
+The following procedure gives such a bound
 \begin{enumerate}
 \item Start with $Y_0 \sim \pi(\cdot)$ and $X_0 = x$
-\item For each iteration $n$ of the chain, sample $b_n \sim Bernoulli(\epsilon)$.  If $b_n = 1$ then sample $Y_n \sim \nu(\cdot)$ and set $X_n = Y_n$.  If $b_n = 0$ then sample $X_{n+1} \sim P(X_n,\cdot)$ and $Y_{n+1} \sim P(Y_{n+1},\cdot)$ independently
+\item For each iteration $n$ of the chain, sample $b_n \sim \texttt{Bernoulli}(\epsilon)$. 
+\begin{itemize}
+\item If $b_n = 1$ then sample $Y_n \sim \nu(\cdot)$ and set $X_n = Y_n$. We say the chains  `couple'.
+\item If $b_n = 0$ then sample $X_{n+1} \sim P(X_n,\cdot)$ and $Y_{n+1} \sim P(Y_{n},\cdot)$ independently.\todo{HS: I guess both transition would be $R$ here?.}
+\end{itemize}
 \end{enumerate}
-Note two things, i) $\mathbb{P}(X_n \neq Y_n) = (1-\epsilon)^n$, and ii) at each iteration $Y_{n+1}|Y_i$ is marginally sampled from $P$, so $Y_{n+1} \sim \pi(\cdot)$ for all $n$ under this procedure, meaning at the point at which the chains `couple' ($b_n = 1$) then $X_n \sim \pi(\cdot)$ also.  This approach was first introduced by Doeblin (1936), and (\ref{eqn:doeblin}) is sometimes called the Doeblin condition.  It can be extended to the case where $P^m$ can be decomposed as in (\ref{eqn:doeblin}) for some fixed $m$ straightforwardly.
+Note two things
+\begin{itemize}
+\item $\mathbb{P}(X_n \neq Y_n) = (1-\epsilon)^n$.  For $n=0$, we clearly have $\mathbb{P}(X_0 \neq Y_0)=1$ \todo{HS: Is there a name for this fact?}. For $n=1$, since the probability of `coupling' the chains is $\epsilon$ and they have zero probability of hitting the same value otherwise \todo{HS: Same argument as above, but whats the name?} otherwise, we have $\mathbb{P}(X_1 \neq Y_1)=\mathbb{P}(X_0 \neq Y_0)\mathbb{P}(\epsilon=0)=1-\epsilon$. And so on.
+\item At each iteration $Y_{n+1}|Y_n$ is marginally\todo{HS: This is by construction with the two cases right?} sampled from $P$, so $Y_{n+1} \sim \pi(\cdot)$ for all $n$.\todo{HS: I guess we need to assume that $\pi(\cdot)$ is the invariant measure of $P$?}
+\end{itemize}
+This means that at the point at which the chains `couple', we have $X_n \sim \pi(\cdot)$. Consequently, \todo{HS: Add summary here, what is what in the coupling equation.} This approach was first introduced by Doeblin (1936), and (\ref{eqn:doeblin}) is sometimes called the Doeblin condition.  It can be extended to the case where $P^m$ can be decomposed as in (\ref{eqn:doeblin}) for some fixed $m$ straightforwardly.
 
 On unbounded state spaces, however, it is often difficult to satisfy the Doeblin condition with a uniform $\epsilon$ for all $x \in \X$.  Instead we tend to establish (\ref{eqn:doeblin}) for any $x \in C$, where $C$ is called a `small set'.  Under mild conditions any compact set is small.  To establish a geometric bound here entails showing (\ref{eqn:doeblin}) inside $C$, together with another condition, the stipulation that
 \begin{equation} \label{eqn:return}
@@ -117,5 +146,6 @@ The result can straightforwardly be adjusted to an integral over any set $(-x^\d
 
 INSERT
 
+\bibliography{biblio}
 
 \end{document}
