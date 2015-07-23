@@ -40,12 +40,12 @@ def emp_quantiles(X, bananicity=0.03, V=100, quantiles=np.arange(0.1, 1, 0.1)):
     assert(len(X.shape) == 2)
     D = X.shape[1]
     
-    substract=bananicity * ((X[:, 0] ** 2) - V)
-    divide=np.sqrt(V)
+    substract = bananicity * ((X[:, 0] ** 2) - V)
+    divide = np.sqrt(V)
     X[:, 1] -= substract
     X[:, 0] /= divide
     phi = Gaussian(np.zeros(D), np.eye(D))
-    quantiles=phi.emp_quantiles(X, quantiles)
+    quantiles = phi.emp_quantiles(X, quantiles)
     
     # undo changes to X
     X[:, 0] *= divide
@@ -55,7 +55,7 @@ def emp_quantiles(X, bananicity=0.03, V=100, quantiles=np.arange(0.1, 1, 0.1)):
 
 def avg_quantile_error(X, bananicity=0.03, V=100, quantiles=np.arange(0.1, 1, 0.1)):
     q = emp_quantiles(X, bananicity, V, quantiles)
-    return np.mean(np.abs(q-quantiles))
+    return np.mean(np.abs(q - quantiles))
 
 def norm_of_emp_mean(X):
     return np.linalg.norm(np.mean(X, 0))
