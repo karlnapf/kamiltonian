@@ -1,0 +1,121 @@
+\documentclass{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+%\usepackage{bbold}
+\usepackage{sectsty}
+\usepackage[compact]{titlesec}
+\usepackage{color}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{mdframed}
+%\usepackage{pgfornament}
+
+% Paragraph settings
+\setlength{\parindent}{0in}
+\setlength{\parskip}{0.3cm}
+
+% Title and section title spacing and formatting
+\titlespacing{\chapter}{0pt}{*0}{*0}
+\titlespacing{\section}{0pt}{*2.5}{*0}
+\titlespacing{\subsection}{0pt}{*0}{*0}
+%\allsectionsfont{\centering}
+\sectionfont{\normalsize}
+\subsectionfont{\normalsize \itshape}
+\subsubsectionfont{\normalfont \itshape}
+
+% new commands %
+\newcommand{\pd}[2]{ \frac{\partial #1}{\partial #2} }
+\newcommand{\comment}[1]{}
+\newcommand{\p}[1]{ (#1_t)_{t \geq 0} }
+\newcommand{\ch}[1]{ \{#1_t\}_{t \geq 0} }
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\B}{\mathcal{B}}
+
+
+\title{\Large \bfseries A textbook proof of geometric ergodicity.}
+\author{Sam Livingstone}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Geometric Ergodicity of Markov chains}
+
+We describe the Markov chain $\{ X_t \}_{t \geq 0}$ on the measurable space $(\mathcal{X},\mathcal{B})$ through a starting point $X_0 = x$ and a transition kernel $P(x,A) = \mathbb{P}(X_{i+1} \in A |X_i = x)$.  The $m$-step kernel $P^n(x,A)$ is defined similarly for $X_{i+n}$.  We say $\pi(\cdot)$ is an invariant distribution if $\int P(x,A)\pi(dx) = \pi(A)$.  The chain is called geometrically ergodic if
+\begin{equation} \label{eqn:ge}
+\| P^n(x,\cdot) - \pi(\cdot) \|_{TV} = O(\rho^n)
+\end{equation}
+for some $\rho < 1$, where $\|\mu(\cdot) - \nu(\cdot)\|_{TV} := \sup_{A \in \mathcal{B}} |\mu(A) - \nu(A)|$ is the total variation distance. 
+
+\section{Establishing Geometric Ergodicity}
+
+In fact, all Markov chains with a finite state space ($|\mathcal{X}| < \infty$) which are irreducible and aperiodic have a unique invariant measure \cite{Norris_1997}, and are geometrically ergodic.  A straightforward way of establishing this is through the \emph{coupling inequality}
+\begin{equation}
+\|\mu(\cdot) - \nu(\cdot)\|_{TV} \leq \mathbb{P}(X \neq Y),
+\end{equation}
+where $(X,Y)$ is some pair of random variables such that marginally $X \sim \mu(\cdot)$ and $Y \sim \nu(\cdot)$ (the proof is straightforward, see e.g. \cite{2004}).  We can use the coupling inequality to establish (\ref{eqn:ge}) by constructing two Markov chains $\{Y_t\}_{t \geq 0}$ and $\{ X_t\}_{t \geq 0}$ such that $Y_n \sim \pi(\cdot)$ for all $n$ and $\mathbb{P}(X_n \neq Y_n)$ decreases geometrically with $n$.
+
+Imagine that we can write $P$ as a mixture
+\begin{equation} \label{eqn:doeblin}
+P(x,\cdot) = \epsilon \nu(\cdot) + (1 - \epsilon)R(x,A).
+\end{equation}
+The following procedure will then give such a bound
+\begin{enumerate}
+\item Start with $Y_0 \sim \pi(\cdot)$ and $X_0 = x$
+\item For each iteration $n$ of the chain, sample $b_n \sim Bernoulli(\epsilon)$.  If $b_n = 1$ then sample $Y_n \sim \nu(\cdot)$ and set $X_n = Y_n$.  If $b_n = 0$ then sample $X_{n+1} \sim P(X_n,\cdot)$ and $Y_{n+1} \sim P(Y_{n+1},\cdot)$ independently
+\end{enumerate}
+Note two things, i) $\mathbb{P}(X_n \neq Y_n) = (1-\epsilon)^n$, and ii) at each iteration $Y_{n+1}|Y_i$ is marginally sampled from $P$, so $Y_{n+1} \sim \pi(\cdot)$ for all $n$ under this procedure, meaning at the point at which the chains `couple' ($b_n = 1$) then $X_n \sim \pi(\cdot)$ also.  This approach was first introduced by Doeblin (1936), and (\ref{eqn:doeblin}) is sometimes called the Doeblin condition.  It can be extended to the case where $P^m$ can be decomposed as in (\ref{eqn:doeblin}) for some fixed $m$ straightforwardly.
+
+On unbounded state spaces, however, it is often difficult to satisfy the Doeblin condition with a uniform $\epsilon$ for all $x \in \X$.  Instead we tend to establish (\ref{eqn:doeblin}) for any $x \in C$, where $C$ is called a `small set'.  Under mild conditions any compact set is small.  To establish a geometric bound here entails showing (\ref{eqn:doeblin}) inside $C$, together with another condition, the stipulation that
+\begin{equation} \label{eqn:return}
+\tau_C := \inf \{ t \geq 1 : X_t \in C \}
+\end{equation}
+the return time to $C$ when leaving it, follows a distribution with geometric tails.  In fact, Meyn \& Tweedie showed that this is equivalent to the condition that there exists a function $V: \X \to [1,\infty)$ such that
+\begin{equation}
+\int V(y)P(x,dy) \leq \lambda V(x) + b1_C(x),
+\end{equation}
+or some $\lambda<1$, $b < \infty$, with $V$ called a \emph{Lyapunov} function.  Intuitively, $\{ V(X_t) \}_{t \geq 0}$ can be thought of as a one-dimensional projection of the chain.  The condition effectively states that to establish \ref{eqn:return} we only need look at the one-dimensional projections of $\ch{X}$.
+
+Roberts \& Tweedie \cite{} further simplified matters by showing that if all compact sets are small then we need not explicitly find a $C$, but instead show that
+\begin{equation} \label{eqn:ge2}
+\limsup_{|x| \to \infty} \int \frac{V(y)}{V(x)} P(x,dy) < 1.
+\end{equation}
+Effectively, showing (\ref{eqn:ge2}) establishes geometric ergodicity.  In the case where $P$ is a Metropolis--Hastings kernel, then we can equivalently write
+\begin{equation} \label{eqn:gemh}
+\limsup_{|x| \to \infty} \int \left[ \frac{V(y)}{V(x)} - 1 \right] \alpha(x,y)Q(x,dy) < 0,
+\end{equation}
+where $Q$ is the proposal kernel and $\alpha$ the acceptance rate.  The skill in establishing the result in a given scenario is find a suitable way to bound $\alpha$ and choosing an appropriate $V$ such that (\ref{eqn:gemh}) can be established.
+
+\section{Geometric Ergodicity of the Random Walk Metropolis in 1D}
+
+For the Random Walk Metropolis the kernel choice is such that $Q(x,dy) = q(|x-y|)dy$, meaning $\alpha(x,y) = 1 \wedge \pi(y)/\pi(x)$.  Since the acceptance rate is just the ratio of target densities, it lends itself quite nicely to a simple bound.  If we assume $\pi(x)$ is log-concave in the tails, then $\pi(y)/\pi(x) \leq \exp\left(-a(|y|-|x|)\right)$ for large enough $x$.  With this, a sensible choice of Lyapunov function would seem to be $V(x) = e^{s|x|}$, for some $0 < s < a$.  Let's consider the positive tail, i.e. the case $x \to \infty$.  In this instance we can re-write the integral in (\ref{eqn:gemh}) as
+\begin{align*}
+\int_{-\infty}^0 [e^{s(|y|-x)} - 1]\alpha(x,y)&Q(x,dy) + \int_0^x [e^{s(y-x)} - 1]\alpha(x,y)Q(x,dy) \\ &+ \int_x^{2x} [e^{s(y-x)} - 1]\alpha(x,y)Q(x,dy) + \int_{2x}^\infty [e^{s(y-x)} - 1]\alpha(x,y)Q(x,dy).
+\end{align*}
+In the first and last terms can be made arbitrarily small by taken $x$ large.  In the first case this is because
+\[
+\int_{-\infty}^0 [e^{s(|y|-x)} - 1]\alpha(x,y)Q(x,dy) \leq \int_{-x}^0 [e^{s(|y|-x)} - 1]Q(x,dy) + \int_{-\infty}^{-x} [e^{s(|y|-x)} - 1]e^{-a(|y|-x)}Q(x,dy),
+\]
+in the latter case because $\alpha(x,y) \leq e^{-a(|y|-|x|)}$ for $|y| \geq |x|$.  The first integral on the right-hand side is strictly negative for any $x$ and the second is bounded above by $Q(x,(-\infty,-x))$, which will clearly become negligibly small as $x$ grows.  For the last term, we can again use the log-concave restriction to bound the integral with
+\[
+\int_{2x}^\infty [e^{(s-a)(y-x)} - e^{-a(y-x)}]Q(x,dy) \leq Q(x,(2x,\infty)) \to 0.
+\]
+This leaves the middle two terms.  We can combine these by writing $y = x + Z$, for $Z \sim \mu(\cdot)$, meaning $\mu(\cdot)$ denotes zero mean proposal `increment' distribution.  Typically $\mu(\cdot)$ might be a zero mean Gaussian, if $Q(x,\cdot) = \mathcal{N}(x,h\sigma^2)$.  We can then bound the middle two integrals with
+\begin{align*}
+\int_0^x [e^{-sz} - 1 + e^{(s-a)z} + e^{-az}]\mu(dz) = -\int_0^{x} (1-e^{(s-a)z})(1-e^{-sz}) \mu(dz),
+\end{align*}
+which is strictly negative.  Since for large $x$ the entire integral will be comprised of terms which can be made arbitrarily small and terms which are strictly negative, this establishes (\ref{eqn:gemh}) as $x \to \infty$, and the log-concave restriction means an equivalent argument holds as $x \to -\infty$.
+
+\section{Geometric Ergodicity of KMC-lite in 1D}
+
+The result can straightforwardly be adjusted to an integral over any set $(-x^\delta,x^{\delta})$ for some $\delta \in (0,1]$.
+
+
+INSERT
+
+
+\end{document}
