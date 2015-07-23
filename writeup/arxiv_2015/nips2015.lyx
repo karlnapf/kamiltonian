@@ -4166,7 +4166,7 @@ As assumed the log unnormalised density takes the form
 \begin_layout Proof
 \begin_inset Formula 
 \[
-f(x)=\sum_{i=1}^{m}\alpha_{i}k(x_{i},x)
+f(x)=\sum_{i=1}^{n}\alpha_{i}k(x_{i},x)
 \]
 
 \end_inset
