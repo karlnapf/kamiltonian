@@ -135,23 +135,25 @@ with Efficient Kernel Exponential Families
 \end_layout
 
 \begin_layout Abstract
-We propose 
-\emph on
-Kamiltonian Monte Carlo (KMC)
-\emph default
-, a gradient-free adaptive MCMC algorithm based on Hamiltonian Monte Carlo
- (HMC).
- On target densities where HMC is unavailable due to intractable gradients,
- KMC adaptively learns the target's gradient structure by fitting an exponential
- family model in a Reproducing Kernel Hilbert Space.
+We propose Kamiltonian Monte Carlo (KMC), a gradient-free adaptive MCMC
+ algorithm based on Hamiltonian Monte Carlo (HMC).
+ HMC often obtains fast mixing in high dimensions using gradient information.
+ When these gradients are intractable or expensive to compute (as in large-scale
+ settings), KMC adaptively learns the target's gradient structure by fitting
+ an infinite dimensional exponential family model, where the sufficient
+ statistic is an RKHS function.
+ While KMC remains asymptotically exact since adaptation vanishes, it smoothly
+ transitions from a random walk into HMC-like mixing.
  Computational costs are reduced by two novel efficient approximations to
- this gradient.
- While being asymptotically exact, KMC mimics HMC in terms of sampling efficienc
-y and offers substantial mixing improvements to state-of-the-art gradient-free
- samplers.
+ the gradient.
  We support our claims with experimental studies on both toy and real-world
- applications, including Approximate Bayesian Computation and exact-approximate
- MCMC.
+ applications, including Approximate Bayesian Computation (ABC) and exact-approx
+imate MCMC.
+ Our numerical studies show that KMC mimics HMC in terms of sampling efficiency
+ and offers substantial mixing improvements to state-of-the-art gradient-free
+ samplers.
+ Furthermore, KMC can be used to reduce computational costs compared to
+ HMC in both the large-scale and the ABC setting.
 \end_layout
 
 \end_body
