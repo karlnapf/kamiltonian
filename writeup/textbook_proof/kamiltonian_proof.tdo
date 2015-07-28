@@ -1,2 +1,0 @@
-\contentsline {todo}{SJL: the point is you want to write $P$ as a mixture, so you need the mixture weights $\epsilon $ and $1-\epsilon $ such that they sum to 1. You can't take $\epsilon $ to be zero otherwise the chains will never couple. You can have them exactly $1$ but this would mean you are just drawing independent samples, as $P(x,\cdot ) = \nu (\cdot )$ then.}{2}
-\contentsline {todo}{HS: This is by construction with the two cases right? SJL: Yes exactly}{2}
