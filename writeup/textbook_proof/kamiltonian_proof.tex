@@ -62,7 +62,7 @@ is the total variation distance between $\mu(\cdot)$ and $\nu(\cdot)$. Informall
 \[
 p_x = \text{gcd}(\{ n \in \mathbb{N} : P^n(x,x) > 0 \}),
 \]
-where $\text{gcd}(A)$ denotes the greatest common divisor of the argument.  For irreducible chains all states have the same period \cite{}.  The chain is called \emph{aperiodic} if $p_x = 1$.  In the uncountable case, it suffices to note that any chain with a non-zero probability of remaining at the current position is aperiodic (so any Metropolis--Hastings algorithm) (for a full definition see \cite{}).
+where $\text{gcd}(A)$ denotes the greatest common divisor of the argument.  For irreducible chains all states have the same period \cite{norris1997markov}.  The chain is called \emph{aperiodic} if $p_x = 1$.  In the uncountable case, it suffices to note that any chain with a non-zero probability of remaining at the current position is aperiodic (so any Metropolis--Hastings algorithm) (for a full definition see \cite{tierney1994markov}).
 
 \end{itemize}
 
@@ -77,16 +77,16 @@ for some $\rho < 1$.  In words, $P^n(x,\cdot)$ approaches $\pi(\cdot)$ at a geom
 \section{Establishing Geometric Ergodicity}
 
 \subsection{Doeblin condition for finite state spaces}
-In fact, all Markov chains with a finite state space ($|\mathcal{X}| < \infty$)\todo{HS: Not clear where this comes in below} which are irreducible and aperiodic have a unique invariant measure \cite{Norris_1997}, and are geometrically ergodic.  A straightforward way of establishing this is through the \emph{coupling inequality}. Given some pair of random variables $(X,Y)$ with marginal distributions $X \sim \mu(\cdot)$ and $Y \sim \nu(\cdot)$, we have that
+In fact, all Markov chains with a finite state space ($|\mathcal{X}| < \infty$)\todo{HS: Not clear where this comes in below} which are irreducible and aperiodic have a unique invariant measure \cite{norris1997markov}, and are geometrically ergodic.  A straightforward way of establishing this is through the \emph{coupling inequality}. Given some pair of random variables $(X,Y)$ with marginal distributions $X \sim \mu(\cdot)$ and $Y \sim \nu(\cdot)$, we have that
 \begin{equation}
 \|\mu(\cdot) - \nu(\cdot)\|_{\TV} \leq \mathbb{P}(X \neq Y).\label{eqn:coupling_inequality}
 \end{equation}
-The proof is straightforward, see e.g. \cite{2004}. Intuition: \todo{HS: Intuition?}  We can use the coupling inequality to establish (\ref{eqn:geometric_ergodicity}) by constructing two Markov chains $\{Y_n\}_{n \geq 0}$ and $\{ X_n\}_{n \geq 0}$ such that (i) $X_n \sim P^n(x,\cdot)$ and $Y_n \sim \pi(\cdot)$ for all $n$, and (ii) the upper bound $\mathbb{P}(X_n \neq Y_n)$ in \eqref{eqn:coupling_inequality} decreases geometrically with $n$. 
+The proof is straightforward, see e.g. \cite{roberts2004general}. Intuition: \todo{HS: Intuition?}  We can use the coupling inequality to establish (\ref{eqn:geometric_ergodicity}) by constructing two Markov chains $\{Y_n\}_{n \geq 0}$ and $\{ X_n\}_{n \geq 0}$ such that (i) $X_n \sim P^n(x,\cdot)$ and $Y_n \sim \pi(\cdot)$ for all $n$, and (ii) the upper bound $\mathbb{P}(X_n \neq Y_n)$ in \eqref{eqn:coupling_inequality} decreases geometrically with $n$. 
 Imagine that we can write $P$ (with limiting distribution $\pi(\cdot)$) as a mixture, i.e. assume there exists a measure $\nu(\cdot)$, a transition kernel $R(x,A)$, and  $\epsilon$  $0<\epsilon\leq1$, such that \todo{SJL: the point is you want to write $P$ as a mixture, so you need the mixture weights $\epsilon$ and $1-\epsilon$ such that they sum to 1.  You can't take $\epsilon$ to be zero otherwise the chains will never couple.  You can have them exactly $1$ but this would mean you are just drawing independent samples, as $P(x,\cdot) = \nu(\cdot)$ then. HS: I see. But can any $P$ written as such a mixture? Might be obvious ...}
 \begin{equation} \label{eqn:doeblin}
 P(x,\cdot) = \epsilon \nu(\cdot) + (1 - \epsilon)R(x,A).
 \end{equation}
-\todo{HS: I removed this as I could not connect it to anything, what is splitted? In fact, this `splitting' technique can be done \emph{in certain regions of $\X$} whenever the Markov chain is recurrent (see below) \cite{}.  While we avoid a full definition, any Markov chain which is $\pi$-irreducible and $\pi$-invariant is recurrent (so these are necessary requirements for $P(x,\cdot)$ to converge to $\pi(\cdot)$).}
+\todo{HS: I removed this as I could not connect it to anything, what is splitted? In fact, this `splitting' technique can be done \emph{in certain regions of $\X$} whenever the Markov chain is recurrent (see below) \cite{meyn2009markov}.  While we avoid a full definition, any Markov chain which is $\pi$-irreducible and $\pi$-invariant is recurrent (so these are necessary requirements for $P(x,\cdot)$ to converge to $\pi(\cdot)$).}
   The following procedure gives a bound on the TV between $P^n(x,\cdot)$ and $\pi(\cdot)$:
 \begin{enumerate}
 \item Start with $Y_0 \sim \pi(\cdot)$ and $X_0 = x$.
@@ -125,7 +125,7 @@ TODO. \label{eqn:geometric_return_time}
 \end{equation}
 or some $\lambda<1$, $b < \infty$, and set indicator\todo{HS: is that correct? I added} function $1_C(x)$, with $V$ called a \emph{Lyapunov} function.  Intuitively, $\{ V(X_t) \}_{t \geq 0}$ can be thought of as a one-dimensional projection of the chain.\todo{HS: Is there intuition why \eqref{eqn:eqn:lyapunov_condition} is the same as \eqref{eqn:geometric_return_time}? Like: Imagine your MC was 1D, then this exactly corresponds?}  The condition effectively states that to establish \eqref{eqn:geometric_return_time}, we only need look at the one-dimensional projections of $\ch{X}$.
 
-Roberts \& Tweedie \cite{} further simplified matters by showing that if all compact sets are small then we need not explicitly find a $C$\todo{So far, we talked about finding a $V$, now all of a sudden there is a $C$? A bit spaghetti}, but instead show that
+Roberts \& Tweedie \cite{roberts1996geometric} further simplified matters by showing that if all compact sets are small then we need not explicitly find a $C$\todo{So far, we talked about finding a $V$, now all of a sudden there is a $C$? A bit spaghetti}, but instead show that
 \begin{equation} \label{eqn:ge2}
 \limsup_{|x| \to \infty} \int \frac{V(y)}{V(x)} P(x,dy) < 1.
 \end{equation}
@@ -181,7 +181,7 @@ where $c(x,p)$ is basically a sequence of gradient steps, which depends on the c
 
 We assumed that $c(x) \xrightarrow{p} 0$ as $|x| \to \infty$, which seems valid given the KMC-lite kernel, and that $c(x) < M$ for all $x \in \X$.
 
-We also assumed the conditions of Theorem 2.2 in \cite{}.  These are technical conditions, but well-known among the Markov chain community.  They are extremely loose, and assert that
+We also assumed the conditions of Theorem 2.2 in \cite{roberts1996geometric}.  These are technical conditions, but well-known among the Markov chain community.  They are extremely loose, and assert that
 \begin{itemize}
 \item The Markov chain is $\mu^L$-irreducible, where $\mu^L(\cdot)$ denotes Lebesgue measure, and aperiodic
 \item All compact sets are small
@@ -216,7 +216,15 @@ The crux of the proof is basically to show that in the set $y \in (x - x^\delta,
 \end{equation}
 Note that $c(x)$ can be made arbitrarily small for any choice of $p \in (-x^\delta,x^\delta)$, and also that therefore $\alpha(x,y(p))$ can be made arbitrarily close to $1 \wedge \pi(y(p))/\pi(x)$.  Because of these, we can say that (\ref{eqn:kmc1}) can be made arbitrarily close to (\ref{eqn:rwm}) on this set, and hence will be strictly negative for large enough $x$.
 
-For proposals $y$ outside of the set $(x - x^\delta,x + x^\delta)$, then in the tails the two integrals $I_{-\infty}^{x - x^\delta}$ and $I_{x + x^\delta}^\infty$ can be made arbitrarily close to zero because $\mu(dp)$ is a Gaussian.  Specifically, the dominant term in the integrals will be the Gaussian density $e^{-(y-x)^2}$, and for large enough $x$ this will be $\mathcal{O}(e^{-x^{2\delta}})$ or smaller.  Since the Lyapunov function term is $\mathcal{O}(e^{x^\delta})$ by the same argument, then the combination will be $\mathcal{O}(e^{x^\delta - x^{2\delta}})$, so the integrals can be made arbitrarily small by choosing $x$ large enough, for any $\delta > 0$.  Note that the assumption that $c(x) < M$ for all $x$ is important here for these order based arguments to be valid.
+For proposals $y$ outside of the set $(x - x^\delta,x + x^\delta)$, then in the tails the two integrals $I_{-\infty}^{x - x^\delta}$ and $I_{x + x^\delta}^\infty$ can be made arbitrarily close to zero.  For $y \in (-\infty,x-x^{\delta})$, since $x - M + p \leq y \leq x + M + p$ for all $y \in \X$ (where $M$ is the bound on the gradient term $c(x)$), there exists some constant $C_1 \in \mathbb{R}$ such that the integral is bounded above by
+\[
+\int_{-\infty}^{- C_1 - x^\delta} \left[e^{s(M + |p|)} - 1 \right]\alpha(x,y(p))\mu(dp),
+\]
+noting that $|y| = |x + M + p| \leq |x| + M + |p|$.  for $x$ large to get the term inside the exponential. As $0 \leq \alpha(x,y(p)) \leq 1$, this is again bounded above by
+\[
+e^{sM}\int_{-\infty}^{- C_1 - x^\delta} e^{s|p|}\mu(dp) = e^{sM}\int_{C_1 + x^{\delta}}^{\infty} e^{sp}\mu(dp) = e^{sM}e^{s^2/2}\Phi(s - x^\delta - C_1),
+\]
+using properties of the Gaussian distribution, where $\Phi$ is the standard Gaussian CDF.  The last term tends to $0$ as $x \to \infty$, as required.  The same argument can be applied to any $y \in (x + x^\delta,\infty)$ to show that the integral over that set can also be made arbitrarily small.
 
 \subsection{Proof in paper}
 
@@ -292,7 +300,21 @@ of $e^{s(\Vert x^{*}(p')\Vert_{2}-\Vert x_{t}\Vert_{2})}$ meaning
 the integral can be made arbitrarily small by choosing large enough
 $x_{t}$, and the same argument holds for $I_{x_{t}^{\delta}}^{\infty}$.
 
-\bibliography{biblio}
+\begin{thebibliography}{1}
+
+  \bibitem{norris1997markov} Norris, James R. \emph{Markov chains}. No. 2008. Cambridge university press, 1998.
+
+  \bibitem{tierney1994markov}  Tierney, Luke. "Markov chains for exploring posterior distributions." \emph{The Annals of Statistics} (1994): 1701-1728.
+
+  \bibitem{roberts2004general} Roberts, Gareth O., and Jeffrey S. Rosenthal. "General state space Markov chains and MCMC algorithms." \emph{Probability Surveys} 1 (2004): 20-71.
+
+  \bibitem{meyn2009markov} Meyn, Sean P., and Richard L. Tweedie. \emph{Markov chains and stochastic stability}. Springer Science \& Business Media, 2012.
+  
+  \bibitem{roberts1996geometric} Roberts, Gareth O., and Richard L. Tweedie. "Geometric convergence and central limit theorems for multidimensional Hastings and Metropolis algorithms." \emph{Biometrika} 83, no. 1 (1996): 95-110.
+  
+  \bibitem{mengersen1996rates} Mengersen, Kerrie L., and Richard L. Tweedie. "Rates of convergence of the Hastings and Metropolis algorithms." \emph{The Annals of Statistics} 24, no. 1 (1996): 101-121.
+
+  \end{thebibliography}
 
 
 
