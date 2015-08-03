@@ -3133,8 +3133,8 @@ KMC Finite: Stability of Trajectories in High Dimensions
 
 \begin_layout Standard
 In order to quantify efficiency in growing dimensions, we study average
- acceptance probabilities purely over trajectories from the origin along
- the kernel induced Hamiltonian flow (no MCMC yet) on a standard Gaussian
+ acceptance probabilities purely over trajectories from a random sample
+ along the kernel induced Hamiltonian flow (no MCMC yet) on a standard Gaussian
  target.
  Figure 
 \begin_inset CommandInset ref
