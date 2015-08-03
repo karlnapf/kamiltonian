@@ -1002,7 +1002,7 @@ key "neal2011mcmc"
 
 , the end-point of the approximate trajectory is accepted with probability
  
-\begin_inset Formula $\min\left[1,\exp\left(-H(p^{*}q^{*})+H(q,p')\right)\right]$
+\begin_inset Formula $\min\left[1,\exp\left(-H(p^{*},q^{*})+H(q,p')\right)\right]$
 \end_inset
 
 .
@@ -1216,7 +1216,7 @@ kernel
 \end_inset
 
 , which satisfies 
-\begin_inset Formula $f(x)=\langle f,k(x,\cdot)\rangle$
+\begin_inset Formula $f(x)=\langle f,k(x,\cdot)\rangle_{{\cal H}}$
 \end_inset
 
  for any 
@@ -1393,7 +1393,7 @@ reference "eq:potential_energy_operator"
 n error from the leap-frog integrator, is naturally corrected for in the
  Metropolis step.
  We accept an end-point 
-\begin_inset Formula $\phi_{t}^{\hat{H}}(p',q)$
+\begin_inset Formula $\phi_{t}^{\hat{H}_{k}}(p',q)$
 \end_inset
 
  of a trajectory starting at 
@@ -1878,7 +1878,7 @@ where
 \begin_inset Formula $C\in\mathbb{R}^{n\times n}$
 \end_inset
 
- with 
+ are given by 
 \size footnotesize
 
 \begin_inset Formula 
@@ -1903,11 +1903,11 @@ with entry-wise products
 \end_layout
 
 \begin_layout Standard
-The estimator has a cost of 
+The estimator costs 
 \begin_inset Formula ${\cal O}(n^{3}+dn^{2})$
 \end_inset
 
- in computation (both for computing 
+ computation (both for computing 
 \begin_inset Formula $C,b$
 \end_inset
 
@@ -2035,7 +2035,7 @@ We deliberately don't state the form of the approximation yet, but will
 \end_inset
 
 , and denote by 
-\begin_inset Formula $\phi_{x}\in\mathbb{{\cal H}}^{m}$
+\begin_inset Formula $\phi_{x}\in\mathbb{{\cal H}}_{m}$
 \end_inset
 
  the embedding of a point 
@@ -4808,7 +4808,7 @@ reference "eq:score_match_objective_random_feats"
 
 \begin_layout Standard
 Next, we give an example for the approximate feature space 
-\begin_inset Formula ${\cal H}^{m}$
+\begin_inset Formula ${\cal H}_{m}$
 \end_inset
 
 .
