@@ -21,9 +21,9 @@ if __name__ == "__main__":
     
     print(Ns)
     print(Ds)
-    num_repetitions = 3
-    num_steps = 100
-    max_steps = 1000
+    num_repetitions = 1
+    num_steps = 10
+    max_steps = 100
     step_size = .1
     
     alpha0 = 0.6
