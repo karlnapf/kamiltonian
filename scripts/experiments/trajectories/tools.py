@@ -62,10 +62,7 @@ def compute(fname_base, job_generator, Ds, Ns, num_repetitions, num_steps, step_
                 log_dets_est[j, i, k] = result.vol_est
                 avg_steps_taken[j, i, k] = result.steps_taken
             
-    with open(fname_base + ".csv", 'a+') as f:
-        for i in range(len(Ds)):
-            for k in range(len(Ns)):
-                for j in range(num_repetitions):
+                with open(fname_base + ".csv", 'a+') as f:
                     line = np.array([
                                      Ds[i],
                                      Ns[k],
