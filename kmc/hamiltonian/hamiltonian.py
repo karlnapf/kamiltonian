@@ -1,3 +1,5 @@
+from numpy.linalg.linalg import LinAlgError
+
 import numpy as np
 
 
@@ -19,6 +21,9 @@ def compute_log_accept_pr_single(q0, p0, q, p, logq, logp):
 def compute_log_det_trajectory(Qs, Ps):
     joint = np.hstack((Qs, Ps))
     Sigma = np.cov(joint.T) 
-    Sigma +=np.eye(Sigma.shape[0])*1e-5
-    L = np.linalg.cholesky(Sigma)
-    return 2 * np.sum(np.log(np.diag(L)))
+    Sigma +=np.eye(Sigma.shape[0])*1e-3
+    try:
+        L = np.linalg.cholesky(Sigma)
+        return 2 * np.sum(np.log(np.diag(L)))
+    except LinAlgError:
+        return 0.
