@@ -103,30 +103,7 @@ class TrajectoryJob(IndependentJob):
         # set up target and momentum densities and gradients
         self.set_up()
         
-        # load or learn parameters
-        if self.learn_parameters:
-            sigma, lmbda = self.determine_sigma_lmbda()
-        else:
-            sigma = self.sigma0
-            lmbda = self.lmbda0
-        
-        logger.info("Using sigma: %.2f, lmbda=%.6f" % (sigma, lmbda))
-        
-        D = self.Z.shape[1]
-        gamma = 0.5 * (sigma ** 2)
-        omega, u = sample_basis(D, self.m, gamma)
-        
-        logger.info("Estimate density in RKHS, N=%d, m=%d" % (self.N, self.m))
-        theta = score_matching_sym(self.Z, lmbda, omega, u)
-        
-#         logger.info("Computing objective function")
-#         J = _objective_sym(Z, sigma, lmbda, a, K, b, C)
-#         J_xval = np.mean(xvalidate(Z, 5, sigma, self.lmbda, K))
-#         logger.info("N=%d, sigma: %.2f, lambda: %.2f, J(a)=%.2f, XJ(a)=%.2f" % \
-#                 (self.N, sigma, self.lmbda, J, J_xval))
-        
-        dlogq_est = lambda x: log_pdf_estimate_grad(feature_map_grad_single(x, omega, u),
-                                                    theta)
+        dlogq_est = self.update_density_estimate()
         
         # random number of steps?
         if self.max_steps is not None:
@@ -180,3 +157,32 @@ class TrajectoryJob(IndependentJob):
         self.aggregator.submit_result(result)
         
         logger.debug("Leaving")
+
+    @abstractmethod
+    def update_density_estimate(self):
+        # load or learn parameters
+        if self.learn_parameters:
+            sigma, lmbda = self.determine_sigma_lmbda()
+        else:
+            sigma = self.sigma0
+            lmbda = self.lmbda0
+        
+        logger.info("Using sigma: %.2f, lmbda=%.6f" % (sigma, lmbda))
+        
+        D = self.Z.shape[1]
+        gamma = 0.5 / (sigma ** 2)
+        omega, u = sample_basis(D, self.m, gamma)
+        
+        logger.info("Estimate density in RKHS, N=%d, m=%d" % (self.N, self.m))
+        theta = score_matching_sym(self.Z, lmbda, omega, u)
+        
+#         logger.info("Computing objective function")
+#         J = _objective_sym(Z, sigma, lmbda, a, K, b, C)
+#         J_xval = np.mean(xvalidate(Z, 5, sigma, self.lmbda, K))
+#         logger.info("N=%d, sigma: %.2f, lambda: %.2f, J(a)=%.2f, XJ(a)=%.2f" % \
+#                 (self.N, sigma, self.lmbda, J, J_xval))
+        
+        dlogq_est = lambda x: log_pdf_estimate_grad(feature_map_grad_single(x, omega, u),
+                                                    theta)
+        
+        return dlogq_est
