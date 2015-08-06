@@ -78,7 +78,7 @@ for some $\rho < 1$.  In words, $P^n(x,\cdot)$ approaches $\pi(\cdot)$ at a geom
 \section{Establishing Geometric Ergodicity}
 
 \subsection{Doeblin condition for finite state spaces}
-In fact, all Markov chains with a finite state space ($|\mathcal{X}| < \infty$)\todo{HS: Not clear where this comes in below} which are irreducible and aperiodic have a unique invariant measure \cite{norris1997markov}, and are geometrically ergodic.  A straightforward way of establishing this is through the \emph{coupling inequality}. Given some pair of random variables $(X,Y)$ with marginal distributions $X \sim \mu(\cdot)$ and $Y \sim \nu(\cdot)$, we have that
+In fact, all Markov chains with a finite state space ($|\mathcal{X}| < \infty$) which are irreducible and aperiodic have a unique invariant measure \cite{norris1997markov}, and are geometrically ergodic.  A straightforward way of establishing this is through the \emph{coupling inequality}. Given some pair of random variables $(X,Y)$ with marginal distributions $X \sim \mu(\cdot)$ and $Y \sim \nu(\cdot)$, we have that
 \begin{equation}
 \|\mu(\cdot) - \nu(\cdot)\|_{\TV} \leq \mathbb{P}(X \neq Y).\label{eqn:coupling_inequality}
 \end{equation}
@@ -109,7 +109,7 @@ The kernel $R(x,\cdot) = (P(x,\cdot) - \epsilon\nu(\cdot))/(1-\epsilon)$ is call
 
 \vspace{0.3cm}
 
-\textit{Example.}  Consider a Gaussian random walk Metropolis on the State space $\X = [0,10]$ with $\pi(\cdot) = U[0,10]$.  Then for any $x,y \in \X$ and $A \in \B$ we have
+\textit{Example of a residual kernel.}  Consider a Gaussian random walk Metropolis on the state space $\X = [0,10]$ with $\pi(\cdot) = U[0,10]$. Here,  $Q(x,\cdot)$ is the proposal kernel centred at $x$ and $\alpha(x,y)$ is the probability of accepting $y$ at $x$, Then for any $x,y \in \X$ and $A \in \B$, since $\alpha(x,y)\leq 1$, we have
 \[
 P(x,A) \geq \mathbb{P}[y \in A ~~ \text{proposed and accepted}] = \int_A \alpha(x,y)Q(x,dy) \geq \int_A \min_{x,y \in \X}{\alpha(x,y)q(y|x)} dx.
 \]
@@ -117,14 +117,14 @@ Since $q(y|x) = e^{-(x-y)^2/2}/\sqrt{2\pi} \geq e^{-50}/\sqrt{2\pi}$ and $\alpha
 \[
 P(x,A) \geq \epsilon \mu^L(A)
 \]
-where $\mu^L(\cdot)$ is the \emph{normalised} Lebesgue measure on $\mathbb{R}$ (normalised by dividing by $\mu^L(\X) = 10$ to get a probability measure).  Setting $R(x,A) = (P(x,A) - \epsilon \nu(A))/(1-\epsilon)$ gives the mixture representation, as desired.
+where $\mu^L(\cdot)$ is the \emph{normalised} Lebesgue measure on $\mathbb{R}$ (normalised by dividing by $\mu^L(\X) = 10$ to get a probability measure).  Setting $R(x,A) = (P(x,A) - \epsilon \nu(A))/(1-\epsilon)$ gives the mixture representation, as desired.\todo{HS: I have to admit, it took me a while to get this. What about putting a high level description at the start of example?} \todo{Also would be good to point out what exactly does not work in the general case.}
 
 \vspace{0.3cm}
 
 This approach was first introduced by Doeblin (1936), and (\ref{eqn:doeblin}) is sometimes called the Doeblin condition.
 
-\subsection{Lyapunov functions for unbounded state spaces}
-On unbounded state spaces, however, it is often difficult to satisfy the Doeblin condition with a uniform $\epsilon$ for all $x \in \X$.  Instead we tend to establish (\ref{eqn:doeblin}) for any $x \in C$, where $C$ is called a `small set'.  Under mild conditions any compact set is small.  To establish a geometric bound here entails showing (\ref{eqn:doeblin}) inside $C$, together with another condition, the stipulation that the \emph{return time} to $C$ after leaving it,
+\subsection{Lyapunov condition for unbounded state spaces}
+On unbounded state spaces, however, it is often difficult to satisfy the Doeblin condition with a uniform $\epsilon$ for all $x \in \X$. \todo{HS: I.e. for the above example, we cannot .....} Instead we tend to establish (\ref{eqn:doeblin}) for any $x \in C$, where $C$ is called a `small set'.  Under mild conditions any compact set is small.  To establish a geometric bound here entails showing (\ref{eqn:doeblin}) inside $C$, together with another condition, the stipulation that the \emph{return time} to $C$ after leaving it, \todo{HS: The definition of the return time does not make sense to me. Where did 'leaving' $C$ happen? is that last part maybe $X_M \notin C$?}
 \begin{equation} \label{eqn:return}
 \tau_C := \inf \{ t \geq 1 : X_{m+t} \in C | X_m \in C \},
 \end{equation}
@@ -132,21 +132,22 @@ follows a distribution with geometric tails, i.e. for large enough $t$ and some 
 \begin{equation}
 \mathbb{P}[\tau_C = t] \propto \beta^{-t}. \label{eqn:geometric_return_time}
 \end{equation}
-\todo{HS: Should the return time not depend on $X_n$ for some fixed $n<t$ somehow? SJL: No, I've fixed your definition (you defined the hitting time).  And the geometric tails would be in $n$ I guess?  SJL: Yes, or whatever you call the iterations.}Meyn \& Tweedie showed that \eqref{eqn:geometric_return_time} is equivalent to the condition that there exists a function $V: \X \to [1,\infty)$ such that
+Meyn \& Tweedie showed that \eqref{eqn:geometric_return_time} is equivalent to the condition that there exists a function $V: \X \to [1,\infty)$ such that for some $\lambda<1$, $b < \infty$,
 \begin{equation}
 \int V(y)P(x,dy) \leq \lambda V(x) + b1_C(x), \label{eqn:lyapunov_condition}
 \end{equation}
-or some $\lambda<1$, $b < \infty$, and set indicator function $1_C(x)$, with $V$ called a \emph{Lyapunov} function.  Intuitively, $\{ V(X_t) \}_{t \geq 0}$ can be thought of as a one-dimensional projection of the chain.\todo{HS: Is there intuition why \eqref{eqn:lyapunov_condition} is the same as \eqref{eqn:geometric_return_time}? Like: Imagine your MC was 1D, then this exactly corresponds? SJL: Not that I know of.}  The condition effectively states that to establish \eqref{eqn:geometric_return_time}, we only need look at the one-dimensional projections of $\ch{X}$.
+where $1_C(x)$ is a  set indicator function, and $V$  is called a \emph{Lyapunov} function.  Intuitively, $\{ V(X_t) \}_{t \geq 0}$ can be thought of as a one-dimensional projection of the chain.\todo{HS: Intuition?}  The condition effectively states that to establish \eqref{eqn:geometric_return_time}, we only need look at the one-dimensional projections of $\ch{X}$.
 
-Roberts \& Tweedie \cite{roberts1996geometric} further simplified matters by showing that if all compact sets are small then we need not explicitly find a $C$\todo{So far, we talked about finding a $V$, now all of a sudden there is a $C$? A bit spaghetti.  SJL: Don't get confused.  $C$ is the small set which we've already talked about a lot.}, but instead find a $V$ such that
+Roberts \& Tweedie \cite{roberts1996geometric} further simplified matters by showing that if all compact sets are small then we need not explicitly find a $C$ and $V$ to establish \eqref{eqn:lyapunov_condition}, but instead \emph{only find} a $V$ such that
 \begin{equation} \label{eqn:ge2}
 \limsup_{|x| \to \infty} \int \frac{V(y)}{V(x)} P(x,dy) < 1.
 \end{equation}
-Effectively, showing (\ref{eqn:ge2}) establishes geometric ergodicity.  In the case where $P$ is a Metropolis--Hastings kernel, then we can equivalently write
+Showing \eqref{eqn:ge2} effectively  establishes geometric ergodicity.  In the case where $P$ is a Metropolis--Hastings kernel, then \eqref{eqn:ge2} can be equivalently re-written as
 \begin{equation} \label{eqn:gemh}
 \limsup_{|x| \to \infty} \int \left[ \frac{V(y)}{V(x)} - 1 \right] \alpha(x,y)Q(x,dy) < 0,
 \end{equation}
-where $Q$ is the proposal kernel centred at $x$, and $\alpha(x,y)$ is the acceptance probability to accept the proposal $y$ at $x$.  The skill in establishing the result in a given scenario is find a suitable way to bound $\alpha$ and choosing an appropriate $V$ such that (\ref{eqn:gemh}) can be established.\todo{HS: This is great! Really a good story on why all this is done. I guess the only major thing missing for me is what I said above about the compact set, and why the Doeblin works then, and doesnt in the general case.  SJL: Hopefully the example helps!}
+where again $Q$ is the proposal kernel centred at $x$, and $\alpha(x,y)$ is the acceptance probability to accept the proposal $y$ at $x$.  The skill in establishing the result in a given scenario is find a suitable way to bound $\alpha$ and choosing an appropriate $V$ such that (\ref{eqn:gemh}) holds.
+\todo{HS: I put a few final changes, but am very happy about this now!}
 
 \section{Geometric Ergodicity of the Random Walk Metropolis in 1D}
 
@@ -176,32 +177,36 @@ We now have vanishing upper bounds for the first and last term in \eqref{eqn:int
 &\leq &\int_0^x [e^{-sz} - 1 + e^{(s-a)z} + e^{-az}]\mu(dz) \nonumber \\
 &=& -\int_0^{x} (1-e^{(s-a)z})(1-e^{-sz}) \mu(dz), \nonumber
 \end{align}
-which is strictly negative.  \todo{SJL: This way of laying it out is hideous.  Don't even remember whether you did it or me?}
+which is strictly negative.  \todo{SJL: This way of laying it out is hideous.  Don't even remember whether you did it or me? HS: I remember changing it, but maybe its a combination as I don't like this either. We can change tomorrow!}
 
 To summarise, for large $x$ the entire integral will be comprised of terms which can be made arbitrarily small and terms which are strictly negative. This establishes (\ref{eqn:gemh}) as $x \to \infty$. Using equivalent arguments, (\ref{eqn:gemh}) also holds for $x \to -\infty$.
 
 \section{Geometric Ergodicity of KMC-lite in 1D}
-
+TODO\todo{HS: need a high level connection to previous stuff here}
 \subsection{Notation}
 
-If $x$ denotes the current position in the chain, we denote the next candidate move as $y$.  We can write for the KMC lite kernel
+If $x$ denotes the current position in the chain, we denote the next candidate move as $y$.  We can write for the KMC-lite kernel
 \[
 y(x,p) = x + c(x,p) + P, ~~ P \sim \mathcal{N}(0,1),
 \]
-where $c(x,p)$ is basically a sequence of gradient steps, which depends on the current point $x$ and the random variable $P$.  For brevity, we write $y(p) = x + c(x) + P$.  We also write $\mu(\cdot)$ to denote a standard Gaussian measure.
+where $c(x,p)$ is basically a sequence of gradient steps, which depends on the current point $x$ and the random variable $P$.  For brevity, we write $y(p) = x + c(x) + P$.\todo{Notation re-use $P$ clash}  We also write $\mu(\cdot)$ to denote a standard Gaussian measure.
 
 \subsection{Extra Assumptions}
 
-We assumed that $c(x) \xrightarrow{p} 0$ as $|x| \to \infty$, which seems valid given the KMC-lite kernel, and that $c(x) < M$ for all $x \in \X$.
+For KMC, we assumed that
+\begin{align*}
+c(x) \xrightarrow{p} 0 \quad\text{as}\quad \Vert x\Vert _2 \to \infty, \qquad\text{and}\qquad \forall x \in \X:  c(x) < M\\
+\end{align*}
+which is valid for KMC-lite. This requires a bounded kernel with bounded gradients as $c$ takes the form of a finite linear combination of kernels and their gradients gradients, and the fact that the kernel goes to zero for one argument going to infinity.\todo{HS: The kernel people could be a bit more explicit here.}
 
-We also assumed the conditions of Theorem 2.2 in \cite{roberts1996geometric}.  These are technical conditions, but well-known among the Markov chain community.  They are extremely loose, and assert that
+For the target, we also assumed the conditions of the below Theorem 2.2 in \cite{roberts1996geometric}.  These are technical conditions, but well-known among the Markov chain community.  They are extremely loose, and assert that:
 \begin{itemize}
-\item The Markov chain is $\mu^L$-irreducible, where $\mu^L(\cdot)$ denotes Lebesgue measure, and aperiodic
-\item All compact sets are small
+\item The Markov chain is $\mu^L$-irreducible, where $\mu^L(\cdot)$ denotes Lebesgue measure, and aperiodic.
+\item All compact sets are small.
 \end{itemize}
-This means that we can use (\ref{eqn:ge2}) to establish geometric ergodicity here too.  There is not a direct proof of this assumption, but noone would question that it is true in the cases of interest to us (I actually have a rough proof which will go in the geometric ergodicity of HMC paper we are writing, but the paper is still in progress at the moment).
+This means that we can use (\ref{eqn:ge2}) to establish geometric ergodicity here too. We leave proofing this assumption to the Markov chain community.
 
-\textbf{Theorem 2.2} (Roberts \& Tweedie).  {\itshape Assume that $\pi(\cdot)$ and $Q$ admit densities $\pi(x)$ and $q(y|x)$, that $\pi(x)$ is bounded away from 0 on compact sets, and that there are $\epsilon_q$ and $delta_q$ such that
+\textbf{Theorem 2.2} (Roberts \& Tweedie).  {\itshape Assume that $\pi(\cdot)$ and $Q$ admit densities $\pi(x)$ and $q(y|x)$, that $\pi(x)$ is bounded away from 0 on compact sets, and that there are $\epsilon_q$ and $\delta_q$ such that
 \[
 |x - y| \leq \delta_q \implies q(y|x) \geq \epsilon_q.
 \]
@@ -210,6 +215,7 @@ Then the Metropolis--Hastings chain with proposal kernel $Q$ is $\mu^L$-irreduci
 \subsection{Details}
 
 We extend the Random Walk result, using the intuition the KMC-lite approaches a random walk in the tails.
+\todo{HS: Need high level connection to the proof above, so that it is clear the integral splitting is going on here.}
 
 The result can straightforwardly be adjusted to an integral over any set $(-x^\delta,x^{\delta})$ for some $\delta \in (0,1]$.  This will be crucial to the approach here, as the entire set $(x - x^\delta,x + x^\delta)$ can be pushed arbitrarily far into the tails of the distribution for $\delta < 1$, whereas $(0,2x)$ always contains the centre of the space.  So denoting
 \[
