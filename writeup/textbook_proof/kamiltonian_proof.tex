@@ -160,9 +160,9 @@ P(x,A) \geq \mathbb{P}[y \in A ~~ \text{proposed and accepted}] = \int_A \alpha(
 \]
 where
 \[
-c_m = \min_{x,y \in \X}{\alpha(x,y)q(y|x)}
+c_m = \min_{x,y \in \X}\left\{\alpha(x,y)q(y|x)\right\}
 \]
-Since $q(y|x) = e^{-(x-y)^2/2}/\sqrt{2\pi} \geq e^{-50}/\sqrt{2\pi}$ and $\alpha(x,y) = \mathbbm{1}(y \in [0,10])$, then setting $\epsilon = e^{-50}/\sqrt{2\pi}/10$ gives
+Since $q(y|x) = e^{-(x-y)^2/2}/\sqrt{2\pi} \geq e^{-50}/\sqrt{2\pi}$ and $\alpha(x,y)$ is as described above, then setting $\epsilon = e^{-50}/\sqrt{200\pi}$ gives
 \[
 P(x,A) \geq \epsilon \mu^L(A)
 \]
@@ -173,7 +173,7 @@ where $\mu^L(\cdot)$ is the uniform distribution on $[0,10]$.  Setting $R(x,A) =
 This approach was first introduced by Doeblin (1936), and (\ref{eqn:doeblin}) is sometimes called the Doeblin condition (e.g. \cite{norris1997markov}).  
 
 \subsection{Lyapunov conditions for unbounded state spaces}
-On unbounded state spaces, however, it is often difficult to satisfy the Doeblin condition with a uniform $\epsilon$ for all $x \in \X$. For example, the above example is no longer viable in the case where the state space is extended to the whole of $\mathbb{R}$, for any choice of $\pi(\cdot)$, as it will no longer be possible to lower bound $q(y|x)$ for any $x,y \in \X$.  Instead we tend to establish (\ref{eqn:doeblin}) for any $x$ in some small subset $C \in \X$.  Under mild conditions, any compact set is small \cite{roberts1996geometric}.  To establish a geometric bound here entails showing (\ref{eqn:doeblin}) inside $C$, together with another condition, the stipulation that the \emph{return time} to $C$ after leaving it,
+On unbounded state spaces, however, it is often difficult to satisfy the Doeblin condition with a uniform $\epsilon$ for all $x \in \X$.  For instance, the above example is no longer viable in the case where the state space is extended to the whole of $\mathbb{R}$, for any choice of $\pi(\cdot)$, as it will no longer be possible to find a positive lower bound $q(y|x)$ over all $x,y \in \X$.  Instead we tend to establish (\ref{eqn:doeblin}) for any $x$ in some `small' subset $C \in \X$.  Under mild conditions, any compact set\footnote{The reason we can make some compact set $C$ small is by taking the minorising measure $\nu(\cdot)$ to \emph{only} have support within $C$.  We already have that $x \in C$, so this effectively means we only need consider $y \in C$ also, so the problem is again reduced to a compact set, where simple lower bounds on transitions will allow the mixture representation of $P$, as in the first example.} is small \cite{roberts1996geometric}.  To establish a geometric bound here entails showing (\ref{eqn:doeblin}) inside $C$, together with another condition, the stipulation that the \emph{return time} to $C$,
 \begin{equation} \label{eqn:return}
 \tau_C := \inf \{ t \geq 1 : X_{m+t} \in C | X_m \in C \},
 \end{equation}
@@ -185,7 +185,7 @@ Meyn \& Tweedie showed that \eqref{eqn:geometric_return_time} is equivalent to t
 \begin{equation}
 \int V(y)P(x,dy) \leq \lambda V(x) + b1_C(x), \label{eqn:lyapunov_condition}
 \end{equation}
-where $1_C(x)$ is a  set indicator function, and $V$  is called a \emph{Lyapunov} function.  Intuitively, $\{ V(X_t) \}_{t \geq 0}$ can be thought of as a one-dimensional projection of the chain.  $V$ must also be \emph{coercive}, meaning $V(x) \to \infty$ as $|x| \to \infty$ in any direction.  This gives some intuition to the idea that controlling the growth of $V$ (as in (\ref{eqn:lyapunov_condition})) will control the behaviour of the chain to some degree.  The condition effectively states that to establish \eqref{eqn:geometric_return_time}, we only need look at the one-dimensional projections of $\ch{X}$.
+where $1_C(x)$ is a  set indicator function, and $V$  is called a \emph{Lyapunov} function, and sometimes (\ref{eqn:lyapunov_condition}) is also called as `drift' condition.  Intuitively, $\{ V(X_t) \}_{t \geq 0}$ can be thought of as a one-dimensional projection of the chain.  The function $V$ must also be \emph{coercive}, meaning $V(x) \to \infty$ as $|x| \to \infty$ in any direction.  This gives some intuition to the idea that controlling the growth of $V$ (as in (\ref{eqn:lyapunov_condition})) will control the behaviour of the chain to some degree, preventing it from spiralling off to infinity uncontrollably.  The condition effectively states that to establish \eqref{eqn:geometric_return_time}, we only need look at the one-dimensional projections of $\ch{X}$.
 
 \vspace{0.3cm}
 {\color{darkblue}
@@ -197,11 +197,11 @@ for some constant $|a|<1$.  The chain is ergodic with limiting distribution $\pi
 \[
 \int V(y) P(x,dy) = 1 + \int |y| \mathcal{N}(dy|ax, (1-a^2)).
 \]
-If we take $c$ to be large, then
+If we take $c$ to be large, then $ax$ will also be large for any $x>c$, so most of the mass of the proposal will be on $[0,\infty)$, meaning
 \[
-\int |y| \mathcal{N}(dy|ax, (1-a^2)) \approx \int y \mathcal{N}(dy|ax, (1-a^2)),
+\int |y| \mathcal{N}(dy|ax, (1-a^2)) \approx \int y \mathcal{N}(dy|ax, (1-a^2)) = ax.
 \]
-because almost all of the mass for $P(x,\cdot)$ will be on positive values for $y$.  Combining means that for $x > c$ we have
+So for $x > c$ we have
 \[
 \int V(y) P(x,dy) \approx 1 + ax \leq (a+\varepsilon)V(x),
 \]
@@ -213,11 +213,17 @@ To generalise the intuition of the above example, Roberts \& Tweedie \cite{rober
 \begin{equation} \label{eqn:ge2}
 \limsup_{|x| \to \infty} \int \frac{V(y)}{V(x)} P(x,dy) < 1.
 \end{equation}
-Showing \eqref{eqn:ge2} effectively  establishes geometric ergodicity.  In the case where $P$ is a Metropolis--Hastings kernel, then \eqref{eqn:ge2} can be equivalently re-written as
+Showing \eqref{eqn:ge2} effectively  establishes geometric ergodicity.  In the case where $P$ is a Metropolis--Hastings kernel, then
+\begin{align*}
+\int \frac{V(y)}{V(x)}P(x,dy) &= \int \frac{V(y)}{V(x)}\alpha(x,y)Q(x,dy) + \int \frac{V(y)}{V(x)}r(x)\delta_x(dy), \\
+&= \int \frac{V(y)}{V(x)}\alpha(x,y)Q(x,dy) + r(x), \\
+&= \int \left[ \frac{V(y)}{V(x)} - 1\right] \alpha(x,y)Q(x,dy) + 1,
+\end{align*}
+meaning \eqref{eqn:ge2} can be re-written as
 \begin{equation} \label{eqn:gemh}
 \limsup_{|x| \to \infty} \int \left[ \frac{V(y)}{V(x)} - 1 \right] \alpha(x,y)Q(x,dy) < 0,
 \end{equation}
-where again $Q$ is the proposal kernel centred at $x$, and $\alpha(x,y)$ is the acceptance probability to accept the proposal $y$ at $x$.  The skill in establishing the result in a given scenario is find a suitable way to bound $\alpha$ and choosing an appropriate $V$ such that (\ref{eqn:gemh}) holds.
+where again $Q$ is the proposal kernel centred at $x$, and $\alpha(x,y)$ is the probability of accepting the proposal $y$ from the current point $x$.  The skill in establishing the result in a given scenario is in finding a suitable way to bound $\alpha$ and choosing an appropriate $V$ such that (\ref{eqn:gemh}) holds.
 
 \section{Geometric Ergodicity of the Random Walk Metropolis in 1D}
 
@@ -311,7 +317,7 @@ Then the Metropolis--Hastings chain with proposal kernel $Q$ is $\mu^L$-irreduci
 
 We extend the Random Walk result, using the intuition the KMC-lite approaches a random walk in the tails.
 
-Recall that in the random walk case, we split the state space using $(-\infty,0,x,2x,\infty)$, and reduced the problem to considering $(0,2x)$ by showing that the integral beame negligible in the other sets.  The argument used to show that the integral was strictly negative on $(0,2x)$ trivially
+Recall that in the random walk case, we split the state space using $(-\infty,0,x,2x,\infty)$, and reduced the problem to considering $(0,2x)$ by showing that the integral became negligible in the other sets.  The argument used to show that the integral was strictly negative on $(0,2x)$ trivially
 also holds for $(x-x^\delta,x+x^\delta)$, for any $\delta<1$, as this is a subset of $(0,2x)$.  This will be crucial to the approach here, as the entire set $(x - x^\delta,x + x^\delta)$ can be pushed arbitrarily far into the tails of the distribution for $\delta < 1$, whereas $(0,2x)$ always contains the centre of the space.  So denoting
 \[
 I_a^b := \int_a^b \left[ e^{s(|y| - |x|)} - 1 \right]\alpha(x,y)Q(x,dy),
