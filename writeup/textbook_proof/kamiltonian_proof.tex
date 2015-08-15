@@ -3,6 +3,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
 \usepackage{bm}
+\usepackage{bbm}
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{amsfonts}
@@ -37,6 +38,9 @@
 \newcommand{\B}{\mathcal{B}}
 \newcommand{\TV}{\text{TV}}
 
+% colours
+\definecolor{darkblue}{RGB}{0, 51, 102}
+
 
 \title{\Large \bfseries A textbook proof of geometric ergodicity.}
 \author{Sam Livingstone, Heiko Strathmann}
@@ -52,42 +56,82 @@
 \begin{itemize}
 \item We use upper-case letters for random variables $X$ and events $A\in \mathcal{B}$. Lower-case values represent values of random variables, i.e. $X=x$ means the random variable $X$ takes the value $x$.
 \item Denote by $\mathbb{P}(X_{i+1} \in A |X_i = x)$ the probability of the event $X_{i+1} \in A$ given that $X_i = x$.
+\item Denote $a \wedge b$ to mean the minimum of real numbers $a$ and $b$
 \item \textbf{Total variation distance}
 \begin{equation*}
 \|\mu(\cdot) - \nu(\cdot)\|_{\TV} := \sup_{A \in \mathcal{B}} |\mu(A) - \nu(A)|
 \end{equation*}
 is the total variation distance between $\mu(\cdot)$ and $\nu(\cdot)$. Informally, this is the largest possible difference between the probabilities that $\mu(\cdot)$ and $\nu(\cdot)$ can assign to the same event.
-\item \textbf{Irreducibility}. When $\X$ is countable, a Markov chain $\ch{X}$ is called \emph{irreducible} if for any $x,y \in \X$ there exist $n = n(x,y)$ and $m = m(y,x)$ such that $P^n(x,y)>0$ and $P^m(y,x) > 0$.  In the uncountable case, the chain is called $\varphi$-irreducible for some measure $\varphi(\cdot)$ if for any $x \in \X$ and any $A \in \B$ there is an $n = n(x,A)$ such that $P^n(x,A) > 0$ whenever $\varphi(A) > 0$.
-\item \textbf{Aperiodicity}. When $\X$ is countable, the period $p_x$ of a state $x$ of a Markov chain is defined as
+\item \textbf{Irreducibility}. When $\X$ is countable, a Markov chain $\ch{X}$ where each $X_i \in \X$ is called \emph{irreducible} if for any $x,y \in \X$ there exist $n = n(x,y)$ and $m = m(y,x)$ such that $P^n(x,y)>0$ and $P^m(y,x) > 0$.  In the uncountable case, the chain is called $\varphi$-irreducible for some measure $\varphi(\cdot)$ if for any $x \in \X$ and any $A \in \B$ there is an $n = n(x,A)$ such that $P^n(x,A) > 0$ whenever $\varphi(A) > 0$.
+\item \textbf{Aperiodicity}. A chain is called periodic with period $d$ if there is a sequence of disjoint sets $\X_1 \cup ... \cup \X_d$, each contained in $\X$, such that if $x \in \X_i$
 \[
-p_x = \text{gcd}(\{ n \in \mathbb{N} : P^n(x,x) > 0 \}),
+P(x,\X_j) = 1 \text{ for } j = (i+1)\text{mod}(d).
 \]
-where $\text{gcd}(A)$ denotes the greatest common divisor of the argument.  For irreducible chains all states have the same period \cite{norris1997markov}.  The chain is called \emph{aperiodic} if $p_x = 1$.  In the uncountable case, it suffices to note that any chain with a non-zero probability of remaining at the current position is aperiodic (so any Metropolis--Hastings algorithm) (for a full definition see \cite{tierney1994markov}).
+In words, the chain cycles periodically through different regions of the state space $\X$.  Note that any chain for which $P(x,\{x\}) > 0$ (i.e. there is a non-zero chance the chain does not move) is therefore aperiodic, which is almost always the case in Markov chain Monte Carlo.
+
 \item \textbf{Coupling}.  A coupling of two probability distributions $\mu(\cdot)$ and $\nu(\cdot)$  on the measurable space $(\X,\B)$ is a joint distribution $\Lambda(\cdot)$ on the product space $(\X \times \X,\B \times \B)$ such that if $(X,Y) \sim \Lambda(\cdot)$ then marginally $X \sim \mu(\cdot)$ and $Y \sim \nu(\cdot)$.
 
 \end{itemize}
 
 \section{Geometric Ergodicity of Markov chains}
 
-We describe the Markov chain $\{ X_t \}_{t \geq 0}$ on the measurable space $(\mathcal{X},\mathcal{B})$ through a starting point $X_0 = x$ and a transition kernel $P: \X \times \B \to [0,1]$.  For each $x \in \X$, $P(x,\cdot)$ defines a probability measure where $P(x,A) = \mathbb{P}(X_{i+1} \in A |X_i = x)$ for any $A \in \B$.  We will also use the shorthand $X_{i+1} \sim P(X_i,\cdot)$ rather than writing `If $X_i = x_i$ for any $x_i \in \X$ then $X_{i+1} \sim P(x_i,\cdot)$.'  The $n$-step kernel $P^n(x,A)$ is defined similarly for $X_{i+n}$.  We say $\pi(\cdot)$ is an invariant distribution of $P$ if $\int P(x,A)\pi(dx) = \pi(A)$.  We assume for the purpose of this note that each $\pi(\cdot)$ admits a Lebesgue density, and write $\pi(dx) = \pi(x)dx$.  The chain is called \emph{geometrically ergodic} if
+We describe the Markov chain $\{ X_t \}_{t \geq 0}$ on the measurable space $(\mathcal{X},\mathcal{B})$ through a starting point $X_0 = x$ and a transition kernel $P: \X \times \B \to [0,1]$.  For each $x \in \X$, $P(x,\cdot)$ defines a probability measure where $P(x,A) = \mathbb{P}(X_{i+1} \in A |X_i = x)$ for any $A \in \B$.  We will also use the shorthand $X_{i+1} \sim P(X_i,\cdot)$ rather than writing `If $X_i = x_i$ for any $x_i \in \X$ then $X_{i+1} \sim P(x_i,\cdot)$.'  The $n$-step kernel $P^n(x,A)$ is defined similarly for $X_{i+n}$.  We say $\pi(\cdot)$ is an invariant distribution of $P$ if $\int P(x,A)\pi(dx) = \pi(A)$.  We assume for the purpose of this note that each $\pi(\cdot)$ admits a Lebesgue density, and write $\pi(dx) = \pi(x)dx$.  Although the definition varies (see e.g. \cite{tierney1994markov, norris1997markov}), here we will call the chain \emph{ergodic} if the distribution $P^n(x,\cdot) \to \pi(\cdot)$ (in total variation distance) as $n \to \infty$.  The chain is called \emph{geometrically ergodic} if
 \begin{equation} \label{eqn:geometric_ergodicity}
-\| P^n(x,\cdot) - \pi(\cdot) \|_{\TV} = \mathcal{O}(\rho^n)
+\| P^n(x,\cdot) - \pi(\cdot) \|_{\TV} \leq M(x)\rho^n,
 \end{equation}
-for some $\rho < 1$.  In words, $P^n(x,\cdot)$ approaches $\pi(\cdot)$ at a geometric rate in $n$.  As the name suggests, a kernel $P(x,\cdot)$, can \emph{only} converge to a $\pi(\cdot)$ which is invariant for that kernel.
+for some $\rho < 1$ and $M: \X \to [0,\infty)$.  In words, $P^n(x,\cdot)$ approaches $\pi(\cdot)$ at a geometric rate in $n$.  As the name suggests, a kernel $P(x,\cdot)$, can \emph{only} converge to a $\pi(\cdot)$ which is invariant for that kernel.
+
+We will be concerned with Metropolis--Hastings chains.  In transition kernel notation these are written
+\begin{equation}
+P(x,dy) = \alpha(x,y)Q(x,dy) + r(x)\delta_x(dy),
+\end{equation}
+where $Q(x,dy) = q(y|x)dy$ is the proposal kernel, $\alpha(x,y) = 1 \wedge \pi(y)q(x|y)/[\pi(x)q(y|x)]$, $\delta_x(dy)$ is defined such that $\delta_x(A) = 1$ if $x \in A$ and $0$ otherwise, and
+\[
+r(x) = \int (1-\alpha(x,y))Q(x,dy)
+\]
+is the probability that a proposed move from $Q(x,\cdot)$ will be rejected, in which case the chain stays put.
+
 
 \section{Establishing Geometric Ergodicity}
 
-\subsection{Doeblin condition for finite state spaces}
-In fact, all Markov chains with a finite state space ($|\mathcal{X}| < \infty$) which are irreducible and aperiodic have a unique invariant measure \cite{norris1997markov}, and are geometrically ergodic.  A straightforward way of establishing this is through the \emph{coupling inequality}. Given some pair of random variables $(X,Y)$ with marginal distributions $X \sim \mu(\cdot)$ and $Y \sim \nu(\cdot)$, we have that
+\subsection{Results for compact state spaces}
+In fact, the vast majority\footnote{Note, however, that some interesting counter-examples for Gibbs samplers are given in \cite{roberts1998convergence}.} of Markov chains with a compact state space which are $\pi$-irreducible and aperiodic and have an invariant measure $\pi(\cdot)$ are geometrically ergodic \cite{meyn2009markov}.  A straightforward way of establishing this is using the following result
+
+\textbf{Theorem}.  (Coupling inequality). {\itshape Given some pair of random variables $(X,Y)$ with marginal distributions $X \sim \mu(\cdot)$ and $Y \sim \nu(\cdot)$, we have that}
 \begin{equation}
 \|\mu(\cdot) - \nu(\cdot)\|_{\TV} \leq \mathbb{P}(X \neq Y).\label{eqn:coupling_inequality}
 \end{equation}
-The proof is straightforward, and direct, moving from the left to the right-hand side in a few steps using basic probability rules (see e.g. \cite{roberts2004general}).  We can use the coupling inequality to establish (\ref{eqn:geometric_ergodicity}) by constructing two Markov chains $\{Y_n\}_{n \geq 0}$ and $\{ X_n\}_{n \geq 0}$ such that (i) $X_n \sim P^n(x,\cdot)$ and $Y_n \sim \pi(\cdot)$ for all $n$, and (ii) the upper bound $\mathbb{P}(X_n \neq Y_n)$ in \eqref{eqn:coupling_inequality} decreases geometrically with $n$. 
+
+\emph{Proof:} We need to show $|\mu(A) - \nu(A)| \leq \mathbb{P}_\Lambda(X \neq Y)$, for any $A \in \B$.  We write $\mu(A) = \mathbb{P}_\mu(X \in A)$, and similarly for $\nu(A)$ and $Y$, and $\Lambda(A)$ and $(X,Y)$.  Now
+\begin{align*} \mathbb{P}_\mu(X \in A) &= \mathbb{P}_\Lambda(X \in A,X \neq Y) + \mathbb{P}_\Lambda(X \in A,X = Y), \\
+\mathbb{P}_\nu(Y \in A) &= \mathbb{P}_\Lambda(Y \in A,X \neq Y) + \mathbb{P}_\Lambda(Y \in A,X = Y),
+\end{align*}
+and $\mathbb{P}_\Lambda(X \in A,X = Y) = \mathbb{P}_\Lambda(Y \in A,X = Y)$, so we can write
+\[
+|\mu(A) - \nu(A)| = \left|\mathbb{P}_\Lambda(X \in A,X \neq Y) - \mathbb{P}_\Lambda(Y \in A,X \neq Y)\right|.
+\]
+Now, for any $x,y \geq 0$ note that $|x-y| \leq \max\{x,y\}$, giving
+\[
+|\mu(A) - \nu(A)| \leq \max \left\{ \mathbb{P}_\Lambda(X \in A,X \neq Y), \mathbb{P}_\Lambda(Y \in A,X \neq Y) \right\}
+\]
+Since $\mathbb{P}_\Lambda(X \in A,X \neq Y) = \mathbb{P}_\Lambda(X \neq Y) \mathbb{P}(X \in A| X \neq Y)$, and similarly for $\mathbb{P}_\Lambda(Y \in A,X \neq Y)$, we can write
+\[
+|\mu(A) - \nu(A)| \leq \mathbb{P}_\Lambda(X \neq Y) \max \left\{ \mathbb{P}(X \in A | X \neq Y), \mathbb{P}(Y \in A |X \neq Y) \right\} \leq \mathbb{P}_\Lambda(X \neq Y),
+\]
+which completes the proof. \hfill $\square$
+
+We can use the coupling inequality to establish (\ref{eqn:geometric_ergodicity}) by constructing two Markov chains $\{Y_n\}_{n \geq 0}$ and $\{ X_n\}_{n \geq 0}$ such that (i) $X_n \sim P^n(x,\cdot)$ and $Y_n \sim \pi(\cdot)$ for all $n$, and (ii) the upper bound $\mathbb{P}(X_n \neq Y_n)$ in \eqref{eqn:coupling_inequality} decreases geometrically with $n$. 
 Imagine that we can write $P$ (with limiting distribution $\pi(\cdot)$) as a mixture, i.e. assume there exists a measure $\nu(\cdot)$, a transition kernel $R(x,A)$, and  $\epsilon$  $0<\epsilon\leq1$, such that
 \begin{equation} \label{eqn:doeblin}
 P(x,\cdot) = \epsilon \nu(\cdot) + (1 - \epsilon)R(x,A).
 \end{equation}
-This way of writing $P$ as a mixture is known as the `splitting' technique, and can be done \emph{in certain regions of $\X$} whenever the Markov chain is recurrent (see below) \cite{meyn2009markov}.  While we avoid a full definition, any Markov chain which is $\pi$-irreducible and $\pi$-invariant is recurrent (so these are necessary requirements for $P(x,\cdot)$ to converge to $\pi(\cdot)$).  The following procedure gives a bound on the TV between $P^n(x,\cdot)$ and $\pi(\cdot)$:
+This way of writing $P$ as a mixture is known as the `splitting' technique, and can be done \emph{in certain regions of $\X$} whenever the Markov chain is $\pi$-irreducible, aperiodic and $\pi$-invariant.  Specifically, a region of the state space $C \subset \X$ is called a \emph{small set} if for some $m \geq 1$ we can
+\[
+P^m(x,A) \geq \nu(A),
+\]
+for every $x \in C$ and every $A \in \B$.  In this region, therefore, the $m$-step kernel be written as in (\ref{eqn:doeblin}).  We restrict ourselves to the $m=1$ case here for ease of exposition, but the full case is treated in \cite{roberts2004general}.
+
+On compact state spaces it is often straightforward to show that the whole state space $\X$ is `small' (we give an example later to help intuition here).  If this is the case, then the following procedure gives a bound on the TV between $P^n(x,\cdot)$ and $\pi(\cdot)$:
 \begin{enumerate}
 \item Start with $Y_0 \sim \pi(\cdot)$ and $X_0 = x$.
 \item For each iteration $n$ of the chain, sample $b_n \sim \texttt{Bernoulli}(\epsilon)$. 
@@ -96,7 +140,7 @@ This way of writing $P$ as a mixture is known as the `splitting' technique, and 
 \item If $b_n = 0$ then sample $X_{n+1} \sim R(X_n,\cdot)$ and $Y_{n+1} \sim R(Y_{n},\cdot)$ independently.
 \end{itemize}
 \end{enumerate}
-Intuitively, the construction leads to two Markov chains on $(X,Y)$-space that are independent (therefore $X\neq Y$) at first, but that start `coalescing' (i.e. $X=Y$) with a geometrically decaying probability as $n$ increases. This can be seen as follows:\todo{HS: I rewrote this quite a bit, verbosing way more. Hope it is still correct}
+Intuitively, the construction leads to two Markov chains on $(X,Y)$-space that are independent (therefore $X\neq Y$) at first, but that start `coalescing' (i.e. $X=Y$) with a geometrically decaying probability as $n$ increases. This can be seen as follows:
 \begin{enumerate}
 \item Before the chains `coalesce', at each iteration $X_{n+1}|X_n$ is marginally (in $\epsilon$ sense) sampled from $P(X_n,\cdot)$. Since $X_0=x$, we therefore have $X_{n+1} \sim P^{n+1}(x,\cdot)$.
 \item The same is true for $Y_{n+1}|Y_n$. Since $\pi(\cdot)$ is the invariant distribution  of $P$ and $Y_0\sim\pi(\cdot)$ by construction, however, we have $Y_{n+1} \sim \pi(\cdot)$ for all $n$.
@@ -105,26 +149,31 @@ Intuitively, the construction leads to two Markov chains on $(X,Y)$-space that a
 \item For $n=1$, since the probability of `coalescence' is $\epsilon$ and they have zero probability of taking the same value otherwise (both continuous and independent), we have $\mathbb{P}(X_1 \neq Y_1)=\mathbb{P}(X_0 \neq Y_0)\mathbb{P}(\epsilon=0)=1-\epsilon$.  Induction gives $\mathbb{P}(X_n \neq Y_n) = (1-\epsilon)^n$. 
 \end{enumerate}
 
-The kernel $R(x,\cdot) = (P(x,\cdot) - \epsilon\nu(\cdot))/(1-\epsilon)$ is called the \emph{residual kernel}, and represents the part of $P(x,\cdot)$ in which there is dependence on the current point $x$, and the independent measure $\nu(\cdot)$ represents the part of $P(x,\cdot)$ that can be written as independent of $x$.
+The kernel $R(x,\cdot) = (P(x,\cdot) - \epsilon\nu(\cdot))/(1-\epsilon)$ is called the \emph{residual kernel}, and represents the part of $P(x,\cdot)$ in which there is dependence on the current point $x$, and the independent measure $\nu(\cdot)$ represents the part of $P(x,\cdot)$ that can be written as independent of $x$.  The chains $\ch{X}$ and $\ch{Y}$ are here being `coupled' through the sequence of random variables $\{b_1,b_2,...\}$, which are the same for each of them at each iteration.
 
 \vspace{0.3cm}
 
-\textit{Example of a residual kernel.}  Consider a Gaussian random walk Metropolis on the state space $\X = [0,10]$ with $\pi(\cdot) = U[0,10]$. Here,  $Q(x,\cdot)$ is the proposal kernel centred at $x$ and $\alpha(x,y)$ is the probability of accepting $y$ at $x$, Then for any $x,y \in \X$ and $A \in \B$, since $\alpha(x,y)\leq 1$, we have
+{\color{darkblue}
+\textbf{Example of a residual kernel.}  Consider a Gaussian random walk Metropolis on the state space $\X = [0,10]$ with target distribution $\pi(\cdot) = U[0,10]$. Here,  $Q(x,\cdot) = \mathcal{N}(\cdot|x,h\sigma^2)$ is the proposal kernel (a Gaussian centred at $x$).  Note that $\alpha(x,y) = 1$ if $y \in [0,10]$ and $0$ otherwise here, as $\pi(y)/\pi(x) = 1$ whenever $x,y \in [0,10]$.  With these choices, for any $x,y \in \X$ and $A \in \B$ we have
 \[
-P(x,A) \geq \mathbb{P}[y \in A ~~ \text{proposed and accepted}] = \int_A \alpha(x,y)Q(x,dy) \geq \int_A \min_{x,y \in \X}{\alpha(x,y)q(y|x)} dx.
+P(x,A) \geq \mathbb{P}[y \in A ~~ \text{proposed and accepted}] = \int_A \alpha(x,y)Q(x,dy) \geq c_m\int_A  dy,
 \]
-Since $q(y|x) = e^{-(x-y)^2/2}/\sqrt{2\pi} \geq e^{-50}/\sqrt{2\pi}$ and $\alpha(x,y) = 1$ as $\pi(\cdot)$ is uniform, then setting $\epsilon = e^{-50}/\sqrt{2\pi}$ gives
+where
+\[
+c_m = \min_{x,y \in \X}\left\{\alpha(x,y)q(y|x)\right\}
+\]
+Since $q(y|x) = e^{-(x-y)^2/2}/\sqrt{2\pi} \geq e^{-50}/\sqrt{2\pi}$ and $\alpha(x,y)$ is as described above, then setting $\epsilon = e^{-50}/\sqrt{200\pi}$ gives
 \[
 P(x,A) \geq \epsilon \mu^L(A)
 \]
-where $\mu^L(\cdot)$ is the \emph{normalised} Lebesgue measure on $\mathbb{R}$ (normalised by dividing by $\mu^L(\X) = 10$ to get a probability measure).  Setting $R(x,A) = (P(x,A) - \epsilon \nu(A))/(1-\epsilon)$ gives the mixture representation, as desired.\todo{HS: I have to admit, it took me a while to get this. What about putting a high level description at the start of example?} \todo{Also would be good to point out what exactly does not work in the general case.}
-
+where $\mu^L(\cdot)$ is the uniform distribution on $[0,10]$.  Setting $R(x,A) = (P(x,A) - \epsilon \nu(A))/(1-\epsilon)$ gives the mixture representation, as desired.  This shows that the entire state space is small, and therefore the above procedure can be applied to get a geometric bound.
+}
 \vspace{0.3cm}
 
-This approach was first introduced by Doeblin (1936), and (\ref{eqn:doeblin}) is sometimes called the Doeblin condition.
+This approach was first introduced by Doeblin (1936), and (\ref{eqn:doeblin}) is sometimes called the Doeblin condition (e.g. \cite{norris1997markov}).  
 
-\subsection{Lyapunov condition for unbounded state spaces}
-On unbounded state spaces, however, it is often difficult to satisfy the Doeblin condition with a uniform $\epsilon$ for all $x \in \X$. \todo{HS: I.e. for the above example, we cannot .....} Instead we tend to establish (\ref{eqn:doeblin}) for any $x \in C$, where $C$ is called a `small set'.  Under mild conditions any compact set is small.  To establish a geometric bound here entails showing (\ref{eqn:doeblin}) inside $C$, together with another condition, the stipulation that the \emph{return time} to $C$ after leaving it, \todo{HS: The definition of the return time does not make sense to me. Where did 'leaving' $C$ happen? is that last part maybe $X_M \notin C$?}
+\subsection{Lyapunov conditions for unbounded state spaces}
+On unbounded state spaces, however, it is often difficult to satisfy the Doeblin condition with a uniform $\epsilon$ for all $x \in \X$.  For instance, the above example is no longer viable in the case where the state space is extended to the whole of $\mathbb{R}$, for any choice of $\pi(\cdot)$, as it will no longer be possible to find a positive lower bound $q(y|x)$ over all $x,y \in \X$.  Instead we tend to establish (\ref{eqn:doeblin}) for any $x$ in some `small' subset $C \in \X$.  Under mild conditions, any compact set\footnote{The reason we can make some compact set $C$ small is by taking the minorising measure $\nu(\cdot)$ to \emph{only} have support within $C$.  We already have that $x \in C$, so this effectively means we only need consider $y \in C$ also, so the problem is again reduced to a compact set, where simple lower bounds on transitions will allow the mixture representation of $P$, as in the first example.} is small \cite{roberts1996geometric}.  To establish a geometric bound here entails showing (\ref{eqn:doeblin}) inside $C$, together with another condition, the stipulation that the \emph{return time} to $C$,
 \begin{equation} \label{eqn:return}
 \tau_C := \inf \{ t \geq 1 : X_{m+t} \in C | X_m \in C \},
 \end{equation}
@@ -136,22 +185,53 @@ Meyn \& Tweedie showed that \eqref{eqn:geometric_return_time} is equivalent to t
 \begin{equation}
 \int V(y)P(x,dy) \leq \lambda V(x) + b1_C(x), \label{eqn:lyapunov_condition}
 \end{equation}
-where $1_C(x)$ is a  set indicator function, and $V$  is called a \emph{Lyapunov} function.  Intuitively, $\{ V(X_t) \}_{t \geq 0}$ can be thought of as a one-dimensional projection of the chain.\todo{HS: Intuition?}  The condition effectively states that to establish \eqref{eqn:geometric_return_time}, we only need look at the one-dimensional projections of $\ch{X}$.
+where $1_C(x)$ is a  set indicator function, and $V$  is called a \emph{Lyapunov} function, and sometimes (\ref{eqn:lyapunov_condition}) is also called as `drift' condition.  Intuitively, $\{ V(X_t) \}_{t \geq 0}$ can be thought of as a one-dimensional projection of the chain.  The function $V$ must also be \emph{coercive}, meaning $V(x) \to \infty$ as $|x| \to \infty$ in any direction.  This gives some intuition to the idea that controlling the growth of $V$ (as in (\ref{eqn:lyapunov_condition})) will control the behaviour of the chain to some degree, preventing it from spiralling off to infinity uncontrollably.  The condition effectively states that to establish \eqref{eqn:geometric_return_time}, we only need look at the one-dimensional projections of $\ch{X}$.
 
-Roberts \& Tweedie \cite{roberts1996geometric} further simplified matters by showing that if all compact sets are small then we need not explicitly find a $C$ and $V$ to establish \eqref{eqn:lyapunov_condition}, but instead \emph{only find} a $V$ such that
+\vspace{0.3cm}
+{\color{darkblue}
+\textbf{Example of a Lyapunov function.}  Consider the chain with state space $\X = \mathbb{R}$ and transition kernel
+\[
+P(x,\cdot) = \mathcal{N}(\cdot|ax, (1-a^2)),
+\]
+for some constant $|a|<1$.  The chain is ergodic with limiting distribution $\pi(\cdot) = \mathcal{N}(\cdot|0,1)$.  If we take the Lyapunov function $V(x) = |x| + 1$, it is clear that for some constant $c>0$ if $x > c$ we have
+\[
+\int V(y) P(x,dy) = 1 + \int |y| \mathcal{N}(dy|ax, (1-a^2)).
+\]
+If we take $c$ to be large, then $ax$ will also be large for any $x>c$, so most of the mass of the proposal will be on $[0,\infty)$, meaning
+\[
+\int |y| \mathcal{N}(dy|ax, (1-a^2)) \approx \int y \mathcal{N}(dy|ax, (1-a^2)) = ax.
+\]
+So for $x > c$ we have
+\[
+\int V(y) P(x,dy) \approx 1 + ax \leq (a+\varepsilon)V(x),
+\]
+for some positive $\varepsilon < 1-a$.  An identical argument can be made for $y < -c$, meaning that outside the set $[-c,c]$ the inequality (\ref{eqn:lyapunov_condition}) holds.  As the set $[-c,c]$ is compact it is small, meaning the chain is geometrically ergodic.
+}
+\vspace{0.3cm}
+
+To generalise the intuition of the above example, Roberts \& Tweedie \cite{roberts1996geometric} further simplified matters by showing that if all compact sets are small then we need not explicitly find a $C$ and $V$ to establish \eqref{eqn:lyapunov_condition}, but instead \emph{only find} a $V$ and satisfy the inequality
 \begin{equation} \label{eqn:ge2}
 \limsup_{|x| \to \infty} \int \frac{V(y)}{V(x)} P(x,dy) < 1.
 \end{equation}
-Showing \eqref{eqn:ge2} effectively  establishes geometric ergodicity.  In the case where $P$ is a Metropolis--Hastings kernel, then \eqref{eqn:ge2} can be equivalently re-written as
+Showing \eqref{eqn:ge2} effectively  establishes geometric ergodicity.  In the case where $P$ is a Metropolis--Hastings kernel, then
+\begin{align*}
+\int \frac{V(y)}{V(x)}P(x,dy) &= \int \frac{V(y)}{V(x)}\alpha(x,y)Q(x,dy) + \int \frac{V(y)}{V(x)}r(x)\delta_x(dy), \\
+&= \int \frac{V(y)}{V(x)}\alpha(x,y)Q(x,dy) + r(x), \\
+&= \int \left[ \frac{V(y)}{V(x)} - 1\right] \alpha(x,y)Q(x,dy) + 1,
+\end{align*}
+meaning \eqref{eqn:ge2} can be re-written as
 \begin{equation} \label{eqn:gemh}
 \limsup_{|x| \to \infty} \int \left[ \frac{V(y)}{V(x)} - 1 \right] \alpha(x,y)Q(x,dy) < 0,
 \end{equation}
-where again $Q$ is the proposal kernel centred at $x$, and $\alpha(x,y)$ is the acceptance probability to accept the proposal $y$ at $x$.  The skill in establishing the result in a given scenario is find a suitable way to bound $\alpha$ and choosing an appropriate $V$ such that (\ref{eqn:gemh}) holds.
-\todo{HS: I put a few final changes, but am very happy about this now!}
+where again $Q$ is the proposal kernel centred at $x$, and $\alpha(x,y)$ is the probability of accepting the proposal $y$ from the current point $x$.  The skill in establishing the result in a given scenario is in finding a suitable way to bound $\alpha$ and choosing an appropriate $V$ such that (\ref{eqn:gemh}) holds.
 
 \section{Geometric Ergodicity of the Random Walk Metropolis in 1D}
 
-For the Random Walk Metropolis the kernel choice is such that $Q(x,dy) = q(|x-y|)dy$, meaning $\alpha(x,y) = 1 \wedge \pi(y)/\pi(x)$.  Since the acceptance rate is just the ratio of target densities, it lends itself quite nicely to a simple bound.  If we assume $\pi(x)$ is log-concave in the tails, then $\alpha(x,y)=\pi(y)/\pi(x) \leq \exp\left(-a(|y|-|x|)\right)$ for large enough $x$, and fixed $a$.  With this, a sensible choice of Lyapunov function is
+For the Random Walk Metropolis the kernel choice is such that $Q(x,dy) = q(|x-y|)dy$, meaning $\alpha(x,y) = 1 \wedge \pi(y)/\pi(x)$.  Since the acceptance rate is just the ratio of target densities, it lends itself quite nicely to a simple bound.  We assume that $\pi(x)$ is \emph{log-concave in the tails}, meaning that there are constants $x_U > 0$ and $x_L < 0$ and $a > 0$ such that for every $y \geq x \geq x_U$ and every $y \leq x \leq x_L$
+\begin{equation} 
+\pi(y)/\pi(x) \leq \exp\left( -a(|y|-|x|) \right). \label{eqn:log_concavity}
+\end{equation}
+If (\ref{eqn:log_concavity}) holds then $\alpha(x,y)= 1 \wedge \pi(y)/\pi(x) \leq \exp\left(-a(|y|-|x|)\right)$ for large enough $x$, and fixed $a$.  With this, a sensible choice of Lyapunov function is
 \begin{equation}
 V(x) = e^{s|x|}
 \end{equation}
@@ -164,40 +244,61 @@ In the first and last terms in \eqref{eqn:integral_split} can be made arbitraril
 \[
 \int_{-\infty}^0 [e^{s(|y|-x)} - 1]\alpha(x,y)Q(x,dy) \leq \underbrace{\int_{-x}^0 [e^{s(|y|-x)} - 1]Q(x,dy)}_{<0} + \underbrace{\int_{-\infty}^{-x} [e^{s(|y|-x)} - 1]e^{-a(|y|-x)}Q(x,dy)}_{\leq Q(x,(-\infty,-x))},
 \]
-where the first integral on the right-hand side is strictly negative for any $x$, since $-x\leq y$ which implies $|y|-x<0$ and therefore $e^{s(|y|-x)} - 1<0$. The second integral on the right-hand side is bounded above by $Q(x,(-\infty,-x))$, since $s<a$ and $y\leq x$ imply that $e^{(s-a)(|y|-x)}<1$, and $Q(x,(-\infty,-x))$ becomes negligibly small as $x$ grows.
+where the first integral on the right-hand side is strictly negative for any $x$, since $-x\leq y$ which implies $|y|-x<0$ and therefore $e^{s(|y|-x)} - 1<0$. The second integral on the right-hand side is bounded above by $Q(x,(-\infty,-x))$, since $s<a$ and $y\leq -x$ imply that $e^{(s-a)(|y|-x)}<1$, and $Q(x,(-\infty,-x))$ becomes negligibly small as $x$ grows.
 
 Similarly to above, the last term in \eqref{eqn:integral_split} can be upper bounded using the log-concave restriction $\alpha(x,y) \leq e^{-a(|y|-|x|)}$ for $|y| \geq |x|$ as
 \[
 \int_{2x}^\infty [e^{(s-a)(y-x)} - e^{-a(y-x)}]Q(x,dy) \leq Q(x,(2x,\infty)) \to 0.
 \]
 
-We now have vanishing upper bounds for the first and last term in \eqref{eqn:integral_split} and are left with the middle two terms.  We can combine these by writing $y = x + z$, for $z \sim \mu(\cdot)$, meaning $\mu(\cdot)$ denotes zero mean proposal `increment' distribution.  Typically $\mu(\cdot)$ might be a zero mean Gaussian, e.g.\ $Q(x,\cdot) = \mathcal{N}(\cdot|x,\sigma^2)$.  We can then bound the middle two integrals with
+We now have vanishing upper bounds for the first and last term in \eqref{eqn:integral_split} and are left with the middle two terms.  Intuitively, we have removed the tails of the integral, and have now reduced the problem area to a compact set, which is a lot easier to deal with.  We can combine these by writing $y = x + z$, for $z \sim \mu(\cdot)$, meaning $\mu(\cdot)$ denotes zero mean proposal `increment' distribution.  Typically $\mu(\cdot)$ might be a zero mean Gaussian, e.g.\ $Q(x,\cdot) = \mathcal{N}(\cdot|x,\sigma^2)$.  We can then bound the middle two integrals with
 \begin{align} \label{eqn:rwm}
-&&\int_0^x [e^{s(y-x)} - 1]\alpha(x,y)Q(x,dy)+ \int_x^{2x} [e^{s(y-x)} - 1]\alpha(x,y)Q(x,dy)\\
-&\leq &\int_0^x [e^{-sz} - 1 + e^{(s-a)z} + e^{-az}]\mu(dz) \nonumber \\
-&=& -\int_0^{x} (1-e^{(s-a)z})(1-e^{-sz}) \mu(dz), \nonumber
+\int_0^x [e^{s(y-x)} - 1]\alpha(x,y)Q(x,dy) &+ \int_x^{2x} [e^{s(y-x)} - 1]\alpha(x,y)Q(x,dy)\\
+&\leq \int_0^x [e^{-sz} - 1 + e^{(s-a)z} + e^{-az}]\mu(dz) \nonumber \\
+&= -\int_0^{x} (1-e^{(s-a)z})(1-e^{-sz}) \mu(dz), \nonumber
 \end{align}
-which is strictly negative.  \todo{SJL: This way of laying it out is hideous.  Don't even remember whether you did it or me? HS: I remember changing it, but maybe its a combination as I don't like this either. We can change tomorrow!}
+which is strictly negative.
 
 To summarise, for large $x$ the entire integral will be comprised of terms which can be made arbitrarily small and terms which are strictly negative. This establishes (\ref{eqn:gemh}) as $x \to \infty$. Using equivalent arguments, (\ref{eqn:gemh}) also holds for $x \to -\infty$.
 
 \section{Geometric Ergodicity of KMC-lite in 1D}
-TODO\todo{HS: need a high level connection to previous stuff here}
+
+The basic idea of the below result is to show that in the tails, KMC lite becomes arbitrarily close to a Random Walk Metropolis, so will behave similarly.  Since geometric ergodicity is really only concerned with how an algorithm behaves in the tails of a distribution, the above proof should extend quite straightforwardly.  We do this now.
+
 \subsection{Notation}
 
-If $x$ denotes the current position in the chain, we denote the next candidate move as $y$.  We can write for the KMC-lite kernel
+If $x = x_t$ denotes the current position in the chain, we denote the next candidate move as $y = x_{t+L\epsilon}$.  Here $L$ denotes the number of leapfrog steps and $\epsilon$ the step-size in the Hamiltonian Monte Carlo algorithm.  After $L$ such leapfrog steps, it is actually possible to write $x_{t+L\epsilon}$ in terms of $x_t$ as  
 \[
-y(x,p) = x + c(x,p) + P, ~~ P \sim \mathcal{N}(0,1),
+x_{t+L\epsilon} = x_t + L\epsilon^2 \nabla\log\pi(x_t)/2 + \epsilon^2 \sum_{i=1}^{L-1} (L-i) \nabla\log\pi(x_{t+i\epsilon}) + L\epsilon p_t, ~~ p_t \sim \mathcal{N}(0,1).
 \]
-where $c(x,p)$ is basically a sequence of gradient steps, which depends on the current point $x$ and the random variable $P$.  For brevity, we write $y(p) = x + c(x) + P$.\todo{Notation re-use $P$ clash}  We also write $\mu(\cdot)$ to denote a standard Gaussian measure.
+We can write this more succinctly as
+\[
+y(x,p) = x + c(x,p) + L\epsilon p, ~~ p \sim \mathcal{N}(0,1),
+\]
+where 
+\[
+c(x,p) = L\epsilon^2 \nabla\log\pi(x_t)/2 + \epsilon^2 \sum_{i=1}^{L-1} (L-i) \nabla\log\pi(x_{t+i\epsilon}),
+\]
+which is a sequence of gradient steps, and depends on the current point $x$ and the random variable $p$.  We also write $\mu(\cdot)$ to denote a standard Gaussian measure.  The map
+$c(x,p)$ is the deterministic part of $L$ leapfrog steps of Hamiltonian flow.  We can also marginalise the corresponding $p$ (momentum) transition, as
+\[
+p_{t+L\epsilon} = p_t + \epsilon \nabla\log\pi(x_t)/2 + \epsilon \sum_{i=1}^{L-1} \nabla\log\pi(x_{t+i\epsilon}) + \epsilon \nabla\log\pi(x_{t+L\epsilon})/2.
+\]
+Here we write
+\[
+p_{t+L\epsilon} = p + d(x,p),
+\]
+using the same idea.
+
+
 
 \subsection{Extra Assumptions}
 
 For KMC, we assumed that
 \begin{align*}
-c(x) \xrightarrow{p} 0 \quad\text{as}\quad \Vert x\Vert _2 \to \infty, \qquad\text{and}\qquad \forall x \in \X:  c(x) < M\\
+c(x,p) \xrightarrow{p} 0 \quad\text{as}\quad \Vert x\Vert _2 \to \infty, \qquad\text{and}\qquad \forall x \in \X:  c(x,p) < M\\
 \end{align*}
-which is valid for KMC-lite. This requires a bounded kernel with bounded gradients as $c$ takes the form of a finite linear combination of kernels and their gradients gradients, and the fact that the kernel goes to zero for one argument going to infinity.\todo{HS: The kernel people could be a bit more explicit here.}
+which is valid for KMC-lite. We also assumed $d(x,p)\xrightarrow{p} 0$ as $\|x\|_2 \to \infty$. This requires a bounded kernel with bounded gradients as $c$ takes the form of a finite linear combination of kernels and their gradients, and the fact that the kernel goes to zero for one argument going to infinity.\todo{HS: The kernel people could be a bit more explicit here.}
 
 For the target, we also assumed the conditions of the below Theorem 2.2 in \cite{roberts1996geometric}.  These are technical conditions, but well-known among the Markov chain community.  They are extremely loose, and assert that:
 \begin{itemize}
@@ -215,9 +316,9 @@ Then the Metropolis--Hastings chain with proposal kernel $Q$ is $\mu^L$-irreduci
 \subsection{Details}
 
 We extend the Random Walk result, using the intuition the KMC-lite approaches a random walk in the tails.
-\todo{HS: Need high level connection to the proof above, so that it is clear the integral splitting is going on here.}
 
-The result can straightforwardly be adjusted to an integral over any set $(-x^\delta,x^{\delta})$ for some $\delta \in (0,1]$.  This will be crucial to the approach here, as the entire set $(x - x^\delta,x + x^\delta)$ can be pushed arbitrarily far into the tails of the distribution for $\delta < 1$, whereas $(0,2x)$ always contains the centre of the space.  So denoting
+Recall that in the random walk case, we split the state space using $(-\infty,0,x,2x,\infty)$, and reduced the problem to considering $(0,2x)$ by showing that the integral became negligible in the other sets.  The argument used to show that the integral was strictly negative on $(0,2x)$ trivially
+also holds for $(x-x^\delta,x+x^\delta)$, for any $\delta<1$, as this is a subset of $(0,2x)$.  This will be crucial to the approach here, as the entire set $(x - x^\delta,x + x^\delta)$ can be pushed arbitrarily far into the tails of the distribution for $\delta < 1$, whereas $(0,2x)$ always contains the centre of the space.  So denoting
 \[
 I_a^b := \int_a^b \left[ e^{s(|y| - |x|)} - 1 \right]\alpha(x,y)Q(x,dy),
 \]
@@ -225,21 +326,21 @@ we divide the integral of interest into
 \[
 I_{-\infty}^{x - x^\delta} + I_{x - x^\delta}^{x + x^\delta} + I_{x+x^\delta}^\infty.
 \]
-We can also write (\ref{eqn:ge2}) as an integral with respect to the Gaussian measure $\mu(\cdot)$ rather than $Q(x,\cdot)$, as $P$ is the only random variable, giving
+We can also write (\ref{eqn:ge2}) as an integral with respect to the Gaussian measure $\mu(\cdot)$ rather than $Q(x,\cdot)$, as the momentum term $p$ is the only random variable, giving
 \[
-\int \left[ e^{s(|y(p)| - |x|)} - 1 \right] \alpha(x,y(p)) \mu(dp)
+\int \left[ e^{s(|y(x,p)| - |x|)} - 1 \right] \alpha(x,y(x,p)) \mu(dp)
 \]
 The crux of the proof is basically to show that in the set $y \in (x - x^\delta,x+ x^{\delta})$, this integral can be made arbitrarily close to (\ref{eqn:rwm}), which is strictly negative (meaning this integral will be too).  Specifically, on this set the integral reduces to
 \begin{equation} \label{eqn:kmc1}
-\int \left[ e^{s(c(x) + p)} - 1 \right] \alpha(x,x + c(x) + p) \mu(dp).
+I_{x - x^\delta}^{x + x^\delta} = \int_{x - x^\delta}^{x + x^\delta} \left[ e^{s(c(x,p) + p)} - 1 \right] \alpha(x,x + c(x,p) + p) \mu(dp).
 \end{equation}
-Note that $c(x)$ can be made arbitrarily small for any choice of $p \in (-x^\delta,x^\delta)$, and also that therefore $\alpha(x,y(p))$ can be made arbitrarily close to $1 \wedge \pi(y(p))/\pi(x)$.  Because of these, we can say that (\ref{eqn:kmc1}) can be made arbitrarily close to (\ref{eqn:rwm}) on this set, and hence will be strictly negative for large enough $x$.
+Note that $c(x,p)$ can be made arbitrarily small for any choice of $p \in (-x^\delta,x^\delta)$, and also that therefore $\alpha(x,y(x,p))$ can be made arbitrarily close to $1 \wedge \pi(y(x,p))/\pi(x)$.  Because of these, we can say that (\ref{eqn:kmc1}) can be made arbitrarily close to (\ref{eqn:rwm}) on this set, and hence will be strictly negative for large enough $x$.
 
-For proposals $y$ outside of the set $(x - x^\delta,x + x^\delta)$, then in the tails the two integrals $I_{-\infty}^{x - x^\delta}$ and $I_{x + x^\delta}^\infty$ can be made arbitrarily close to zero.  For $y \in (-\infty,x-x^{\delta})$, since $x - M + p \leq y \leq x + M + p$ for all $y \in \X$ (where $M$ is the bound on the gradient term $c(x)$), there exists some constant $C_1 \in \mathbb{R}$ such that the integral is bounded above by
+For proposals $y$ outside of the set $(x - x^\delta,x + x^\delta)$, then in the tails the two integrals $I_{-\infty}^{x - x^\delta}$ and $I_{x + x^\delta}^\infty$ can be made arbitrarily close to zero.  For $y \in (-\infty,x-x^{\delta})$, since $x - M + p \leq y \leq x + M + p$ for all $y \in \X$ (where $M$ is the bound on the gradient term $c(x,p)$), there exists some constant $C_1 \in \mathbb{R}$ such that the integral is bounded above by
 \[
-\int_{-\infty}^{- C_1 - x^\delta} \left[e^{s(M + |p|)} - 1 \right]\alpha(x,y(p))\mu(dp),
+\int_{-\infty}^{- C_1 - x^\delta} \left[e^{s(M + |p|)} - 1 \right]\alpha(x,y(x,p))\mu(dp),
 \]
-noting that $|y| = |x + M + p| \leq |x| + M + |p|$.  for $x$ large to get the term inside the exponential. As $0 \leq \alpha(x,y(p)) \leq 1$, this is again bounded above by
+noting that $|y| = |x + M + p| \leq |x| + M + |p|$.  for $x$ large to get the term inside the exponential. As $0 \leq \alpha(x,y(x,p)) \leq 1$, this is again bounded above by
 \[
 e^{sM}\int_{-\infty}^{- C_1 - x^\delta} e^{s|p|}\mu(dp) = e^{sM}\int_{C_1 + x^{\delta}}^{\infty} e^{sp}\mu(dp) = e^{sM}e^{s^2/2}\Phi(s - x^\delta - C_1),
 \]
@@ -332,6 +433,8 @@ $x_{t}$, and the same argument holds for $I_{x_{t}^{\delta}}^{\infty}$.
   \bibitem{roberts1996geometric} Roberts, Gareth O., and Richard L. Tweedie. "Geometric convergence and central limit theorems for multidimensional Hastings and Metropolis algorithms." \emph{Biometrika} 83, no. 1 (1996): 95-110.
   
   \bibitem{mengersen1996rates} Mengersen, Kerrie L., and Richard L. Tweedie. "Rates of convergence of the Hastings and Metropolis algorithms." \emph{The Annals of Statistics} 24, no. 1 (1996): 101-121.
+  
+  \bibitem{roberts1998convergence} Roberts, Gareth O., and Jeffrey S. Rosenthal. "On convergence rates of Gibbs samplers for uniform distributions." \emph{Annals of Applied Probability} (1998): 1291-1302.
 
   \end{thebibliography}
 
