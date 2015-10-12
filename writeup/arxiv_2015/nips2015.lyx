@@ -13,32 +13,54 @@
 \title{Kamiltonian Monte Carlo}
 
 
+%\author{
+%Heiko Strathmann%\thanks{ Use footnote for providing further information about %author (webpage, alternative address)---\emph{not} for acknowledging funding %agencies.}
+%\\
+%Gatsby Unit\\
+%University College London \\
+%\texttt{heiko.strathmann@gmail.com} \\
+%\And
+%Dino Sejdinovic \\
+%Department of Statistics \\
+%University of Oxford \\
+%\texttt{dino.sejdinovic@gmail.com} \\
+%\And
+%Samuel Livingstone\\
+%Department of Statistics \\
+%University College London \\
+%\texttt{samuel.livingstone@ucl.ac.uk} \\
+%\And
+%Zoltán Szabó\\
+%Gatsby Unit \\
+%University College London \\
+%\texttt{zoltan.szabo@gatsby.ucl.ac.uk } \\
+%\AND
+%Arthur Gretton \\
+%Gatsby Unit\\
+%University College London \\
+%\texttt{arthur.gretton@gmail.com} 
+%\vspace{-.6cm}
+%}
+
 \author{
-Heiko Strathmann%\thanks{ Use footnote for providing further information about author (webpage, alternative address)---\emph{not} for acknowledging funding agencies.}
+Heiko Strathmann$^*$ Dino Sejdinovic$^+$ Samuel Livingstone$^o$  Zoltan Szabo$^*$ Arthur Gretton$^*$\\
+\And
 \\
-Gatsby Unit\\
+$^*$Gatsby Unit\\
 University College London \\
-\texttt{heiko.strathmann@gmail.com} \\
+%\texttt{\{heiko.strathmann,}\\
+%\texttt{dino.sejdinovic,}\\
+%\texttt{zoltan.szabo,}\\
+%\texttt{arthur.gretton}\\
+%\texttt{@gmail.com\}}
 \And
-Dino Sejdinovic \\
-Department of Statistics \\
+\\
+$^+$Department of Statistics\\
 University of Oxford \\
-\texttt{dino.sejdinovic@gmail.com} \\
 \And
-Samuel Livingstone\\
-Department of Statistics \\
-University College London \\
-\texttt{samuel.livingstone@ucl.ac.uk} \\
-\And
-Zoltán Szabó\\
-Gatsby Unit \\
-University College London \\
-\texttt{zoltan.szabo@gatsby.ucl.ac.uk } \\
-\AND
-Arthur Gretton \\
-Gatsby Unit\\
-University College London \\
-\texttt{arthur.gretton@gmail.com} 
+\\
+$^o$Department of Statistics\\
+University of Bristol
 }
 
 % The \author macro works with any number of authors. There are two commands
@@ -151,7 +173,7 @@ status open
 
 
 \backslash
-vspace{-.2cm}
+vspace{-.3cm}
 \end_layout
 
 \end_inset
@@ -200,7 +222,7 @@ status open
 
 
 \backslash
-vspace{-.2cm}
+vspace{-.4cm}
 \end_layout
 
 \end_inset
@@ -464,6 +486,19 @@ Experiments show that KMC inherits the efficiency of HMC, and therefore
  mixes significantly better than state-of-the-art gradient-free adaptive
  samplers on a number of target densities, including on synthetic examples,
  and when used in PM-MCMC and ABC-MCMC.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.9cm}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Paragraph
