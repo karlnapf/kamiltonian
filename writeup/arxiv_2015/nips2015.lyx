@@ -52,7 +52,7 @@ University College London \\
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
 
-%\nipsfinalcopy % Uncomment for camera-ready version
+\nipsfinalcopy % Uncomment for camera-ready version
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 \end_preamble
@@ -158,7 +158,7 @@ vspace{-.2cm}
 
 We propose 
 \emph on
-Kamiltonian Monte Carlo (KMC)
+Kernel Hamiltonian Monte Carlo (KMC)
 \emph default
 , a gradient-free adaptive MCMC algorithm based on Hamiltonian Monte Carlo
  (HMC).
@@ -168,8 +168,8 @@ Kamiltonian Monte Carlo (KMC)
  Computational costs are reduced by two novel efficient approximations to
  this gradient.
  While being asymptotically exact, KMC mimics HMC in terms of sampling efficienc
-y and offers substantial mixing improvements to state-of-the-art gradient-free
- samplers.
+y and offers substantial mixing improvements to state-of-the-art gradient
+ free samplers.
  We support our claims with experimental studies on both toy and real-world
  applications, including Approximate Bayesian Computation and exact-approximate
  MCMC.
@@ -467,10 +467,14 @@ Experiments show that KMC inherits the efficiency of HMC, and therefore
 \end_layout
 
 \begin_layout Paragraph
+\begin_inset Note Note
+status open
+
+\begin_layout Paragraph
 Paper outline:
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -515,7 +519,7 @@ reference "sec:KMC"
 
 \end_inset
 
- applies these results to obtain our Kamiltonian Monte Carlo algorithm.
+ applies these results to obtain our Kernel Hamiltonian Monte Carlo algorithm.
  We
 \begin_inset Note Note
 status open
@@ -550,6 +554,11 @@ status open
 
 \backslash
 vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1603,14 +1612,7 @@ reference "eq:infinite_exp_family"
 
 \end_inset
 
- and our approximations are based on score matching, see Appendix 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Appendix_score_matching"
-
-\end_inset
-
- for a brief review.
+ and our approximations are based on score matching.
 \begin_inset ERT
 status open
 
@@ -1624,6 +1626,214 @@ vspace{-.2cm}
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Score Matching
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Appendix_score_matching"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+AG:
+\series default
+ Score matching references, 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Hyvarinen-05,Hyvarinen-07"
+
+\end_inset
+
+.
+ The latter gave solutions in terms of a finite mixture at fixed centres.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Following 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Hyvarinen-05"
+
+\end_inset
+
+, score matching is based on modelling an unnormalised log probability density
+ 
+\begin_inset Formula $\log\pi(x)$
+\end_inset
+
+ with a parametric model of the form 
+\begin_inset Formula 
+\begin{equation}
+\log\tilde{\pi}_{Z}(x;f):=\log\tilde{\pi}(x;f)-\log Z(f),\label{eq:score_matching_parametric_model}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $f$
+\end_inset
+
+ is a collection of parameters of yet unspecified dimension (c.f.
+ natural parameters 
+\begin_inset Formula $f$
+\end_inset
+
+ of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+), and 
+\begin_inset Formula $Z(f)$
+\end_inset
+
+ is an unknown normalising constant.
+ We aim to find 
+\begin_inset Formula $\hat{f}$
+\end_inset
+
+ from a set of 
+\begin_inset Formula $n$
+\end_inset
+
+ samples
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+We assume a fixed sample set here but will use both the full Markov chain
+ history 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
+\end_inset
+
+ and a sub-sample of size 
+\begin_inset Formula $n$
+\end_inset
+
+ later.
+ 
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{n}\sim\pi$
+\end_inset
+
+ such that 
+\begin_inset Formula $\pi(x)\approx\tilde{\pi}(x;\hat{f})\times\text{const}$
+\end_inset
+
+..
+ From 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Eq. 2"
+key "Hyvarinen-05"
+
+\end_inset
+
+, the criterion being optimised is the expected squared distance between
+ gradients of the log-density, so-called 
+\emph on
+score functions
+\emph default
+,
+\emph on
+ 
+\emph default
+
+\begin_inset Formula 
+\[
+J(f)=\frac{1}{2}\int_{{\cal X}}\pi(x)\left\Vert \nabla\log\tilde{\pi}(x;f)-\nabla\log\pi(x)\right\Vert _{2}^{2}dx,
+\]
+
+\end_inset
+
+where we note that the normalising constants vanish from taking the gradient
+ 
+\begin_inset Formula $\nabla$
+\end_inset
+
+.
+ As a result, as shown in 
+\begin_inset CommandInset citation
+LatexCommand citet
+after "Theorem 1"
+key "Hyvarinen-05"
+
+\end_inset
+
+, it is possible to compute an empirical version
+\emph on
+ without
+\emph default
+ accessing 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+ or 
+\begin_inset Formula $\nabla\log\pi(x)$
+\end_inset
+
+ other than through observed samples,
+\begin_inset Formula 
+\begin{equation}
+\hat{J}(f)=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\frac{\partial^{2}\log\tilde{\pi}(x;f)}{\partial x_{\ell}^{2}}+\frac{1}{2}\left(\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}\right)^{2}\right].\label{eq:score_matching_objective_sample_version}
+\end{equation}
+
+\end_inset
+
+Both proposed approximate estimators of the infinite dimensional exponential
+ family model 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+ from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SriFukKumGreHyv14"
+
+\end_inset
+
+ are based on minimising 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ using approximate versions of the scores.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -1758,11 +1968,11 @@ Note that any sub-space could be used as long as the support of
  That is, we assume that the log unnormalised density of the model in 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:infinite_exp_family"
+reference "eq:score_matching_parametric_model"
 
 \end_inset
 
- takes the dual form
+ takes the approximate dual form
 \begin_inset ERT
 status open
 
@@ -1788,21 +1998,14 @@ where
 \end_inset
 
  are real valued parameters that are obtained by minimising the empirical
- score matching objective (see 
+ score matching objective 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
- in Appendix 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Appendix_score_matching"
-
-\end_inset
-
-).
+.
  This representation is of a form similar to 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -2060,7 +2263,14 @@ reference "eq:infinite_exp_family"
 
 \end_inset
 
- can be approximated in this feature space as
+ can be approximated via assuming the model in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_parametric_model"
+
+\end_inset
+
+ takes the form
 \begin_inset Formula 
 \begin{align}
 f(x) & =\langle\theta,\phi_{x}\rangle_{{\cal H}_{m}}=\theta^{\top}\phi_{x}\label{eq:infinite_exp_family_random_feats}
@@ -2068,18 +2278,18 @@ f(x) & =\langle\theta,\phi_{x}\rangle_{{\cal H}_{m}}=\theta^{\top}\phi_{x}\label
 
 \end_inset
 
-In order to fit 
+To fit 
 \begin_inset Formula $\theta\in\mathbb{R}^{m}$
 \end_inset
 
-, we again minimise the score matching objective in 
+, we again minimise the score matching objective 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
- in Appendix 
+, as proven in Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Appendix_score_matching"
@@ -2246,7 +2456,7 @@ Gradients of the estimated log-density are written
  , i.e., they require the evaluation of the gradient of the feature space
  embedding.
  Both the evaluation and storage of 
-\begin_inset Formula $\nabla f(\cdot)$
+\begin_inset Formula $\nabla f(x)$
 \end_inset
 
  cost 
@@ -2265,7 +2475,7 @@ and
 \end_layout
 
 \begin_layout Section
-Kamiltonian Monte Carlo
+Kernel Hamiltonian Monte Carlo
 \end_layout
 
 \begin_layout Standard
@@ -2289,7 +2499,7 @@ status open
 \begin_layout Plain Layout
 
 \series bold
-Kamiltonian Monte Carlo -- Pseudo-code
+Kernel Hamiltonian Monte Carlo -- Pseudo-code
 \begin_inset CommandInset label
 LatexCommand label
 name "alg:Kamiltonian-Monte-Carlo"
@@ -2640,7 +2850,7 @@ reference "eq:infinite_exp_family_random_feats"
 
 , we arrive at a gradient free, adaptive MCMC algorithm: 
 \emph on
-Kamiltonian Monte Carlo
+Kernel Hamiltonian Monte Carlo
 \emph default
  (Algorithm 
 \begin_inset CommandInset ref
@@ -2720,8 +2930,16 @@ reference "eq:lite_estimator"
 
 , whose gradients decay outside of the training data.
  More formally, in the tails or before burn-in completion, KMC lite is guarantee
-d to fall back to a random walk, and smoothly transitions to HMC-like proposals
- as the MCMC chain grows.
+d to fall back to a random walk, inheriting its convergence properties,
+ and smoothly transitions to HMC-like proposals as the MCMC chain grows.
+ A proof can be found in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appenidx_ergodicity_lite_proof"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Proposition
@@ -2778,6 +2996,9 @@ key "roberts1996geometric"
 \end_inset
 
 -almost any starting point.
+\end_layout
+
+\begin_layout Proposition
 \begin_inset ERT
 status open
 
@@ -2785,7 +3006,7 @@ status open
 
 
 \backslash
-vspace{-.3cm}
+vspace{-1cm}
 \end_layout
 
 \end_inset
@@ -2794,10 +3015,14 @@ vspace{-.3cm}
 \end_layout
 
 \begin_layout Paragraph
+\begin_inset Note Note
+status open
+
+\begin_layout Paragraph
 Proof Sketch
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 (see Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -2901,15 +3126,6 @@ key "roberts1996geometric"
 \end_inset
 
  but are out of the scope of this paper.
- 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{-.2cm}
 \end_layout
 
 \end_inset
@@ -3051,18 +3267,11 @@ reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
- in Appendix 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Appendix_score_matching"
-
-\end_inset
-
  to choose 
 \begin_inset Formula $\sigma,\lambda$
 \end_inset
 
- pairs via cross-validation (after burn-in).
+ pairs via cross-validation (possible online).
  Earlier adaptive kernel-based MCMC methods 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -3132,11 +3341,25 @@ KMC Finite: Stability of Trajectories in High Dimensions
 \end_layout
 
 \begin_layout Standard
-In order to quantify efficiency in growing dimensions, we study average
- acceptance probabilities purely over trajectories from a random sample
- along the kernel induced Hamiltonian flow (no MCMC yet) on a standard Gaussian
- target.
- Figure 
+In order to quantify efficiency in growing dimensions, we study hypothetical
+ acceptance probabilities along trajectories along the kernel induced Hamiltonia
+n flow (no MCMC yet) on a synthetic Gaussian target: We sample the diagonal
+ entries of the covariance matrix from a 
+\family typewriter
+Gamma(1,1)
+\family default
+ distribution, and rotate with a uniformly sampled random orthogonal matrix.
+ The resulting Gaussian target is challenging to estimate due to its `non-singul
+ar smoothness', i.e.
+ largely differing length-scales across its principal components.
+ As a single Gaussian kernel is not able to effeciently represent such scalings,
+ we use a rational quadratic kernel for the gradient estimation.
+ As this simply is an infinite Gamma mixture of Gaussian kernels, its random
+ features are straight-forward to compute.
+\end_layout
+
+\begin_layout Standard
+Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:kmc_trajectories_mean_acceptance"
@@ -3158,7 +3381,7 @@ reference "fig:kmc_trajectories_mean_acceptance"
 
 .
  In dimensions up to 
-\begin_inset Formula $d\approx100$
+\begin_inset Formula $d\approx50$
 \end_inset
 
 , we are able to obtain acceptance probabilities comparable to plain HMC
@@ -3862,237 +4085,6 @@ Proofs & Details
 \end_layout
 
 \begin_layout Subsection
-Score Matching
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Appendix_score_matching"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-
-\series bold
-AG:
-\series default
- Score matching references, 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "Hyvarinen-05,Hyvarinen-07"
-
-\end_inset
-
-.
- The latter gave solutions in terms of a finite mixture at fixed centres.
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Following 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "Hyvarinen-05"
-
-\end_inset
-
-.
- We model the log unnormalised probability 
-\begin_inset Formula $\log\pi(x)$
-\end_inset
-
- with a parametric model of the form 
-\begin_inset Formula 
-\begin{equation}
-\log\tilde{\pi}_{Z}(x;f):=\log\tilde{\pi}(x;f)-\log Z(f),\label{eq:score_matching_parametric_model}
-\end{equation}
-
-\end_inset
-
-where 
-\begin_inset Formula $f$
-\end_inset
-
- is a collection of parameters of yet unspecified dimension (c.f.
- natural parameters 
-\begin_inset Formula $f$
-\end_inset
-
- of 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
-), and 
-\begin_inset Formula $Z(f)$
-\end_inset
-
- is an unknown normalising constant.
- We aim to approximate 
-\begin_inset Formula $\pi$
-\end_inset
-
- by 
-\begin_inset Formula $\tilde{\pi}$
-\end_inset
-
-, i.e., to find 
-\begin_inset Formula $\hat{f}$
-\end_inset
-
- from a set of fixed 
-\begin_inset Formula $n$
-\end_inset
-
- i.i.d.
- samples
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-We assume a fixed sample set here but will use both the full Markov chain
- history 
-\begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
-\end_inset
-
- and a sub-sample of size 
-\begin_inset Formula $n$
-\end_inset
-
- later.
- 
-\end_layout
-
-\end_inset
-
- 
-\begin_inset Formula $\{x_{i}\}_{i=1}^{n}\sim\pi$
-\end_inset
-
-, such that 
-\begin_inset Formula $\pi(x)\approx\tilde{\pi}(x;\hat{f})\times\text{const}$
-\end_inset
-
-.
- From 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Eq. 2"
-key "Hyvarinen-05"
-
-\end_inset
-
-, the criterion being optimised is the expected squared distance between
- score functions,
-\emph on
- 
-\emph default
-
-\begin_inset Formula 
-\[
-J(f)=\frac{1}{2}\int_{{\cal X}}\pi(x)\left\Vert \psi(x;f)-\psi_{\pi}(x)\right\Vert _{2}^{2}dx,
-\]
-
-\end_inset
-
-where 
-\begin_inset Formula 
-\[
-\tilde{\psi}(x;\theta)=\nabla\log\tilde{\pi}_{Z}(x;f)=\nabla\log\tilde{\pi}(x;f),
-\]
-
-\end_inset
-
-and 
-\begin_inset Formula $\psi(x)$
-\end_inset
-
- is the derivative wrt 
-\begin_inset Formula $x$
-\end_inset
-
- of the unknown true density 
-\begin_inset Formula $\pi(x)$
-\end_inset
-
-.
- As shown in 
-\begin_inset CommandInset citation
-LatexCommand citet
-after "Theorem 1"
-key "Hyvarinen-05"
-
-\end_inset
-
-, the 
-\emph on
-Fisher score
-\emph default
- takes the form
-\begin_inset Formula 
-\begin{equation}
-\hat{J}(f)=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi_{\ell}(x_{i};f)+\frac{1}{2}\psi_{\ell}^{2}(x_{i};f)\right],\label{eq:score_matching_objective_sample_version}
-\end{equation}
-
-\end_inset
-
-where
-\begin_inset Formula 
-\begin{equation}
-\psi_{\ell}(x;f)=\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}\qquad\text{and}\qquad\partial_{\ell}\psi_{\ell}(x;f)=\frac{\partial^{2}\log\tilde{\pi}(x;f)}{\partial x_{\ell}^{2}}.\label{eq:score_match_scores}
-\end{equation}
-
-\end_inset
-
-Both proposed approximate estimators of the infinite dimensional exponential
- family model 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
- from 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SriFukKumGreHyv14"
-
-\end_inset
-
- are based on minimising 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_matching_objective_sample_version"
-
-\end_inset
-
- using approximate version of the scores 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_match_scores"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Subsection
 Lite Estimator
 \end_layout
 
@@ -4144,7 +4136,7 @@ reference "prop:lite_estimator"
 , then directly implement score functions 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:score_match_scores"
+reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
@@ -4183,17 +4175,17 @@ k(x_{i},x)=\exp\left(-\frac{1}{\sigma}\|x_{i}-x\|^{2}\right)=\exp\left(-\frac{1}
 
 \end_inset
 
-The score functions from 
+The score functions for 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:score_match_scores"
+reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
  are then given by
 \begin_inset Formula 
 \[
-\psi_{\ell}(x;\alpha)=\frac{2}{\sigma}\sum_{i=1}^{n}\alpha_{i}(x_{i\ell}-x_{\ell})\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)
+\psi_{\ell}(x;\alpha):=\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}=\frac{2}{\sigma}\sum_{i=1}^{n}\alpha_{i}(x_{i\ell}-x_{\ell})\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)
 \]
 
 \end_inset
@@ -4201,7 +4193,8 @@ reference "eq:score_match_scores"
 and
 \begin_inset Formula 
 \begin{align*}
-\partial_{\ell}\psi_{\ell}(x;\alpha) & =-\frac{2}{\sigma}\sum_{i=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)+\left(\frac{2}{\sigma}\right)^{2}\sum_{i=1}^{n}\alpha_{i}(x_{i\ell}-x_{\ell})^{2}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)\\
+\partial_{\ell}\psi_{\ell}(x;\alpha):= & \frac{\partial^{2}\log\tilde{\pi}(x;f)}{\partial^{2}x_{\ell}}\\
+ & =-\frac{2}{\sigma}\sum_{i=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)+\left(\frac{2}{\sigma}\right)^{2}\sum_{i=1}^{n}\alpha_{i}(x_{i\ell}-x_{\ell})^{2}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)\\
  & =\frac{2}{\sigma}\sum_{i=1}^{n}\alpha_{i}\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)\left[-1+\frac{2}{\sigma}(x_{i\ell}-x_{\ell})^{2}\right].
 \end{align*}
 
@@ -4643,21 +4636,14 @@ reference "prop:finite_estimator"
 
 \end_inset
 
-, then again directly implement score functions 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_match_scores"
-
-\end_inset
-
- and minimise the empirical score matching objective 
+, then again directly implement score functions in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
- via a linear solve.
+ and minimise it via a linear solve.
 \end_layout
 
 \begin_layout Proof
@@ -4682,17 +4668,17 @@ where
 \end_inset
 
 .
- The score function 
+ The score functions in 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:score_match_scores"
+reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
  then can be written as the simple linear form
 \begin_inset Formula 
 \begin{align}
-\psi_{\ell}(\xi;\theta) & =\theta^{T}\dot{\phi}_{x}^{\ell}\quad\text{and}\quad\partial_{\ell}\psi_{\ell}(\xi;\theta)=\theta^{T}\ddot{\phi}_{x}^{\ell},\label{eq:score_function_fourier}
+\psi_{\ell}(\xi;\theta):=\frac{\partial\log\tilde{\pi}(x;\theta)}{\partial x_{\ell}} & =\theta^{T}\dot{\phi}_{x}^{\ell}\quad\text{and}\quad\partial_{\ell}\psi_{\ell}(\xi;\theta):=\frac{\partial^{2}\log\tilde{\pi}(x;\theta)}{\partial x_{\ell}^{2}}=\theta^{T}\ddot{\phi}_{x}^{\ell},\label{eq:score_function_fourier}
 \end{align}
 
 \end_inset
@@ -4935,7 +4921,7 @@ key "le2013fastfood"
 \end_layout
 
 \begin_layout Standard
-The score functions 
+The feature map derivatives 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:score_function_fourier"
