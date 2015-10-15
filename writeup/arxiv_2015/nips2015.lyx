@@ -246,12 +246,12 @@ It allows to represent probability densities of interest via a finite set
  MCMC itself can be computationally demanding, and the expected estimation
  error depends directly on the correlation between successive points in
  the Markov chain.
- Therefore, MCMC efficiency can be achieved by taking large steps with high
- probability.
+ Therefore, efficiency can be achieved by taking large steps with high probabili
+ty.
 \end_layout
 
 \begin_layout Standard
-Hamiltonian Monte Carlo (HMC) 
+Hamiltonian Monte Carlo 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "neal2011mcmc"
@@ -445,8 +445,8 @@ key "Rasmussen2003"
 \end_layout
 
 \begin_layout Standard
-We require our adaptive algorithm to be computationally efficient, as it
- deals with high-dimensional MCMC chains of growing length.
+We require our adaptive KMC algorithm to be computationally efficient, as
+ it deals with high-dimensional MCMC chains of growing length.
  Thus, we develop two novel approximations to the infinite dimensional exponenti
 al family model.
  The first approximation, 
@@ -493,107 +493,7 @@ status open
 
 
 \backslash
-vspace{-.9cm}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Paragraph
-\begin_inset Note Note
-status open
-
-\begin_layout Paragraph
-Paper outline:
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{-.2cm}
-\end_layout
-
-\end_inset
-
-In Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:background_previous_work"
-
-\end_inset
-
-, we place our contribution in the context of previous work and cover HMC
- basics.
- Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:kernel_hamiltonian_dynamics"
-
-\end_inset
-
- introduces Hamiltonian dynamics induced by kernel exponential families.
- Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:estimators"
-
-\end_inset
-
- contains our approximate estimators of of the log density and its gradient,
- and Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:KMC"
-
-\end_inset
-
- applies these results to obtain our Kernel Hamiltonian Monte Carlo algorithm.
- We
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
- in Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:kernel_hmc"
-
-\end_inset
-
- and
-\end_layout
-
-\end_inset
-
- demonstrate the efficiency of KMC in a number of experiments in Section
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Experiments"
-
-\end_inset
-
-.
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{-.2cm}
-\end_layout
-
-\end_inset
-
-
+vspace{-.3cm}
 \end_layout
 
 \end_inset
@@ -623,7 +523,7 @@ status open
 
 
 \backslash
-vspace{-.2cm}
+vspace{-.3cm}
 \end_layout
 
 \end_inset
@@ -1088,7 +988,7 @@ status open
 
 
 \backslash
-vspace{-.2cm}
+vspace{-.3cm}
 \end_layout
 
 \end_inset
@@ -1238,10 +1138,6 @@ which in particular implies
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 Here 
 \begin_inset Formula ${\cal H}$
 \end_inset
@@ -1587,7 +1483,7 @@ status open
 
 
 \backslash
-vspace{-.2cm}
+vspace{-.3cm}
 \end_layout
 
 \end_inset
@@ -1614,7 +1510,7 @@ status open
 
 
 \backslash
-vspace{-.2cm}
+vspace{-.3cm}
 \end_layout
 
 \end_inset
@@ -1711,12 +1607,11 @@ key "Hyvarinen-05"
 
 \end_inset
 
-, score matching is based on modelling an unnormalised log probability density
- 
+, we model an unnormalised log probability density 
 \begin_inset Formula $\log\pi(x)$
 \end_inset
 
- with a parametric model of the form 
+ with a parametric model 
 \begin_inset Formula 
 \begin{equation}
 \log\tilde{\pi}_{Z}(x;f):=\log\tilde{\pi}(x;f)-\log Z(f),\label{eq:score_matching_parametric_model}
@@ -1785,7 +1680,7 @@ We assume a fixed sample set here but will use both the full Markov chain
 \begin_inset Formula $\pi(x)\approx\tilde{\pi}(x;\hat{f})\times\text{const}$
 \end_inset
 
-..
+.
  From 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1845,18 +1740,10 @@ key "Hyvarinen-05"
 
 \end_inset
 
-Both proposed approximate estimators of the infinite dimensional exponential
- family model 
+Our efficient approximations of the infinite dimensional model 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
-
-\end_inset
-
- from 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SriFukKumGreHyv14"
 
 \end_inset
 
@@ -1867,7 +1754,7 @@ reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
- using approximate versions of the scores.
+ using approximate scores.
  
 \end_layout
 
@@ -1948,14 +1835,8 @@ key "sejdinovic_kernel_2014"
 \begin_inset Formula $d$
 \end_inset
 
- is large, we develop an approximation to the full dual solution in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "SriFukKumGreHyv14"
-
-\end_inset
-
- by expressing the solution in terms of 
+ is large, we approximate the full dual solution by expressing it in terms
+ of 
 \begin_inset Formula $\text{span}\left(\left\{ k(z_{i},\cdot)\right\} _{i=1}^{n}\right)$
 \end_inset
 
@@ -2000,14 +1881,14 @@ Note that any sub-space could be used as long as the support of
 
 \end_inset
 
- That is, we assume that the log unnormalised density of the model in 
+ That is, we assume that the model 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_parametric_model"
 
 \end_inset
 
- takes the approximate dual form
+ takes the `light' dual form
 \begin_inset ERT
 status open
 
@@ -2178,7 +2059,7 @@ reference "sub:Appendix_lite_details"
 \end_layout
 
 \begin_layout Standard
-Gradients of the estimated log-density are given as 
+Gradients of the model are given as 
 \begin_inset Formula $\nabla f(x)=\sum_{i=1}^{n}\alpha_{i}\nabla k(x,x_{i})$
 \end_inset
 
@@ -2190,14 +2071,6 @@ Gradients of the estimated log-density are given as
 
  both cost 
 \begin_inset Formula ${\cal O}(dn)$
-\end_inset
-
-, which interestingly is independent of the target 
-\begin_inset Formula $\pi$
-\end_inset
-
-, and only depends on the sub-sample 
-\begin_inset Formula $\mathbf{z}$
 \end_inset
 
 .
@@ -2257,18 +2130,7 @@ Define an
 \begin_inset Formula $m$
 \end_inset
 
--dimensional approximate
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-We deliberately don't state the form of the approximation yet, but will
- give details later.
-\end_layout
-
-\end_inset
-
- feature space 
+-dimensional approximate feature space 
 \begin_inset Formula ${\cal H}_{m}=\mathbb{R}^{m}$
 \end_inset
 
@@ -2324,10 +2186,10 @@ reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
-, as proven in Appendix 
+, as proved in Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:Appendix_score_matching"
+reference "sub:Appendix_finite_details"
 
 \end_inset
 
@@ -2484,29 +2346,33 @@ reference "sub:Appendix_finite_details"
 \end_layout
 
 \begin_layout Standard
-Gradients of the estimated log-density are written 
+Gradients of the model are 
 \begin_inset Formula $\nabla f(x)=\left[\nabla\phi_{x}\right]^{\top}\hat{\theta}$
 \end_inset
 
  , i.e., they require the evaluation of the gradient of the feature space
- embedding.
- Both the evaluation and storage of 
-\begin_inset Formula $\nabla f(x)$
+ embedding, costing 
+\begin_inset Formula ${\cal O}(md)$
 \end_inset
 
- cost 
+ computation and and 
 \begin_inset Formula ${\cal O}(m)$
 \end_inset
 
-, which is again independent of 
-\begin_inset Formula $\pi$
+ storage.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
 \end_inset
 
- 
-\emph on
-and
-\emph default
- the Markov chain history.
+
 \end_layout
 
 \begin_layout Section
@@ -2521,6 +2387,498 @@ name "sec:KMC"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
+\end_inset
+
+Constructing a kernel induced Hamiltonian flow as in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:kernel_hmc_flow"
+
+\end_inset
+
+ from the gradients of the infinite dimensional exponential family model
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family"
+
+\end_inset
+
+, and approximate estimators 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_lite"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_random_feats"
+
+\end_inset
+
+, we arrive at a gradient free, adaptive MCMC algorithm: 
+\emph on
+Kernel Hamiltonian Monte Carlo
+\emph default
+ (Algorithm 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Kamiltonian-Monte-Carlo"
+
+\end_inset
+
+).
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Computational Efficiency, Geometric Ergodicity, and Burn-in
+\end_layout
+
+\begin_layout Standard
+KMC finite using 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_random_feats"
+
+\end_inset
+
+ allows for online updates using the 
+\emph on
+full
+\emph default
+ Markov chain history, and therefore is a more elegant solution than KMC
+ lite, which has greater computational cost and requires sub-sampling the
+ chain history.
+ Due to the parametric nature of this approximate model, however, the tails
+ of the estimator are not guaranteed to decay.
+ For example, the random Fourier feature embedding described below Proposition
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:finite_estimator"
+
+\end_inset
+
+ contains periodic cosine functions, and therefore oscillates in the tails
+ of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_random_feats"
+
+\end_inset
+
+, resulting in a reduced acceptance probability.
+ As we will demonstrate in the experiments, this problem does not appear
+ when KMC finite is initialised in high-density regions, nor after burn-in.
+ In situations where information about the target density support is unknown,
+ and during burn-in, we suggest to use the lite estimator 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lite_estimator"
+
+\end_inset
+
+, whose gradients decay outside of the training data.
+ As a result, KMC lite is guaranteed to fall back to a Random Walk Metropolis
+ in unexplored regions, inheriting convergence properties, and smoothly
+ transitions to HMC-like proposals as the MCMC chain grows.
+ A proof can be found in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appenidx_ergodicity_lite_proof"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:ergodicity_kmc_lite"
+
+\end_inset
+
+Assume
+\emph on
+ 
+\begin_inset Formula $d=1$
+\end_inset
+
+,
+\emph default
+ 
+\begin_inset Formula $\pi(x)$
+\end_inset
+
+ has log-concave tails, regularity conditions of 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Thm 2.2"
+key "roberts1996geometric"
+
+\end_inset
+
+ (implying 
+\begin_inset Formula $\pi$
+\end_inset
+
+-irreducibility and smallness of compact sets), MCMC adaptation stops after
+ a fixed time, and a fixed number 
+\begin_inset Formula $L$
+\end_inset
+
+ of 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+-leapfrog steps.
+ If 
+\begin_inset Formula $\limsup_{\|x\|_{2}\to\infty}\|\nabla f(x)\|_{2}=0$
+\end_inset
+
+, and 
+\begin_inset Formula $\exists M:\forall x:\|\nabla f(x)\|_{2}\leq M$
+\end_inset
+
+, then KMC lite is geometrically ergodic from 
+\begin_inset Formula $\pi$
+\end_inset
+
+-almost any starting point.
+\end_layout
+
+\begin_layout Proposition
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-1cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset Note Note
+status open
+
+\begin_layout Paragraph
+Proof Sketch
+\end_layout
+
+\begin_layout Plain Layout
+(see Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appenidx_ergodicity_lite_proof"
+
+\end_inset
+
+ for the detailed proof) Define 
+\size footnotesize
+
+\begin_inset Formula $c(x^{(0)}):=\epsilon^{2}\sum_{i=0}^{L-1}\nabla f(x^{(i\epsilon)})/2$
+\end_inset
+
+
+\size default
+ and 
+\size footnotesize
+
+\begin_inset Formula $d(x^{(0)}):=\epsilon(\nabla f(x^{(0)})+\nabla f(x^{(L\epsilon)}))/2+\epsilon\sum_{i=1}^{L-1}\nabla f(x^{(i\epsilon)})$
+\end_inset
+
+,
+\size default
+ where 
+\begin_inset Formula $x^{(i\epsilon)}$
+\end_inset
+
+ is the 
+\begin_inset Formula $i$
+\end_inset
+
+-th point of the leapfrog integration from 
+\begin_inset Formula $x=x^{(0)}$
+\end_inset
+
+.
+ At 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, the marginal KMC proposal on position space looks like 
+\begin_inset Formula $x^{*}(p')=x_{t}+c(x_{t})+N\epsilon p'$
+\end_inset
+
+ where wlog.
+ 
+\begin_inset Formula $p'\sim\mathcal{N}(0,I)$
+\end_inset
+
+.
+ This is accepted with probability 
+\size footnotesize
+
+\begin_inset Formula $\text{acc}(x_{t},x^{*}(p'))=\min\left(1,\frac{\pi(x^{*}(p'))}{\pi(x_{t})}\exp\left(-\frac{1}{2}\left[p'd(x_{t})+d(x_{t})^{2}\right]\right)\right)$
+\end_inset
+
+
+\size default
+.
+ From the distribution of 
+\begin_inset Formula $p'$
+\end_inset
+
+, we have 
+\begin_inset Formula $c(x_{t})\overset{p}{\to}0$
+\end_inset
+
+ as 
+\begin_inset Formula $\Vert x_{t}\Vert_{2}\to\infty$
+\end_inset
+
+, and similarly for 
+\begin_inset Formula $d(x_{t})$
+\end_inset
+
+.
+ So for large 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, we have 
+\begin_inset Formula $x^{*}\approx x_{t}+L\epsilon p'$
+\end_inset
+
+ and 
+\begin_inset Formula $\text{acc}(x_{t},x^{*})\approx\min(1,\pi(x^{*})/\pi(x_{t}))$
+\end_inset
+
+, meaning in the tails the chain will behave as a Random Walk Metropolis.
+ Consequently, KMC lite is geometrically ergodic whenever the Random Walk
+ Metropolis is.
+ Generalisations to 
+\begin_inset Formula $d\geq2$
+\end_inset
+
+ require an additional curvature condition of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "roberts1996geometric"
+
+\end_inset
+
+ but are out of the scope of this paper.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Vanishing adaptation
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:adaptive_subsampling"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+MCMC algorithms that use the history of the Markov chain for constructing
+ proposals might not be asymptotically correct.
+ We follow 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Sec. 4.2"
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+ and the idea of 
+\begin_inset Quotes eld
+\end_inset
+
+vanishing adaptation
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Andrieu2008"
+
+\end_inset
+
+, to avoid such biases.
+ Let 
+\begin_inset Formula $\left\{ a_{t}\right\} _{i=0}^{\infty}$
+\end_inset
+
+ be a schedule of decaying probabilities such that 
+\begin_inset Formula $\lim_{t\to\infty}a_{t}=0$
+\end_inset
+
+ and 
+\begin_inset Formula $\sum_{t=0}^{\infty}a_{t}=\infty$
+\end_inset
+
+.
+ We update the density gradient estimate according to this schedule in Algorithm
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Kamiltonian-Monte-Carlo"
+
+\end_inset
+
+.
+ Intuitively, adaptation becomes less likely as the MCMC chain progresses,
+ but never fully stops, while sharing asymptotic convergence with adaptation
+ that stops at a fixed point 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Theorem 1"
+key "RobertsRosenthal2007"
+
+\end_inset
+
+.
+ Note that Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:ergodicity_kmc_lite"
+
+\end_inset
+
+ is a stronger statement about the 
+\emph on
+convergence rate
+\emph default
+.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.2cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Free Parameters
+\end_layout
+
+\begin_layout Standard
+KMC has two free parameters: the Gaussian kernel bandwidth 
+\begin_inset Formula $\sigma$
+\end_inset
+
+, and the regularisation parameter 
+\begin_inset Formula $\lambda$
+\end_inset
+
+.
+ KMC's performance depends on the quality of the approximate infinite dimensiona
+l exponential family model in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_lite"
+
+\end_inset
+
+ or 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:infinite_exp_family_random_feats"
+
+\end_inset
+
+, hence a principled approach is to use the score matching objective function
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+ to choose 
+\begin_inset Formula $\sigma,\lambda$
+\end_inset
+
+ pairs via cross-validation (possible online).
+ Earlier adaptive kernel-based MCMC methods 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+ did not address parameter choice.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float algorithm
 wide false
 sideways false
@@ -2841,495 +3199,6 @@ reference "eq:kmc_accept_prob"
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{-.3cm}
-\end_layout
-
-\end_inset
-
-Constructing a kernel induced Hamiltonian flow as in Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:kernel_hmc_flow"
-
-\end_inset
-
- from the gradients of the infinite dimensional exponential family model
- 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
-, and approximate estimators 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family_lite"
-
-\end_inset
-
-,
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family_random_feats"
-
-\end_inset
-
-, we arrive at a gradient free, adaptive MCMC algorithm: 
-\emph on
-Kernel Hamiltonian Monte Carlo
-\emph default
- (Algorithm 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "alg:Kamiltonian-Monte-Carlo"
-
-\end_inset
-
-).
- KMC overcomes random-walk behaviour of competing state-of-the-art
-\emph on
- 
-\emph default
-samplers KAMH and AMH.
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{-.2cm}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Paragraph
-Computational Efficiency, Geometric Ergodicity, and Burn-in
-\end_layout
-
-\begin_layout Standard
-KMC finite using 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family_random_feats"
-
-\end_inset
-
- allows for online updates using the 
-\emph on
-full
-\emph default
- Markov chain history, and is this respect a more elegant solution than
- KMC lite, which has greater computational cost and requires sub-sampling
- the chain history.
- Due to the parametric nature of this approximate model, however, the tails
- of the estimator are not guaranteed to decay.
- For example, the random Fourier feature embedding described below Proposition
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "prop:finite_estimator"
-
-\end_inset
-
- contains periodic cosine functions, and therefore oscillates in the tails
- of 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family_random_feats"
-
-\end_inset
-
-, resulting in a reduced acceptance probability.
- As we will demonstrate in the experiments, this problem does not appear
- when KMC finite is initialised in high-density regions, nor after burn-in.
- In situations where information about the target density support is unknown,
- and during burn-in, we suggest to use the lite estimator 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:lite_estimator"
-
-\end_inset
-
-, whose gradients decay outside of the training data.
- More formally, in the tails or before burn-in completion, KMC lite is guarantee
-d to fall back to a random walk, inheriting its convergence properties,
- and smoothly transitions to HMC-like proposals as the MCMC chain grows.
- A proof can be found in Appendix 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Appenidx_ergodicity_lite_proof"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Proposition
-\begin_inset CommandInset label
-LatexCommand label
-name "prop:ergodicity_kmc_lite"
-
-\end_inset
-
-Assume
-\emph on
- 
-\begin_inset Formula $d=1$
-\end_inset
-
-,
-\emph default
- 
-\begin_inset Formula $\pi(x)$
-\end_inset
-
- is log-concave in the tails, and the regularity conditions of 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Thm 2.2"
-key "roberts1996geometric"
-
-\end_inset
-
- (implying 
-\begin_inset Formula $\pi$
-\end_inset
-
--irreducibility and smallness of compact sets), MCMC adaptation stops after
- a fixed time, and a fixed number 
-\begin_inset Formula $L$
-\end_inset
-
- of 
-\begin_inset Formula $\epsilon$
-\end_inset
-
--leapfrog steps.
- If 
-\begin_inset Formula $\limsup_{\|x\|_{2}\to\infty}\|\nabla f(x)\|_{2}=0$
-\end_inset
-
-, and 
-\begin_inset Formula $\exists M:\forall x:\|\nabla f(x)\|_{2}\leq M$
-\end_inset
-
-, then KMC lite is geometrically ergodic from 
-\begin_inset Formula $\pi$
-\end_inset
-
--almost any starting point.
-\end_layout
-
-\begin_layout Proposition
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{-1cm}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Paragraph
-\begin_inset Note Note
-status open
-
-\begin_layout Paragraph
-Proof Sketch
-\end_layout
-
-\begin_layout Plain Layout
-(see Appendix 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Appenidx_ergodicity_lite_proof"
-
-\end_inset
-
- for the detailed proof) Define 
-\size footnotesize
-
-\begin_inset Formula $c(x^{(0)}):=\epsilon^{2}\sum_{i=0}^{L-1}\nabla f(x^{(i\epsilon)})/2$
-\end_inset
-
-
-\size default
- and 
-\size footnotesize
-
-\begin_inset Formula $d(x^{(0)}):=\epsilon(\nabla f(x^{(0)})+\nabla f(x^{(L\epsilon)}))/2+\epsilon\sum_{i=1}^{L-1}\nabla f(x^{(i\epsilon)})$
-\end_inset
-
-,
-\size default
- where 
-\begin_inset Formula $x^{(i\epsilon)}$
-\end_inset
-
- is the 
-\begin_inset Formula $i$
-\end_inset
-
--th point of the leapfrog integration from 
-\begin_inset Formula $x=x^{(0)}$
-\end_inset
-
-.
- At 
-\begin_inset Formula $x_{t}$
-\end_inset
-
-, the marginal KMC proposal on position space looks like 
-\begin_inset Formula $x^{*}(p')=x_{t}+c(x_{t})+N\epsilon p'$
-\end_inset
-
- where wlog.
- 
-\begin_inset Formula $p'\sim\mathcal{N}(0,I)$
-\end_inset
-
-.
- This is accepted with probability 
-\size footnotesize
-
-\begin_inset Formula $\text{acc}(x_{t},x^{*}(p'))=\min\left(1,\frac{\pi(x^{*}(p'))}{\pi(x_{t})}\exp\left(-\frac{1}{2}\left[p'd(x_{t})+d(x_{t})^{2}\right]\right)\right)$
-\end_inset
-
-
-\size default
-.
- From the distribution of 
-\begin_inset Formula $p'$
-\end_inset
-
-, we have 
-\begin_inset Formula $c(x_{t})\overset{p}{\to}0$
-\end_inset
-
- as 
-\begin_inset Formula $\Vert x_{t}\Vert_{2}\to\infty$
-\end_inset
-
-, and similarly for 
-\begin_inset Formula $d(x_{t})$
-\end_inset
-
-.
- So for large 
-\begin_inset Formula $x_{t}$
-\end_inset
-
-, we have 
-\begin_inset Formula $x^{*}\approx x_{t}+L\epsilon p'$
-\end_inset
-
- and 
-\begin_inset Formula $\text{acc}(x_{t},x^{*})\approx\min(1,\pi(x^{*})/\pi(x_{t}))$
-\end_inset
-
-, meaning in the tails the chain will behave as a Random Walk Metropolis.
- Consequently, KMC lite is geometrically ergodic whenever the Random Walk
- Metropolis is.
- Generalisations to 
-\begin_inset Formula $d\geq2$
-\end_inset
-
- require an additional curvature condition of 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "roberts1996geometric"
-
-\end_inset
-
- but are out of the scope of this paper.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Paragraph
-Vanishing adaptation
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:adaptive_subsampling"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-MCMC algorithms that use the history of the Markov chain for constructing
- proposals might not be asymptotically correct.
- We follow 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Sec. 4.2"
-key "sejdinovic_kernel_2014"
-
-\end_inset
-
- and the idea of 
-\begin_inset Quotes eld
-\end_inset
-
-vanishing adaptation
-\begin_inset Quotes erd
-\end_inset
-
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "Andrieu2008"
-
-\end_inset
-
-, to avoid such biases.
- Let 
-\begin_inset Formula $\left\{ a_{t}\right\} _{i=0}^{\infty}$
-\end_inset
-
- be a schedule of decaying probabilities such that 
-\begin_inset Formula $\lim_{t\to\infty}a_{t}=0$
-\end_inset
-
- and 
-\begin_inset Formula $\sum_{t=0}^{\infty}a_{t}=\infty$
-\end_inset
-
-.
- We update the density gradient estimate according to this schedule in Algorithm
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "alg:Kamiltonian-Monte-Carlo"
-
-\end_inset
-
-.
- Intuitively, adaptation becomes less likely as the MCMC chain progresses,
- but never fully stops, while sharing asymptotic convergence with adaptation
- that stops at a fixed point 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Theorem 1"
-key "RobertsRosenthal2007"
-
-\end_inset
-
-.
- Note that Proposition 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "prop:ergodicity_kmc_lite"
-
-\end_inset
-
- is a stronger statement about the convergence rate.
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{-.2cm}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Paragraph
-Free Parameters
-\end_layout
-
-\begin_layout Standard
-KMC has two free parameters: the Gaussian kernel bandwidth 
-\begin_inset Formula $\sigma$
-\end_inset
-
-, and the regularisation parameter 
-\begin_inset Formula $\lambda$
-\end_inset
-
-.
- KMC's performance depends on the quality of the approximate infinite dimensiona
-l exponential family model in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family_lite"
-
-\end_inset
-
- or 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family_random_feats"
-
-\end_inset
-
-, hence a principled approach is to use the score matching objective function
- in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_matching_objective_sample_version"
-
-\end_inset
-
- to choose 
-\begin_inset Formula $\sigma,\lambda$
-\end_inset
-
- pairs via cross-validation (possible online).
- Earlier adaptive kernel-based MCMC methods 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sejdinovic_kernel_2014"
-
-\end_inset
-
- did not address parameter choice.
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{-.3cm}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Experiments
 \end_layout
@@ -3377,20 +3246,19 @@ KMC Finite: Stability of Trajectories in High Dimensions
 
 \begin_layout Standard
 In order to quantify efficiency in growing dimensions, we study hypothetical
- acceptance probabilities along trajectories along the kernel induced Hamiltonia
-n flow (no MCMC yet) on a synthetic Gaussian target: We sample the diagonal
+ acceptance rates along trajectories on the kernel induced Hamiltonian flow
+ (no MCMC yet) on a challenging Gaussian target: We sample the diagonal
  entries of the covariance matrix from a 
 \family typewriter
 Gamma(1,1)
 \family default
- distribution, and rotate with a uniformly sampled random orthogonal matrix.
- The resulting Gaussian target is challenging to estimate due to its `non-singul
-ar smoothness', i.e.
+ distribution and rotate with a uniformly sampled random orthogonal matrix.
+ The resulting target is challenging to estimate due to its `non-singular
+ smoothness', i.e.
  largely differing length-scales across its principal components.
- As a single Gaussian kernel is not able to effeciently represent such scalings,
- we use a rational quadratic kernel for the gradient estimation.
- As this simply is an infinite Gamma mixture of Gaussian kernels, its random
- features are straight-forward to compute.
+ As a single Gaussian kernel is not able to effeciently represent such scaling
+ families, we use a rational quadratic kernel for the gradient estimation,
+ whose random features are straight-forward to compute.
 \end_layout
 
 \begin_layout Standard
@@ -3419,8 +3287,8 @@ reference "fig:kmc_trajectories_mean_acceptance"
 \begin_inset Formula $d\approx50$
 \end_inset
 
-, we are able to obtain acceptance probabilities comparable to plain HMC
- with the finite estimator obtained in a few seconds on a laptop computer.
+, gradients of the finite estimator lead to acceptance rates comparable
+ to plain HMC.
 \begin_inset ERT
 status open
 
@@ -3575,8 +3443,8 @@ name "sub:experiment_hmc_like_mixing"
 \end_layout
 
 \begin_layout Standard
-We now show that KMC is able to match the performance of HMC as it sees
- more data.
+We now show that KMC's performance approaches that of HMC as it sees more
+ data.
  We compare KMC, HMC, an isotropic random walk (RW), and KAMH on the 8-dimension
 al nonlinear banana-shaped target from 
 \begin_inset CommandInset citation
@@ -3594,17 +3462,17 @@ key "sejdinovic_kernel_2014,Haario1999"
 \end_inset
 
 .
- We tuned the scaling of KAMH and RW to achieve 23% acceptance.
- We set HMC parameters to achieve 80% acceptance and then used the same
- parameters for KMC.
- We ran all samplers for 2000+200 iterations from a random start point (chosen
- from burn-in samples), discarded the burn-in and computed average acceptance
- rate, the norm of the empirical mean 
+ We tune the scaling of KAMH and RW to achieve 23% acceptance.
+ We set HMC parameters to achieve 80% acceptance and then use the same parameter
+s for KMC.
+ We run all samplers for 2000+200 iterations from a random start point (chosen
+ from burn-in samples), discard the burn-in and compute acceptance rates,
+ the norm of the empirical mean 
 \begin_inset Formula $\mathbb{\Vert\hat{E}}[x]\Vert$
 \end_inset
 
-, and average effective sample size (ESS) across dimensions.
- For KAMH and KMC, we repeated the experiment for an increasing number of
+, and effective sample size (ESS) across dimensions.
+ For KAMH and KMC, we repeat the experiment for an increasing number of
  burn-in samples and basis functions 
 \begin_inset Formula $m=n$
 \end_inset
@@ -3736,7 +3604,7 @@ key "sejdinovic_kernel_2014"
 
 \end_inset
 
-, we next apply KMC to sample the marginal posterior over hyper-parameters
+, we next apply KMC to sample from the marginal posterior over hyper-parameters
  of a Gaussian Process Classification (GPC) model on the UCI Glass dataset
  
 \begin_inset CommandInset citation
@@ -3750,8 +3618,7 @@ key "Bache2013"
 \emph on
 unavailable
 \emph default
- for this problem, due to the intractability of the marginal data likelihood
- given the hyper-parameters.
+ for this problem, due to the intractability of the marginal data likelihood.
  Our experimental protocol mostly follows 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -3770,7 +3637,7 @@ key "Grettonetal12"
 \end_inset
 
 , lower is better).
- KMC randomly used between 1 and 10 leapfrog steps of a size chosen uniformly
+ KMC randomly uses between 1 and 10 leapfrog steps of a size chosen uniformly
  in 
 \begin_inset Formula $[0.01,0.1]$
 \end_inset
@@ -3791,8 +3658,8 @@ reference "fig:experiment_gp_abc"
 art KAMH.
  These results are backed by the average ESS (not plotted), which is around
  800 for KMC and is around 90 and 60 for KAMH and RW, respectively.
- All samplers took roughly 1h of computing time, with most of the time spent
- on estimating the marginal likelihood, in line with 
+ All samplers took 1h time, with most of the time spent on estimating the
+ marginal likelihood, in line with 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "Sec. 5.1"
@@ -3866,7 +3733,7 @@ every
 leapfrog step, and that the additional bias from the Gaussian likelihood
  approximation can be problematic.
  In contrast, KMC does not require simulations to construct a proposal,
- but rather 'invests' simulations into an accept/reject step 
+ but rather `invests' simulations into an accept/reject step 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:kmc_accept_prob"
@@ -3907,12 +3774,12 @@ key "Meeds2015"
 \end_inset
 
 .
- KMC mixes as well as HABC, but HABC suffers from a severe bias; we also
- reduce by a factor 
+ KMC mixes as well as HABC, but HABC suffers from a severe bias.
+ It also reduces the number of simulations per proposal by a factor 
 \begin_inset Formula $L=50$
 \end_inset
 
- the number of simulations per proposal.
+.
 \begin_inset ERT
 status open
 
@@ -4042,7 +3909,7 @@ We have introduced KMC, a kernel-based gradient free adaptive MCMC algorithm,
  that mimics HMC's behaviour by estimating target gradients in an RKHS.
  In experiments, KMC outperforms random walk based sampling methods in up
  to moderately high dimensions (
-\begin_inset Formula $d\leq100$
+\begin_inset Formula $d\leq50$
 \end_inset
 
 ), including the recent kernel-based KAMH  
@@ -4063,7 +3930,16 @@ s of both.
 \begin_layout Standard
 Future work includes establishing theoretical consistency and uniform convergenc
 e rates for the empirical estimators, and a thorough experimental study
- in the ABC-MCMC context where we see KMC's biggest potential.
+ in the ABC-MCMC context where we see a lot of potential for KMC.
+ It might also be possible to use KMC as a precomputing strategy to speed
+ up original HMC as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "zhang2015hamiltonian"
+
+\end_inset
+
+.
  We will publish our code to reproduce all experimental results.
 \end_layout
 
@@ -4114,12 +3990,60 @@ onecolumn
 
 \end_layout
 
-\begin_layout Section
-\start_of_appendix
-Proofs & Details
+\begin_layout Part*
+Appendix
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Standard
+The Appendix contains proofs for Propositions 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:lite_estimator"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:finite_estimator"
+
+\end_inset
+
+, as well as additional computational details for both KMC lite in Section
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appendix_lite_details"
+
+\end_inset
+
+ and KMC finite in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appendix_finite_details"
+
+\end_inset
+
+.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Appenidx_ergodicity_lite_proof"
+
+\end_inset
+
+ contains the proof of geometric ergodicity of KMC lite from proposition
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:ergodicity_kmc_lite"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
 Lite Estimator
 \end_layout
 
@@ -4466,7 +4390,7 @@ key "SriFukKumGreHyv14"
 .
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection*
 Linear Computational Costs via Low-rank Approximations and Conjugate Gradient
 \end_layout
 
@@ -4630,7 +4554,7 @@ total cost of
  Further details will be published with the implementation.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Finite Feature Space Estimator
 \end_layout
 
@@ -4844,7 +4768,7 @@ any
 .
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection*
 Example: Random Fourier Features for the Gaussian Kernel
 \end_layout
 
@@ -5031,7 +4955,7 @@ k(x,y)={\cal \exp}\left(-\sigma\Vert x-y\Vert_{2}^{2}\right)\quad\text{and}\quad
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection*
 Constant Cost Updates
 \end_layout
 
@@ -5213,7 +5137,7 @@ https://github.com/jcrudy/choldate
 , see 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "gill1974methods,seeger2004low"
+key "seeger2004low"
 
 \end_inset
 
@@ -5327,7 +5251,7 @@ Update approximate infinite dimensional exponential family parameters
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Ergodicity of KMC lite
 \end_layout
 
