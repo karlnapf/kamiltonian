@@ -3289,6 +3289,16 @@ reference "fig:kmc_trajectories_mean_acceptance"
 
 , gradients of the finite estimator lead to acceptance rates comparable
  to plain HMC.
+ On targets with a more `regular' smoothness, the estimator naturally performs
+ better, see Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:app_experimental_details"
+
+\end_inset
+
+.
+ 
 \begin_inset ERT
 status open
 
@@ -3627,6 +3637,13 @@ key "sejdinovic_kernel_2014"
 
 \end_inset
 
+, see Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:app_experimental_details"
+
+\end_inset
+
 , but uses only 1200+5000 MCMC iterations.
  We compare convergence in terms of all mixed moments of order up to 3 to
  a set of benchmark samples (MMD 
@@ -3659,7 +3676,8 @@ art KAMH.
  These results are backed by the average ESS (not plotted), which is around
  800 for KMC and is around 90 and 60 for KAMH and RW, respectively.
  All samplers took 1h time, with most of the time spent on estimating the
- marginal likelihood, in line with 
+ marginal likelihood, c.f.
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "Sec. 5.1"
@@ -4040,6 +4058,14 @@ reference "prop:ergodicity_kmc_lite"
 \end_inset
 
 .
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:app_experimental_details"
+
+\end_inset
+
+ contains further experimental details.
 \end_layout
 
 \begin_layout Section
@@ -4314,8 +4340,8 @@ This means that
 \begin_layout Proof
 \begin_inset Formula 
 \begin{align*}
-J(\alpha) & =\frac{2}{n\sigma}\sum_{\ell=1}^{d}\left[\frac{2}{\sigma}\left[\alpha^{T}Ks_{\ell}+(\alpha\odot s_{\ell})^{T}K\mathbf{1}-2(\alpha\odot x_{\ell})^{T}Kx_{\ell}\right]-\alpha^{T}K\mathbf{1}\right]\\
- & +\frac{2}{n\sigma^{2}}\sum_{\ell=1}^{d}\left[(\alpha\odot x_{\ell})^{T}K-x_{\ell}^{T}\odot(\alpha^{T}K)\right]\left[K(\alpha\odot x_{\ell})-(K\alpha)\odot x_{\ell}\right],
+J(\alpha) & =\frac{2}{n\sigma}\sum_{\ell=1}^{d}\left[\frac{2}{\sigma}\left[\alpha^{T}Ks_{\ell}+(\alpha\odot s_{\ell})^{\top}K\mathbf{1}-2(\alpha\odot x_{\ell})^{\top}Kx_{\ell}\right]-\alpha^{T}K\mathbf{1}\right]\\
+ & +\frac{2}{n\sigma^{2}}\sum_{\ell=1}^{d}\left[(\alpha\odot x_{\ell})^{\top}K-x_{\ell}^{\top}\odot(\alpha^{\top}K)\right]\left[K(\alpha\odot x_{\ell})-(K\alpha)\odot x_{\ell}\right],
 \end{align*}
 
 \end_inset
@@ -4328,7 +4354,7 @@ can be rewritten as
 \begin{align*}
 J(\alpha) & =\frac{2}{n\sigma}\alpha^{T}\sum_{\ell=1}^{d}\left[\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right]\\
  & +\frac{2}{n\sigma^{2}}\alpha^{T}\left(\sum_{\ell=1}^{d}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\right)\alpha\\
- & =\frac{2}{n\sigma}\alpha^{T}b+\frac{2}{n\sigma^{2}}\alpha^{T}C\alpha,
+ & =\frac{2}{n\sigma}\alpha^{T}b+\frac{2}{n\sigma^{2}}\alpha^{\top}C\alpha,
 \end{align*}
 
 \end_inset
@@ -4432,7 +4458,7 @@ key "shawe2004kernel"
  We rewrite the kernel matrix 
 \begin_inset Formula 
 \[
-K\approx LL^{T},
+K\approx LL^{\top},
 \]
 
 \end_inset
@@ -4475,7 +4501,7 @@ In this paper, we solely use the Gaussian kernel, whose spectrum decays
 , we can rewrite any matrix-vector product as 
 \begin_inset Formula 
 \[
-Kb\approx(LL^{T})b=L(L^{T}b),
+Kb\approx(LL^{\top})b=L(L^{\top}b),
 \]
 
 \end_inset
@@ -4489,7 +4515,7 @@ Kb\approx(LL^{T})b=L(L^{T}b),
 \end_inset
 
  and we never need to store 
-\begin_inset Formula $LL^{T}$
+\begin_inset Formula $LL^{\top}$
 \end_inset
 
 .
@@ -4637,7 +4663,7 @@ reference "eq:score_matching_objective_sample_version"
  then can be written as the simple linear form
 \begin_inset Formula 
 \begin{align}
-\psi_{\ell}(\xi;\theta):=\frac{\partial\log\tilde{\pi}(x;\theta)}{\partial x_{\ell}} & =\theta^{T}\dot{\phi}_{x}^{\ell}\quad\text{and}\quad\partial_{\ell}\psi_{\ell}(\xi;\theta):=\frac{\partial^{2}\log\tilde{\pi}(x;\theta)}{\partial x_{\ell}^{2}}=\theta^{T}\ddot{\phi}_{x}^{\ell},\label{eq:score_function_fourier}
+\psi_{\ell}(\xi;\theta):=\frac{\partial\log\tilde{\pi}(x;\theta)}{\partial x_{\ell}} & =\theta^{\top}\dot{\phi}_{x}^{\ell}\quad\text{and}\quad\partial_{\ell}\psi_{\ell}(\xi;\theta):=\frac{\partial^{2}\log\tilde{\pi}(x;\theta)}{\partial x_{\ell}^{2}}=\theta^{\top}\ddot{\phi}_{x}^{\ell},\label{eq:score_function_fourier}
 \end{align}
 
 \end_inset
@@ -4675,7 +4701,7 @@ J(\theta) & =\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\partial_{\ell}\psi
  where
 \begin_inset Formula 
 \begin{equation}
-b:=-\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}\quad\text{and}\quad C:=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\in\mathbb{R}^{m\times m}.\label{eq:b_and_C_random_feats}
+b:=-\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\mathbb{R}^{m}\quad\text{and}\quad C:=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{\top}\right)\in\mathbb{R}^{m\times m}.\label{eq:b_and_C_random_feats}
 \end{equation}
 
 \end_inset
@@ -4798,7 +4824,7 @@ key "Rahimi2007"
  Bochner's theorem gives the representation
 \begin_inset Formula 
 \[
-k(x,y)=\tilde{k}(x-y)=\int_{\mathbb{R}^{d}}\exp\left(i\omega^{T}(x-y)\right)d\Gamma(\omega),
+k(x,y)=\tilde{k}(x-y)=\int_{\mathbb{R}^{d}}\exp\left(i\omega^{\top}(x-y)\right)d\Gamma(\omega),
 \]
 
 \end_inset
@@ -4813,7 +4839,7 @@ where
  This gives 
 \begin_inset Formula 
 \[
-\phi_{x}=\sqrt{\frac{2}{m}}\left[\cos(\omega_{1}^{T}x+u_{1}),\dots,\cos(\omega_{m}^{T}x+u_{m})\right],
+\phi_{x}=\sqrt{\frac{2}{m}}\left[\cos(\omega_{1}^{\top}x+u_{1}),\dots,\cos(\omega_{m}^{\top}x+u_{m})\right],
 \]
 
 \end_inset
@@ -4988,7 +5014,7 @@ reference "eq:b_and_C_random_feats"
 \end_inset
 
  and 
-\begin_inset Formula $\sum_{\ell=1}^{d}\dot{\phi}_{x_{t+1}}^{\ell}(\dot{\phi}_{x_{t+1}}^{\ell})^{T}\in\mathbb{R}^{m\times m}$
+\begin_inset Formula $\sum_{\ell=1}^{d}\dot{\phi}_{x_{t+1}}^{\ell}(\dot{\phi}_{x_{t+1}}^{\ell})^{\top}\in\mathbb{R}^{m\times m}$
 \end_inset
 
  to the moving averages of 
@@ -5030,7 +5056,7 @@ reference "eq:score_match_objective_random_feats"
  Assume we have computed the sum of all moving average terms, 
 \begin_inset Formula 
 \[
-\bar{C}_{t}^{-1}:=\left(\sum_{i=1}^{t}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{T}\right)\right)^{-1}
+\bar{C}_{t}^{-1}:=\left(\sum_{i=1}^{t}\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{i}}^{\ell}\left(\dot{\phi}_{x_{i}}^{\ell}\right)^{\top}\right)\right)^{-1}
 \]
 
 \end_inset
@@ -5051,7 +5077,7 @@ from feature vectors derivatives
  We can then write the inverse of the new sum as
 \begin_inset Formula 
 \begin{align*}
-\bar{C}_{t+1}^{-1}: & =\left(\bar{C}_{t}+\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{t+1}}^{\ell}\left(\dot{\phi}_{x_{t+1}}^{\ell}\right)^{T}\right)\right)^{-1}.
+\bar{C}_{t+1}^{-1}: & =\left(\bar{C}_{t}+\sum_{\ell=1}^{d}\left(\dot{\phi}_{x_{t+1}}^{\ell}\left(\dot{\phi}_{x_{t+1}}^{\ell}\right)^{\top}\right)\right)^{-1}.
 \end{align*}
 
 \end_inset
@@ -5105,7 +5131,7 @@ status open
 
 , we can represent its inverse as a numerically much more stable Cholesky
  factorisation 
-\begin_inset Formula $\bar{C}_{t}=\bar{L}_{t}\bar{L}_{t}^{T}$
+\begin_inset Formula $\bar{C}_{t}=\bar{L}_{t}\bar{L}_{t}^{\top}$
 \end_inset
 
 .
@@ -5161,7 +5187,7 @@ reference "eq:score_match_linear_system_random_feats"
  as 
 \begin_inset Formula 
 \begin{align*}
-\hat{\theta} & =C^{-1}b=\left(\frac{1}{t}\bar{C}_{t}\right)^{-1}\left(\frac{1}{t}\bar{b}_{t}\right)=\bar{C}_{t}^{-1}\bar{b}_{t}=\bar{L}_{t}^{-T}\bar{L}_{t}^{-1}\bar{b}_{t},
+\hat{\theta} & =C^{-1}b=\left(\frac{1}{t}\bar{C}_{t}\right)^{-1}\left(\frac{1}{t}\bar{b}_{t}\right)=\bar{C}_{t}^{-1}\bar{b}_{t}=\bar{L}_{t}^{-\top}\bar{L}_{t}^{-1}\bar{b}_{t},
 \end{align*}
 
 \end_inset
@@ -5216,7 +5242,7 @@ Algorithmic Description:
 Update sums 
 \begin_inset Formula 
 \[
-\bar{b}_{t+1}\leftarrow\bar{b}_{t}-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t+1}}^{\ell}\quad\text{and}\quad\bar{C}_{t+1}\leftarrow\bar{C}_{t}+\frac{1}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t+1}}^{\ell}(\dot{\phi}_{x_{t+1}}^{\ell})^{T}
+\bar{b}_{t+1}\leftarrow\bar{b}_{t}-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t+1}}^{\ell}\quad\text{and}\quad\bar{C}_{t+1}\leftarrow\bar{C}_{t}+\frac{1}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t+1}}^{\ell}(\dot{\phi}_{x_{t+1}}^{\ell})^{\top}
 \]
 
 \end_inset
@@ -5243,7 +5269,7 @@ Update approximate infinite dimensional exponential family parameters
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\hat{\theta}\leftarrow\bar{L}_{t+1}^{-T}\bar{L}_{t+1}^{-1}\bar{b}_{t+1}
+\hat{\theta}\leftarrow\bar{L}_{t+1}^{-\top}\bar{L}_{t+1}^{-1}\bar{b}_{t+1}
 \]
 
 \end_inset
@@ -5620,6 +5646,42 @@ For
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Section
+Additional Experimental Details
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:app_experimental_details"
+
+\end_inset
+
+This section contains additional experimental details.
+\end_layout
+
+\begin_layout Subsection
+Stability in High Dimensions
+\end_layout
+
+\begin_layout Standard
+We reproduce the experiment in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:kmc_trajectories_mean_acceptance"
+
+\end_inset
+
+ on an isotropic Gaussian in increasing dimension.
+ As length-scales across all principal components is equal, this is a significan
+tly less challening target to estimate gradients for.
+ As a result, the estimator works well up to 
+\begin_inset Formula $d\approx100$
+\end_inset
+
+
 \end_layout
 
 \end_body
