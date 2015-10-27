@@ -80,13 +80,13 @@ class KMCLiteJob(HMCJob):
         # use a function call to be able to overload it for KMC
         acc_prob, log_pdf_q = self.accept_prob_log_pdf(current, q, p0_log_pdf, p_log_pdf, current_log_pdf, samples)
          
-        if True and (len(samples) % 100) ==0 and False:
+        if True and (len(samples) % 100) ==0:
             logger.debug("Plotting")
             import matplotlib.pyplot as plt
              
             res = 50
-            Xs_q = np.linspace(-5,5, res)
-            Ys_q = np.linspace(-8,2, res)
+            Xs_q = np.linspace(-4,4, res)
+            Ys_q = np.linspace(-4,4, res)
          
             # evaluate density and estimate
             D1=0
@@ -105,14 +105,14 @@ class KMCLiteJob(HMCJob):
                 theta[D2]=X_2d[1]
                 return self.target.log_pdf(theta)
              
-            plt.figure()
-            G = evaluate_density_grid(Xs_q, Ys_q, dummy)
-            plot_array(Xs_q, Ys_q, G)
-            plt.plot(self.Z[:,D1], self.Z[:,D2], '.')
-            plt.plot(Qs[:,D1], Qs[:,D2], 'r-')
-            plt.plot(samples[:,D1], samples[:,D2], 'm-')
-            plt.plot(current[D1], current[D2], 'b*', markersize=15)
-            plt.plot(Qs[-1,D1], Qs[-1,D2], 'r*', markersize=15)
+#             plt.figure()
+#             G = evaluate_density_grid(Xs_q, Ys_q, dummy)
+#             plot_array(Xs_q, Ys_q, G)
+#             plt.plot(self.Z[:,D1], self.Z[:,D2], '.')
+#             plt.plot(Qs[:,D1], Qs[:,D2], 'r-')
+#             plt.plot(samples[:,D1], samples[:,D2], 'm-')
+#             plt.plot(current[D1], current[D2], 'b*', markersize=15)
+#             plt.plot(Qs[-1,D1], Qs[-1,D2], 'r*', markersize=15)
              
             plt.figure()
             G_norm, U_q, V, X, Y = evaluate_gradient_grid(Xs_q, Ys_q, dummy_grad)
@@ -124,11 +124,11 @@ class KMCLiteJob(HMCJob):
             plt.plot(Qs[-1,D1], Qs[-1,D2], 'r*', markersize=15)
             plt.quiver(X, Y, U_q, V, color='m')
              
-            plt.figure()
-            plt.plot(Ps[:,D1], Ps[:,D2], 'r-')
-            plt.plot(p0[D1], p0[D2], 'b*', markersize=15)
-            plt.plot(Ps[-1,D1], Ps[-1,D2], 'r*', markersize=15)
-            plt.title('momentum')
+#             plt.figure()
+#             plt.plot(Ps[:,D1], Ps[:,D2], 'r-')
+#             plt.plot(p0[D1], p0[D2], 'b*', markersize=15)
+#             plt.plot(Ps[-1,D1], Ps[-1,D2], 'r*', markersize=15)
+#             plt.title('momentum')
              
             acc_probs = np.exp(compute_log_accept_pr(current, p0, Qs, Ps, self.orig_target.log_pdf, self.momentum.log_pdf))
             H_ratios = np.exp(compute_log_accept_pr(current, p0, Qs, Ps, self.target.log_pdf, self.momentum.log_pdf))
@@ -136,23 +136,23 @@ class KMCLiteJob(HMCJob):
             momentum_ratio = [np.min([1,np.exp(self.momentum.log_pdf(x)-p0_log_pdf)]) for x in Ps]
             target_log_pdf = np.exp(np.array([self.orig_target.log_pdf(x) for x in Qs]))
 # #              
-            plt.figure(figsize=(12,4))
-            plt.subplot(151)
-            plt.plot(acc_probs)
-            plt.plot([0, len(acc_probs)], [acc_probs.mean(), acc_probs.mean()])
-            plt.title("acc_probs")
-            plt.subplot(152)
-            plt.plot(target_ratio)
-            plt.title("target_ratio")
-            plt.subplot(153)
-            plt.plot(momentum_ratio)
-            plt.title("momentum_ratio")
-            plt.subplot(154)
-            plt.plot(H_ratios)
-            plt.title("H_ratios")
-            plt.subplot(155)
-            plt.plot(target_log_pdf)
-            plt.title("target_log_pdf")
+#             plt.figure(figsize=(12,4))
+#             plt.subplot(151)
+#             plt.plot(acc_probs)
+#             plt.plot([0, len(acc_probs)], [acc_probs.mean(), acc_probs.mean()])
+#             plt.title("acc_probs")
+#             plt.subplot(152)
+#             plt.plot(target_ratio)
+#             plt.title("target_ratio")
+#             plt.subplot(153)
+#             plt.plot(momentum_ratio)
+#             plt.title("momentum_ratio")
+#             plt.subplot(154)
+#             plt.plot(H_ratios)
+#             plt.title("H_ratios")
+#             plt.subplot(155)
+#             plt.plot(target_log_pdf)
+#             plt.title("target_log_pdf")
              
              
              
