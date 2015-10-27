@@ -3973,9 +3973,9 @@ key "zhang2015hamiltonian"
 \end_inset
 
 .
- For code, see 
+ For code, see
 \size footnotesize
-
+ 
 \begin_inset Flex URL
 status open
 
@@ -3986,6 +3986,8 @@ https://github.com/karlnapf/kernel_hmc
 
 \end_inset
 
+
+\size default
 .
 \end_layout
 
