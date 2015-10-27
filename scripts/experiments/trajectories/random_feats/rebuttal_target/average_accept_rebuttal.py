@@ -29,4 +29,4 @@ if __name__ == "__main__":
                                                      learn_parameters=False)
     
     process(modulename, job_generator, Ds, Ns, num_repetitions, num_steps,
-            step_size, max_steps, compute_local=True)
+            step_size, max_steps, compute_local=False)
