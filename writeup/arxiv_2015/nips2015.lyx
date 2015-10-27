@@ -192,9 +192,8 @@ Kernel Hamiltonian Monte Carlo (KMC)
  While being asymptotically exact, KMC mimics HMC in terms of sampling efficienc
 y and offers substantial mixing improvements to state-of-the-art gradient
  free samplers.
- We support our claims with experimental studies on both toy and real-world
- applications, including Approximate Bayesian Computation and exact-approximate
- MCMC.
+ We support our claims with studies on applications including Approximate
+ Bayesian Computation and exact-approximate MCMC.
 \begin_inset ERT
 status open
 
@@ -202,7 +201,7 @@ status open
 
 
 \backslash
-vspace{-.2cm}
+vspace{-.4cm}
 \end_layout
 
 \end_inset
@@ -486,6 +485,22 @@ Experiments show that KMC inherits the efficiency of HMC, and therefore
  mixes significantly better than state-of-the-art gradient-free adaptive
  samplers on a number of target densities, including on synthetic examples,
  and when used in PM-MCMC and ABC-MCMC.
+ All code can be fond at
+\size footnotesize
+ 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/karlnapf/kernel_hmc
+\end_layout
+
+\end_inset
+
+
+\size default
+.
 \begin_inset ERT
 status open
 
@@ -3958,7 +3973,20 @@ key "zhang2015hamiltonian"
 \end_inset
 
 .
- We will publish our code to reproduce all experimental results.
+ For code, see 
+\size footnotesize
+
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/karlnapf/kernel_hmc
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -5096,14 +5124,7 @@ This is the inverse of the rank-
 \end_inset
 
  successive applications of the Sherman-Morrison-Woodbury formula for rank-one
- updates 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "gill1974methods"
-
-\end_inset
-
-, each using 
+ updates, each using 
 \begin_inset Formula ${\cal O}(m^{2})$
 \end_inset
 
