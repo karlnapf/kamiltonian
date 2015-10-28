@@ -77,6 +77,18 @@ University of Bristol
 \nipsfinalcopy % Uncomment for camera-ready version
 
 \DeclareMathOperator*{\argmin}{arg\,min}
+
+\usepackage{scalerel,stackengine}
+\stackMath
+\newcommand\reallywidehat[1]{%
+\savestack{\tmpbox}{\stretchto{%
+  \scaleto{%
+    \scalerel*[\widthof{\ensuremath{#1}}]{\kern-.6pt\bigwedge\kern-.6pt}%
+    {\rule[-\textheight/2]{1ex}{\textheight}}%WIDTH-LIMITED BIG WEDGE
+  }{\textheight}% 
+}{0.5ex}}%
+\stackon[1pt]{#1}{\tmpbox}%
+}
 \end_preamble
 \use_default_options false
 \begin_modules
@@ -192,8 +204,8 @@ Kernel Hamiltonian Monte Carlo (KMC)
  While being asymptotically exact, KMC mimics HMC in terms of sampling efficienc
 y and offers substantial mixing improvements to state-of-the-art gradient
  free samplers.
- We support our claims with studies on applications including Approximate
- Bayesian Computation and exact-approximate MCMC.
+ We support our claims with studies on synthetic and real-world applications,
+ including Approximate Bayesian Computation and exact-approximate MCMC.
 \begin_inset ERT
 status open
 
@@ -661,8 +673,8 @@ status open
 \begin_inset Formula $\pi$
 \end_inset
 
- is unavailable due to analytic intractability, as opposed to computationally
- expensive in the Big Data context.
+ is analytically intractable, as opposed to computationally expensive in
+ the Big Data context.
 \end_layout
 
 \end_inset
@@ -699,8 +711,8 @@ Throughout the paper
 \begin_inset Formula $x$
 \end_inset
 
-, but can compute unbiased estimates of 
-\begin_inset Formula $\pi(x)$
+, but can only access an unbiased estimator 
+\begin_inset Formula $\hat{\pi}(x)$
 \end_inset
 
 .
@@ -708,7 +720,11 @@ Throughout the paper
 \begin_inset Formula $\pi(x)$
 \end_inset
 
- with an unbiased estimator results in PM-MCMC 
+ with 
+\begin_inset Formula $\hat{\pi}(x)$
+\end_inset
+
+ when computing acceptance probabilities results in PM-MCMC 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "beaumont2003estimation,Andrieu2009a"
@@ -936,13 +952,16 @@ Hamiltonian operator
 
 \begin_inset Formula 
 \begin{align}
-\hat{H} & :=\frac{\partial K}{\partial p}\frac{\partial}{\partial q}-\frac{\partial U}{\partial q}\frac{\partial}{\partial p}=:\hat{K}+\hat{U}.\label{eq:potential_energy_operator}
+\frac{\partial K}{\partial p}\frac{\partial}{\partial q}-\frac{\partial U}{\partial q}\frac{\partial}{\partial p}\label{eq:potential_energy_operator}
 \end{align}
 
 \end_inset
 
 In practice, 
-\begin_inset Formula $\hat{H}$
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:potential_energy_operator"
+
 \end_inset
 
  is usually unavailable and we need to resort to approximations.
@@ -1042,34 +1061,39 @@ vspace{-.3cm}
 
 \end_inset
 
-KMC replaces the potential energy operator 
-\begin_inset Formula $\hat{U}$
-\end_inset
-
- in
-\change_deleted 456741484 1433169142
- 
-\change_unchanged
- 
+KMC replaces the potential energy in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:potential_energy_operator"
 
 \end_inset
 
- by a kernel induced surrogate 
-\begin_inset Formula $\hat{U}_{k}$
-\end_inset
-
- computed from the history of the Markov chain.
+ by a kernel induced surrogate computed from the history of the Markov chain.
  As we will see, this surrogate does not require gradients of the log-target
  density.
  The surrogate induces a kernel Hamiltonian flow, which can be numerically
  simulated using standard leap-frog integration.
  As with the discretisation error in HMC, any deviation of the kernel induced
- flow to the true flow is corrected via a Metropolis acceptance procedure.
- Consequently, the stationary distribution of the Markov chain will remain
- correct
+ flow to the true flow is corrected via a Metropolis acceptance procedure,
+ which here also contains the estimation noise from 
+\begin_inset Formula $\hat{\pi}$
+\end_inset
+
+ and re-using previous values of 
+\begin_inset Formula $\hat{\pi}$
+\end_inset
+
+, c.f.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Table 1"
+key "Andrieu2009a"
+
+\end_inset
+
+.
+ Consequently, the stationary distribution of the chain remains correct
 \emph on
 .
 \emph default
@@ -1302,53 +1326,37 @@ name "sub:kernel_hmc_flow"
 \end_layout
 
 \begin_layout Standard
-We define a kernel induced Hamiltonian operator 
-\begin_inset Formula $\hat{H}_{k}:=\hat{K}+\hat{U}_{k}$
+We define a kernel induced Hamiltonian operator by replacing 
+\begin_inset Formula $U$
 \end_inset
 
-, where 
-\begin_inset Formula $\hat{K}$
+ in the potential energy part 
+\begin_inset Formula $\frac{\partial U}{\partial p}\frac{\partial}{\partial q}$
 \end_inset
 
- is defined as in
-\change_deleted 456741484 1433169142
- 
-\change_unchanged
- 
+ in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:potential_energy_operator"
 
 \end_inset
 
-, and we have replaced the potential energy 
-\begin_inset Formula $U$
-\end_inset
-
- with the kernel surrogate 
+ by our kernel surrogate 
 \begin_inset Formula $U_{k}=f$
 \end_inset
 
 .
- This induces a kernel induced potential energy operator 
-\begin_inset Formula $\hat{U}_{k}=\frac{\partial U_{k}}{\partial p}\frac{\partial}{\partial q}$
+ It is clear that, depending on 
+\begin_inset Formula $U_{k}$
 \end_inset
 
- and a corresponding kernel Hamiltonian flow.
- It is clear that the kernel induced potential energy operator results in
- different trajectories than those induced by the true operator 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:potential_energy_operator"
-
-\end_inset
-
-.
+, the resulting kernel induced Hamiltonian flow differs from the original
+ one.
  That said, any bias on the resulting Markov chain, in addition to discretisatio
 n error from the leap-frog integrator, is naturally corrected for in the
- Metropolis step.
+ Pseudo-Marginal Metropolis step.
  We accept an end-point 
-\begin_inset Formula $\phi_{t}^{\hat{H}_{k}}(p',q)$
+\begin_inset Formula $\phi_{t}^{H_{k}}(p',q)$
 \end_inset
 
  of a trajectory starting at 
@@ -1362,21 +1370,57 @@ kernel induced
 flow with probability
 \begin_inset Formula 
 \begin{equation}
-\min\left[1,\exp\left(H\left(\phi_{t}^{H_{k}}(p',q)\right)-H(p',q)\right)\right],\label{eq:kmc_accept_prob}
+\min\left[1,\reallywidehat{\exp\left(H\left(\phi_{t}^{H_{k}}(p',q)\right)\right)}\Big/\reallywidehat{\exp\left(H(p',q)\right)}\right],\label{eq:kmc_accept_prob}
 \end{equation}
 
 \end_inset
 
 where 
-\begin_inset Formula $H\left(\phi_{t}^{\hat{H}}(p',q)\right)$
+\begin_inset Formula $H\left(\phi_{t}^{H}(p',q)\right)$
 \end_inset
 
- denotes evaluation of the 
+ corresponds to the
 \emph on
-true
+ true
 \emph default
  Hamiltonian at 
 \begin_inset Formula $\phi_{t}^{H_{k}}(p',q)$
+\end_inset
+
+.
+ Here, in the Pseudo-Marginal context, we replace both terms in the ratio
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kmc_accept_prob"
+
+\end_inset
+
+ by unbiased estimates, i.e.
+ the widehat denotes replacing 
+\begin_inset Formula $\pi(q)$
+\end_inset
+
+ within 
+\begin_inset Formula $H$
+\end_inset
+
+ with an unbiased estimator 
+\begin_inset Formula $\hat{\pi}(q)$
+\end_inset
+
+.
+ Note that this also involves recycling the estimates of 
+\begin_inset Formula $\exp\left(H(p',q)\right)$
+\end_inset
+
+ from previous iterations to ensure anyymptotic correctness, c.f.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Table 1"
+key "Andrieu2009a"
+
 \end_inset
 
 .
@@ -2752,15 +2796,7 @@ key "sejdinovic_kernel_2014"
 
 \end_inset
 
- and the idea of 
-\begin_inset Quotes eld
-\end_inset
-
-vanishing adaptation
-\begin_inset Quotes erd
-\end_inset
-
- 
+ and the idea of `vanishing adaptation' 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Andrieu2008"
@@ -2842,8 +2878,8 @@ KMC has two free parameters: the Gaussian kernel bandwidth
 \end_inset
 
 .
- KMC's performance depends on the quality of the approximate infinite dimensiona
-l exponential family model in 
+ As KMC's performance depends on the quality of the approximate infinite
+ dimensional exponential family model in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family_lite"
@@ -2857,7 +2893,7 @@ reference "eq:infinite_exp_family_random_feats"
 
 \end_inset
 
-, hence a principled approach is to use the score matching objective function
+, a principled approach is to use the score matching objective function
  in 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -2869,7 +2905,7 @@ reference "eq:score_matching_objective_sample_version"
 \begin_inset Formula $\sigma,\lambda$
 \end_inset
 
- pairs via cross-validation (possible online).
+ pairs via cross-validation (using `hot-started' black-box optimisation).
  Earlier adaptive kernel-based MCMC methods 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -3274,10 +3310,7 @@ Gamma(1,1)
  As a single Gaussian kernel is not able to effeciently represent such scaling
  families, we use a rational quadratic kernel for the gradient estimation,
  whose random features are straight-forward to compute.
-\end_layout
-
-\begin_layout Standard
-Figure 
+ Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:kmc_trajectories_mean_acceptance"
@@ -3288,8 +3321,8 @@ reference "fig:kmc_trajectories_mean_acceptance"
 \begin_inset Formula $100$
 \end_inset
 
- independent trials as a function of the number of data and basis functions,
- which are set to be equal 
+ independent trials as a function of the number of (ground truth) samples
+ and basis functions, which are set to be equal 
 \begin_inset Formula $n=m$
 \end_inset
 
@@ -3308,7 +3341,7 @@ reference "fig:kmc_trajectories_mean_acceptance"
  better, see Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:app_experimental_details"
+reference "sub:app_stability_in_high_dim"
 
 \end_inset
 
@@ -3471,10 +3504,10 @@ name "sub:experiment_hmc_like_mixing"
 We now show that KMC's performance approaches that of HMC as it sees more
  data.
  We compare KMC, HMC, an isotropic random walk (RW), and KAMH on the 8-dimension
-al nonlinear banana-shaped target from 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "sejdinovic_kernel_2014,Haario1999"
+al nonlinear banana-shaped target, see Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:app_banana_target"
 
 \end_inset
 
@@ -3490,13 +3523,13 @@ key "sejdinovic_kernel_2014,Haario1999"
  We tune the scaling of KAMH and RW to achieve 23% acceptance.
  We set HMC parameters to achieve 80% acceptance and then use the same parameter
 s for KMC.
- We run all samplers for 2000+200 iterations from a random start point (chosen
- from burn-in samples), discard the burn-in and compute acceptance rates,
- the norm of the empirical mean 
+ We run all samplers for 2000+200 iterations from a random start point,
+ discard the burn-in and compute acceptance rates, the norm of the empirical
+ mean 
 \begin_inset Formula $\mathbb{\Vert\hat{E}}[x]\Vert$
 \end_inset
 
-, and effective sample size (ESS) across dimensions.
+, and minimum effective sample size (ESS) across dimensions.
  For KAMH and KMC, we repeat the experiment for an increasing number of
  burn-in samples and basis functions 
 \begin_inset Formula $m=n$
@@ -3655,7 +3688,7 @@ key "sejdinovic_kernel_2014"
 , see Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sec:app_experimental_details"
+reference "sub:app_gp_target"
 
 \end_inset
 
@@ -5690,6 +5723,16 @@ Stability in High Dimensions
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:app_stability_in_high_dim"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 We reproduce the experiment in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5705,6 +5748,289 @@ tly less challening target to estimate gradients for.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Banana target
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:app_banana_target"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Following 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014,Haario1999"
+
+\end_inset
+
+, let 
+\begin_inset Formula $X\sim\mathcal{N}(0,\Sigma)$
+\end_inset
+
+ be a multivariate normal in 
+\begin_inset Formula $d\geq2$
+\end_inset
+
+ dimensions, with 
+\begin_inset Formula $\Sigma=\text{{diag}}(v,1,\ldots,1)$
+\end_inset
+
+, which undergoes the transformation 
+\begin_inset Formula $X\to Y$
+\end_inset
+
+, where 
+\begin_inset Formula $Y_{2}=X_{2}+b(X_{1}^{2}-v)$
+\end_inset
+
+, and 
+\begin_inset Formula $Y_{i}=X_{i}$
+\end_inset
+
+ for 
+\begin_inset Formula $i\neq2$
+\end_inset
+
+.
+ We will write 
+\begin_inset Formula $Y\sim\mathcal{B}(b,v)$
+\end_inset
+
+.
+ It is clear that 
+\begin_inset Formula $\mathbb{E}Y=0$
+\end_inset
+
+, and that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathcal{B}(y;b,v)=\mathcal{N}(y_{1};0,v)\mathcal{N}(y_{2};b(y_{1}^{2}-v),1)\prod_{j=3}^{d}\mathcal{N}(y_{j};0,1).
+\]
+
+\end_inset
+
+We choose 
+\begin_inset Formula $d=8$
+\end_inset
+
+, 
+\begin_inset Formula $V=100$
+\end_inset
+
+ and 
+\begin_inset Formula $b=0.03$
+\end_inset
+
+, which corresponds to the `strongly twisted' 8-dimensional Banana in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014,Haario1999"
+
+\end_inset
+
+.
+ The target is challenging due to the nonlinear dependence of the first
+ two dimensions and its highly position dependent scaling within those.
+ We use 
+\end_layout
+
+\begin_layout Subsection
+Pseudo-Marginal MCMC for GP Classification
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:app_gp_target"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Closely following 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+, we consider a joint distribution of GP-latent variables 
+\begin_inset Formula $\mathbf{f}$
+\end_inset
+
+, labels 
+\begin_inset Formula $\mathbf{y}$
+\end_inset
+
+ (with covariate matrix 
+\series bold
+
+\begin_inset Formula $X$
+\end_inset
+
+
+\series default
+), and hyperparameters 
+\begin_inset Formula $\theta$
+\end_inset
+
+, given by
+\begin_inset Formula 
+\[
+p(\mathbf{f},\mathbf{y},\theta)=p(\theta)p(\mathbf{f}|\theta)p(\mathbf{y}|\mathbf{f}),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\mathbf{f}|\theta\sim{\cal N}(0,\mathcal{K}_{\theta})$
+\end_inset
+
+, with 
+\begin_inset Formula $\mathcal{K}_{\theta}$
+\end_inset
+
+ modeling the covariance between latent variables evaluated at the input
+ covariates: 
+\begin_inset Formula $(\mathcal{K}_{\theta})_{ij}=\kappa(\mathbf{x}_{i},\mathbf{x}_{j}'|\theta)=\exp\left(-\frac{1}{2}\sum_{d=1}^{D}\frac{(x_{i,d}-x'_{j,d})^{2}}{\ell_{d}^{2}}\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta_{d}=\log\ell_{d}^{2}$
+\end_inset
+
+.
+ This covariance parametrisation allows to perform Automatic Relevance Determina
+tion.
+ We here restrict our attention to the binary logistic classifier, i.e.
+ the likelihood is given by 
+\begin_inset Formula 
+\[
+p(y_{i}|f_{i})=\frac{1}{1-\exp(-y_{i}f_{i})}
+\]
+
+\end_inset
+
+ where 
+\begin_inset Formula $y_{i}\in\{-1,1\}$
+\end_inset
+
+.
+ Aiming for a fully Bayesian treatment, we wish to estimate the 
+\emph on
+marginal 
+\emph default
+posterior of the hyperparameters 
+\begin_inset Formula $\theta$
+\end_inset
+
+, motivated in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "FilipponeIEEETPAMI13"
+
+\end_inset
+
+.
+ The marginal likelihood 
+\begin_inset Formula $p(\mathbf{y}|\theta)$
+\end_inset
+
+ is intractable for non-Gaussian likelihoods 
+\begin_inset Formula $p(\mathbf{y}|\mathbf{f})$
+\end_inset
+
+, but can be replaced with an unbiased estimate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{p}(\mathbf{y}|\theta):=\frac{1}{n_{\textrm{imp}}}\sum_{i=1}^{n_{\textrm{imp}}}p(\mathbf{y}|\mathbf{f}^{(i)})\frac{p(\mathbf{f}^{(i)}|\theta)}{q(\mathbf{f}^{(i)}|\theta)},
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\left\{ \mathbf{f}^{(i)}\right\} _{i=1}^{n_{\textrm{imp}}}\sim q(\mathbf{f}|\theta)$
+\end_inset
+
+ are 
+\begin_inset Formula $n_{imp}$
+\end_inset
+
+ importance samples.
+ In 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "FilipponeIEEETPAMI13"
+
+\end_inset
+
+, the importance distribution 
+\begin_inset Formula $q(\mathbf{f}|\theta)$
+\end_inset
+
+ is chosen as the Laplacian or as the Expectation Propagation (EP) approximation
+ of 
+\begin_inset Formula $p(\mathbf{f}|\mathbf{y},\theta)\propto p(\mathbf{y}|\mathbf{f})p(\mathbf{f}|\theta)$
+\end_inset
+
+, leading to state-of-the-art results.
+ 
+\end_layout
+
+\begin_layout Standard
+We here use a Laplace approximation and 
+\begin_inset Formula $n_{\text{imp}}=100$
+\end_inset
+
+.
+ We consider classification of window against non-window glass in the UCI
+ Glass dataset, which induces a posterior that has a nonlinear shape 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Figure 3"
+key "sejdinovic_kernel_2014"
+
+\end_inset
+
+.
+ Since the ground truth for the hyperparameter posterior is not available,
+ we initially run multiple hand-tuned standard Metropolis-Hastings chains
+ for 500,000 iterations (with a 100,000 burn-in), keep every 1000-th sample
+ in each of the chains, and combine them.
+ The resulting samples are used as a benchmark, to evaluate the performance
+ all algorithms.
+ We use the MMD 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "BorGreRasKrietal06,GreBorRasSchetal07c"
+
+\end_inset
+
+ between each sampler output and the benchmark sample is computed, using
+ the polynomial kernel 
+\begin_inset Formula $\left(1+\left\langle \theta,\theta'\right\rangle \right)^{3}$
+\end_inset
+
+.
+ This corresponds to the estimation error of all mixed moments of order
+ up to 3.
 \end_layout
 
 \end_body
