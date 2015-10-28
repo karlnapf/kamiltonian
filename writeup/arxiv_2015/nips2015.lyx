@@ -3512,8 +3512,11 @@ reference "sub:app_banana_target"
 \end_inset
 
 .
- To only quantify mixing, both KMC and KAMH used the same set of fixed burn-in
- samples.
+ We here only quantify mixing 
+\emph on
+after 
+\emph default
+a sufficient burn-in (burn-in speed is included in next example).
  We quantify performance on estimating the target's mean, which is exactly
  
 \begin_inset Formula $\mathbf{0}$
@@ -3692,7 +3695,12 @@ reference "sub:app_gp_target"
 
 \end_inset
 
-, but uses only 1200+5000 MCMC iterations.
+, but uses only 6000 MCMC iterations 
+\emph on
+without
+\emph default
+ discarding a burn-in, i.e.
+ we study how fast KMC initially explores the target.
  We compare convergence in terms of all mixed moments of order up to 3 to
  a set of benchmark samples (MMD 
 \begin_inset CommandInset citation
@@ -3707,8 +3715,15 @@ key "Grettonetal12"
 \begin_inset Formula $[0.01,0.1]$
 \end_inset
 
-, a standard Gaussian momentum, and a cross-validation tuned kernel width
- (tuned after burn-in), achieving 45% acceptance.
+, a standard Gaussian momentum, and a cross-validation tuned kernel, see
+ Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:app_gp_target"
+
+\end_inset
+
+.
  We did not extensively tune the HMC parameters of KMC as the described
  settings were sufficient.
  Both KMC and KAMH used 1000 samples from the chain history.
@@ -3719,21 +3734,25 @@ reference "fig:experiment_gp_abc"
 
 \end_inset
 
- (left) shows that KMC clearly outperforms both RW and the earlier state-of-the-
-art KAMH.
- These results are backed by the average ESS (not plotted), which is around
- 800 for KMC and is around 90 and 60 for KAMH and RW, respectively.
- All samplers took 1h time, with most of the time spent on estimating the
- marginal likelihood, c.f.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Sec. 5.1"
-key "sejdinovic_kernel_2014"
+ (left) shows that KMC's burn-in phase contains a short `exploration phase'
+ where produced estimates are bad, supposedly due to it falling back to
+ a random walk in unexplored regions, c.f.
+ Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:ergodicity_kmc_lite"
 
 \end_inset
 
 .
+ From around 500 iterations, however, KMC clearly outperforms both RW and
+ the earlier state-of-the-art KAMH.
+ These results are backed by the minimum ESS (not plotted), which is around
+ 415 for KMC and is around 35 and 25 for KAMH and RW, respectively.
+ Note that all samplers effectively stop improving from 3000 iterations
+ -- supposedly a burn-in bias.
+ All samplers took 1h time, with most time spent estimating the marginal
+ likelihood.
 \begin_inset ERT
 status open
 
@@ -3908,9 +3927,8 @@ Left:
 \series default
 Results for 9-dimensional marginal posterior over length scales of a GPC
  model applied to the UCI Glass dataset.
- The plots shows convergence of all mixed moments up to order 3 to a previously
- generated heavily thinned benchmark sample used as ground truth (lower
- MMD is better).
+ The plots shows convergence (no burn-in discarded) of all mixed moments
+ up to order 3 (lower MMD is better).
  
 \series bold
 Middle/right:
@@ -5860,6 +5878,10 @@ name "sub:app_gp_target"
 
 \end_layout
 
+\begin_layout Paragraph
+Model
+\end_layout
+
 \begin_layout Standard
 Closely following 
 \begin_inset CommandInset citation
@@ -5994,6 +6016,10 @@ key "FilipponeIEEETPAMI13"
  
 \end_layout
 
+\begin_layout Paragraph
+Experimental details
+\end_layout
+
 \begin_layout Standard
 We here use a Laplace approximation and 
 \begin_inset Formula $n_{\text{imp}}=100$
@@ -6016,21 +6042,80 @@ key "sejdinovic_kernel_2014"
  in each of the chains, and combine them.
  The resulting samples are used as a benchmark, to evaluate the performance
  all algorithms.
- We use the MMD 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "BorGreRasKrietal06,GreBorRasSchetal07c"
-
-\end_inset
-
- between each sampler output and the benchmark sample is computed, using
- the polynomial kernel 
+ We use the MMD between each sampler output and the benchmark sample is
+ computed, using the polynomial kernel 
 \begin_inset Formula $\left(1+\left\langle \theta,\theta'\right\rangle \right)^{3}$
 \end_inset
 
 .
  This corresponds to the estimation error of all mixed moments of order
  up to 3.
+\end_layout
+
+\begin_layout Paragraph
+Cross-validation
+\end_layout
+
+\begin_layout Standard
+Kernel parameters are tuned using a black box Bayesian optimisation package
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+We use the open-source package 
+\family typewriter
+pybo
+\family default
+, 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/mwhoffman/pybo
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ and the median heuristic for KMC and KAMH repsectively.
+ The Bayesian optimisation was stopped after 15 iterations, where each trial
+ was done via a 5-fold cross-validation of the score matching objective
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:score_matching_objective_sample_version"
+
+\end_inset
+
+.
+ We learn parameters after MCMC 500 iterations, and then re-learn after
+ 2000.
+ We tried re-learning parameters after more iterations, but this did not
+ lead to significant changes.
+ 
+\end_layout
+
+\begin_layout Subsection
+ABC MCMC
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:app_abc_mcmc"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+TODO
 \end_layout
 
 \end_body
