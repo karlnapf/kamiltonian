@@ -35,8 +35,6 @@ statistics['norm_of_mean']=norm_of_emp_mean
 
 def get_start(D):
     start = np.array(start_base + [0. ] * (D - 2))
-    start = np.random.randn(D)*10
-    start = np.ones(D) * 10
     return start
 
 def hmc_generator(D, target, num_warmup, thin_step, momentum_seed):
@@ -143,8 +141,8 @@ if __name__ == "__main__":
     print(Ns)
     print(Ds)
     assert np.min(Ds) >= 2
-    num_repetitions = 10
     num_repetitions = 1
+    num_repetitions = 10
     
     # target
     bananicity = 0.03
