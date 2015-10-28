@@ -22,7 +22,7 @@ class KameleonJob(MCMCJob):
         
         MCMCJob.__init__(self, target, num_iterations, len(start), start, statistics, num_warmup, thin_step)
         
-        self.aggregator = KMCJobResultAggregator()
+        self.aggregator = KMCJobResultAggregator(len(Z))
         
         self.Z = Z
         self.sigma = sigma

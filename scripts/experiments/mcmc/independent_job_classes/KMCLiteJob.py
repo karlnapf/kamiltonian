@@ -35,7 +35,7 @@ class KMCLiteJob(HMCJob):
                         num_steps_min, num_steps_max, step_size_min,
                         step_size_max, momentum_seed, statistics, num_warmup, thin_step)
         
-        self.aggregator = KMCJobResultAggregator()
+        self.aggregator = KMCJobResultAggregator(len(Z))
         
         self.Z = Z
         self.sigma = sigma
@@ -273,11 +273,12 @@ class KMCLiteJob(HMCJob):
 
 
 class KMCJobResultAggregator(HMCJobResultAggregator):
-    def __init__(self):
+    def __init__(self, N):
         HMCJobResultAggregator.__init__(self)
+        self.N = N
         
     @abstractmethod
     def fire_and_forget_result_strings(self):
         strings = HMCJobResultAggregator.fire_and_forget_result_strings(self)
         
-        return [str(len(self.result.mcmc_job.Z))] + strings
+        return [self.N] + strings
