@@ -136,7 +136,6 @@ if __name__ == "__main__":
     logger.setLevel(10)
     Ds = np.sort([8])[::-1]
     Ns = np.sort([50, 100, 200, 500, 1000, 1500, 2000])[::-1]
-    Ns = np.sort([2000])[::-1]
     
     print(Ns)
     print(Ds)
