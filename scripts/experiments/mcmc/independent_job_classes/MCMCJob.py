@@ -160,15 +160,17 @@ class MCMCJob(IndependentJob):
             accepted = np.float(results[i, 3])
             avg_quantile_error = results[i, 4]
             avg_ess = results[i, 5]
-            norm_of_mean = results[i, 6]
+            min_ess = results[i, 6]
+            norm_of_mean = results[i, 7]
             
-            to_add = np.zeros(6)
+            to_add = np.zeros(7)
             to_add[0] = time_taken_set_up
             to_add[1] = time_taken_sampling
             to_add[2] = accepted
             to_add[3] = avg_quantile_error
             to_add[4] = avg_ess
-            to_add[5] = norm_of_mean
+            to_add[5] = min_ess
+            to_add[6] = norm_of_mean
             
             result_dict[D] += [to_add]
         
