@@ -281,4 +281,4 @@ class KMCJobResultAggregator(HMCJobResultAggregator):
     def fire_and_forget_result_strings(self):
         strings = HMCJobResultAggregator.fire_and_forget_result_strings(self)
         
-        return [self.N] + strings
+        return [str(self.N)] + strings

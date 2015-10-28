@@ -82,12 +82,13 @@ class KameleonJob(MCMCJob):
     def get_parameter_fname_suffix(self):
         return ("Kameleon_N=%d_" % len(self.Z)) + MCMCJob.get_parameter_fname_suffix(self)[4:] 
     
-class KameleonJobResultAggregator(MCMCJobResultAggregator):
-    def __init__(self):
+class KMCJobResultAggregator(MCMCJobResultAggregator):
+    def __init__(self, N):
         MCMCJobResultAggregator.__init__(self)
+        self.N = N
         
     @abstractmethod
     def fire_and_forget_result_strings(self):
         strings = MCMCJobResultAggregator.fire_and_forget_result_strings(self)
         
-        return [str(len(self.result.mcmc_job.Z))] + strings
+        return [str(self.N)] + strings
