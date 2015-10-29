@@ -6923,7 +6923,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /home/heiko/git/kamiltonian/writeup/notes/abc/LN_plot.pdf
+	filename figures/LN_plot.pdf
 	scale 20
 	BoundingBox 200bp 30bp 850bp 506bp
 	clip
