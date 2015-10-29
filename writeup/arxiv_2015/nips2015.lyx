@@ -2905,7 +2905,8 @@ reference "eq:score_matching_objective_sample_version"
 \begin_inset Formula $\sigma,\lambda$
 \end_inset
 
- pairs via cross-validation (using `hot-started' black-box optimisation).
+ pairs via cross-validation (using e.g.
+ `hot-started' black-box optimisation).
  Earlier adaptive kernel-based MCMC methods 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -2967,8 +2968,8 @@ Input
 \emph default
 :
 \series default
- Target (estimator) 
-\begin_inset Formula $\pi$
+ Target (possibly noisy estimator) 
+\begin_inset Formula $\hat{\pi}$
 \end_inset
 
 , adaptation schedule 
@@ -3223,11 +3224,11 @@ setcounter{enumi}{3}
 
 \size footnotesize
 Perform Metropolis step using 
-\begin_inset Formula $\pi$
+\begin_inset Formula $\hat{\pi}$
 \end_inset
 
-, 
-\begin_inset Formula $\qquad x_{t+1}\leftarrow x^{*}$
+: accept 
+\begin_inset Formula $x_{t+1}\leftarrow x^{*}$
 \end_inset
 
  w.p.
@@ -3238,11 +3239,34 @@ reference "eq:kmc_accept_prob"
 
 \end_inset
 
- and 
+ and reject 
 \begin_inset Formula $x_{t+1}\leftarrow x_{t}$
 \end_inset
 
  otherwise
+\begin_inset Newline newline
+\end_inset
+
+If 
+\begin_inset Formula $\hat{\pi}$
+\end_inset
+
+ is noisy and 
+\begin_inset Formula $x^{*}$
+\end_inset
+
+ was accepted, store above 
+\begin_inset Formula $\hat{\pi}(x^{*})$
+\end_inset
+
+ for evaluating 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kmc_accept_prob"
+
+\end_inset
+
+ in the next iteration
 \end_layout
 
 \end_inset
@@ -3773,6 +3797,16 @@ KMC Lite: Reduced Simulations and no Additional Bias in ABC
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:experiment_abc"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 We now apply KMC in the context of Approximate Bayesian Computation (ABC),
  which often is employed when the data likelihood is intractable but can
  be obtained by simulation, see e.g.
@@ -3860,11 +3894,22 @@ key "Meeds2015"
 
 .
  KMC mixes as well as HABC, but HABC suffers from a severe bias.
- It also reduces the number of simulations per proposal by a factor 
-\begin_inset Formula $L=50$
+ KMC also reduces the number of simulations per proposal by a factor 
+\begin_inset Formula $2L=100$
 \end_inset
 
 .
+
+ See Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:app_abc_mcmc"
+
+\end_inset
+
+ for details.
+\lang british
+
 \begin_inset ERT
 status open
 
@@ -4658,7 +4703,7 @@ total cost of
  storage.
  CG also has the advantage of allowing for 'hot starts', i.e.
  initialising the linear solver at a previous solution.
- Further details will be published with the implementation.
+ Further details can be found in our implementation.
 \end_layout
 
 \begin_layout Section
@@ -5305,7 +5350,7 @@ We can therefore use
 all
 \emph default
  points in the history for constructing a proposal.
- 
+ See our implementation for further details.
 \end_layout
 
 \begin_layout Subsubsection
@@ -5733,7 +5778,15 @@ name "sec:app_experimental_details"
 
 \end_inset
 
-This section contains additional experimental details.
+This section contains additional details for the experiments in Section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Experiments"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -5758,11 +5811,157 @@ reference "fig:kmc_trajectories_mean_acceptance"
 
 \end_inset
 
- on an isotropic Gaussian in increasing dimension.
+ on an 
+\emph on
+isotropic
+\emph default
+ Gaussian in increasing dimension.
  As length-scales across all principal components is equal, this is a significan
-tly less challening target to estimate gradients for.
- As a result, the estimator works well up to 
+tly less challening target to estimate gradients for; though still useful
+ as a benchmark representing very smooth targets.
+ We use a standard Gaussian kernel and the same experimental protocol as
+ for Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:kmc_trajectories_mean_acceptance"
+
+\end_inset
+
+.
+ The estimator works well up to 
 \begin_inset Formula $d\approx100$
+\end_inset
+
+, see Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:kmc_trajectories_mean_acceptance_isotropic"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/average_accept_gaussian_target_kmc.eps
+	scale 50
+	BoundingBox 0bp 0bp 200bp 144bp
+	clip
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/average_accept_gaussian_target_N=2000.eps
+	scale 50
+	BoundingBox 5bp 0bp 200bp 144bp
+	clip
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/average_accept_gaussian_target_D=16.eps
+	scale 50
+	BoundingBox 5bp 0bp 206bp 144bp
+	clip
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/average_accept_gaussian_target_data_needs_kmc.eps
+	scale 50
+	BoundingBox 5bp 0bp 206bp 144bp
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:kmc_trajectories_mean_acceptance_isotropic"
+
+\end_inset
+
+Acceptance probability of kernel induced Hamiltonian flow for a standard
+ Gasussian in high dimensions.
+ 
+\series bold
+Left:
+\series default
+ As a function of
+\series bold
+ 
+\begin_inset Formula $n=m$
+\end_inset
+
+
+\series default
+ (x-axis) and 
+\begin_inset Formula $d$
+\end_inset
+
+ (y-axis).
+ 
+\series bold
+Middle: 
+\series default
+Slices through left plot with error bars for a fixed 
+\begin_inset Formula $n=m$
+\end_inset
+
+ and as a function in 
+\series bold
+
+\begin_inset Formula $d$
+\end_inset
+
+
+\series default
+ (left), and for a fixed 
+\begin_inset Formula $d$
+\end_inset
+
+ as a function of 
+\begin_inset Formula $n=m$
+\end_inset
+
+ (right).
+ 
+\series bold
+Right:
+\series default
+ Number of data 
+\begin_inset Formula $n=m$
+\end_inset
+
+ needed to reach given acceptance probabilities as a function of 
+\begin_inset Formula $d$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \end_inset
 
 
@@ -6083,9 +6282,9 @@ https://github.com/mwhoffman/pybo
 \end_inset
 
  and the median heuristic for KMC and KAMH repsectively.
- The Bayesian optimisation was stopped after 15 iterations, where each trial
- was done via a 5-fold cross-validation of the score matching objective
- 
+ The Bayesian optimisation uses standard parameters and is stopped after
+ 15 iterations, where each trial is done via a 5-fold cross-validation of
+ the score matching objective 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:score_matching_objective_sample_version"
@@ -6097,7 +6296,9 @@ reference "eq:score_matching_objective_sample_version"
  2000.
  We tried re-learning parameters after more iterations, but this did not
  lead to significant changes.
- 
+ The costs for this are neglectable in the context of PM-MCMC as estimating
+ the marginal likelihood takes significantly more time than generating the
+ KMC proposal.
 \end_layout
 
 \begin_layout Subsection
@@ -6111,11 +6312,680 @@ name "sub:app_abc_mcmc"
 
 \end_inset
 
+In this section, we give a brief background on Approximate Bayesian Computation,
+ and how KMC can be used within the framework.
+ We then give details of the competing approach in the final experiment
+ in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:experiment_abc"
 
+\end_inset
+
+, including experimental details and an analytic counter example.
+\end_layout
+
+\begin_layout Paragraph
+Likelihood-free Models
 \end_layout
 
 \begin_layout Standard
-TODO
+Approximate Bayesian Computation is a method for inference in the scenario
+ where conditional on some parameter of interest 
+\begin_inset Formula $\theta$
+\end_inset
+
+, we can easily simulate data 
+\begin_inset Formula $x\sim f(\cdot|\theta)$
+\end_inset
+
+, but for which the likelihood function 
+\begin_inset Formula $f$
+\end_inset
+
+ is unavailable 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Sisson2010"
+
+\end_inset
+
+.
+ We however have data 
+\begin_inset Formula $y$
+\end_inset
+
+ which assume to be from the model, and we have a prior 
+\begin_inset Formula $\pi_{0}(\theta)$
+\end_inset
+
+.
+ A simple ABC algorithm is to sample 
+\begin_inset Formula $\theta_{i}\sim\pi_{0}(\cdot)$
+\end_inset
+
+ (or any other suitable distribution), simulate data 
+\begin_inset Formula $x_{i}\sim f(\cdot|\theta_{i})$
+\end_inset
+
+, and `accept' 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+as a sample from the approximate posterior 
+\begin_inset Formula $\pi_{\epsilon}(\theta|y)$
+\end_inset
+
+ if 
+\begin_inset Formula $d(y,x)\leq\epsilon$
+\end_inset
+
+.
+ This procedure can be formalised by defining the approximate likelihood
+ as 
+\begin_inset Formula 
+\begin{equation}
+f_{\epsilon}(y|\theta)\propto\int g_{\epsilon}(y|x,\theta)f(x|\theta)dx,\label{eqn:lik}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $g_{\epsilon}(y|x,\theta)$
+\end_inset
+
+ is an appropriate kernel that gives more importance to points for which
+ 
+\begin_inset Formula $d(y,x)$
+\end_inset
+
+ is smaller.
+ In the simple case above 
+\begin_inset Formula $g_{\epsilon}(y|x,\theta)=\mathbf{1}_{\{d(y,x)\leq\epsilon\}}$
+\end_inset
+
+.
+ The ABC posterior is then found using 
+\begin_inset Formula $\pi_{\epsilon}(\theta|y)\propto f_{\epsilon}(y|\theta)\pi_{0}(\theta)$
+\end_inset
+
+.
+ Often 
+\begin_inset Formula $g_{\epsilon}$
+\end_inset
+
+is based on some low-dimensional summary statistics, which can have both
+ advantages and disadvantages.
+\end_layout
+
+\begin_layout Paragraph
+Likelihood-free MCMC
+\end_layout
+
+\begin_layout Standard
+There are many different way to do ABC, and clearly not all involve Markov
+ chain Monte Carlo.
+ If the posterior however is not similar to the prior, and if 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is more than three or four dimensional, MCMC is a sensible option.
+ Since the likelihood 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eqn:lik"
+
+\end_inset
+
+ is intractable, typically algorithms are considered for which an approximation
+ to either the likelihood, or the ABC posterior are used either in constructing
+ proposals, defining Metropolis-Hastings acceptance rates, or both.
+ We focus here on samplers which target 
+\begin_inset Formula $\pi_{\epsilon}(\theta|y)$
+\end_inset
+
+ directly, c.f.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "marjoram2003markov"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Pseudo-Marginal Metropolis-Hastings
+\end_layout
+
+\begin_layout Standard
+Similar to the approach taken in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:app_gp_target"
+
+\end_inset
+
+, we here accept proposals 
+\begin_inset Formula $\theta'\sim Q(\theta,\cdot)$
+\end_inset
+
+ where 
+\begin_inset Formula $Q$
+\end_inset
+
+ is some proposal mechanism (i.e.
+ KMC), via replacing the likelihood with an unbiased estimate.
+ We accept according to the ratio 
+\begin_inset Formula 
+\begin{equation}
+\tilde{\alpha}(\theta,\theta')=\frac{\tilde{\pi}_{\epsilon}(\theta'|y)Q(\theta|\theta')}{\tilde{\pi}_{\epsilon}(\theta|y)Q(\theta'|\theta)},\label{eqn:ratio}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\tilde{\pi}_{\epsilon}(\theta|y)=\pi_{0}(\theta)\tilde{g}_{\epsilon}(y|\theta),$
+\end_inset
+
+ and 
+\begin_inset Formula 
+\[
+\tilde{g}_{\epsilon}(y|\theta)=\frac{1}{n_{\text{lik}}}\sum_{i}g_{\epsilon}(y|x_{i},\theta),~~\{x_{i}\}_{i=1}^{n_{\text{lik}}}\sim f(\cdot|\theta_{i})
+\]
+
+\end_inset
+
+is a simple Monte Carlo estimator for the intractable likelihood 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eqn:lik"
+
+\end_inset
+
+.
+ Since it is easy to simulate from 
+\begin_inset Formula $f$
+\end_inset
+
+ then 
+\begin_inset Formula $\tilde{g}_{\epsilon}(y|\theta)$
+\end_inset
+
+ is typically easy to compute.
+ As with other general Pseudo-Marginal schemes, and as mentioned below the
+ KMC acceptance 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kmc_accept_prob"
+
+\end_inset
+
+, it is crucial that if 
+\begin_inset Formula $\theta'$
+\end_inset
+
+ is accepted, the same estimate for 
+\begin_inset Formula $\tilde{\pi}(\theta'|y)$
+\end_inset
+
+ is used on the denominator of the Hastings ratio in future iterations until
+ the next proposal is accepted for the scheme, c.f.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Table 1"
+key "Andrieu2009a"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We can directly adapt KMC to the ABC case via plugging in the estimated
+ likelihood 
+\begin_inset Formula $\tilde{g}_{\epsilon}$
+\end_inset
+
+ in the KMC acceptance ratio 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kmc_accept_prob"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Synthetic Likelihood Metropolis-Hastings
+\end_layout
+
+\begin_layout Standard
+Following 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Wood:2010aa"
+
+\end_inset
+
+, one idea to approximate the intractable likelihood is to draw 
+\begin_inset Formula $n_{\text{lik}}$
+\end_inset
+
+ samples 
+\begin_inset Formula $x_{i}\sim f(\cdot|\theta_{i})$
+\end_inset
+
+, and fit a Gaussian approximation to 
+\begin_inset Formula $f$
+\end_inset
+
+, producing estimates 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\Sigma}$
+\end_inset
+
+ for the mean and covariance using 
+\begin_inset Formula $\{x_{i}\}_{i=1}^{n_{\text{lik}}}$
+\end_inset
+
+.
+ If the error functon 
+\begin_inset Formula $g_{\epsilon}$
+\end_inset
+
+ is also chosen to be a Gaussian (with mean 
+\begin_inset Formula $y$
+\end_inset
+
+ and variance 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+), then the marginal likelihood 
+\begin_inset Formula $f_{\epsilon}(y|\theta)$
+\end_inset
+
+ can be approximated as 
+\begin_inset Formula 
+\[
+y|\theta\sim\mathcal{N}\left(\hat{\mu},\hat{\Sigma}+\epsilon^{2}I\right)
+\]
+
+\end_inset
+
+The likelihood is essentially approximated by a Gaussian 
+\begin_inset Formula $f_{G}$
+\end_inset
+
+, producing a synthetic posterior 
+\begin_inset Formula $\pi_{s}(\cdot)$
+\end_inset
+
+, which is then used in the accept-reject step.
+ Clearly some approximation error is introduced by the Gaussian likelihood
+ approximation step, but as shown in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Wood:2010aa"
+
+\end_inset
+
+, it can be a reasonable choice for some models.
+\end_layout
+
+\begin_layout Paragraph
+Hamiltonian ABC
+\end_layout
+
+\begin_layout Standard
+Introduced in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Meeds2015"
+
+\end_inset
+
+, the synthetic likelihood formulation is used to construct a proposal,
+ with the accept-reject step removed altogether.
+ Hamiltonian dynamics use the gradient 
+\begin_inset Formula $\nabla\log\pi(\theta)$
+\end_inset
+
+ to suggest candidate values for the next state of a Markov chain which
+ are far from the current point, thus increasing the chances that the chain
+ mixes quickly.
+ Here the gradient of the log-likelihood is unavailable, so is approximated
+ with that of a Gaussian (since the map 
+\begin_inset Formula $\theta\to(\mu,\Sigma)$
+\end_inset
+
+ is not always clear this is done numerically, using a stochastic finite
+ differences estimate of the gradient, SPAS 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Sec. 4.3, 4.4"
+key "Meeds2015"
+
+\end_inset
+
+), giving 
+\begin_inset Formula 
+\[
+\nabla\log\pi(\theta)\approx\sum_{i=1}^{n_{\text{lik}}}\nabla\log f_{G}(y_{i}|\hat{\mu},\hat{\Sigma})+\nabla\log\pi_{0}(\theta).
+\]
+
+\end_inset
+
+Since there is no accept-reject step, the synthetic posterior is also the
+ target of this scheme (although there is also further bias introduced by
+ discretisation error), but the introduction of gradient-based dynamics
+ is hoped to improve mixing and hence efficiency of inferences compared
+ to random-walk type schemes.
+\end_layout
+
+\begin_layout Paragraph
+A Counter-example
+\end_layout
+
+\begin_layout Standard
+We give a very simple toy model to highlight the bias introduced by the
+ Hamiltonian ABC sampler.
+ Consider posterior inference for the mean parameter in a log-Normal model.
+ Specfically, the true model is 
+\begin_inset Formula 
+\begin{align*}
+\mu & \sim\mathcal{N}(\mu_{0},\tau_{0}),\\
+y|\mu,\tau & \sim\log\mathcal{N}(\mu,\tau),
+\end{align*}
+
+\end_inset
+
+where the precision 
+\begin_inset Formula $\tau$
+\end_inset
+
+ and hyperparameters 
+\begin_inset Formula $\mu_{0},\tau_{0}$
+\end_inset
+
+ are known.
+ The model is in fact conjugate, giving a Gaussian posterior 
+\begin_inset Formula 
+\[
+\mu|y\sim\mathcal{N}\left(\frac{\tau_{0}\mu_{0}+\tau\sum_{i}\log x_{i}}{\tau_{0}+n\tau},\tau_{0}+n\tau\right)
+\]
+
+\end_inset
+
+If we introduce a Gaussian approximation to the likelihood, then the mean
+ and precision of this approximation 
+\begin_inset Formula $f_{G}$
+\end_inset
+
+ are (empirical estimates for) 
+\begin_inset Formula 
+\[
+\mu_{G}=e^{\mu+1/2\tau},~~\tau_{G}=1/\text{Var}[Y_{i}]=\frac{e^{-2\mu-1/\tau}}{e^{1/\tau}-1},
+\]
+
+\end_inset
+
+which depend on the current value for 
+\begin_inset Formula $\mu$
+\end_inset
+
+ in the chain.
+ The resulting synthetic posterior is no longer tractable, but since it
+ is one dimensional we can approximate it numerically.
+ Using 
+\begin_inset Formula $\mu_{0}=0$
+\end_inset
+
+, 
+\begin_inset Formula $\tau_{0}=1/100$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon=0.1$
+\end_inset
+
+ and 
+\begin_inset Formula $\tau=1$
+\end_inset
+
+ then the true and approximate posteriors for 100 data points generated
+ using the truth 
+\begin_inset Formula $\mu=2$
+\end_inset
+
+ are shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:experiment_gp_abc_with_friction"
+
+\end_inset
+
+ (left).
+ This is a proof of concept that a likelihood with a positive skew being
+ approximated by a Gaussian introduces upwards bias the posterior.
+\end_layout
+
+\begin_layout Paragraph
+Experimental details
+\end_layout
+
+\begin_layout Standard
+The simulation study in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:experiment_abc"
+
+\end_inset
+
+ uses a slightly more complex and multi-dimensional simulation example:
+ a 10-dimensional multivariate skew-Normal distribution, given by 
+\begin_inset Formula 
+\[
+p(y|\theta)=2\mathcal{N}\left(\theta,I\right)\Phi\left(\left\langle \alpha,y\right\rangle \right)
+\]
+
+\end_inset
+
+with 
+\begin_inset Formula $\theta=\alpha=\mathbf{1}\cdot10$
+\end_inset
+
+.
+ In each iteration of KMC, the likelihood is estimated via simulting 
+\begin_inset Formula $n_{\text{lik}}=10$
+\end_inset
+
+ samples from the above likelihood.
+ We use the mean of all samples as summary statistic, and a Gaussian similarity
+ kernel 
+\begin_inset Formula $g_{\epsilon}(y|x,\theta)$
+\end_inset
+
+ with a fixed 
+\begin_inset Formula $\epsilon=0.55$
+\end_inset
+
+.
+ Both KMC and HABC use a standard Gaussian momentum, a uniformly random
+ stepsize in 
+\begin_inset Formula $[0.01,0.1]$
+\end_inset
+
+ and 
+\begin_inset Formula $L=50$
+\end_inset
+
+ leapfrog steps.
+ HABC is used with the suggested `sticky random numbers' 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Section 4.4"
+key "Meeds2015"
+
+\end_inset
+
+, i.e.
+ we use the same seed for all simulations along a single porposal trajectory.
+ Both algorithms are run for 
+\begin_inset Formula $200+5000$
+\end_inset
+
+ MCMC iterations.
+ KMC then attempts to re-learn smoothness parameters, and stops adaptation.
+ Burn-in samples are discarded when quantifying performance of all algorithms.
+\end_layout
+
+\begin_layout Paragraph
+Friction, mixing, and number of simulations
+\end_layout
+
+\begin_layout Standard
+HABC is used in its `stochastic gradient' 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ChenFoxGuestrin2014"
+
+\end_inset
+
+ and has a `friction' parameter that we estimate using a running average
+ of the global covariance of all SPAS gradient evaluations, 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Equation 21"
+key "Meeds2015"
+
+\end_inset
+
+.
+ Note that we ran HABC with both the friction term included and removed,
+ where we found that adding friction has severely negative impact on mixing,
+ where not adding friction results in a wider posterior (with the same bias).
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:experiment_gp_abc"
+
+\end_inset
+
+ (middle, right) show the results 
+\emph on
+without
+\emph default
+ friction, Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:experiment_gp_abc_with_friction"
+
+\end_inset
+
+ shows the same plots with friction.
+ We refer to our implementation for further details.
+ 
+\end_layout
+
+\begin_layout Standard
+Due to the gradient estimation in every of the 
+\begin_inset Formula $L=50$
+\end_inset
+
+ leap-frog steps, e
+\emph on
+very
+\emph default
+ MCMC proposal for HABC requires 
+\begin_inset Formula $2L=100$
+\end_inset
+
+ simulations to be generated.
+ In contrast, KMC only requires a single simulation.
+ We leave studying the exact trade-offs of KMC's learning phase and its
+ ability to mix well as compared to HABC to future work.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/heiko/git/kamiltonian/writeup/notes/abc/LN_plot.pdf
+	scale 20
+	BoundingBox 200bp 30bp 850bp 506bp
+	clip
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename figures/abc_target_autocorr_with_friction.eps
+	scale 55
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/abc_target_marginal0_with_friction.eps
+	scale 55
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:experiment_gp_abc_with_friction"
+
+\end_inset
+
+
+\series bold
+Left: 
+\series default
+Counter example showing posterior and its synthetic approximation for a
+ simple toy model 
+\series bold
+Middle/right:
+\series default
+ The same results as in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:experiment_gp_abc"
+
+\end_inset
+
+, but here we also show performance of HABC with added friction, which has
+ a severely negative impact on mixing.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
