@@ -13,7 +13,7 @@ if __name__ == "__main__":
     sigma_q = 1.
     sigma_p = 1.
     Ds = np.sort(2 ** np.arange(6))[::-1]
-    Ns = np.sort([100, 200, 500, 1000, 2000, 5000, 10000, 20000])[::-1]
+    Ns = np.sort([100, 200, 500, 1000, 2000, 5000, 10000, 16000])[::-1]
     
     num_repetitions = 10
     num_steps = 10
