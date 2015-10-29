@@ -4,7 +4,7 @@
 \begin_header
 \textclass article
 \begin_preamble
-\usepackage{nips14submit_e,times}
+\usepackage{nips15submit_e,times}
 \usepackage{hyperref}
 \usepackage{url}
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
@@ -1370,13 +1370,13 @@ kernel induced
 flow with probability
 \begin_inset Formula 
 \begin{equation}
-\min\left[1,\reallywidehat{\exp\left(H\left(\phi_{t}^{H_{k}}(p',q)\right)\right)}\Big/\reallywidehat{\exp\left(H(p',q)\right)}\right],\label{eq:kmc_accept_prob}
+\min\left[1,\exp\left(H\left(\phi_{t}^{H_{k}}(p',q)\right)-H(p',q)\right)\right],\label{eq:kmc_accept_prob}
 \end{equation}
 
 \end_inset
 
 where 
-\begin_inset Formula $H\left(\phi_{t}^{H}(p',q)\right)$
+\begin_inset Formula $H\left(\phi_{t}^{H_{k}}(p',q)\right)$
 \end_inset
 
  corresponds to the
@@ -1397,7 +1397,7 @@ reference "eq:kmc_accept_prob"
 \end_inset
 
  by unbiased estimates, i.e.
- the widehat denotes replacing 
+ we replace 
 \begin_inset Formula $\pi(q)$
 \end_inset
 
@@ -1410,8 +1410,8 @@ reference "eq:kmc_accept_prob"
 \end_inset
 
 .
- Note that this also involves recycling the estimates of 
-\begin_inset Formula $\exp\left(H(p',q)\right)$
+ Note that this also involves `recycling' the estimates of 
+\begin_inset Formula $H$
 \end_inset
 
  from previous iterations to ensure anyymptotic correctness, c.f.
