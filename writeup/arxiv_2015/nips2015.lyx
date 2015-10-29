@@ -59,7 +59,7 @@ $^+$Department of Statistics\\
 University of Oxford \\
 \And
 \\
-$^o$Department of Statistics\\
+$^o$School of Mathematics\\
 University of Bristol
 }
 
@@ -5431,7 +5431,7 @@ Denote by
 
 .
  Define 
-\begin_inset Formula $c(x^{(0)}):=\epsilon^{2}\sum_{i=0}^{L-1}\nabla f(x^{(i\epsilon)})/2$
+\begin_inset Formula $c(x^{(0)}):=L\epsilon^{2}\nabla\log\pi(x^{(0)})/2+\epsilon^{2}\sum_{i=1}^{L-1}(L-i)\nabla\log\pi(x^{(i\epsilon)}$
 \end_inset
 
  and 
