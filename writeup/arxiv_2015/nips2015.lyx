@@ -6876,7 +6876,15 @@ very
 \end_inset
 
  simulations to be generated.
- In contrast, KMC only requires a single simulation.
+ In contrast, KMC only requires a single simulation, for evaluating the
+ accept/reject probability 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:kmc_accept_prob"
+
+\end_inset
+
+.
  We leave studying the exact trade-offs of KMC's learning phase and its
  ability to mix well as compared to HABC to future work.
 \end_layout
