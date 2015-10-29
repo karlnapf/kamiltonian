@@ -3355,21 +3355,22 @@ reference "fig:kmc_trajectories_mean_acceptance"
 \end_inset
 
 .
- In dimensions up to 
-\begin_inset Formula $d\approx50$
+ In up to moderate dimensions, gradients of the finite estimator lead to
+ acceptance rates comparable to plain HMC.
+ On targets with a more `regular' smoothness, the estimator naturally performs
+ well in up to 
+\begin_inset Formula $d\approx100$
 \end_inset
 
-, gradients of the finite estimator lead to acceptance rates comparable
- to plain HMC.
- On targets with a more `regular' smoothness, the estimator naturally performs
- better, see Appendix 
+, with less variance.
+ See Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:app_stability_in_high_dim"
 
 \end_inset
 
-.
+ for details.
  
 \begin_inset ERT
 status open
@@ -3395,7 +3396,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figures/average_accept_gaussian_target_kmc.eps
+	filename figures/average_accept_gaussian_target_rebuttal_kmc.eps
 	scale 50
 	BoundingBox 0bp 0bp 200bp 144bp
 	clip
@@ -3404,7 +3405,7 @@ status open
 
 
 \begin_inset Graphics
-	filename figures/average_accept_gaussian_target_N=2000.eps
+	filename figures/average_accept_gaussian_target_rebuttal_N=5000.eps
 	scale 50
 	BoundingBox 5bp 0bp 200bp 144bp
 	clip
@@ -3413,16 +3414,7 @@ status open
 
 
 \begin_inset Graphics
-	filename figures/average_accept_gaussian_target_D=16.eps
-	scale 50
-	BoundingBox 5bp 0bp 206bp 144bp
-	clip
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename figures/average_accept_gaussian_target_data_needs_kmc.eps
+	filename figures/average_accept_gaussian_target_rebuttal_D=8.eps
 	scale 50
 	BoundingBox 5bp 0bp 206bp 144bp
 	clip
@@ -3442,7 +3434,8 @@ name "fig:kmc_trajectories_mean_acceptance"
 
 \end_inset
 
-Acceptance probability of kernel induced Hamiltonian flow in high dimensions.
+Hypothetical acceptance probability of KMC finite on a challening target
+ in growing dimensions.
  
 \series bold
 Left:
@@ -3462,7 +3455,7 @@ Left:
  (y-axis).
  
 \series bold
-Middle: 
+Middle/right: 
 \series default
 Slices through left plot with error bars for a fixed 
 \begin_inset Formula $n=m$
@@ -3485,19 +3478,6 @@ Slices through left plot with error bars for a fixed
 \end_inset
 
  (right).
- 
-\series bold
-Right:
-\series default
- Number of data 
-\begin_inset Formula $n=m$
-\end_inset
-
- needed to reach given acceptance probabilities as a function of 
-\begin_inset Formula $d$
-\end_inset
-
-.
 \end_layout
 
 \end_inset
@@ -5828,7 +5808,15 @@ reference "fig:kmc_trajectories_mean_acceptance"
 \end_inset
 
 .
- The estimator works well up to 
+ The estimator works slightly better than on the target considered in Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:kmc_trajectories_mean_acceptance"
+
+\end_inset
+
+, and performs well up to 
 \begin_inset Formula $d\approx100$
 \end_inset
 
@@ -5877,15 +5865,6 @@ status open
 \end_inset
 
 
-\begin_inset Graphics
-	filename figures/average_accept_gaussian_target_data_needs_kmc.eps
-	scale 50
-	BoundingBox 5bp 0bp 206bp 144bp
-	clip
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Plain Layout
@@ -5899,7 +5878,7 @@ name "fig:kmc_trajectories_mean_acceptance_isotropic"
 \end_inset
 
 Acceptance probability of kernel induced Hamiltonian flow for a standard
- Gasussian in high dimensions.
+ Gasussian in high dimensions for an isotropic Gaussian.
  
 \series bold
 Left:
@@ -5943,18 +5922,6 @@ Slices through left plot with error bars for a fixed
 
  (right).
  
-\series bold
-Right:
-\series default
- Number of data 
-\begin_inset Formula $n=m$
-\end_inset
-
- needed to reach given acceptance probabilities as a function of 
-\begin_inset Formula $d$
-\end_inset
-
-.
 \end_layout
 
 \end_inset
