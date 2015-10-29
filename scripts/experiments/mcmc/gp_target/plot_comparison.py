@@ -12,7 +12,7 @@ import numpy as np
 if __name__ == "__main__":
     logger.setLevel(10)
     
-    warmup = 200
+    warmup = 0
     num_samples = 4800
     num_Ns = 10
     Ns = np.round(np.linspace(1, num_samples, num_Ns)).astype(int)
