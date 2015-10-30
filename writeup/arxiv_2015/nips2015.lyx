@@ -513,7 +513,7 @@ https://github.com/karlnapf/kernel_hmc
 
 
 \size default
-.
+
 \begin_inset ERT
 status open
 
@@ -2358,7 +2358,7 @@ b:=-\frac{1}{n}\sum_{i=1}^{t}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\math
 An example feature embedding based on random Fourier features 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Rahimi2007"
+key "Rahimi2007,sriperumbudurszabo15optimal"
 
 \end_inset
 
@@ -4080,8 +4080,16 @@ key "sejdinovic_kernel_2014"
 
 \begin_layout Standard
 Future work includes establishing theoretical consistency and uniform convergenc
-e rates for the empirical estimators, and a thorough experimental study
- in the ABC-MCMC context where we see a lot of potential for KMC.
+e rates for the empirical estimators, for example via using recent analysis
+ of random Fourier Features with tight bounds 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sriperumbudurszabo15optimal"
+
+\end_inset
+
+, and a thorough experimental study in the ABC-MCMC context where we see
+ a lot of potential for KMC.
  It might also be possible to use KMC as a precomputing strategy to speed
  up classical HMC as in 
 \begin_inset CommandInset citation
@@ -4105,8 +4113,6 @@ https://github.com/karlnapf/kernel_hmc
 \end_inset
 
 
-\size default
-.
 \end_layout
 
 \begin_layout Standard
@@ -5046,7 +5052,14 @@ key "Rahimi2007"
 
 \end_inset
 
- for details and a uniform convergence bound.
+ for details and a uniform convergence bound and 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sriperumbudurszabo15optimal"
+
+\end_inset
+
+ for a more detailed analysis with tighter bounds.
  Note that it is possible to achieve logarithmic computational costs in
  
 \begin_inset Formula $d$
@@ -5299,13 +5312,6 @@ https://github.com/jcrudy/choldate
 
 
 \end_layout
-
-\end_inset
-
-, see 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "seeger2004low"
 
 \end_inset
 
