@@ -4407,8 +4407,8 @@ where
 \end_inset
 
  is the entry-wise product.
- The remaining terms are sums with constant row or column terms, define
- 
+ The remaining terms are sums with constant row or column terms.
+ Define 
 \begin_inset Formula $s_{\ell}:=x_{\ell}\odot x_{\ell}$
 \end_inset
 
@@ -4537,14 +4537,14 @@ Assuming
 \end_layout
 
 \begin_layout Standard
-Similar to 
+As in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14"
 
 \end_inset
 
-, we in practice add a term 
+, we add a term 
 \begin_inset Formula $\lambda\Vert f\Vert_{{\cal H}}^{2}$
 \end_inset
 
