@@ -1576,8 +1576,8 @@ vspace{-.3cm}
 
 \end_inset
 
-We now address the topic of estimating the infinite dimensional exponential
- family model 
+We now address estimating the infinite dimensional exponential family model
+ 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
@@ -1595,16 +1595,8 @@ key "SriFukKumGreHyv14"
  has large computational costs.
  This is problematic in the adaptive MCMC context, where the model has to
  be updated on a regular basis.
- We propose two efficient approximations, each with its particular strengths
- and weaknesses.
- Both the original estimator for 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:infinite_exp_family"
-
-\end_inset
-
- and our approximations are based on score matching.
+ We propose two efficient approximations, each with its strengths and weaknesses.
+ Both are based on score matching.
 \begin_inset ERT
 status open
 
@@ -1612,7 +1604,7 @@ status open
 
 
 \backslash
-vspace{-.2cm}
+vspace{-.3cm}
 \end_layout
 
 \end_inset
@@ -1635,6 +1627,19 @@ name "sub:Appendix_score_matching"
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.3cm}
+\end_layout
+
+\end_inset
+
+
 \begin_inset Note Note
 status open
 
@@ -1680,20 +1685,12 @@ key "Hyvarinen-05"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 where 
 \begin_inset Formula $f$
 \end_inset
 
  is a collection of parameters of yet unspecified dimension (c.f.
- natural parameters 
-\begin_inset Formula $f$
-\end_inset
-
- of 
+ natural parameters of 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
@@ -1718,23 +1715,19 @@ reference "eq:infinite_exp_family"
 status open
 
 \begin_layout Plain Layout
-We assume a fixed sample set here but will use both the full Markov chain
- history 
+We assume a fixed sample set here but will use both the full chain history
+ 
 \begin_inset Formula $\{x_{i}\}_{i=1}^{t}$
 \end_inset
 
- and a sub-sample of size 
-\begin_inset Formula $n$
-\end_inset
-
- later.
+ or a sub-sample later.
  
 \end_layout
 
 \end_inset
 
  
-\begin_inset Formula $\{x_{i}\}_{i=1}^{n}\sim\pi$
+\begin_inset Formula ${\cal D}:=\{x_{i}\}_{i=1}^{n}\sim\pi$
 \end_inset
 
  such that 
@@ -1751,7 +1744,7 @@ key "Hyvarinen-05"
 \end_inset
 
 , the criterion being optimised is the expected squared distance between
- gradients of the log-density, so-called 
+ gradients of the log density, so-called 
 \emph on
 score functions
 \emph default
@@ -1773,7 +1766,7 @@ where we note that the normalising constants vanish from taking the gradient
 \end_inset
 
 .
- As a result, as shown in 
+ As shown in 
 \begin_inset CommandInset citation
 LatexCommand citet
 after "Theorem 1"
@@ -1796,12 +1789,12 @@ key "Hyvarinen-05"
  other than through observed samples,
 \begin_inset Formula 
 \begin{equation}
-\hat{J}(f)=\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\left[\frac{\partial^{2}\log\tilde{\pi}(x;f)}{\partial x_{\ell}^{2}}+\frac{1}{2}\left(\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}\right)^{2}\right].\label{eq:score_matching_objective_sample_version}
+\hat{J}(f)=\frac{1}{n}\sum_{x\in{\cal D}}\sum_{\ell=1}^{d}\left[\frac{\partial^{2}\log\tilde{\pi}(x;f)}{\partial x_{\ell}^{2}}+\frac{1}{2}\left(\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}\right)^{2}\right].\label{eq:score_matching_objective_sample_version}
 \end{equation}
 
 \end_inset
 
-Our efficient approximations of the infinite dimensional model 
+Our approximations of the original model 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:infinite_exp_family"
@@ -1817,6 +1810,19 @@ reference "eq:score_matching_objective_sample_version"
 
  using approximate scores.
  
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{-.6cm}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
