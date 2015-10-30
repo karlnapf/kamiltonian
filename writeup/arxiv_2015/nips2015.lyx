@@ -486,7 +486,7 @@ key "Rahimi2007"
 \emph on
 all
 \emph default
- of the Markov chain history, at the cost of decreased efficiency in unexpored
+ of the Markov chain history, at the cost of decreased efficiency in unexplored
  regions.
  A choice between KMC lite and KMC finite ultimately depends on the ability
  to initialise the sampler within high-density regions of the target; alternativ
