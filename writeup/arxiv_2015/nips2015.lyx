@@ -3954,6 +3954,7 @@ status open
 \begin_inset Graphics
 	filename figures/gp_target_results.eps
 	scale 50
+	BoundingBox -5bp 0bp 225bp 153bp
 
 \end_inset
 
