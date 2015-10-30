@@ -204,8 +204,9 @@ Kernel Hamiltonian Monte Carlo (KMC)
  While being asymptotically exact, KMC mimics HMC in terms of sampling efficienc
 y and offers substantial mixing improvements to state-of-the-art gradient
  free samplers.
- We support our claims with studies on synthetic and real-world applications,
- including Approximate Bayesian Computation and exact-approximate MCMC.
+ We support our claims with experimental studies on both toy and real-world
+ applications, including Approximate Bayesian Computation and exact-approximate
+ MCMC.
 \begin_inset ERT
 status open
 
@@ -272,14 +273,13 @@ key "neal2011mcmc"
  is an MCMC algorithm that improves efficiency by exploiting gradient informatio
 n.
  It simulates particle movement along the contour lines of a dynamical system
- which is constructed from the target density.
+ constructed from the target density.
  Projections of these trajectories cover wide parts of the target's support,
  and the probability of accepting a move along a trajectory is often close
  to one.
- Remarkably, this property is mostly invariant to dimensionality.
- Thus, HMC is often superior to random walk methods, which need to decrease
- their step size at a much faster rate to maintain a reasonable acceptance
- probability with increasing dimension 
+ Remarkably, this property is mostly invariant to growing dimensionality,
+ and HMC here often is superior to random walk methods, which need to decrease
+ their step size at a much faster rate 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "Sec. 4.4"
@@ -300,8 +300,8 @@ key "beaumont2003estimation,Andrieu2009a"
 
 \end_inset
 
-, the posterior density does not have an analytic expression even up to
- a normalising constant, but can only be estimated at any given point, e.g.
+, the posterior does not have an analytic expression, but can only be estimated
+ at any given point, e.g.
  in Bayesian Gaussian Process classification 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -311,7 +311,7 @@ key "FilipponeIEEETPAMI13"
 
 .
  A related context is MCMC for Approximate Bayesian Computation (ABC-MCMC),
- where a Bayesian posterior has to be approximated through repeated simulation
+ where the posterior has to be approximated through repeated simulation
  from a likelihood model 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -320,10 +320,10 @@ key "marjoram2003markov,Sisson2010"
 \end_inset
 
 .
- In both cases, plain HMC cannot be applied, leaving random walk methods
- as the only mature alternative.
- Recently, there have been efforts to mimic HMC's behaviour using stochastic
- gradients from mini-batches in Big Data 
+ In both cases, HMC cannot be applied, leaving random walk methods as the
+ only mature alternative.
+ There have been efforts to mimic HMC's behaviour using stochastic gradients
+ from mini-batches in Big Data 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "ChenFoxGuestrin2014"
@@ -350,8 +350,7 @@ key "Betancourt2015a"
 \end_layout
 
 \begin_layout Standard
-Random walk methods can be tuned by proposing local steps whose scaling
- matches the target density.
+Random walk methods can be tuned by matching scaling of steps and target.
  For example, Adaptive Metropolis-Hastings (AMH)
 \emph on
  
@@ -363,8 +362,8 @@ key "Haario1999,Andrieu2008"
 
 \end_inset
 
- is based on learning the global linear scaling of a target density from
- the history of the Markov chain.
+ is based on learning the global scaling of the target from the history
+ of the Markov chain.
  
 \begin_inset Note Note
 status open
@@ -385,8 +384,8 @@ key "AndrieuMoulines2006"
 
 \end_inset
 
- Yet, for densities with nonlinear support across components, this approach
- does not work very well.
+ Yet, for densities with nonlinear support, this approach does not work
+ very well.
  Recently, 
 \begin_inset CommandInset citation
 LatexCommand citep
@@ -394,8 +393,8 @@ key "sejdinovic_kernel_2014"
 
 \end_inset
 
- introduced a Kernel Adaptive Metropolis-Hastings (KAMH) algorithm, with
- proposals locally aligned to the target density.
+ introduced a Kernel Adaptive Metropolis-Hastings (KAMH) algorithm whose
+ proposals are locally aligned to the target.
  By adaptively learning target covariance in a Reproducing Kernel Hilbert
  Space (RKHS), KAMH achieves improved sampling efficiency.
 \end_layout
@@ -419,8 +418,8 @@ locally
 globally
 \emph default
 .
- More precisely, we fit an (unnormalised) infinite dimensional exponential
- family model in a RKHS via score matching 
+ More precisely, we fit an infinite dimensional exponential family model
+ in a RKHS via score matching 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14,Hyvarinen-05"
@@ -442,24 +441,23 @@ key "wasserman2006all"
 \end_inset
 
 .
- A Gaussian Process (GP) was also used in 
+ Gaussian Processes (GP) were also used in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Rasmussen2003"
 
 \end_inset
 
- as an emulator of the target density in order to speed up HMC, however
- this work requires access to the log target density in closed form, to
- provide training points for the GP regressor.
- 
+ as an emulator of the target density in order to speed up HMC, however,
+ this requires access to the target in closed form, to provide training
+ points for the GP.
 \end_layout
 
 \begin_layout Standard
 We require our adaptive KMC algorithm to be computationally efficient, as
  it deals with high-dimensional MCMC chains of growing length.
- Thus, we develop two novel approximations to the infinite dimensional exponenti
-al family model.
+ We develop two novel approximations to the infinite dimensional exponential
+ family model.
  The first approximation, 
 \emph on
 score matching lite
@@ -476,7 +474,7 @@ KMC lite
 \emph on
 KMC finite
 \emph default
-), combined with the random Fourier features framework of 
+), combined with random Fourier features 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Rahimi2007"
@@ -484,12 +482,15 @@ key "Rahimi2007"
 \end_inset
 
 .
- This results in an extremely efficient online estimator that allows to
- use all of the Markov chain history, at the cost of decreased efficiency
- when initialised in the tails.
- A choice between KMC lite and KMC finite will ultimately depend on the
- ability to initialise the sampler within high-density regions of the target
- density; alternatively the two approaches could be combined.
+ KMC finite is an efficient online estimator that allows to use 
+\emph on
+all
+\emph default
+ of the Markov chain history, at the cost of decreased efficiency in unexpored
+ regions.
+ A choice between KMC lite and KMC finite ultimately depends on the ability
+ to initialise the sampler within high-density regions of the target; alternativ
+ely the two approaches could be combined.
 \end_layout
 
 \begin_layout Standard
@@ -661,7 +662,7 @@ status open
 \end_inset
 
  otherwise.
- In this paper, we generally assume that 
+ We assume that 
 \begin_inset Formula $\pi$
 \end_inset
 
@@ -711,7 +712,7 @@ Throughout the paper
 \begin_inset Formula $x$
 \end_inset
 
-, but can only access an unbiased estimator 
+, but can only estimate it unbiasedly via 
 \begin_inset Formula $\hat{\pi}(x)$
 \end_inset
 
@@ -724,7 +725,7 @@ Throughout the paper
 \begin_inset Formula $\hat{\pi}(x)$
 \end_inset
 
- when computing acceptance probabilities results in PM-MCMC 
+ results in PM-MCMC 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "beaumont2003estimation,Andrieu2009a"
@@ -773,8 +774,8 @@ In the absence of
 \end_inset
 
 .
- When the (unknown) scale of the target density is not uniform across dimensions
-, or if there are strong correlations, the original AMH algorithm 
+ When the scale of the target density is not uniform across dimensions,
+ or if there are strong correlations, the AMH algorithm 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Haario1999,Andrieu2008"
@@ -787,19 +788,19 @@ key "Haario1999,Andrieu2008"
 
  from the history of the Markov chain.
  For cases where the local scaling does not match the global covariance
- structure of 
+ of 
 \begin_inset Formula $\pi$
 \end_inset
 
-, for instance when the support of the target is highly nonlinear, KAMH
- 
+, i.e.
+ the support of the target is nonlinear, KAMH 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "sejdinovic_kernel_2014"
 
 \end_inset
 
- improves mixing by learning the target covariance structure in a RKHS.
+ improves mixing by learning the target covariance in a RKHS.
  KAMH proposals are Gaussian with a covariance that matches the local covariance
  of 
 \begin_inset Formula $\pi$
@@ -833,9 +834,8 @@ vspace{-.2cm}
 
 \end_inset
 
-Hamiltonian Monte Carlo (HMC) often overcomes random walk behaviour by utilising
- deterministic, measure-preserving maps to generate efficient Markov transitions
- that 
+Hamiltonian Monte Carlo (HMC) utilisises deterministic, measure-preserving
+ maps to generate efficient Markov transitions 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "neal2011mcmc,Betancourt2015"
@@ -843,8 +843,7 @@ key "neal2011mcmc,Betancourt2015"
 \end_inset
 
 .
- Starting from the negative log unnormalised target density, referred to
- as the 
+ Starting from the negative log target, referred to as the 
 \emph on
 potential energy
 \emph default
@@ -919,12 +918,8 @@ Hamiltonian flow
 \begin_inset Formula $H(p^{*},q^{*})=H(p,q)$
 \end_inset
 
- for any 
-\begin_inset Formula $t\in\mathbb{R}$
-\end_inset
-
 .
- This allows construction of 
+ This allows constructing 
 \begin_inset Formula $\pi$
 \end_inset
 
@@ -932,7 +927,7 @@ Hamiltonian flow
 \begin_inset Formula $q=x_{t}$
 \end_inset
 
-, we repeatedly (i) re-sample 
+, repeatedly (i) re-sample 
 \begin_inset Formula $p'\sim\exp(-K(\cdot))$
 \end_inset
 
@@ -1069,13 +1064,12 @@ reference "eq:potential_energy_operator"
 \end_inset
 
  by a kernel induced surrogate computed from the history of the Markov chain.
- As we will see, this surrogate does not require gradients of the log-target
- density.
+ This surrogate does not require gradients of the log-target density.
  The surrogate induces a kernel Hamiltonian flow, which can be numerically
  simulated using standard leap-frog integration.
  As with the discretisation error in HMC, any deviation of the kernel induced
- flow to the true flow is corrected via a Metropolis acceptance procedure,
- which here also contains the estimation noise from 
+ flow to the true flow is corrected via a Metropolis acceptance procedure.
+ This here also contains the estimation noise from 
 \begin_inset Formula $\hat{\pi}$
 \end_inset
 
@@ -1093,17 +1087,24 @@ key "Andrieu2009a"
 \end_inset
 
 .
- Consequently, the stationary distribution of the chain remains correct
-\emph on
-.
-\emph default
+ Consequently, the stationary distribution of the chain remains correct,
+ given that we take care when adapting the surrogate.
+ 
+\begin_inset Note Note
+status open
 
+\begin_layout Plain Layout
 \begin_inset Foot
 status open
 
 \begin_layout Plain Layout
 As usual when constructing adaptive MCMC algorithms, we will need to take
  care when generating proposals based on the history of the Markov chain.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1169,15 +1170,15 @@ key "SriFukKumGreHyv14"
 
 \end_inset
 
-which in particular implies
-\begin_inset Formula 
-\[
-\nabla f\approx-\nabla U=\nabla\log\pi.
-\]
 
+\end_layout
+
+\begin_layout Standard
+which in particular implies 
+\begin_inset Formula $\nabla f\approx-\nabla U=\nabla\log\pi.$
 \end_inset
 
-Here 
+ Here 
 \begin_inset Formula ${\cal H}$
 \end_inset
 
@@ -1244,7 +1245,8 @@ reference "eq:infinite_exp_family"
 
  defines broad class of densities: when universal kernels are used, the
  family is dense in the space of continuous densities on compact domains,
- with respect to the Total Variation, KL, and Hellinger divergences 
+ with respect to e.g.
+ Total Variation and KL 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "Section 3"
@@ -1291,15 +1293,15 @@ key "Hyvarinen-05"
 
 , and reduces the problem to solving a linear system.
  More importantly, the approach is observed to be relatively robust to increasin
-g dimensions, as opposed to classic kernel density estimation.
- We will return to the topic of estimation in Section 
+g dimensions.
+ We return to estimation in Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:estimators"
 
 \end_inset
 
-, where we develop two efficient approximate empirical estimators.
+, where we develop two efficient approximations.
  For now, assume access to an 
 \begin_inset Formula $\hat{f}\in{\cal H}$
 \end_inset
@@ -3661,15 +3663,7 @@ KMC Lite: Pseudo-Marginal MCMC for GP Classification on Real World Data
 \end_layout
 
 \begin_layout Standard
-Following 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "Section 5.1"
-key "sejdinovic_kernel_2014"
-
-\end_inset
-
-, we next apply KMC to sample from the marginal posterior over hyper-parameters
+We next apply KMC to sample from the marginal posterior over hyper-parameters
  of a Gaussian Process Classification (GPC) model on the UCI Glass dataset
  
 \begin_inset CommandInset citation
@@ -5431,7 +5425,7 @@ Denote by
 
 .
  Define 
-\begin_inset Formula $c(x^{(0)}):=L\epsilon^{2}\nabla\log\pi(x^{(0)})/2+\epsilon^{2}\sum_{i=1}^{L-1}(L-i)\nabla\log\pi(x^{(i\epsilon)}$
+\begin_inset Formula $c(x^{(0)}):=L\epsilon^{2}\nabla\log\pi(x^{(0)})/2+\epsilon^{2}\sum_{i=1}^{L-1}(L-i)\nabla\log\pi(x^{(i\epsilon)})$
 \end_inset
 
  and 
