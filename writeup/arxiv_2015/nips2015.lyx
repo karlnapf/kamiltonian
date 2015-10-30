@@ -6956,8 +6956,8 @@ status open
 \align center
 \begin_inset Graphics
 	filename figures/LN_plot.pdf
-	scale 20
-	BoundingBox 200bp 30bp 850bp 506bp
+	scale 17
+	BoundingBox 0bp 0bp 504bp 504bp
 	clip
 
 \end_inset

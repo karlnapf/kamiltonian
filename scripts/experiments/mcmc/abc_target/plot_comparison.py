@@ -98,7 +98,7 @@ if __name__ == "__main__":
     ax_acor.legend((line1, line2, line3, line4), ["KMC", "RW","HABC naive", "HABC friction"])
     ax_acor.grid(True)
     plt.sca(ax_acor)
-    plt.savefig("abc_target_autocorr.pdf", bbox_inches="tight")
+    plt.savefig("abc_target_autocorr_with_friction.eps", bbox_inches="tight")
     
     # KDE
     for alg_idx, fnames in enumerate([
@@ -122,5 +122,5 @@ if __name__ == "__main__":
         
     ax_kde.grid(True)
     plt.sca(ax_kde)
-    plt.savefig("abc_target_marginal0.pdf", bbox_inches="tight")
+    plt.savefig("abc_target_marginal0_with_friction.eps", bbox_inches="tight")
     plt.show()
