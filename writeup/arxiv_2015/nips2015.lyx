@@ -196,13 +196,13 @@ Kernel Hamiltonian Monte Carlo (KMC)
 \emph default
 , a gradient-free adaptive MCMC algorithm based on Hamiltonian Monte Carlo
  (HMC).
- On target densities where HMC is unavailable due to intractable gradients,
- KMC adaptively learns the target's gradient structure by fitting an exponential
- family model in a Reproducing Kernel Hilbert Space.
+ On target densities where classical HMC is not an option due to intractable
+ gradients, KMC adaptively learns the target's gradient structure by fitting
+ an exponential family model in a Reproducing Kernel Hilbert Space.
  Computational costs are reduced by two novel efficient approximations to
  this gradient.
  While being asymptotically exact, KMC mimics HMC in terms of sampling efficienc
-y and offers substantial mixing improvements to state-of-the-art gradient
+y, and offers substantial mixing improvements over state-of-the-art gradient
  free samplers.
  We support our claims with experimental studies on both toy and real-world
  applications, including Approximate Bayesian Computation and exact-approximate
@@ -310,9 +310,9 @@ key "FilipponeIEEETPAMI13"
 \end_inset
 
 .
- A related context is MCMC for Approximate Bayesian Computation (ABC-MCMC),
- where the posterior has to be approximated through repeated simulation
- from a likelihood model 
+ A related setting is MCMC for Approximate Bayesian Computation (ABC-MCMC),
+ where the posterior is approximated through repeated simulation from a
+ likelihood model 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "marjoram2003markov,Sisson2010"
@@ -419,7 +419,7 @@ globally
 \emph default
 .
  More precisely, we fit an infinite dimensional exponential family model
- in a RKHS via score matching 
+ in an RKHS via score matching 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SriFukKumGreHyv14,Hyvarinen-05"
@@ -427,9 +427,9 @@ key "SriFukKumGreHyv14,Hyvarinen-05"
 \end_inset
 
 .
- This is a non-parametric method to model the log unnormalised target density
- as an RKHS function, and has been shown to approximate a rich class of
- density functions arbitrarily well.
+ This is a non-parametric method of modelling the log unnormalised target
+ density as an RKHS function, and has been shown to approximate a rich class
+ of density functions arbitrarily well.
  More importantly, the method has been empirically observed to be relatively
  robust to increasing dimensionality -- in sharp contrast to classical kernel
  density estimation 
@@ -490,7 +490,7 @@ all
  regions.
  A choice between KMC lite and KMC finite ultimately depends on the ability
  to initialise the sampler within high-density regions of the target; alternativ
-ely the two approaches could be combined.
+ely, the two approaches could be combined.
 \end_layout
 
 \begin_layout Standard
@@ -498,7 +498,7 @@ Experiments show that KMC inherits the efficiency of HMC, and therefore
  mixes significantly better than state-of-the-art gradient-free adaptive
  samplers on a number of target densities, including on synthetic examples,
  and when used in PM-MCMC and ABC-MCMC.
- All code can be fond at
+ All code can be found at
 \size footnotesize
  
 \begin_inset Flex URL
@@ -666,7 +666,7 @@ status open
 \begin_inset Formula $\pi$
 \end_inset
 
- is intractable
+ is intractable,
 \begin_inset Foot
 status open
 
@@ -680,7 +680,7 @@ status open
 
 \end_inset
 
-, i.e.
+ i.e.
  that we can neither evaluate 
 \begin_inset Formula $\pi(x)$
 \end_inset
@@ -834,8 +834,8 @@ vspace{-.2cm}
 
 \end_inset
 
-Hamiltonian Monte Carlo (HMC) utilisises deterministic, measure-preserving
- maps to generate efficient Markov transitions 
+Hamiltonian Monte Carlo (HMC) uses deterministic, measure-preserving maps
+ to generate efficient Markov transitions 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "neal2011mcmc,Betancourt2015"
@@ -954,7 +954,7 @@ Hamiltonian operator
 
 In practice, 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:potential_energy_operator"
 
 \end_inset
@@ -992,8 +992,8 @@ In many cases the gradient of
 \begin_inset Formula $\log\pi(q)=-U(q)$
 \end_inset
 
- is unavailable, leaving random-walk based methods as the state-of-the-art
- 
+ cannot be written in closed form, leaving random-walk based methods as
+ the state-of-the-art 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sejdinovic_kernel_2014,Andrieu2008"
@@ -1001,7 +1001,7 @@ key "sejdinovic_kernel_2014,Andrieu2008"
 \end_inset
 
 .
- KMC aims to overcome random-walk behaviour, so as to obtain significantly
+ We aim to overcome random-walk behaviour, so as to obtain significantly
  more efficient sampling 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1068,12 +1068,12 @@ reference "eq:potential_energy_operator"
  The surrogate induces a kernel Hamiltonian flow, which can be numerically
  simulated using standard leap-frog integration.
  As with the discretisation error in HMC, any deviation of the kernel induced
- flow to the true flow is corrected via a Metropolis acceptance procedure.
+ flow from the true flow is corrected via a Metropolis acceptance procedure.
  This here also contains the estimation noise from 
 \begin_inset Formula $\hat{\pi}$
 \end_inset
 
- and re-using previous values of 
+ and re-uses previous values of 
 \begin_inset Formula $\hat{\pi}$
 \end_inset
 
@@ -1236,6 +1236,7 @@ natural parameters
 \change_deleted 456741484 1433169142
  
 \change_unchanged
+Eq.
  
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -1398,8 +1399,7 @@ reference "eq:kmc_accept_prob"
 
 \end_inset
 
- by unbiased estimates, i.e.
- we replace 
+ by unbiased estimates, i.e., we replace 
 \begin_inset Formula $\pi(q)$
 \end_inset
 
@@ -1426,7 +1426,7 @@ key "Andrieu2009a"
 \end_inset
 
 .
- Any deviations of the kernel induced flow from the true flow results in
+ Any deviations of the kernel induced flow from the true flow result in
  a decreased acceptance probability 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -1592,7 +1592,7 @@ key "SriFukKumGreHyv14"
 
 \end_inset
 
- has large computational costs.
+ has a large computational cost.
  This is problematic in the adaptive MCMC context, where the model has to
  be updated on a regular basis.
  We propose two efficient approximations, each with its strengths and weaknesses.
@@ -1875,8 +1875,8 @@ key "SriFukKumGreHyv14"
 \end_inset
 
  matrix.
- This is clearly prohibitive if we are to run even a moderately large number
- of iterations of a Markov chain.
+ This is clearly prohibitive if we are to run even a moderate number of
+ iterations of a Markov chain.
  Following 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1889,7 +1889,7 @@ key "sejdinovic_kernel_2014"
 \begin_inset Formula $t$
 \end_inset
 
-: we form a proposal using a random sub-sample of a fixed size 
+: we form a proposal using a random sub-sample of fixed size 
 \begin_inset Formula $n$
 \end_inset
 
@@ -1898,12 +1898,23 @@ key "sejdinovic_kernel_2014"
 \end_inset
 
 .
- In order to reduce excessive computational costs arising when 
+ In order to avoid excessive computation when 
 \begin_inset Formula $d$
 \end_inset
 
- is large, we approximate the full dual solution by expressing it in terms
- of 
+ is large, we replace
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+AG: An important distinction, we are not approximating the full solution,
+ we are replacing it with a simpler one (indeed, as we've seen, the solution
+ is not a projection of the full solution onto a subspace).
+\end_layout
+
+\end_inset
+
+ the full dual solution with a solution in terms of 
 \begin_inset Formula $\text{span}\left(\left\{ k(z_{i},\cdot)\right\} _{i=1}^{n}\right)$
 \end_inset
 
@@ -1955,7 +1966,26 @@ reference "eq:score_matching_parametric_model"
 
 \end_inset
 
- takes the `light' dual form
+ takes the `light'
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+AG: I would be cautious about using 
+\begin_inset Quotes eld
+\end_inset
+
+dual
+\begin_inset Quotes erd
+\end_inset
+
+ here, since we assume this form of the solution, rather than arriving at
+ it from a primal problem.
+\end_layout
+
+\end_inset
+
+ form
 \begin_inset ERT
 status open
 
@@ -2093,7 +2123,7 @@ The estimator costs
 \begin_inset Formula ${\cal O}(n^{3}+dn^{2})$
 \end_inset
 
- computation (both for computing 
+ computation (for computing 
 \begin_inset Formula $C,b$
 \end_inset
 
@@ -2105,7 +2135,7 @@ The estimator costs
 \begin_inset Formula ${\cal O}(n^{2})$
 \end_inset
 
- storage for a fixed random chain history sub-sample size 
+ storage, for a fixed random chain history sub-sample size 
 \begin_inset Formula $n$
 \end_inset
 
@@ -2227,7 +2257,7 @@ reference "eq:infinite_exp_family"
 
 \end_inset
 
- can be approximated via assuming the model in 
+ can be approximated by assuming the model in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_parametric_model"
@@ -2545,8 +2575,8 @@ full
  Markov chain history, and therefore is a more elegant solution than KMC
  lite, which has greater computational cost and requires sub-sampling the
  chain history.
- Due to the parametric nature of this approximate model, however, the tails
- of the estimator are not guaranteed to decay.
+ Due to the parametric nature of KMC finite, however, the tails of the estimator
+ are not guaranteed to decay.
  For example, the random Fourier feature embedding described below Proposition
  
 \begin_inset CommandInset ref
@@ -2576,9 +2606,9 @@ reference "eq:lite_estimator"
 
 , whose gradients decay outside of the training data.
  As a result, KMC lite is guaranteed to fall back to a Random Walk Metropolis
- in unexplored regions, inheriting convergence properties, and smoothly
+ in unexplored regions, inheriting its convergence properties, and smoothly
  transitions to HMC-like proposals as the MCMC chain grows.
- A proof can be found in Appendix 
+ A proof of the proposition below can be found in Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Appenidx_ergodicity_lite_proof"
@@ -2607,7 +2637,7 @@ Assume
 \begin_inset Formula $\pi(x)$
 \end_inset
 
- has log-concave tails, regularity conditions of 
+ has log-concave tails, the regularity conditions of 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "Thm 2.2"
@@ -2619,8 +2649,8 @@ key "roberts1996geometric"
 \begin_inset Formula $\pi$
 \end_inset
 
--irreducibility and smallness of compact sets), MCMC adaptation stops after
- a fixed time, and a fixed number 
+-irreducibility and smallness of compact sets), that MCMC adaptation stops
+ after a fixed time, and a fixed number 
 \begin_inset Formula $L$
 \end_inset
 
@@ -3337,11 +3367,11 @@ Gamma(1,1)
 \family default
  distribution and rotate with a uniformly sampled random orthogonal matrix.
  The resulting target is challenging to estimate due to its `non-singular
- smoothness', i.e.
- largely differing length-scales across its principal components.
+ smoothness', i.e., substantially differing length-scales across its principal
+ components.
  As a single Gaussian kernel is not able to effeciently represent such scaling
  families, we use a rational quadratic kernel for the gradient estimation,
- whose random features are straight-forward to compute.
+ whose random features are straightforward to compute.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3363,10 +3393,10 @@ reference "fig:kmc_trajectories_mean_acceptance"
 \end_inset
 
 .
- In up to moderate dimensions, gradients of the finite estimator lead to
+ In low to moderate dimensions, gradients of the finite estimator lead to
  acceptance rates comparable to plain HMC.
- On targets with a more `regular' smoothness, the estimator naturally performs
- well in up to 
+ On targets with more `regular' smoothness, the estimator performs well
+ in up to 
 \begin_inset Formula $d\approx100$
 \end_inset
 
@@ -3465,11 +3495,11 @@ Left:
 \series bold
 Middle/right: 
 \series default
-Slices through left plot with error bars for a fixed 
+Slices through left plot with error bars for fixed 
 \begin_inset Formula $n=m$
 \end_inset
 
- and as a function in 
+ and as a function of 
 \series bold
 
 \begin_inset Formula $d$
@@ -3477,7 +3507,7 @@ Slices through left plot with error bars for a fixed
 
 
 \series default
- (left), and for a fixed 
+ (left), and for fixed 
 \begin_inset Formula $d$
 \end_inset
 
@@ -3513,10 +3543,10 @@ name "sub:experiment_hmc_like_mixing"
 \end_layout
 
 \begin_layout Standard
-We now show that KMC's performance approaches that of HMC as it sees more
+We next show that KMC's performance approaches that of HMC as it sees more
  data.
  We compare KMC, HMC, an isotropic random walk (RW), and KAMH on the 8-dimension
-al nonlinear banana-shaped target, see Appendix 
+al nonlinear banana-shaped target; see Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:app_banana_target"
@@ -3535,17 +3565,17 @@ a sufficient burn-in (burn-in speed is included in next example).
 \end_inset
 
 .
- We tune the scaling of KAMH and RW to achieve 23% acceptance.
- We set HMC parameters to achieve 80% acceptance and then use the same parameter
-s for KMC.
- We run all samplers for 2000+200 iterations from a random start point,
- discard the burn-in and compute acceptance rates, the norm of the empirical
+ We tuned the scaling of KAMH and RW to achieve 23% acceptance.
+ We set HMC parameters to achieve 80% acceptance and then used the same
+ parameters for KMC.
+ We ran all samplers for 2000+200 iterations from a random start point,
+ discarded the burn-in and computed acceptance rates, the norm of the empirical
  mean 
 \begin_inset Formula $\mathbb{\Vert\hat{E}}[x]\Vert$
 \end_inset
 
-, and minimum effective sample size (ESS) across dimensions.
- For KAMH and KMC, we repeat the experiment for an increasing number of
+, and the minimum effective sample size (ESS) across dimensions.
+ For KAMH and KMC, we repeated the experiment for an increasing number of
  burn-in samples and basis functions 
 \begin_inset Formula $m=n$
 \end_inset
@@ -3625,9 +3655,9 @@ name "fig:experiment_synthetic_banana"
 
 \end_inset
 
-Results for 8-dimensional synthetic Banana.
- As the number of seen data increases, KMC performs close to HMC -- outperformin
-g KAMH and RW.
+Results for the 8-dimensional synthetic Banana.
+ As the amout of observed data increases, KMC performance approaches HMC
+ -- outperforming KAMH and RW.
  80% error bars over 30 runs.
 \end_layout
 
@@ -3679,11 +3709,8 @@ key "Bache2013"
 \end_inset
 
 .
- Note that HMC is 
-\emph on
-unavailable
-\emph default
- for this problem, due to the intractability of the marginal data likelihood.
+ Classical HMC cannot be used for this problem, due to the intractability
+ of the marginal data likelihood.
  Our experimental protocol mostly follows 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -3703,8 +3730,8 @@ reference "sub:app_gp_target"
 \emph on
 without
 \emph default
- discarding a burn-in, i.e.
- we study how fast KMC initially explores the target.
+ discarding a burn-in, i.e., we study how fast KMC initially explores the
+ target.
  We compare convergence in terms of all mixed moments of order up to 3 to
  a set of benchmark samples (MMD 
 \begin_inset CommandInset citation
@@ -3719,8 +3746,8 @@ key "Grettonetal12"
 \begin_inset Formula $[0.01,0.1]$
 \end_inset
 
-, a standard Gaussian momentum, and a cross-validation tuned kernel, see
- Appendix 
+, a standard Gaussian momentum, and a kernel tuned by cross-validation,
+ see Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:app_gp_target"
@@ -3738,9 +3765,18 @@ reference "fig:experiment_gp_abc"
 
 \end_inset
 
- (left) shows that KMC's burn-in phase contains a short `exploration phase'
- where produced estimates are bad, supposedly due to it falling back to
- a random walk in unexplored regions, c.f.
+ (left) shows that KMC's burn-in contains a short `exploration phase' where
+ produced estimates are bad,
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+supposedly
+\end_layout
+
+\end_inset
+
+ due to it falling back to a random walk in unexplored regions, c.f.
  Proposition 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3754,7 +3790,17 @@ reference "prop:ergodicity_kmc_lite"
  These results are backed by the minimum ESS (not plotted), which is around
  415 for KMC and is around 35 and 25 for KAMH and RW, respectively.
  Note that all samplers effectively stop improving from 3000 iterations
- -- supposedly a burn-in bias.
+ -- 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+supposedly
+\end_layout
+
+\end_inset
+
+ indicating a burn-in bias.
  All samplers took 1h time, with most time spent estimating the marginal
  likelihood.
 \begin_inset ERT
@@ -3809,15 +3855,14 @@ key "marjoram2003markov"
  estimator of the approximate likelihood.
  As each such evaluation requires expensive simulations from the likelihood,
  the goal of all ABC methods is to reduce the number of such simulations.
- 
+ Accordingly, Hamiltonian ABC was recently proposed 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Meeds2015"
 
 \end_inset
 
- recently proposed Hamiltonian ABC, combining the synthetic likelihood approach
- 
+, combining the synthetic likelihood approach 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Wood:2010aa"
@@ -3879,7 +3924,6 @@ key "Meeds2015"
 \end_inset
 
 .
-
  See Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3888,8 +3932,6 @@ reference "sub:app_abc_mcmc"
 \end_inset
 
  for details.
-\lang british
-
 \begin_inset ERT
 status open
 
@@ -4014,14 +4056,14 @@ vspace{-.3cm}
 
 \end_inset
 
-We have introduced KMC, a kernel-based gradient free adaptive MCMC algorithm,
+We have introduced KMC, a kernel-based gradient free adaptive MCMC algorithm
  that mimics HMC's behaviour by estimating target gradients in an RKHS.
  In experiments, KMC outperforms random walk based sampling methods in up
- to moderately high dimensions (
-\begin_inset Formula $d\leq50$
+ to 
+\begin_inset Formula $d=50$
 \end_inset
 
-), including the recent kernel-based KAMH  
+ dimensions, including the recent kernel-based KAMH  
 \begin_inset CommandInset citation
 LatexCommand cite
 key "sejdinovic_kernel_2014"
@@ -4030,10 +4072,10 @@ key "sejdinovic_kernel_2014"
 
 .
  KMC is particularly useful when gradients of the target density are unavailable
-, as in PM-MCMC or ABC-MCMC, where HMC is not an option.
- We have proposed two efficient empirical estimators, each with different
- strengths and weaknesses, and have given experimental evidence of the robustnes
-s of both.
+, as in PM-MCMC or ABC-MCMC, where classical HMC cannot be used.
+ We have proposed two efficient empirical estimators for the target gradients,
+ each with different strengths and weaknesses, and have given experimental
+ evidence for the robustness of both.
 \end_layout
 
 \begin_layout Standard
@@ -4041,7 +4083,7 @@ Future work includes establishing theoretical consistency and uniform convergenc
 e rates for the empirical estimators, and a thorough experimental study
  in the ABC-MCMC context where we see a lot of potential for KMC.
  It might also be possible to use KMC as a precomputing strategy to speed
- up original HMC as in 
+ up classical HMC as in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "zhang2015hamiltonian"
