@@ -3432,8 +3432,6 @@ status open
 \begin_inset Graphics
 	filename figures/average_accept_gaussian_target_rebuttal_kmc.eps
 	scale 50
-	BoundingBox 0bp 0bp 200bp 144bp
-	clip
 
 \end_inset
 
@@ -3441,8 +3439,6 @@ status open
 \begin_inset Graphics
 	filename figures/average_accept_gaussian_target_rebuttal_N=5000.eps
 	scale 50
-	BoundingBox 5bp 0bp 200bp 144bp
-	clip
 
 \end_inset
 
@@ -3450,8 +3446,7 @@ status open
 \begin_inset Graphics
 	filename figures/average_accept_gaussian_target_rebuttal_D=8.eps
 	scale 50
-	BoundingBox 5bp 0bp 206bp 144bp
-	clip
+	BoundingBox 0bp 0bp 225bp 153bp
 
 \end_inset
 
@@ -5887,7 +5882,6 @@ status open
 \begin_inset Graphics
 	filename figures/average_accept_gaussian_target_kmc.eps
 	scale 50
-	BoundingBox 0bp 0bp 200bp 144bp
 	clip
 
 \end_inset
@@ -5896,8 +5890,6 @@ status open
 \begin_inset Graphics
 	filename figures/average_accept_gaussian_target_N=2000.eps
 	scale 50
-	BoundingBox 5bp 0bp 200bp 144bp
-	clip
 
 \end_inset
 
@@ -5905,8 +5897,7 @@ status open
 \begin_inset Graphics
 	filename figures/average_accept_gaussian_target_D=16.eps
 	scale 50
-	BoundingBox 5bp 0bp 206bp 144bp
-	clip
+	BoundingBox 0bp 0bp 216bp 144bp
 
 \end_inset
 
@@ -6289,7 +6280,7 @@ We use the open-source package
 \family typewriter
 pybo
 \family default
-, 
+, available under 
 \begin_inset Flex URL
 status open
 
@@ -6310,7 +6301,7 @@ https://github.com/mwhoffman/pybo
  15 iterations, where each trial is done via a 5-fold cross-validation of
  the score matching objective 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:score_matching_objective_sample_version"
 
 \end_inset
