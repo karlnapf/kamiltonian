@@ -4176,6 +4176,7 @@ reference "prop:finite_estimator"
 \end_inset
 
 , as well as additional computational details for both KMC lite in Section
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Appendix_lite_details"
@@ -4197,8 +4198,7 @@ reference "sub:Appenidx_ergodicity_lite_proof"
 
 \end_inset
 
- contains the proof of geometric ergodicity of KMC lite from proposition
- 
+ covers the proof of geometric ergodicity of KMC lite from Proposition 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "prop:ergodicity_kmc_lite"
@@ -4213,7 +4213,7 @@ reference "sec:app_experimental_details"
 
 \end_inset
 
- contains further experimental details.
+ describes further experimental details.
 \end_layout
 
 \begin_layout Section
@@ -4252,14 +4252,24 @@ key "Hyvarinen-07"
 \end_inset
 
 .
- We assume the model log-density 
+ We assume that the model log-density 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:score_matching_parametric_model"
 
 \end_inset
 
- takes the dual form in Proposition 
+ takes the 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+dual 
+\end_layout
+
+\end_inset
+
+form in Proposition 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "prop:lite_estimator"
@@ -4273,15 +4283,8 @@ reference "eq:score_matching_objective_sample_version"
 
 \end_inset
 
- and derive a matrix expression of the empirical score matching objective
- 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:score_matching_objective_sample_version"
-
-\end_inset
-
-, which can be minimised with a linear solve.
+, from which we derive an empirical score matching objective as a system
+ of linear equations.
 \end_layout
 
 \begin_layout Proof
@@ -4318,7 +4321,7 @@ reference "eq:score_matching_objective_sample_version"
  are then given by
 \begin_inset Formula 
 \[
-\psi_{\ell}(x;\alpha):=\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}=\frac{2}{\sigma}\sum_{i=1}^{n}\alpha_{i}(x_{i\ell}-x_{\ell})\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right)
+\psi_{\ell}(x;\alpha):=\frac{\partial\log\tilde{\pi}(x;f)}{\partial x_{\ell}}=\frac{2}{\sigma}\sum_{i=1}^{n}\alpha_{i}(x_{i\ell}-x_{\ell})\exp\left(-\frac{\|x_{i}-x\|^{2}}{\sigma}\right),
 \]
 
 \end_inset
@@ -4448,7 +4451,7 @@ Second Term
 -th dimension, this is
 \begin_inset Formula 
 \begin{align*}
- & \sum_{i=1}^{n}\left[\sum_{j=1}^{n}\alpha_{j}(x_{j\ell}-x_{i\ell})\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}
+ & \sum_{i=1}^{n}\left[\sum_{j=1}^{n}\alpha_{j}(x_{j\ell}-x_{i\ell})\exp\left(-\frac{\|x_{i}-x_{j}\|^{2}}{\sigma}\right)\right]^{2}.
 \end{align*}
 
 \end_inset
@@ -4472,7 +4475,7 @@ We take the entry-wise square and sum the resulting vector.
 \begin_layout Proof
 \begin_inset Formula 
 \begin{align*}
-K(\alpha\odot x) & =KD_{x}\alpha\\
+K(\alpha\odot x) & =KD_{x}\alpha,\\
 (K\alpha)\odot x & =D_{x}K\alpha.
 \end{align*}
 
@@ -4513,7 +4516,7 @@ where
 \begin_layout Proof
 \begin_inset Formula 
 \begin{align*}
-b & =\sum_{\ell=1}^{d}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{n}\\
+b & =\sum_{\ell=1}^{d}\left(\frac{2}{\sigma}(Ks_{\ell}+D_{s_{\ell}}K\mathbf{1}-2D_{x_{\ell}}Kx_{\ell})-K\mathbf{1}\right)\in\mathbb{R}^{n},\\
 C & =\sum_{\ell=1}^{d}\left[D_{x_{\ell}}K-KD_{x_{\ell}}\right]\left[KD_{x_{\ell}}-D_{x_{\ell}}K\right]\in\mathbb{R}^{n\times n}.
 \end{align*}
 
@@ -4528,7 +4531,7 @@ Assuming
 
 \begin_inset Formula 
 \[
-\hat{\alpha}=\frac{-\sigma}{2}C^{-1}b.
+\hat{\alpha}=-\frac{\sigma}{2}C^{-1}b.
 \]
 
 \end_inset
@@ -4565,7 +4568,7 @@ key "SriFukKumGreHyv14"
 \end_layout
 
 \begin_layout Subsection*
-Linear Computational Costs via Low-rank Approximations and Conjugate Gradient
+Reduced Computational Costs via Low-rank Approximations and Conjugate Gradient
 \end_layout
 
 \begin_layout Standard
@@ -4710,11 +4713,17 @@ reference "eq:lite_estimator"
 \end_inset
 
 .
- We arrive at a 
-\emph on
-linear 
-\emph default
-total cost of 
+ We arrive at a
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ZSZ: it's not necessarily linear, since l may to increase with n for consistency.
+\end_layout
+
+\end_inset
+
+ total cost of 
 \begin_inset Formula ${\cal O}(n\ell\tau)$
 \end_inset
 
@@ -4854,7 +4863,7 @@ b:=-\frac{1}{n}\sum_{i=1}^{n}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\math
 
 \end_inset
 
-Assuming 
+Assuming that 
 \begin_inset Formula $C$
 \end_inset
 
@@ -4898,8 +4907,8 @@ key "SriFukKumGreHyv14"
 
 \end_inset
 
-, we in practice add a term 
-\begin_inset Formula $\lambda\Vert\theta\Vert_{2}^{2}$
+, we add a term 
+\begin_inset Formula $\lambda/2\Vert\theta\Vert_{2}^{2}$
 \end_inset
 
  for 
@@ -4972,7 +4981,7 @@ key "Rahimi2007"
  Bochner's theorem gives the representation
 \begin_inset Formula 
 \[
-k(x,y)=\tilde{k}(x-y)=\int_{\mathbb{R}^{d}}\exp\left(i\omega^{\top}(x-y)\right)d\Gamma(\omega),
+k(x,y)=\tilde{k}(x-y)=\int_{\mathbb{R}^{d}}\exp\left(i\omega^{\top}(x-y)\right)\mathrm{d}\Gamma(\omega),
 \]
 
 \end_inset
@@ -5056,7 +5065,7 @@ key "le2013fastfood"
 \begin_layout Standard
 The feature map derivatives 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:score_function_fourier"
 
 \end_inset
@@ -5072,7 +5081,7 @@ reference "eq:score_function_fourier"
 \end_inset
 
 where 
-\begin_inset Formula $\omega_{1\ell}$
+\begin_inset Formula $\omega_{j\ell}$
 \end_inset
 
  is the 
@@ -5080,7 +5089,7 @@ where
 \end_inset
 
 -th component of 
-\begin_inset Formula $\omega_{1}$
+\begin_inset Formula $\omega_{j}$
 \end_inset
 
 , and
@@ -5109,19 +5118,11 @@ where
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-An example pair of translation invariant kernel and its Fourier transform
- for the well-known 
-\emph on
-Gaussian kernel
-\emph default
- are
+As an example, the translation invariant Gaussian kernel and its Fourier
+ transform are
 \begin_inset Formula 
 \[
-k(x,y)={\cal \exp}\left(-\sigma\Vert x-y\Vert_{2}^{2}\right)\quad\text{and}\quad\Gamma(\omega)={\cal N}\left(\omega\Big\vert\mathbf{0},\sigma^{2}I_{m}\right).
+k(x,y)={\cal \exp}\left(-\frac{\Vert x-y\Vert_{2}^{2}}{2\sigma^{2}}\right)\quad\text{and}\quad\Gamma(\omega)={\cal N}\left(\omega\Big\vert\mathbf{0},\frac{2}{\sigma^{2}}I_{m}\right).
 \]
 
 \end_inset
@@ -5383,7 +5384,7 @@ Algorithmic Description:
 Update sums 
 \begin_inset Formula 
 \[
-\bar{b}_{t+1}\leftarrow\bar{b}_{t}-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t+1}}^{\ell}\quad\text{and}\quad\bar{C}_{t+1}\leftarrow\bar{C}_{t}+\frac{1}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t+1}}^{\ell}(\dot{\phi}_{x_{t+1}}^{\ell})^{\top}
+\bar{b}_{t+1}=\bar{b}_{t}-\sum_{\ell=1}^{d}\ddot{\phi}_{x_{t+1}}^{\ell}\quad\text{and}\quad\bar{C}_{t+1}=\bar{C}_{t}+\frac{1}{2}\sum_{\ell=1}^{d}\dot{\phi}_{x_{t+1}}^{\ell}(\dot{\phi}_{x_{t+1}}^{\ell})^{\top}.
 \]
 
 \end_inset
@@ -5410,7 +5411,7 @@ Update approximate infinite dimensional exponential family parameters
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\hat{\theta}\leftarrow\bar{L}_{t+1}^{-\top}\bar{L}_{t+1}^{-1}\bar{b}_{t+1}
+\hat{\theta}=\bar{L}_{t+1}^{-\top}\bar{L}_{t+1}^{-1}\bar{b}_{t+1}.
 \]
 
 \end_inset
@@ -5458,7 +5459,7 @@ Denote by
 \begin_inset Formula $\alpha(x_{t},x^{*}(p'))$
 \end_inset
 
- is the probability of accepting a 
+ the probability of accepting a 
 \begin_inset Formula $(p',x^{*})$
 \end_inset
 
@@ -5634,12 +5635,22 @@ for some
  we have 
 \begin_inset Formula 
 \[
-L\epsilon p'>x^{*}-x_{t}>L\epsilon p'-\gamma_{1}\implies e^{-\alpha_{1}(-\gamma_{1}+L\epsilon p')}\geq e^{-\alpha_{1}(x^{*}-x_{t})}\geq\pi(x^{*})/\pi(x_{t}),
+L\epsilon p'>x^{*}-x_{t}>L\epsilon p'-\gamma_{1}\implies e^{-\alpha_{1}(-\gamma_{1}+L\epsilon p')}\geq e^{-\alpha_{1}(x^{*}-x_{t})}\geq\pi(x^{*})/\pi(x_{t}).
 \]
 
 \end_inset
 
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Proof
 where the last inequality is from (i).
+ ZSZ: problem! missing reference.
+\end_layout
+
+\end_inset
+
  For 
 \begin_inset Formula $p'\in(\gamma_{2}^{2}/2,x_{t}^{\delta})$
 \end_inset
@@ -5838,8 +5849,8 @@ reference "fig:kmc_trajectories_mean_acceptance"
 isotropic
 \emph default
  Gaussian in increasing dimension.
- As length-scales across all principal components is equal, this is a significan
-tly less challening target to estimate gradients for; though still useful
+ As length-scales across all principal components are equal, this is a significa
+ntly less challenging target to estimate gradients for; though still useful
  as a benchmark representing very smooth targets.
  We use a standard Gaussian kernel and the same experimental protocol as
  for Figure 
@@ -6068,8 +6079,19 @@ key "sejdinovic_kernel_2014,Haario1999"
 
 .
  The target is challenging due to the nonlinear dependence of the first
- two dimensions and its highly position dependent scaling within those.
- We use 
+ two dimensions and the highly position dependent scaling within these dimension
+s.
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+We use
+\end_layout
+
+\end_inset
+
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -6150,12 +6172,12 @@ tion.
  the likelihood is given by 
 \begin_inset Formula 
 \[
-p(y_{i}|f_{i})=\frac{1}{1-\exp(-y_{i}f_{i})}
+p(y_{i}|f_{i})=\frac{1}{1-\exp(-y_{i}f_{i})},
 \]
 
 \end_inset
 
- where 
+where 
 \begin_inset Formula $y_{i}\in\{-1,1\}$
 \end_inset
 
@@ -6331,7 +6353,7 @@ reference "sub:experiment_abc"
 
 \end_inset
 
-, including experimental details and an analytic counter example.
+, including experimental details and an analytic counterexample.
 \end_layout
 
 \begin_layout Paragraph
@@ -6381,7 +6403,7 @@ key "Sisson2010"
 \begin_inset Formula $x_{i}$
 \end_inset
 
-as a sample from the approximate posterior 
+ as a sample from the approximate posterior 
 \begin_inset Formula $\pi_{\epsilon}(\theta|y)$
 \end_inset
 
@@ -6394,7 +6416,7 @@ as a sample from the approximate posterior
  as 
 \begin_inset Formula 
 \begin{equation}
-f_{\epsilon}(y|\theta)\propto\int g_{\epsilon}(y|x,\theta)f(x|\theta)dx,\label{eqn:lik}
+f_{\epsilon}(y|\theta)\propto\int g_{\epsilon}(y|x,\theta)f(x|\theta)\mathrm{d}x,\label{eqn:lik}
 \end{equation}
 
 \end_inset
@@ -6423,7 +6445,7 @@ where
 \begin_inset Formula $g_{\epsilon}$
 \end_inset
 
-is based on some low-dimensional summary statistics, which can have both
+ is based on some low-dimensional summary statistics, which can have both
  advantages and disadvantages.
 \end_layout
 
@@ -6728,7 +6750,7 @@ where the precision
  The model is in fact conjugate, giving a Gaussian posterior 
 \begin_inset Formula 
 \[
-\mu|y\sim\mathcal{N}\left(\frac{\tau_{0}\mu_{0}+\tau\sum_{i}\log x_{i}}{\tau_{0}+n\tau},\tau_{0}+n\tau\right)
+\mu|y\sim\mathcal{N}\left(\frac{\tau_{0}\mu_{0}+\tau\sum_{i}\log x_{i}}{\tau_{0}+n\tau},\tau_{0}+n\tau\right).
 \]
 
 \end_inset
@@ -6783,7 +6805,7 @@ reference "fig:experiment_gp_abc_with_friction"
 
  (left).
  This is a proof of concept that a likelihood with a positive skew being
- approximated by a Gaussian introduces upwards bias the posterior.
+ approximated by a Gaussian introduces an upwards bias to the posterior.
 \end_layout
 
 \begin_layout Paragraph
@@ -6921,7 +6943,7 @@ very
  In contrast, KMC only requires a single simulation, for evaluating the
  accept/reject probability 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:kmc_accept_prob"
 
 \end_inset
