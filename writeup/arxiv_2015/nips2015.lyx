@@ -513,7 +513,7 @@ https://github.com/karlnapf/kernel_hmc
 
 
 \size default
-.
+
 \begin_inset ERT
 status open
 
@@ -2140,11 +2140,7 @@ The estimator costs
 \end_inset
 
 .
- This can be further reduced to 
-\emph on
-linear
-\emph default
- computation and storage via low-rank approximations to the kernel matrix
+ This can be further reduced via low-rank approximations to the kernel matrix
  and conjugate gradient methods, which are derived in Appendix 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -2358,7 +2354,7 @@ b:=-\frac{1}{n}\sum_{i=1}^{t}\sum_{\ell=1}^{d}\ddot{\phi}_{x_{i}}^{\ell}\in\math
 An example feature embedding based on random Fourier features 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Rahimi2007"
+key "Rahimi2007,sriperumbudurszabo15optimal"
 
 \end_inset
 
@@ -3436,8 +3432,6 @@ status open
 \begin_inset Graphics
 	filename figures/average_accept_gaussian_target_rebuttal_kmc.eps
 	scale 50
-	BoundingBox 0bp 0bp 200bp 144bp
-	clip
 
 \end_inset
 
@@ -3445,8 +3439,6 @@ status open
 \begin_inset Graphics
 	filename figures/average_accept_gaussian_target_rebuttal_N=5000.eps
 	scale 50
-	BoundingBox 5bp 0bp 200bp 144bp
-	clip
 
 \end_inset
 
@@ -3454,8 +3446,7 @@ status open
 \begin_inset Graphics
 	filename figures/average_accept_gaussian_target_rebuttal_D=8.eps
 	scale 50
-	BoundingBox 5bp 0bp 206bp 144bp
-	clip
+	BoundingBox 0bp 0bp 225bp 153bp
 
 \end_inset
 
@@ -3958,6 +3949,7 @@ status open
 \begin_inset Graphics
 	filename figures/gp_target_results.eps
 	scale 50
+	BoundingBox -5bp 0bp 225bp 153bp
 
 \end_inset
 
@@ -4080,8 +4072,16 @@ key "sejdinovic_kernel_2014"
 
 \begin_layout Standard
 Future work includes establishing theoretical consistency and uniform convergenc
-e rates for the empirical estimators, and a thorough experimental study
- in the ABC-MCMC context where we see a lot of potential for KMC.
+e rates for the empirical estimators, for example via using recent analysis
+ of random Fourier Features with tight bounds 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sriperumbudurszabo15optimal"
+
+\end_inset
+
+, and a thorough experimental study in the ABC-MCMC context where we see
+ a lot of potential for KMC.
  It might also be possible to use KMC as a precomputing strategy to speed
  up classical HMC as in 
 \begin_inset CommandInset citation
@@ -4105,8 +4105,6 @@ https://github.com/karlnapf/kernel_hmc
 \end_inset
 
 
-\size default
-.
 \end_layout
 
 \begin_layout Standard
@@ -5046,7 +5044,14 @@ key "Rahimi2007"
 
 \end_inset
 
- for details and a uniform convergence bound.
+ for details and a uniform convergence bound and 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sriperumbudurszabo15optimal"
+
+\end_inset
+
+ for a more detailed analysis with tighter bounds.
  Note that it is possible to achieve logarithmic computational costs in
  
 \begin_inset Formula $d$
@@ -5299,13 +5304,6 @@ https://github.com/jcrudy/choldate
 
 
 \end_layout
-
-\end_inset
-
-, see 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "seeger2004low"
 
 \end_inset
 
@@ -5635,22 +5633,12 @@ for some
  we have 
 \begin_inset Formula 
 \[
-L\epsilon p'>x^{*}-x_{t}>L\epsilon p'-\gamma_{1}\implies e^{-\alpha_{1}(-\gamma_{1}+L\epsilon p')}\geq e^{-\alpha_{1}(x^{*}-x_{t})}\geq\pi(x^{*})/\pi(x_{t}).
+L\epsilon p'>x^{*}-x_{t}>L\epsilon p'-\gamma_{1}\implies e^{-\alpha_{1}(-\gamma_{1}+L\epsilon p')}\geq e^{-\alpha_{1}(x^{*}-x_{t})}\geq\pi(x^{*})/\pi(x_{t}),
 \]
 
 \end_inset
 
-
-\begin_inset Note Note
-status collapsed
-
-\begin_layout Proof
-where the last inequality is from (i).
- ZSZ: problem! missing reference.
-\end_layout
-
-\end_inset
-
+where the last inequality comes from the log-concave tails assumption.
  For 
 \begin_inset Formula $p'\in(\gamma_{2}^{2}/2,x_{t}^{\delta})$
 \end_inset
@@ -5894,7 +5882,6 @@ status open
 \begin_inset Graphics
 	filename figures/average_accept_gaussian_target_kmc.eps
 	scale 50
-	BoundingBox 0bp 0bp 200bp 144bp
 	clip
 
 \end_inset
@@ -5903,8 +5890,6 @@ status open
 \begin_inset Graphics
 	filename figures/average_accept_gaussian_target_N=2000.eps
 	scale 50
-	BoundingBox 5bp 0bp 200bp 144bp
-	clip
 
 \end_inset
 
@@ -5912,8 +5897,7 @@ status open
 \begin_inset Graphics
 	filename figures/average_accept_gaussian_target_D=16.eps
 	scale 50
-	BoundingBox 5bp 0bp 206bp 144bp
-	clip
+	BoundingBox 0bp 0bp 216bp 144bp
 
 \end_inset
 
@@ -6296,7 +6280,7 @@ We use the open-source package
 \family typewriter
 pybo
 \family default
-, 
+, available under 
 \begin_inset Flex URL
 status open
 
@@ -6317,7 +6301,7 @@ https://github.com/mwhoffman/pybo
  15 iterations, where each trial is done via a 5-fold cross-validation of
  the score matching objective 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:score_matching_objective_sample_version"
 
 \end_inset
@@ -6963,8 +6947,8 @@ status open
 \align center
 \begin_inset Graphics
 	filename figures/LN_plot.pdf
-	scale 40
-	BoundingBox 200bp 30bp 850bp 506bp
+	scale 17
+	BoundingBox 0bp 0bp 504bp 504bp
 	clip
 
 \end_inset

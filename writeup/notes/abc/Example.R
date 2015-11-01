@@ -30,6 +30,9 @@ post = function(mu) { interpost(mu)/Z2 }
 truth = function(mu) { dnorm(mu, (t0*mu0 + t*sum (log(y)) )/(t0 + n*t), sqrt(1/(t0 + n*t)) ) }
 
 # plots
-curve(post, 0,5, lwd = 2, xlab = "mu", ylab = "", main = "Log-Normal Example")
-curve(truth, 0,5, col = "blue", lwd = 3, lty = 2, add = T)
-legend(2.8,6.5, c("True Posterior", "Synthetic Approximation"), c("blue", "black"))
+curve(post, 1.4,2.5, lwd = 2, xlab = "mu", ylab = "")
+curve(truth, 1.4,2.5, col = "blue", lwd = 3, lty = 2, add = T)
+legend(1.5,6.5, c("True Posterior", "Synthetic Approximation"), c("blue", "black"))
+dev.copy(pdf,'LN_plot.pdf')
+dev.off()
+

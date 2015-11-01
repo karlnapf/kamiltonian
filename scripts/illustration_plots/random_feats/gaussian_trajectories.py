@@ -109,7 +109,8 @@ while True:
     plt.title("HMC")
     plt.gca().xaxis.set_visible(False)
     plt.gca().yaxis.set_visible(False)
-    plt.savefig(fname_base + "_hmc.eps", axis_inches="tight")
+    plt.tight_layout()
+    plt.savefig(fname_base + "_hmc.eps")
     
     plt.figure()
     plot_array(Xs_q, Ys_q, np.exp(G_est))
@@ -118,7 +119,8 @@ while True:
     plt.title("KMC")
     plt.gca().xaxis.set_visible(False)
     plt.gca().yaxis.set_visible(False)
-    plt.savefig(fname_base + "_kmc.eps", axis_inches="tight")
+    plt.tight_layout()
+    plt.savefig(fname_base + "_kmc.eps")
     
     plt.figure()
     plot_array(Xs_q, Ys_q, G_norm)
@@ -127,7 +129,8 @@ while True:
     plt.title("HMC gradient")
     plt.gca().xaxis.set_visible(False)
     plt.gca().yaxis.set_visible(False)
-    plt.savefig(fname_base + "_hmc_grad.eps", axis_inches="tight")
+    plt.tight_layout()
+    plt.savefig(fname_base + "_hmc_grad.eps")
     
     plt.figure()
     plot_array(Xs_q, Ys_q, G_est_norm)
@@ -137,7 +140,8 @@ while True:
     plt.title("KMC gradient")
     plt.gca().xaxis.set_visible(False)
     plt.gca().yaxis.set_visible(False)
-    plt.savefig(fname_base + "_kmc_grad.eps", axis_inches="tight")
+    plt.tight_layout()
+    plt.savefig(fname_base + "_kmc_grad.eps")
     
     plt.figure()
     plt.title("Momentum")
@@ -145,7 +149,8 @@ while True:
     plot_2d_trajectory(Ps)
     plt.gca().xaxis.set_visible(False)
     plt.gca().yaxis.set_visible(False)
-    plt.savefig(fname_base + "_momentum_hmc.eps", axis_inches="tight")
+    plt.tight_layout()
+    plt.savefig(fname_base + "_momentum_hmc.eps")
     
     plt.figure()
     plt.title("Momentum")
@@ -153,7 +158,8 @@ while True:
     plot_2d_trajectory(Ps_est)
     plt.gca().xaxis.set_visible(False)
     plt.gca().yaxis.set_visible(False)
-    plt.savefig(fname_base + "_momentum_kmc.eps", axis_inches="tight")
+    plt.tight_layout()
+    plt.savefig(fname_base + "_momentum_kmc.eps")
     
     # ylim for Hamiltonian plots
     ylim = [np.min([Hs.min(), Hs_est.min()]),
@@ -167,7 +173,8 @@ while True:
     plt.gca().get_yaxis().get_major_formatter().set_useOffset(False)
     plt.xlabel("Leap-frog step")
     plt.ylabel(r"$H(p,q)$")
-    plt.savefig(fname_base + "_hamiltonian_hmc.eps", axis_inches="tight")
+    plt.tight_layout()
+    plt.savefig(fname_base + "_hamiltonian_hmc.eps")
     
     plt.figure()
     plt.title("Hamiltonian")
@@ -177,7 +184,8 @@ while True:
     plt.gca().xaxis.set_visible(False)
     plt.xlabel("Leap-frog step")
     plt.ylabel(r"$H(p,q)$")
-    plt.savefig(fname_base + "_hamiltonian_kmc.eps", axis_inches="tight")
+    plt.tight_layout()
+    plt.savefig(fname_base + "_hamiltonian_kmc.eps")
     
     # ylim for acceptance plots
     ylim = [np.exp(np.min([log_acc.min(), log_acc_est.min()])),
@@ -193,9 +201,9 @@ while True:
     plt.ylim(ylim)
     plt.xlim([0, num_steps])
     plt.grid(True)
-    plt.xlabel("Iteration")
-    plt.ylabel("Acc. prob.")
-    plt.savefig(fname_base + "_acceptance_hmc.eps", axis_inches="tight")
+    plt.xlabel("Leap-frog steps")
+    plt.tight_layout()
+    plt.savefig(fname_base + "_acceptance_hmc.eps")
     
     plt.figure()
     plt.title("Acceptance prob.")
@@ -204,8 +212,9 @@ while True:
     plt.ylim(ylim)
     plt.xlim([0, num_steps])
     plt.grid(True)
-    plt.xlabel("Iteration")
-    plt.savefig(fname_base + "_acceptance_kmc.eps", axis_inches="tight")
+    plt.xlabel("Leap-frog steps")
+    plt.tight_layout()
+    plt.savefig(fname_base + "_acceptance_kmc.eps")
     
     
     plt.show()
