@@ -6963,7 +6963,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figures/LN_plot.pdf
-	scale 20
+	scale 40
 	BoundingBox 200bp 30bp 850bp 506bp
 	clip
 
@@ -6972,14 +6972,14 @@ status open
  
 \begin_inset Graphics
 	filename figures/abc_target_autocorr_with_friction.eps
-	scale 55
+	scale 85
 
 \end_inset
 
 
 \begin_inset Graphics
 	filename figures/abc_target_marginal0_with_friction.eps
-	scale 55
+	scale 85
 
 \end_inset
 
@@ -7000,8 +7000,8 @@ name "fig:experiment_gp_abc_with_friction"
 \series bold
 Left: 
 \series default
-Counter example showing posterior and its synthetic approximation for a
- simple toy model 
+Counterexample showing posterior and its synthetic approximation for a simple
+ toy model 
 \series bold
 Middle/right:
 \series default
