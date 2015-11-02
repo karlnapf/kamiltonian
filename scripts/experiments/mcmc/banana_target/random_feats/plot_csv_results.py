@@ -29,12 +29,14 @@ if __name__ == "__main__":
             1: 'Time sampling',
             2: 'Acc. rate',
             3: 'Minimum ESS',
-                  4: r'$\Vert \hat{\mathbb E} [X]\Vert$',
-                  5: r'Quantile Error',
+                  5: r'$\Vert \hat{\mathbb E} [X]\Vert$',
+                  4: r'Quantile Error',
                   6: 'Average ESS',
                   }
         
-        for stat_idx in [2,3,6,4]:
+        for stat_idx in [2,3,6,5]:
+#         for stat_idx in [5]:
+            
             title = '%s' % (titles[stat_idx])
             xlabel=r'$n$'
             plot_banana_result_mean_N_D(resuts_kameleon, D, stat_idx=stat_idx, normalise_by_time=normalise_by_time, title=title, xlabel=xlabel, color='g', xlim=[0, xmax])
@@ -50,6 +52,6 @@ if __name__ == "__main__":
             if stat_idx ==3:
                 plt.legend( (line1, line2, line3, line4), ('HMC', 'KMC', 'RW', 'KAMH'), loc='upper left')
             
-            plt.xlabel("Iterations")
+            plt.xlabel("$n$")
             plt.tight_layout()
             plt.show()
