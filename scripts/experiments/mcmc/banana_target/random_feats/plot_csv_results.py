@@ -20,7 +20,7 @@ if __name__ == "__main__":
     resuts_kmc = KMCRandomFeatsJob.result_dict_from_file(fname_kmc)
     resuts_rw = MCMCJob.result_dict_from_file(fname_rw)
     resuts_kameleon = KMCRandomFeatsJob.result_dict_from_file(fname_kameleon)
-
+    
     for D in [8]:
         xmax = 2000
         normalise_by_time = False
@@ -35,7 +35,6 @@ if __name__ == "__main__":
                   }
         
         for stat_idx in [2,3,6,5]:
-#         for stat_idx in [5]:
             
             title = '%s' % (titles[stat_idx])
             xlabel=r'$n$'
