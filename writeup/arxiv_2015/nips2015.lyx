@@ -6778,11 +6778,11 @@ which depend on the current value for
  are shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:experiment_gp_abc_with_friction"
+reference "fig:experiment_gp_abc_counterexample"
 
 \end_inset
 
- (left).
+.
  This is a proof of concept that a likelihood with a positive skew being
  approximated by a Gaussian introduces an upwards bias to the posterior.
 \end_layout
@@ -6942,13 +6942,44 @@ status open
 \align center
 \begin_inset Graphics
 	filename figures/LN_plot.pdf
-	scale 17
+	scale 34
 	BoundingBox 0bp 0bp 504bp 504bp
 	clip
 
 \end_inset
 
  
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:experiment_gp_abc_counterexample"
+
+\end_inset
+
+Counter example showing posterior and its synthetic approximation for a
+ simple toy model.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figures/abc_target_autocorr_with_friction.eps
 	scale 85
@@ -6989,6 +7020,11 @@ Middle/right:
 LatexCommand ref
 reference "fig:experiment_gp_abc"
 
+\end_inset
+
+, i.e.
+ autocorrelation and marginal posterior for 
+\begin_inset Formula $\theta_{1}$
 \end_inset
 
 , but here we also show performance of HABC with added friction, which has
