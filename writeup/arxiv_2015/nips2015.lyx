@@ -5122,7 +5122,7 @@ As an example, the translation invariant Gaussian kernel and its Fourier
  transform are
 \begin_inset Formula 
 \[
-k(x,y)={\cal \exp}\left(-\frac{\Vert x-y\Vert_{2}^{2}}{2\sigma^{2}}\right)\quad\text{and}\quad\Gamma(\omega)={\cal N}\left(\omega\Big\vert\mathbf{0},\frac{2}{\sigma^{2}}I_{m}\right).
+k(x,y)={\cal \exp}\left(-\sigma^{-1}\Vert x-y\Vert_{2}^{2}\right)\quad\text{and}\quad\Gamma(\omega)={\cal N}\left(\omega\Big\vert\mathbf{0},\sigma^{-2}I_{m}\right).
 \]
 
 \end_inset
